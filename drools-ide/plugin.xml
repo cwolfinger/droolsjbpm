@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+   <extension point="org.eclipse.ui.views">
+      <category
+         name="Drools"
+         id="org.drools.ide.views">
+      </category>
+      <view
+         name="Working Memory View"
+         icon="icons/drools.gif"
+         category="org.drools.ide.views"
+         class="org.drools.ide.debug.WorkingMemoryView"
+         id="org.drools.ide.debug.WorkingMemoryView">
+      </view>
+      <view
+         name="Agenda View"
+         icon="icons/drools.gif"
+         category="org.drools.ide.views"
+         class="org.drools.ide.debug.AgendaView"
+         id="org.drools.ide.debug.AgendaView">
+      </view>
+      <view
+         name="Application Data View"
+         icon="icons/drools.gif"
+         category="org.drools.ide.views"
+         class="org.drools.ide.debug.ApplicationDataView"
+         id="org.drools.ide.debug.ApplicationDataView">
+      </view>
+      <view
+         name="Audit View"
+         icon="icons/drools.gif"
+         category="org.drools.ide.views"
+         class="org.drools.ide.debug.AuditView"
+         id="org.drools.ide.debug.AuditView">
+      </view>
+   </extension>
+   
+   <extension
+         point="org.eclipse.debug.core.logicalStructureTypes">
+      <logicalStructureType
+        id="org.drools.ide.debug.AgendaLogicalStructures"
+        class="org.drools.ide.debug.AgendaLogicalStructureDelegate"
+        modelIdentifier="org.eclipse.jdt.debug"
+        description="Agenda Item">
+      </logicalStructureType>
+   </extension>
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            class="org.drools.ide.editors.DRLRuleEditor"
+            contributorClass="org.eclipse.ui.editors.text.TextEditorActionContributor"
+            extensions="drl,jbrule,drools,rule"
+            icon="icons/drools.gif"
+            id="org.eclipse.ui.editors.text.DRLEditor"
+            name="Rule Editor"/>
+      <editor
+            class="org.drools.ide.dsl.editor.DSLEditor"
+            contributorClass="org.eclipse.ui.editors.text.TextEditorActionContributor"
+            default="false"
+            extensions="dsl,lang"
+            icon="icons/dsl.GIF"
+            id="org.drools.ide.editor.DomainSpecLangEditor"
+            name="DSL Editor"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <wizard
+            category="org.drools.ide.new"
+            class="org.drools.ide.wizard.rule.NewRulePackageWizard"
+            descriptionImage="icons/drools-large.PNG"
+            icon="icons/drools.gif"
+            id="org.drools.ide.new.file"
+            name="New Rule resource"/>
+      <wizard
+            category="org.drools.ide.new"
+            class="org.drools.ide.wizard.dsl.NewDSLFileWizard"
+            descriptionImage="icons/dsl-large.png"
+            icon="icons/dsl.GIF"
+            id="org.drools.ide.new.dsl"
+            name="New Domain Specific Language"/>
+      <wizard
+            id = "org.drools.ide.wizards.new.project"
+            name = "New Rule Project"
+            class= "org.drools.ide.wizard.project.NewDroolsProjectWizard"
+            category= "org.drools.ide.new"
+            project= "true"
+            icon= "icons/drools.gif">
+         <description>This wizard creates a new Rule project.</description>
+      </wizard>
+      <category
+            id="org.drools.ide.new"
+            name="JBoss Rules"/>
+   </extension>
+   <extension
+         id="org.drools.ide.actionSet"
+         name="JBoss Rules"
+         point="org.eclipse.ui.actionSets">
+      <actionSet
+            id="org.drools.ide.workbenchMenu"
+            label="JBoss Rules"
+            visible="true">
+         <action
+               class="org.drools.ide.menu.RuleHelperActionDelegate"
+               icon="icons/drools.gif"
+               id="org.drools.ide.openRulesWorkbench"
+               label="JBoss Rules wizards"
+               style="pulldown"
+               toolbarPath="Normal/additions"
+               tooltip="JBoss Rules workbench"/>
+      </actionSet>
+   </extension>
+   
+   <extension
+      id="droolsbuilder" name="Drools Builder" point="org.eclipse.core.resources.builders">
+      <builder>
+         <run class="org.drools.ide.builder.DroolsBuilder"/>
+      </builder>
+   </extension>
+
+   <extension
+         id="problem"
+         point="org.eclipse.core.resources.markers"
+         name="Drools error">
+      <super type="org.eclipse.core.resources.problemmarker"/>
+      <persistent value="true" />
+   </extension>
+
+   <extension point="org.eclipse.jdt.core.classpathContainerInitializer">
+       <classpathContainerInitializer class="org.drools.ide.util.DroolsClasspathContainerInitializer" id="DROOLS" /> 
+   </extension>
+   
+</plugin>
