@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section>
+  <title>package</title>
+
+  <para>uuuere</para>
+
+  <figure>
+    <title>package</title>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="package.svg" format="SVG" role=""
+                    />
+      </imageobject>
+
+      <imageobject>
+        <imagedata align="center" fileref="package.png" format="PNG" role=""
+                    />
+      </imageobject>
+    </mediaobject>
+  </figure>
+
+  <section>
+    <title>import</title>
+
+    <figure>
+      <title>import</title>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="import.svg" format="SVG"  />
+        </imageobject>
+
+        <imageobject>
+          <imagedata fileref="import.png" format="PNG"  />
+        </imageobject>
+      </mediaobject>
+    </figure>
+
+    <para></para>
+  </section>
+
+  <section>
+    <title>expander</title>
+
+    <figure>
+      <title>expander</title>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="expander.svg" format="SVG"  />
+        </imageobject>
+
+        <imageobject>
+          <imagedata fileref="expander.png" format="PNG"  />
+        </imageobject>
+      </mediaobject>
+    </figure>
+
+    <para></para>
+  </section>
+
+  <section>
+    <title>global</title>
+
+    <figure>
+      <title>global</title>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="global.svg" format="SVG"  />
+        </imageobject>
+
+        <imageobject>
+          <imagedata fileref="global.png" format="PNG"  />
+        </imageobject>
+      </mediaobject>
+    </figure>
+
+    <para></para>
+  </section>
+</section>

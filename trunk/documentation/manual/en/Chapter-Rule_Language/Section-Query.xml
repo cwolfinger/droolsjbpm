@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section>
+  <title>Query</title>
+
+  <figure>
+    <title>query</title>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="query.svg" format="SVG" role=""
+                    />
+      </imageobject>
+
+      <imageobject>
+        <imagedata align="center" fileref="query.png" format="PNG" role=""
+                    />
+      </imageobject>
+    </mediaobject>
+  </figure>
+
+  <para>uuuere</para>
+</section>
