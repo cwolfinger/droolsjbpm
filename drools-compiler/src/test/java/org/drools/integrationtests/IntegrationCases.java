@@ -45,6 +45,7 @@ import org.drools.Sensor;
 import org.drools.State;
 import org.drools.TestParam;
 import org.drools.WorkingMemory;
+import org.drools.common.ObjectInputStreamWithLoader;
 import org.drools.compiler.DrlParser;
 import org.drools.compiler.DroolsError;
 import org.drools.compiler.DroolsParserException;
@@ -63,6 +64,7 @@ import org.drools.rule.Package;
 import org.drools.rule.Rule;
 import org.drools.spi.ActivationGroup;
 import org.drools.spi.AgendaGroup;
+import org.drools.util.PrimitiveLongMap;
 
 /**
  * This contains the test cases for each engines implementation to execute.
@@ -1686,7 +1688,8 @@ public abstract class IntegrationCases extends TestCase {
 
     }
 
-    public void testSerializable() throws Exception {
+    public void testSerializable() throws Exception {    	
+    	
         final Reader reader = new InputStreamReader( getClass().getResourceAsStream( "test_Serializable.drl" ) );
 
         final PackageBuilder builder = new PackageBuilder();
@@ -1703,7 +1706,7 @@ public abstract class IntegrationCases extends TestCase {
         final byte[] ast = serializeOut( ruleBase );
         ruleBase = (RuleBase) serializeIn( ast );
         final Rule[] rules = ruleBase.getPackages()[0].getRules();
-        assertEquals( 3,
+        assertEquals( 4,
                       rules.length );
 
         assertEquals( "match Person 1",
@@ -1712,6 +1715,34 @@ public abstract class IntegrationCases extends TestCase {
                       rules[1].getName() );
         assertEquals( "match Person 3",
                       rules[2].getName() );
+        assertEquals( "match Integer",
+                      rules[3].getName() );        
+        
+        WorkingMemory workingMemory = ruleBase.newWorkingMemory();
+        
+        workingMemory.setGlobal( "list", new ArrayList() );
+        
+        workingMemory.assertObject( new Integer(5) );        
+        
+        final byte[] wm = serializeOut( workingMemory );
+
+        workingMemory = ruleBase.newWorkingMemory( new ByteArrayInputStream( wm ) );
+        
+        assertEquals( 1, workingMemory.getObjects().size() );
+        assertEquals( new Integer( 5 ) , workingMemory.getObjects().get(0) );
+        
+        assertEquals( 1, workingMemory.getAgenda().agendaSize() );
+        
+        workingMemory.fireAllRules();
+        
+        List list = ( List ) workingMemory.getGlobal( "list" );
+        
+        assertEquals( 1, list.size() );
+        assertEquals( new Integer( 4 ), list.get( 0 ) );
+        
+        assertEquals( 2, workingMemory.getObjects().size() );
+        assertEquals( new Integer( 5 ) , workingMemory.getObjects().get(0) );
+        assertEquals( "help" , workingMemory.getObjects().get(1) );        
     }
 
     public void testLogicalAssertions() throws Exception {
@@ -2233,7 +2264,7 @@ public abstract class IntegrationCases extends TestCase {
         assertTrue( list.contains( "fired3" ) );
     }
 
-    private Object serializeIn(final byte[] bytes) throws IOException,
+    protected Object serializeIn(final byte[] bytes) throws IOException,
                                             ClassNotFoundException {
         final ObjectInput in = new ObjectInputStream( new ByteArrayInputStream( bytes ) );
         final Object obj = in.readObject();
@@ -2241,7 +2272,7 @@ public abstract class IntegrationCases extends TestCase {
         return obj;
     }
 
-    private byte[] serializeOut(final Object obj) throws IOException {
+    protected byte[] serializeOut(final Object obj) throws IOException {
         // Serialize to a byte array
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         final ObjectOutput out = new ObjectOutputStream( bos );
