@@ -80,12 +80,13 @@
             id="org.drools.ide.new.dsl"
             name="New Domain Specific Language"/>
       <wizard
+            category= "org.drools.ide.new"            
+            class= "org.drools.ide.wizard.project.NewDroolsProjectWizard"
+            descriptionImage="icons/drools-large.PNG"      
+            icon= "icons/drools.gif"
             id = "org.drools.ide.wizards.new.project"
             name = "New Rule Project"
-            class= "org.drools.ide.wizard.project.NewDroolsProjectWizard"
-            category= "org.drools.ide.new"
-            project= "true"
-            icon= "icons/drools.gif">
+            project= "true">
          <description>This wizard creates a new Rule project.</description>
       </wizard>
       <category
