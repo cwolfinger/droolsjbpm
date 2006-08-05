@@ -38,8 +38,6 @@ public class BoundVariableConstraint
 
     private final Declaration    declaration;
 
-    private final int            column;
-
     private final Declaration[]  requiredDeclarations;
 
     private final Evaluator      evaluator;
@@ -49,7 +47,6 @@ public class BoundVariableConstraint
                                    final Evaluator evaluator) {
         this.fieldExtractor = fieldExtractor;
         this.declaration = declaration;
-        this.column = declaration.getColumn();
         this.requiredDeclarations = new Declaration[]{declaration};
         this.evaluator = evaluator;
     }
@@ -92,7 +89,6 @@ public class BoundVariableConstraint
     public int hashCode() {
         final int PRIME = 31;
         int result = 1;
-        result = PRIME * result + this.column;
         result = PRIME * result + ((this.declaration == null) ? 0 : this.declaration.hashCode());
         result = PRIME * result + ((this.evaluator == null) ? 0 : this.evaluator.hashCode());
         result = PRIME * result + ((this.fieldExtractor == null) ? 0 : this.fieldExtractor.hashCode());
@@ -111,7 +107,7 @@ public class BoundVariableConstraint
 
         final BoundVariableConstraint other = (BoundVariableConstraint) object;
 
-        return (this.column == other.column) && this.fieldExtractor.equals( other.fieldExtractor ) && this.declaration.equals( other.declaration ) && this.evaluator.equals( other.evaluator ) && Arrays.equals( this.requiredDeclarations,
+        return this.fieldExtractor.equals( other.fieldExtractor ) && this.declaration.equals( other.declaration ) && this.evaluator.equals( other.evaluator ) && Arrays.equals( this.requiredDeclarations,
                                                                                                                                                                                                                  other.requiredDeclarations );
     }
 
