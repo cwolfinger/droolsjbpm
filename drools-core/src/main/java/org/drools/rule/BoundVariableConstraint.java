@@ -79,7 +79,7 @@ public class BoundVariableConstraint
         //                                       declaration.getValue( left ) );                
         //        }
         return this.evaluator.evaluate( this.fieldExtractor.getValue( handle.getObject() ),
-                                        this.declaration.getValue( tuple.get( this.column ).getObject() ) );
+                                        this.declaration.getValue( tuple.get( this.declaration ).getObject() ) );
     }
 
     public String toString() {
