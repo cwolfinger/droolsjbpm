@@ -379,5 +379,10 @@ public class LeapsTest extends IntegrationCases {
 //                      list.get( 2 ) );               
     }
     
+    public void testLogicalAssertionsWithExists() throws Exception {
+        // FIXME
+    }
+
+    
     
 }
