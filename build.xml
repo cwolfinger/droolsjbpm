@@ -1,5 +1,5 @@
 <project name="Drools" basedir="." xmlns:artifact="urn:maven-artifact-ant" default="help">
-    <property name="version"   value="3.0.3"/>                            
+    <property name="version"   value="3.0.4"/>                            
             
     <target name="help">
       <echo level="info" message="Drools Build Help" />
@@ -133,6 +133,13 @@
         <delete>        
             <fileset dir="drools-ide/lib" includes="*"/>        
         </delete>     
+      
+      
+      <mkdir dir="drools-ide/lib" />  
+      
+      <delete>        
+          <fileset dir="drools-ide/lib" includes="*"/>        
+      </delete> 
       
       <copy todir="drools-ide/lib"            
             flatten="true">
@@ -610,6 +617,10 @@
         <zip destfile="target/dist/drools-${version}-src.zip">
             <zipfileset dir="." 
                         includes="*.xml" />        
+            <zipfileset dir="." 
+                        includes="*.txt" />                                
+            <zipfileset dir="." 
+                        includes="lib/*.jar" />                                        
             <zipfileset dir="." 
                         includes="drools-core/**"                                               
                         excludes="drools-core/target/**" />
