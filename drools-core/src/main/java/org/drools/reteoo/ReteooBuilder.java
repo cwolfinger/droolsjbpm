@@ -335,14 +335,6 @@ class ReteooBuilder
         // first column
         this.currentOffsetAdjustment += 1;
 
-        //        final ObjectSource objectSource = attachNode( new ObjectTypeNode( this.id++,
-        //                                                                          this.sinklistFactory.newObjectSinkList( ObjectTypeNode.class ),
-        //                                                                          new ClassObjectType( InitialFact.class ),
-        //                                                                          this.rete ) );
-        //
-        //        this.tupleSource = attachNode( new LeftInputAdapterNode( this.id++,
-        //                                                                 objectSource ) );
-
         final ObjectSource objectTypeSource = attachNode( new ObjectTypeNode( this.id++,
                                                                               this.sinklistFactory.newObjectSinkList( ObjectTypeNode.class ),
                                                                               new ClassObjectType( DroolsQuery.class ),
