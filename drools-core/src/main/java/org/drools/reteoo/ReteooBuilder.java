@@ -334,12 +334,19 @@ class ReteooBuilder
         // incrementing offset adjustment, since we are adding a new ObjectNodeType as our
         // first column
         this.currentOffsetAdjustment += 1;
-        final ClassObjectType queryObjectType = new ClassObjectType( DroolsQuery.class );
-        final ObjectTypeNode queryObjectTypeNode = new ObjectTypeNode( this.id++,
-                                                                       this.sinklistFactory.newObjectSinkList( ObjectTypeNode.class ),
-                                                                       queryObjectType,
-                                                                       this.rete );
-        queryObjectTypeNode.attach();
+
+        //        final ObjectSource objectSource = attachNode( new ObjectTypeNode( this.id++,
+        //                                                                          this.sinklistFactory.newObjectSinkList( ObjectTypeNode.class ),
+        //                                                                          new ClassObjectType( InitialFact.class ),
+        //                                                                          this.rete ) );
+        //
+        //        this.tupleSource = attachNode( new LeftInputAdapterNode( this.id++,
+        //                                                                 objectSource ) );
+
+        final ObjectSource objectTypeSource = attachNode( new ObjectTypeNode( this.id++,
+                                                                              this.sinklistFactory.newObjectSinkList( ObjectTypeNode.class ),
+                                                                              new ClassObjectType( DroolsQuery.class ),
+                                                                              this.rete ) );
 
         final ClassFieldExtractor extractor = new ClassFieldExtractor( DroolsQuery.class,
                                                                        "name" );
@@ -353,17 +360,13 @@ class ReteooBuilder
                                                                     extractor,
                                                                     evaluator );
 
-        final AlphaNode alphaNode = new AlphaNode( this.id++,
-                                                   this.sinklistFactory.newObjectSinkList( AlphaNode.class ),
-                                                   constraint,
-                                                   queryObjectTypeNode );
-        alphaNode.attach();
+        final ObjectSource alphaNodeSource = attachNode( new AlphaNode( this.id++,
+                                                                        this.sinklistFactory.newObjectSinkList( AlphaNode.class ),
+                                                                        constraint,
+                                                                        objectTypeSource ) );
 
-        final LeftInputAdapterNode liaNode = new LeftInputAdapterNode( this.id++,
-                                                                       alphaNode );
-        liaNode.attach();
-
-        this.tupleSource = liaNode;
+        this.tupleSource = attachNode( new LeftInputAdapterNode( this.id++,
+                                                                 alphaNodeSource ) );
     }
 
     private BetaNodeBinder attachColumn(final Column column,
