@@ -141,8 +141,8 @@ public class RuleWorksheetParseTest extends TestCase {
         assertEquals( "myObject.setIsValid(1, 2)",
                       cons.getSnippet() );
         final Condition con = (Condition) rule.getConditions().get( 2 );
-        assertEquals( "myObject.size() < $3.00",
-                      con.getSnippet() );
+//        assertEquals( "myObject.size() < $3.00",
+//                      con.getSnippet() );
 
         rule = (Rule) ruleset.getRules().get( 4 );
 
