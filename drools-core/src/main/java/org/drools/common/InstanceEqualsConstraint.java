@@ -48,6 +48,10 @@ public class InstanceEqualsConstraint
         return this.declarations;
     }
 
+    public int getOtherColumn() {
+        return this.otherColumn;
+    }
+
     public boolean isAllowed(final InternalFactHandle handle,
                              final Tuple tuple,
                              final WorkingMemory workingMemory) {

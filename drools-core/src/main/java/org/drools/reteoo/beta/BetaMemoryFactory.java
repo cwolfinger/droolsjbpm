@@ -20,6 +20,7 @@ import javax.naming.OperationNotSupportedException;
 
 import org.drools.RuleBaseConfiguration;
 import org.drools.common.BetaNodeBinder;
+import org.drools.common.InstanceEqualsConstraint;
 import org.drools.rule.BoundVariableConstraint;
 import org.drools.spi.Evaluator;
 import org.drools.spi.FieldConstraint;
@@ -53,9 +54,9 @@ public class BetaMemoryFactory {
         final FieldConstraint[] constraints = (binder != null) ? binder.getConstraints() : null;
         if ( (constraints != null) && (config.getBooleanProperty( RuleBaseConfiguration.PROPERTY_INDEX_LEFT_BETA_MEMORY )) ) {
             for ( int i = 0; i < constraints.length; i++ ) {
+                BetaLeftMemory innerMemory = null;
                 if ( constraints[i] instanceof BoundVariableConstraint ) {
                     final BoundVariableConstraint bvc = (BoundVariableConstraint) constraints[i];
-                    BetaLeftMemory innerMemory = null;
                     switch ( bvc.getEvaluator().getType() ) {
                         case Evaluator.BOOLEAN_TYPE :
                             innerMemory = new BooleanConstrainedLeftMemory( bvc.getFieldExtractor(),
@@ -79,19 +80,19 @@ public class BetaMemoryFactory {
                             }
                             break;
                     }
-                    if ( innerMemory != null ) {
-                        if ( innerMostMemory != null ) {
-                            try {
-                                innerMostMemory.setInnerMemory( innerMemory );
-                                innerMostMemory = innerMemory;
-                            } catch ( final OperationNotSupportedException e ) {
-                                throw new RuntimeException( "BUG: Exception was not supposed to be raised",
-                                                            e );
-                            }
-                        } else {
-                            memory = innerMemory;
-                            innerMostMemory = memory;
+                }
+                if ( innerMemory != null ) {
+                    if ( innerMostMemory != null ) {
+                        try {
+                            innerMostMemory.setInnerMemory( innerMemory );
+                            innerMostMemory = innerMemory;
+                        } catch ( final OperationNotSupportedException e ) {
+                            throw new RuntimeException( "BUG: Exception was not supposed to be raised",
+                                                        e );
                         }
+                    } else {
+                        memory = innerMemory;
+                        innerMostMemory = memory;
                     }
                 }
             }
@@ -118,9 +119,9 @@ public class BetaMemoryFactory {
         final FieldConstraint[] constraints = (binder != null) ? binder.getConstraints() : null;
         if ( (constraints != null) && (config.getBooleanProperty( RuleBaseConfiguration.PROPERTY_INDEX_RIGHT_BETA_MEMORY )) ) {
             for ( int i = 0; i < constraints.length; i++ ) {
+                BetaRightMemory innerMemory = null;
                 if ( constraints[i] instanceof BoundVariableConstraint ) {
                     final BoundVariableConstraint bvc = (BoundVariableConstraint) constraints[i];
-                    BetaRightMemory innerMemory = null;
                     switch ( bvc.getEvaluator().getType() ) {
                         case Evaluator.BOOLEAN_TYPE :
                             innerMemory = new BooleanConstrainedRightMemory( bvc.getFieldExtractor(),
@@ -144,19 +145,22 @@ public class BetaMemoryFactory {
                             }
                             break;
                     }
-                    if ( innerMemory != null ) {
-                        if ( innerMostMemory != null ) {
-                            try {
-                                innerMostMemory.setInnerMemory( innerMemory );
-                                innerMostMemory = innerMemory;
-                            } catch ( final OperationNotSupportedException e ) {
-                                throw new RuntimeException( "BUG: Exception was not supposed to be raised",
-                                                            e );
-                            }
-                        } else {
-                            memory = innerMemory;
-                            innerMostMemory = memory;
+                } else if ( constraints[i] instanceof InstanceEqualsConstraint ) {
+                    final InstanceEqualsConstraint iec = (InstanceEqualsConstraint) constraints[i];
+                    innerMemory = new InstanceEqualConstrRightMemory( iec.getOtherColumn() );
+                }
+                if ( innerMemory != null ) {
+                    if ( innerMostMemory != null ) {
+                        try {
+                            innerMostMemory.setInnerMemory( innerMemory );
+                            innerMostMemory = innerMemory;
+                        } catch ( final OperationNotSupportedException e ) {
+                            throw new RuntimeException( "BUG: Exception was not supposed to be raised",
+                                                        e );
                         }
+                    } else {
+                        memory = innerMemory;
+                        innerMostMemory = memory;
                     }
                 }
             }
