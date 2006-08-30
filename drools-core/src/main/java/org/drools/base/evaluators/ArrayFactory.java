@@ -54,6 +54,9 @@ public class ArrayFactory {
 
         public boolean evaluate(final Object object1,
                                 final Object object2) {
+            if ( object1 == null ) {
+                return object2 == null;
+            }
             return object1.equals( object2 );
         }
 
@@ -81,7 +84,7 @@ public class ArrayFactory {
         }
 
         public String toString() {
-            return "Object !=";
+            return "Array !=";
         }
     }
 
