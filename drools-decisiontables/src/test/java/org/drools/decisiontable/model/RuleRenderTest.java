@@ -62,7 +62,7 @@ public class RuleRenderTest extends TestCase {
     public void testAttributes() throws Exception {
         Rule rule = new Rule("la", new Integer(42), 2);
         
-        rule.setActivationrGroup( "foo" );
+        rule.setActivationGroup( "foo" );
         rule.setNoLoop( "true" );
         
         DRLOutput out = new DRLOutput();
