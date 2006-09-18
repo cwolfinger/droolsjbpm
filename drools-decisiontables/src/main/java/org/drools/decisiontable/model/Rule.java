@@ -100,7 +100,7 @@ public class Rule extends DRLElement
             out.writeLine( "\tsalience " + this._salience );
         }
         if ( this._activationGroup != null ) {
-            out.writeLine( "\tactivation-group " + this._activationGroup );
+            out.writeLine( "\tactivation-group \"" + this._activationGroup + "\"" );
         }
         if ( this._noLoop != null ) {
             out.writeLine( "\tno-loop " + this._noLoop );
