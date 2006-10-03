@@ -149,7 +149,7 @@ abstract class BaseNode
         return this.id;
     }
 
-    public String toString() {
-        return "[" + this.getClass().getSimpleName() + "(" + this.id + ")]";
+    public String toString() { 
+        return "[" + this.getClass().getName() + "(" + this.id + ")]";
     }
 }
