@@ -152,7 +152,8 @@ abstract class BetaNode extends TupleSource
     public String toString() {
         // return "[JoinNode: common=" + this.commonDeclarations + "; decls=" +
         // this.tupleDeclarations + "]";
-        return "";
+        return "["+this.getClass().getName().substring( this.getClass().getName().lastIndexOf( '.' )+1 )+
+        "("+this.getId()+")]";
     }
 
     /* (non-Javadoc)
