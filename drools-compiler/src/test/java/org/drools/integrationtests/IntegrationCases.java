@@ -677,6 +677,20 @@ public abstract class IntegrationCases extends TestCase {
         workingMemory.fireAllRules();
 
     }
+    
+    public void FIXME_JIRA506_testRetractReassert() throws Exception {
+        final PackageBuilder builder = new PackageBuilder();
+        builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "reassert.drl" ) ) );
+        final Package pkg = builder.getPackage();
+
+        final RuleBase ruleBase = getRuleBase();
+        ruleBase.addPackage( pkg );
+        final WorkingMemory workingMemory = ruleBase.newWorkingMemory();
+
+        workingMemory.assertObject( new Cheese("stilton", 42) );
+        workingMemory.fireAllRules();
+        
+    }
 
     public void testNullConstraint() throws Exception {
         final PackageBuilder builder = new PackageBuilder();
