@@ -213,14 +213,18 @@ final class TerminalNode extends BaseNode
                              final PropagationContext context,
                              final ReteooWorkingMemory workingMemory) {
         final Activation activation = tuple.getActivation();
-        if ( activation.isActivated() ) {
-            activation.remove();
-            workingMemory.getAgendaEventSupport().fireActivationCancelled( activation );
-        }
+        // a noloop attribute in the rule may cause an activation to never be
+        // created, so we need to check for null activation here.
+        if( activation != null ) {
+            if ( activation.isActivated() ) {
+                activation.remove();
+                workingMemory.getAgendaEventSupport().fireActivationCancelled( activation );
+            }
 
-        workingMemory.getTruthMaintenanceSystem().removeLogicalDependencies( activation,
-                                                                             context,
-                                                                             this.rule );
+            workingMemory.getTruthMaintenanceSystem().removeLogicalDependencies( activation,
+                                                                                 context,
+                                                                                 this.rule );
+        }
     }
 
     public void modifyTuple(final ReteTuple tuple,

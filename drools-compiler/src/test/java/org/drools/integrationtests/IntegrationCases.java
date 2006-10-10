@@ -39,6 +39,7 @@ import org.drools.Cell;
 import org.drools.Cheese;
 import org.drools.CheeseEqual;
 import org.drools.Cheesery;
+import org.drools.FactException;
 import org.drools.FactHandle;
 import org.drools.IndexedNumber;
 import org.drools.Person;
@@ -2860,5 +2861,33 @@ public abstract class IntegrationCases extends TestCase {
         
     }
     
+    
+    public void testAssertRetractNoloop() {
+        try {
+            //read in the source
+            final Reader reader = new InputStreamReader( getClass().getResourceAsStream( "test_Assert_Retract_Noloop.drl" ) );
+            final DrlParser parser = new DrlParser();
+            final PackageDescr packageDescr = parser.parse( reader );
+
+            //pre build the package
+            final PackageBuilder builder = new PackageBuilder();
+            builder.addPackage( packageDescr );
+            final Package pkg = builder.getPackage();
+
+            //add the package to a rulebase
+            final RuleBase ruleBase = getRuleBase();
+            ruleBase.addPackage( pkg );
+            //load up the rulebase
+
+            final WorkingMemory wm = ruleBase.newWorkingMemory();
+            wm.assertObject( new Cheese("stilton", 15) );
+            
+            wm.fireAllRules();
+        } catch ( Exception e ) {
+            e.printStackTrace();
+            fail("test should not throw exception");
+        }
+    }
+
 
 }
