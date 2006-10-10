@@ -19,9 +19,7 @@ package org.drools.reteoo;
 import java.io.Serializable;
 import java.util.Iterator;
 
-import org.drools.Agenda;
 import org.drools.RuleBaseConfiguration;
-import org.drools.common.DefaultAgenda;
 import org.drools.common.AgendaGroupImpl;
 import org.drools.common.AgendaItem;
 import org.drools.common.InternalAgenda;
@@ -234,7 +232,7 @@ final class TerminalNode extends BaseNode
         boolean fireActivation = true;
         Activation activation = tuple.getActivation();
         
-        if ( activation.isActivated() ) {
+        if ( ( activation != null ) && ( activation.isActivated() ) ) {
             activation.remove();
             fireActivation = false;
         }
