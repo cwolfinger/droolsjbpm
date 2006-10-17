@@ -6,7 +6,6 @@ Runtime assumes that you are "compiling" rules using drools-compiler.
     * drools-core - the rule engine itself.
     * optional packages:
           o xpp3, xstream - if you are using the file based audit feature
-          o jung, concurrent, colt, commons-collections, xercesImpl - only if you are using the visualisation feature (most people do this in the plug in - so not needed).
 
 Note you can use the drools-core stand-alone if you are compiling "outside" your runtime application, and deploying serialized Package or RuleBase? objects.
 
@@ -36,14 +35,14 @@ Decision tables use spreadsheets to generate rules.
 
     * drools-compiler - required as rules are generated and compiled
     * drools-decisiontables - contains the spreadsheet compiler for both XLS and CSV
-    * jxl ( jexcelapi ) - for parsing Excel spreadsheets or open office - xls format. 
+    * jxl ( jexcelapi ) - for parsing Excel spreadsheets or open office - xls format.
 
-The most common use case is for COMPILER - this allows rules to be loaded from their source form, 
-and includes the runtime engine of course. 
-For example, if you wanted to be able to load rules from a drl source you would need: drools-core and the COMPILER jars mentioned above 
-(not xerces, and not xml-apis), and commons-jar-eclipse, core-3.2. 
+The most common use case is for COMPILER - this allows rules to be loaded from their source form,
+and includes the runtime engine of course.
+For example, if you wanted to be able to load rules from a drl source you would need: drools-core and the COMPILER jars mentioned above
+(not xerces, and not xml-apis), and commons-jar-eclipse, core-3.2.
 You will only need optional core jars if you are using those features.
 
-When building from source, the dependencies are managed by maven. 
-In each module, there is a pom.xml file that lists the exact dependencies and exact version numbers. 
-Even if you use ant to build, the dependencies will be downloaded for you based on those pom.xml files. 
+When building from source, the dependencies are managed by maven.
+In each module, there is a pom.xml file that lists the exact dependencies and exact version numbers.
+Even if you use ant to build, the dependencies will be downloaded for you based on those pom.xml files.
