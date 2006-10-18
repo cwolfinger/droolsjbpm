@@ -1,4 +1,4 @@
-package org.drools.ide;
+ package org.drools.ide;
 /*
  * Copyright 2005 JBoss Inc
  * 
