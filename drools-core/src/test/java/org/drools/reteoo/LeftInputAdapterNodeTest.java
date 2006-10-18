@@ -20,8 +20,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.drools.DroolsTestCase;
+import org.drools.common.BetaNodeBinder;
 import org.drools.common.DefaultFactHandle;
 import org.drools.common.PropagationContextImpl;
+import org.drools.spi.FieldConstraint;
 import org.drools.spi.PropagationContext;
 import org.drools.util.LinkedList;
 import org.drools.util.LinkedListObjectWrapper;
@@ -171,4 +173,12 @@ public class LeftInputAdapterNodeTest extends DroolsTestCase {
 
     }
 
+    public void testGetConstraints_ReturnsNullEvenWithEmptyBinder() {
+        BetaNodeBinder nullBinder = null;
+        final MockObjectSource source = new MockObjectSource( 15 );
+        LeftInputAdapterNode node = new LeftInputAdapterNode( 1,
+                                                source, nullBinder);        
+        FieldConstraint[] constraints = node.getConstraints();
+        assertNull(constraints);        
+    }
 }

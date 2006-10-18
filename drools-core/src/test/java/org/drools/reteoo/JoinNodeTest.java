@@ -407,4 +407,13 @@ public class JoinNodeTest extends DroolsTestCase {
         return matches;
     }
 
+    public void testGetConstraints_ReturnsNullEvenWithEmptyBinder() {
+        BetaNodeBinder nullBinder = null;
+        JoinNode joinNode = new JoinNode( 1,
+                                                this.tupleSource,
+                                                this.objectSource, nullBinder);        
+        FieldConstraint[] constraints = joinNode.getConstraints();
+        assertNull(constraints);
+    }
+    
 }

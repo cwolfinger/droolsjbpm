@@ -27,6 +27,7 @@ import org.drools.common.BetaNodeBinder;
 import org.drools.common.DefaultFactHandle;
 import org.drools.common.PropagationContextImpl;
 import org.drools.rule.Rule;
+import org.drools.spi.FieldConstraint;
 import org.drools.spi.MockConstraint;
 import org.drools.spi.PropagationContext;
 
@@ -283,6 +284,17 @@ public class NotNodeTest extends DroolsTestCase {
         } catch ( final Exception e ) {
             Assert.fail( "No exception should be raised in this procedure, but got: " + e.toString() );
         }
+    }
+    
+
+    public void testGetConstraints_ReturnsNullEvenWithEmptyBinder() {
+        BetaNodeBinder nullBinder = null;
+        NotNode notNode = new NotNode( 1,
+                                                this.tupleSource,
+                                                this.objectSource, nullBinder);        
+        FieldConstraint[] constraints = notNode.getConstraints();
+        assertNull(constraints);
+        
     }
 
 }

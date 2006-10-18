@@ -93,6 +93,10 @@ class LeftInputAdapterNode extends TupleSource
     }
 
     public FieldConstraint[] getConstraints() {
+        
+        // Sanity check
+        if (binder==null) {return null;}
+        
         return this.binder.getConstraints();
     }
 

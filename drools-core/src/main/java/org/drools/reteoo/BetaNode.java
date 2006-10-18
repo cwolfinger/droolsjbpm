@@ -93,6 +93,10 @@ abstract class BetaNode extends TupleSource
     }
 
     public FieldConstraint[] getConstraints() {
+        
+        // Sanity check
+        if (joinNodeBinder==null) {return null;}
+        
         return this.joinNodeBinder.getConstraints();
     }
 
