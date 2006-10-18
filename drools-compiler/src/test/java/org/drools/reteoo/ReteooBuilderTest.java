@@ -1,9 +1,6 @@
 package org.drools.reteoo;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -16,15 +13,12 @@ import org.drools.RuleBase;
 import org.drools.RuleBaseFactory;
 import org.drools.compiler.PackageBuilder;
 import org.drools.rule.Package;
-import org.drools.visualize.ReteooJungViewer;
 
 import com.thoughtworks.xstream.XStream;
 
 public class ReteooBuilderTest extends TestCase {
 
     private final boolean writeTree = false;
-
-    private final boolean showRete  = false;
 
     /** Implementation specific subclasses must provide this. */
     protected RuleBase getRuleBase() throws Exception {
@@ -60,21 +54,6 @@ public class ReteooBuilderTest extends TestCase {
 
         final ReteooRuleBase ruleBase = (ReteooRuleBase) getRuleBase();
         ruleBase.addPackage( pkg );
-
-        if ( this.showRete ) {
-            final ReteooJungViewer viewer = new ReteooJungViewer( ruleBase );
-
-            javax.swing.SwingUtilities.invokeLater( new Runnable() {
-                public void run() {
-                    viewer.showGUI();
-                }
-            } );
-
-            while ( viewer.isRunning() ) {
-                Thread.yield();
-                Thread.sleep( 100 );
-            }
-        }
 
         if ( this.writeTree ) {
             writeRuleBase( ruleBase,
