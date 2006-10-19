@@ -75,8 +75,8 @@ public class DRLRuleEditorActionContributor extends MultiPageEditorActionBarCont
         if ( part instanceof DRLRuleEditor2 ) {
             DRLRuleEditor2 p = (DRLRuleEditor2) part;
             p.setZoomComboContributionItem( zitem );
-            p.setZoomZoomInAction( zoomIn );
-            p.setZoomZoomOutAction( zoomOut );
+            p.setZoomInAction( zoomIn );
+            p.setZoomOutAction( zoomOut );
         }
     }
 

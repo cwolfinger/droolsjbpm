@@ -51,7 +51,6 @@ public class DRLRuleEditor2 extends FormEditor {
         super.init( site,
                     input );
         setPartName( input.getName() );
-        
     }
 
     /**
@@ -125,7 +124,14 @@ public class DRLRuleEditor2 extends FormEditor {
                 return null;
             }            
             
-        }
+        } else if (adapter == ZoomInAction2.class) {
+            return zoomIn;
+        } else if (adapter == ZoomOutAction2.class) {
+            return zoomOut;
+        } else if (adapter == ZoomComboContributionItem.class) {
+            return zitem;
+        } 
+        
         return textEditor.getAdapter( adapter );
     }
 
@@ -167,17 +173,17 @@ public class DRLRuleEditor2 extends FormEditor {
      * 
      * @param zoomOut zoom action
      */
-    public void setZoomZoomOutAction(ZoomOutAction2 zoomOut) {
+    public void setZoomOutAction(ZoomOutAction2 zoomOut) {
         this.zoomOut = zoomOut;
     }
 
     /**
      * Sets ZoomInAction to be used for updating it's
      * ZoomManager when multipage tab is switched. 
-     * @param zoomIn zoom action
+     * @param zoomInAction zoom action
      */
-    public void setZoomZoomInAction(ZoomInAction2 zoomIn) {
-        this.zoomIn = zoomIn;
+    public void setZoomInAction(ZoomInAction2 zoomInAction) {
+        this.zoomIn = zoomInAction;
     }
     
     public void setFocus() {
@@ -185,4 +191,10 @@ public class DRLRuleEditor2 extends FormEditor {
         updateZoomItems();
     }
 
+    /**
+     * Increasing visibility to allow switching tabs by page index
+     */
+    public void setActivePage(int pageIndex) {
+        super.setActivePage( pageIndex );
+    }
 }
