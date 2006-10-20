@@ -28,12 +28,12 @@ import org.eclipse.ui.ide.IDE;
 
 public class ZoomControlTest extends TestCase {
 
-    private IFile               fFile1;
-    private IFile               fFile2;
-    
-    private final static IProgressMonitor NULL_MONITOR= new NullProgressMonitor();
+    private IFile                         fFile1;
+    private IFile                         fFile2;
 
-    private static final String ORIGINAL_CONTENT = "package test\nrule \"a\"\nend\nrule \"b\"\nend";
+    private final static IProgressMonitor NULL_MONITOR     = new NullProgressMonitor();
+
+    private static final String           ORIGINAL_CONTENT = "package test\nrule \"a\"\nend\nrule \"b\"\nend";
 
     public ZoomControlTest(String name) {
         super( name );
@@ -49,11 +49,11 @@ public class ZoomControlTest extends TestCase {
     protected void setUp() throws Exception {
         IFolder folder = createFolder( "ZoomControlTestProject/multipleEditorTest/" );
         fFile1 = createFile( folder,
-                                            "myfile1.drl",
-                                            getOriginalContent() );
+                             "myfile1.drl",
+                             getOriginalContent() );
         fFile2 = createFile( folder,
-                                            "myfile2.drl",
-                                            getOriginalContent() );
+                             "myfile2.drl",
+                             getOriginalContent() );
     }
 
     /*
@@ -75,45 +75,69 @@ public class ZoomControlTest extends TestCase {
         DRLRuleEditor2 part2 = (DRLRuleEditor2) IDE.openEditor( page,
                                                                 fFile2 );
 
-        checkVisibility( part1, part2, false );
+        checkVisibility( part1,
+                         part2,
+                         false );
 
         // Editor1 active
         page.activate( part1 );
-        checkVisibility( part1, part2, false );
+        checkVisibility( part1,
+                         part2,
+                         false );
 
         part1.setActivePage( 1 );
-        checkVisibility( part1, part2, true );
+        checkVisibility( part1,
+                         part2,
+                         true );
 
         part1.setActivePage( 0 );
-        checkVisibility( part1, part2, false );
-        
+        checkVisibility( part1,
+                         part2,
+                         false );
+
         part1.setActivePage( 1 );
-        checkVisibility( part1, part2, true );
+        checkVisibility( part1,
+                         part2,
+                         true );
 
         // Editor2 active
         page.activate( part2 );
         part2.setActivePage( 0 );
-        checkVisibility( part1, part2, false );
+        checkVisibility( part1,
+                         part2,
+                         false );
 
         part2.setActivePage( 1 );
-        checkVisibility( part1, part2, true );
+        checkVisibility( part1,
+                         part2,
+                         true );
 
         // Editor1 active
         page.activate( part1 );
-        checkVisibility( part1, part2, true );
+        checkVisibility( part1,
+                         part2,
+                         true );
 
         // Editor2 active
         page.activate( part2 );
-        checkVisibility( part1, part2, true );
+        checkVisibility( part1,
+                         part2,
+                         true );
 
         part2.setActivePage( 0 );
-        checkVisibility( part1, part2, false );
-        
+        checkVisibility( part1,
+                         part2,
+                         false );
+
         // Editor1 active
         page.activate( part1 );
-        checkVisibility( part1, part2, true );
+        checkVisibility( part1,
+                         part2,
+                         true );
         part2.setActivePage( 0 );
-        checkVisibility( part1, part2, false );
+        checkVisibility( part1,
+                         part2,
+                         false );
 
     }
 
@@ -141,23 +165,30 @@ public class ZoomControlTest extends TestCase {
 
     }
 
-    private IFile createFile(IFolder folder, String name, String contents) throws CoreException {
-        IFile file = folder.getFile(name);
-        InputStream inputStream= new StringBufferInputStream(contents);
-        file.create(inputStream, true, NULL_MONITOR);
+    private IFile createFile(IFolder folder,
+                             String name,
+                             String contents) throws CoreException {
+        IFile file = folder.getFile( name );
+        InputStream inputStream = new StringBufferInputStream( contents );
+        file.create( inputStream,
+                     true,
+                     NULL_MONITOR );
         return file;
     }
 
     private IFolder createFolder(String portableFolderPath) throws CoreException {
-        ContainerCreator creator= new ContainerCreator(ResourcesPlugin.getWorkspace(), new Path(portableFolderPath));
-        IContainer container= creator.createContainer(NULL_MONITOR);
+        ContainerCreator creator = new ContainerCreator( ResourcesPlugin.getWorkspace(),
+                                                         new Path( portableFolderPath ) );
+        IContainer container = creator.createContainer( NULL_MONITOR );
         return (IFolder) container;
     }
 
     private void deleteProject(String projectName) throws CoreException {
-        IWorkspaceRoot root= ResourcesPlugin.getWorkspace().getRoot();
-        IProject project= root.getProject(projectName);
-        if (project.exists()) project.delete(true, true, NULL_MONITOR);
+        IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+        IProject project = root.getProject( projectName );
+        if ( project.exists() ) project.delete( true,
+                                                true,
+                                                NULL_MONITOR );
     }
 
 }

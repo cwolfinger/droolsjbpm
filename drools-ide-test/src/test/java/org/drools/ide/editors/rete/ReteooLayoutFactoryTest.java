@@ -140,8 +140,8 @@ public class ReteooLayoutFactoryTest extends TestCase {
     }
 
     private BaseVertex loadRete(ReteGraph graph) throws IOException,
-                                            DroolsParserException,
-                                            PackageIntegrationException {
+                                                DroolsParserException,
+                                                PackageIntegrationException {
         final InputStream is = getClass().getClassLoader().getResourceAsStream( "simplerule.drl" );
         String drl = streamToString( is );
 
