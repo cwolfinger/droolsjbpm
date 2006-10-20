@@ -22,7 +22,7 @@ import org.eclipse.ui.views.properties.TextPropertyDescriptor;
  * 
  */
 abstract public class GraphicalVertex extends ModelElement {
-    
+
     private static IPropertyDescriptor[] descriptors;
 
     /** ID for the Height property value (used for by the corresponding property descriptor). */
@@ -68,13 +68,12 @@ abstract public class GraphicalVertex extends ModelElement {
     private Point                        location                = new Point( 0,
                                                                               0 );
     /** Size of this vertex. */
-    private final static Dimension                    size                    = new Dimension( 16,
+    private final static Dimension       size                    = new Dimension( 16,
                                                                                   16 );
     /** List of outgoing Connections. */
     private List                         sourceConnections       = new ArrayList();
     /** List of incoming Connections. */
     private List                         targetConnections       = new ArrayList();
-
 
     /**
      * HTML formatted representation of this node
@@ -82,7 +81,7 @@ abstract public class GraphicalVertex extends ModelElement {
      * @return #getHtml
      */
     abstract public String getHtml();
-    
+
     /**
      * Color used for filling vertex figure
      * 
@@ -278,5 +277,5 @@ abstract public class GraphicalVertex extends ModelElement {
         }
         return buffer.toString();
     }
- 
+
 }

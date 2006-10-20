@@ -1,4 +1,5 @@
 package org.drools.ide.editors;
+
 /*
  * Copyright 2006 JBoss Inc
  * 

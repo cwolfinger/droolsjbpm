@@ -7,11 +7,11 @@ import org.drools.reteoo.BaseVertex;
  */
 public class Connection extends ModelElement {
 
-    private boolean isConnected;
+    private boolean    isConnected;
 
-    private BaseVertex  source;
+    private BaseVertex source;
 
-    private BaseVertex  target;
+    private BaseVertex target;
 
     /** 
      * Creating a connection between two distinct vertices.

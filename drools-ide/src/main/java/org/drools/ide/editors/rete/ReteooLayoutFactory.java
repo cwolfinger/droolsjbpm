@@ -93,7 +93,7 @@ public class ReteooLayoutFactory {
         private ReteGraph          graph;
 
         private LayoutCalculator(final ReteGraph graph,
-                                final RowList rowList) {
+                                 final RowList rowList) {
             this.graph = graph;
             this.rowList = rowList;
             computeSize();

@@ -136,12 +136,12 @@ public class ReteViewer extends GraphicalEditor {
                     Thread.currentThread().setContextClassLoader( oldLoader );
                 }
             } catch ( Throwable t ) {
-                DroolsIDEPlugin.log(t);
+                DroolsIDEPlugin.log( t );
             }
         }
-        
+
         return null;
-        
+
     }
 
     /**
@@ -154,8 +154,8 @@ public class ReteViewer extends GraphicalEditor {
      * @throws PackageIntegrationException
      */
     public static RuleBase parseRuleBase(String contents,
-                                   Reader dslReader) throws DroolsParserException,
-                                                    PackageIntegrationException {
+                                         Reader dslReader) throws DroolsParserException,
+                                                          PackageIntegrationException {
         DrlParser parser = new DrlParser();
 
         PackageDescr packageDescr = null;
@@ -188,7 +188,7 @@ public class ReteViewer extends GraphicalEditor {
 
             RuleBase ruleBase = getRuleBase();
             if ( ruleBase == null ) {
-                DroolsIDEPlugin.log(new Exception("Unable to load rule base!"));                
+                DroolsIDEPlugin.log( new Exception( "Unable to load rule base!" ) );
             } else {
 
                 final ReteooVisitor visitor = new ReteooVisitor( diagram );

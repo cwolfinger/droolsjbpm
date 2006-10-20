@@ -59,7 +59,7 @@ public class VertexPropertySource
     private final static String       CAT_GENERAL           = "General";
     private final static String       CAT_OTHER             = "Other";
 
-    protected BaseVertex                  vertex                = null;
+    protected BaseVertex              vertex                = null;
 
     // Map<String,NodeValue>
     private Map                       values                = new HashMap();
@@ -299,7 +299,7 @@ public class VertexPropertySource
             ((PropertyDescriptor) field).setAlwaysIncompatible( true );
             ((PropertyDescriptor) field).setCategory( CAT_GENERAL );
         }
-        
+
     }
 
     private void addOther(IPropertyDescriptor field,
@@ -315,7 +315,7 @@ public class VertexPropertySource
             ((PropertyDescriptor) field).setAlwaysIncompatible( true );
             ((PropertyDescriptor) field).setCategory( CAT_OTHER );
         }
-        
+
     }
 
     /* (non-Javadoc)

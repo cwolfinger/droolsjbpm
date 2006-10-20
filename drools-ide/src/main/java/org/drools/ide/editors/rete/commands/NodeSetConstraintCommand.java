@@ -12,18 +12,18 @@ import org.eclipse.gef.requests.ChangeBoundsRequest;
  * 
  */
 public class NodeSetConstraintCommand extends Command {
-    
+
     /** Stores the new size and location. */
     private final Rectangle           newBounds;
-    
+
     /** Stores the old size and location. */
     private Rectangle                 oldBounds;
-    
+
     /** A request to move/resize an edit part. */
     private final ChangeBoundsRequest request;
 
     /** BaseVertex to manipulate. */
-    private final BaseVertex              vertex;
+    private final BaseVertex          vertex;
 
     /**
      * Create a command that can resize and/or move a vertex.

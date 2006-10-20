@@ -53,7 +53,7 @@ class VertexEditPart extends AbstractGraphicalEditPart
      */
     protected IFigure createFigure() {
         return new VertexFigure( getCastedModel().getFillColor(),
-                                 getCastedModel().getDrawColor());
+                                 getCastedModel().getDrawColor() );
     }
 
     /* (non-Javadoc)
