@@ -38,8 +38,6 @@ import org.drools.reteoo.ReteooVisitor;
 import org.drools.rule.Package;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.debug.core.DebugException;
 import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Point;
@@ -66,6 +64,8 @@ import org.eclipse.ui.texteditor.IDocumentProvider;
  *
  */
 public class ReteViewer extends GraphicalEditor {
+
+    private static final String  JAVA_NATURE  = "org.eclipse.jdt.core.javanature";
 
     ScalableFreeformRootEditPart rootEditPart = new ScalableFreeformRootEditPart();
 
@@ -116,7 +116,7 @@ public class ReteViewer extends GraphicalEditor {
                 ClassLoader oldLoader = Thread.currentThread().getContextClassLoader();
                 ClassLoader newLoader = DroolsBuilder.class.getClassLoader();
                 IFile file = ((IFileEditorInput) getEditorInput()).getFile();
-                if ( file.getProject().getNature( "org.eclipse.jdt.core.javanature" ) != null ) {
+                if ( file.getProject().getNature( JAVA_NATURE ) != null ) {
                     IJavaProject project = JavaCore.create( file.getProject() );
                     newLoader = ProjectClassLoader.getProjectClassLoader( project );
                 }

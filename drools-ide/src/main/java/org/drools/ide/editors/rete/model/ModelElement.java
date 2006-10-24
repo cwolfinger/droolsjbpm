@@ -2,14 +2,11 @@ package org.drools.ide.editors.rete.model;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.io.Serializable;
 
 /**
  * Abstract prototype of a model element.
  */
-public abstract class ModelElement
-    implements
-    Serializable {
+public abstract class ModelElement {
 
     /** Delegate used to implemenent property-change-support. */
     private transient PropertyChangeSupport pcsDelegate = new PropertyChangeSupport( this );
@@ -42,13 +39,6 @@ public abstract class ModelElement
                                             oldValue,
                                             newValue );
         }
-    }
-
-    /**
-     * Children should override this. The default implementation returns false.
-     */
-    public boolean isPropertySet(Object id) {
-        return false;
     }
 
     /** 

@@ -17,8 +17,6 @@ package org.drools.reteoo;
 
 import org.drools.ide.editors.rete.model.GraphicalVertex;
 
-
-
 /**
  * Intermediate class to have a workaround for *Node default visibility  
  * and ReteooVisitor.
@@ -31,5 +29,5 @@ import org.drools.ide.editors.rete.model.GraphicalVertex;
  */
 abstract public class BaseVertex extends GraphicalVertex {
 
-   
+
 }

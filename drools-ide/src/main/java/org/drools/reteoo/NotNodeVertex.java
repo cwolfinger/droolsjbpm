@@ -11,6 +11,9 @@ import org.eclipse.swt.graphics.Color;
  *
  */
 public class NotNodeVertex extends BaseVertex {
+    
+    private static final String NODE_NAME = "NotNode";
+    
     private final NotNode node;
 
     /**
@@ -27,14 +30,14 @@ public class NotNodeVertex extends BaseVertex {
      * @see org.drools.reteoo.BaseNodeVertex#getHtml()
      */
     public String getHtml() {
-        return "NotNode : " + this.node.getId();
+        return NODE_NAME+" : " + this.node.getId();
     }
 
     /* (non-Javadoc)
      * @see org.drools.ide.editors.rete.model.BaseVertex#toString()
      */
     public String toString() {
-        return "NotNode";
+        return NODE_NAME;
     }
 
     /* (non-Javadoc)

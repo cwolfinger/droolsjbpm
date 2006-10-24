@@ -11,6 +11,8 @@ import org.eclipse.swt.graphics.Color;
  *
  */
 public class EvalConditionNodeVertex extends BaseVertex {
+    
+    private static final String     NODE_NAME = "EvalConditionNode";
     private final EvalConditionNode node;
 
     /**
@@ -27,14 +29,14 @@ public class EvalConditionNodeVertex extends BaseVertex {
      * @see org.drools.reteoo.BaseNodeVertex#getHtml()
      */
     public String getHtml() {
-        return "EvalConditionNode : " + this.node.getId();
+        return NODE_NAME + " : " + this.node.getId();
     }
 
     /* (non-Javadoc)
      * @see org.drools.ide.editors.rete.model.BaseVertex#toString()
      */
     public String toString() {
-        return "EvalConditionNode";
+        return NODE_NAME;
     }
 
     /**

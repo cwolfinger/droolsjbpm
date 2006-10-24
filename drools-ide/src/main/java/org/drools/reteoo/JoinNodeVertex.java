@@ -12,7 +12,10 @@ import org.eclipse.swt.graphics.Color;
  *
  */
 public class JoinNodeVertex extends BaseVertex {
-    private final JoinNode node;
+
+    private static final String NODE_NAME = "JoinNode";
+
+    private final JoinNode      node;
 
     /**
      * Constructor
@@ -28,14 +31,14 @@ public class JoinNodeVertex extends BaseVertex {
      * @see org.drools.reteoo.BaseNodeVertex#getHtml()
      */
     public String getHtml() {
-        return "JoinNode<br> " + dumpConstraints( this.node.getConstraints() );
+        return NODE_NAME + "<BR/>" + dumpConstraints( this.node.getConstraints() );
     }
 
     /* (non-Javadoc)
      * @see org.drools.ide.editors.rete.model.BaseVertex#toString()
      */
     public String toString() {
-        return "JoinNode";
+        return NODE_NAME;
     }
 
     /* (non-Javadoc)

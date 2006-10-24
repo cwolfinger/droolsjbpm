@@ -11,6 +11,9 @@ import org.eclipse.swt.graphics.Color;
  *
  */
 public class TerminalNodeVertex extends BaseVertex {
+    
+    private static final String NODE_NAME = "TerminalNode";
+    
     private final TerminalNode node;
 
     /**
@@ -27,14 +30,14 @@ public class TerminalNodeVertex extends BaseVertex {
      * @see org.drools.reteoo.BaseNodeVertex#getHtml()
      */
     public String getHtml() {
-        return "TerminalNode : " + this.node.getId() + " : " + this.node.getRule();
+        return NODE_NAME+" : " + this.node.getId() + " : " + this.node.getRule();
     }
 
     /* (non-Javadoc)
      * @see org.drools.ide.editors.rete.model.BaseVertex#toString()
      */
     public String toString() {
-        return "TerminalNode";
+        return NODE_NAME;
     }
 
     /* (non-Javadoc)

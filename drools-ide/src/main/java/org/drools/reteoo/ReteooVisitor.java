@@ -19,6 +19,8 @@ import org.drools.util.ReflectiveVisitor;
  */
 public class ReteooVisitor extends ReflectiveVisitor {
 
+    private static final String PACKAGE_NAME = "org.drools.reteoo.";
+
     /**
      * Keeps track of visited JoinNode DOT IDs. This mapping allows the visitor
      * to recognize JoinNodes it has already visited and as a consequence link
@@ -27,11 +29,11 @@ public class ReteooVisitor extends ReflectiveVisitor {
      */
     private final Map           visitedNodes = new HashMap();
 
-    private ReteGraph               graph;
+    private ReteGraph           graph;
 
-    private BaseVertex              rootVertex;
+    private BaseVertex          rootVertex;
 
-    private BaseVertex              parentVertex;
+    private BaseVertex          parentVertex;
 
     /**
      * Constructor.
@@ -80,7 +82,7 @@ public class ReteooVisitor extends ReflectiveVisitor {
             try {
                 String name = node.getClass().getName();
                 name = name.substring( name.lastIndexOf( '.' ) + 1 ) + "Vertex";
-                final Class clazz = Class.forName( "org.drools.reteoo." + name );
+                final Class clazz = Class.forName( PACKAGE_NAME + name );
                 vertex = (BaseVertex) clazz.getConstructor( new Class[]{node.getClass()} ).newInstance( new Object[]{node} );
             } catch ( final Exception e ) {
                 throw new RuntimeException( "problem visiting vertex " + node.getClass().getName(),
@@ -89,9 +91,10 @@ public class ReteooVisitor extends ReflectiveVisitor {
             this.graph.addChild( vertex );
             this.visitedNodes.put( dotId( node ),
                                    vertex );
-            
-            new Connection(this.parentVertex,vertex);
-            
+
+            new Connection( this.parentVertex,
+                            vertex );
+
             final BaseVertex oldParentVertex = this.parentVertex;
             this.parentVertex = vertex;
 
@@ -110,7 +113,8 @@ public class ReteooVisitor extends ReflectiveVisitor {
             }
             this.parentVertex = oldParentVertex;
         } else {
-            new Connection(this.parentVertex, vertex );
+            new Connection( this.parentVertex,
+                            vertex );
         }
     }
 

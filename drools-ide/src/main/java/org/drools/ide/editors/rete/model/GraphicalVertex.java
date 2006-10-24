@@ -23,31 +23,37 @@ import org.eclipse.ui.views.properties.TextPropertyDescriptor;
  */
 abstract public class GraphicalVertex extends ModelElement {
 
+    private static final String          VERTEX_NAME             = "BaseVertex ";
+
+    private static final String          WIDTH                   = "Width";
+
+    private static final String          HEIGHT                  = "Height";
+
     private static IPropertyDescriptor[] descriptors;
 
     /** ID for the Height property value (used for by the corresponding property descriptor). */
-    private static final String          HEIGHT_PROP             = "BaseVertex.Height";
-
-    /** Property ID to use when the location of this shape is modified. */
-    public static final String           LOCATION_PROP           = "BaseVertex.Location";
-
-    /** Property ID to use then the size of this shape is modified. */
-    public static final String           SIZE_PROP               = "BaseVertex.Size";
-
-    /** Property ID to use when the list of outgoing connections is modified. */
-    public static final String           SOURCE_CONNECTIONS_PROP = "BaseVertex.SourceConn";
-
-    /** Property ID to use when the list of incoming connections is modified. */
-    public static final String           TARGET_CONNECTIONS_PROP = "BaseVertex.TargetConn";
+    private static final String          HEIGHT_PROP             = VERTEX_NAME + "." + HEIGHT;
 
     /** ID for the Width property value (used for by the corresponding property descriptor). */
-    private static final String          WIDTH_PROP              = "BaseVertex.Width";
+    private static final String          WIDTH_PROP              = VERTEX_NAME + "." + WIDTH;
+
+    /** Property ID to use when the location of this shape is modified. */
+    public static final String           LOCATION_PROP           = VERTEX_NAME + ".Location";
+
+    /** Property ID to use then the size of this shape is modified. */
+    public static final String           SIZE_PROP               = VERTEX_NAME + ".Size";
+
+    /** Property ID to use when the list of outgoing connections is modified. */
+    public static final String           SOURCE_CONNECTIONS_PROP = VERTEX_NAME + ".SourceConn";
+
+    /** Property ID to use when the list of incoming connections is modified. */
+    public static final String           TARGET_CONNECTIONS_PROP = VERTEX_NAME + ".TargetConn";
 
     /** ID for the X property value (used for by the corresponding property descriptor).  */
-    private static final String          XPOS_PROP               = "BaseVertex.xPos";
+    private static final String          XPOS_PROP               = VERTEX_NAME + ".xPos";
 
     /** ID for the Y property value (used for by the corresponding property descriptor).  */
-    private static final String          YPOS_PROP               = "BaseVertex.yPos";
+    private static final String          YPOS_PROP               = VERTEX_NAME + ".yPos";
 
     /*
      * Initializes the property descriptors array.
@@ -60,8 +66,8 @@ abstract public class GraphicalVertex extends ModelElement {
                                                                             "X" ), // id and description pair
             new TextPropertyDescriptor( YPOS_PROP,
                                         "Y" ), new TextPropertyDescriptor( WIDTH_PROP,
-                                                                           "Width" ), new TextPropertyDescriptor( HEIGHT_PROP,
-                                                                                                                  "Height" ),};
+                                                                           WIDTH ), new TextPropertyDescriptor( HEIGHT_PROP,
+                                                                                                                HEIGHT ),};
     } // static
 
     /** Location of this vertex. */
@@ -249,7 +255,7 @@ abstract public class GraphicalVertex extends ModelElement {
      * @see java.lang.Object#toString()
      */
     public String toString() {
-        return "BaseVertex " + hashCode();
+        return VERTEX_NAME + hashCode();
     }
 
     /**

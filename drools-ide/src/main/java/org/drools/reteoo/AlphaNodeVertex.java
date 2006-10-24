@@ -17,6 +17,8 @@ public class AlphaNodeVertex extends BaseVertex {
 
     private final AlphaNode node;
 
+    private final String    NODE_NAME = "AlphaNode";
+
     /**
      * Constructor
      * 
@@ -33,7 +35,7 @@ public class AlphaNodeVertex extends BaseVertex {
     public String getHtml() {
         final LiteralConstraint constraint = (LiteralConstraint) this.node.getConstraint();
         final ClassFieldExtractor extractor = (ClassFieldExtractor) constraint.getFieldExtractor();
-        return "AlphaNode<br>field : " + extractor.getFieldName() + "<br>evaluator : " + constraint.getEvaluator() + "<br>value :  " + constraint.getField();
+        return NODE_NAME + "<BR/>field : " + extractor.getFieldName() + "<BR/>evaluator : " + constraint.getEvaluator() + "<BR/>value :  " + constraint.getField();
     }
 
     /* (non-Javadoc)

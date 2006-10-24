@@ -11,6 +11,9 @@ import org.eclipse.swt.graphics.Color;
  *
  */
 public class ReteVertex extends BaseVertex {
+    
+    private static final String NODE_NAME = "Rete";
+    
     private final Rete node;
 
     /**
@@ -27,14 +30,14 @@ public class ReteVertex extends BaseVertex {
      * @see org.drools.reteoo.BaseNodeVertex#getHtml()
      */
     public String getHtml() {
-        return "Rete : " + this.node.getId();
+        return NODE_NAME+" : " + this.node.getId();
     }
 
     /* (non-Javadoc)
      * @see org.drools.ide.editors.rete.model.BaseVertex#toString()
      */
     public String toString() {
-        return "Rete";
+        return NODE_NAME;
     }
 
     /**

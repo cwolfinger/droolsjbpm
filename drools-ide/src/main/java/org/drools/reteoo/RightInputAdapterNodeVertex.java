@@ -11,8 +11,8 @@ import org.eclipse.swt.graphics.Color;
  *
  */
 public class RightInputAdapterNodeVertex extends BaseVertex {
-    
-    private final RightInputAdapterNode node;
+
+    private static final String NODE_NAME = "RightInputAdapterNode";
 
     /**
      * Constructor
@@ -21,15 +21,14 @@ public class RightInputAdapterNodeVertex extends BaseVertex {
      */
     public RightInputAdapterNodeVertex(final RightInputAdapterNode node) {
         super();
-        this.node = node;
     }
 
     public String getHtml() {
-        return "RightInputAdapterNode";
+        return NODE_NAME;
     }
 
     public String toString() {
-        return "RightInputAdapterNode";
+        return NODE_NAME;
     }
 
     public Color getFillColor() {

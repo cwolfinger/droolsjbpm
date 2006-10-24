@@ -12,6 +12,9 @@ import org.eclipse.swt.graphics.Color;
  *
  */
 public class LeftInputAdapterNodeVertex extends BaseVertex {
+
+    private static final String        NODE_NAME = "LeftInputAdapterNode";
+
     private final LeftInputAdapterNode node;
 
     /**
@@ -28,7 +31,7 @@ public class LeftInputAdapterNodeVertex extends BaseVertex {
      * @see org.drools.reteoo.BaseNodeVertex#getHtml()
      */
     public String getHtml() {
-        return "LeftInputAdapterNode<br>" + dumpConstraints( this.node.getConstraints() );
+        return NODE_NAME + "<BR/>" + dumpConstraints( this.node.getConstraints() );
     }
 
     /* (non-Javadoc)

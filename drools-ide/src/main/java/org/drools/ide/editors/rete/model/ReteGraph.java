@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.drools.reteoo.BaseVertex;
-import org.eclipse.jface.util.PropertyChangeEvent;
 
 /**
  * Rete graph containing a set of vertices that form the graph itself.
@@ -66,15 +65,6 @@ public class ReteGraph extends ModelElement {
         while ( vertices.size() > 0 ) {
             removeChild( ((BaseVertex) vertices.get( 0 )) );
         }
-    }
-
-    /**
-     * Not implemented. Not required if graph editing functionality is not required.
-     * 
-     * @param event property change event
-     */
-    public void propertyChange(PropertyChangeEvent event) {
-        // Not relevant
     }
 
 }

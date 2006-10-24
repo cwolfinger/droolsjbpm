@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.drools.ide.DroolsIDEPlugin;
 import org.drools.reteoo.AlphaNodeVertex;
 import org.drools.reteoo.BaseVertex;
 import org.drools.reteoo.EvalConditionNodeVertex;
@@ -30,39 +29,61 @@ public class VertexPropertySource
     implements
     IPropertySource {
 
-    public String                     ID_ROOT               = "vertex";                               //$NON-NLS-1$
+    private static final String       VERTEX_TERMINAL            = "Terminal BaseVertex";
 
-    public String                     ID_ID                 = "id";                                   //$NON-NLS-1$
-    public String                     ID_HTML               = "html";                                 //$NON-NLS-1$
+    private static final String       VERTEX_EVAL_CONDITION      = "Eval Condition BaseVertex";
+
+    private static final String       VERTEX_NOT                 = "Not BaseVertex";
+
+    private static final String       VERTEX_JOIN                = "Join BaseVertex";
+
+    private static final String       VERTEX_RIGHT_INPUT_ADAPTER = "Right Input Adapter BaseVertex";
+
+    private static final String       VERTEX_LEFT_INPUT_ADAPTER  = "Left Input Adapter BaseVertex";
+
+    private static final String       VERTEX_ALPHA               = "Alpha BaseVertex";
+
+    private static final String       VERTEX_OBJECT_TYPE         = "Object Type BaseVertex";
+
+    private static final String       VERTEX_RETE                = "Rete BaseVertex";
+
+    private static final String       CONSTRAINT_CAP             = "Constraint";
+
+    private static final String       CONSTRAINT                 = "constraint";
+
+    public String                     ID_ROOT                    = "vertex";                               //$NON-NLS-1$
+
+    public String                     ID_ID                      = "id";                                   //$NON-NLS-1$
+    public String                     ID_HTML                    = "html";                                 //$NON-NLS-1$
 
     private IPropertyDescriptor[]     descriptors;
 
-    private final IPropertyDescriptor PROP_NAME             = new PropertyDescriptor( "name",
-                                                                                      "Name" );
-    private final IPropertyDescriptor PROP_ID               = new PropertyDescriptor( "id",
-                                                                                      "ID" );
-    private final IPropertyDescriptor PROP_RULE             = new PropertyDescriptor( "rule",
-                                                                                      "Rule" );
+    private final IPropertyDescriptor PROP_NAME                  = new PropertyDescriptor( "name",
+                                                                                           "Name" );
+    private final IPropertyDescriptor PROP_ID                    = new PropertyDescriptor( "id",
+                                                                                           "ID" );
+    private final IPropertyDescriptor PROP_RULE                  = new PropertyDescriptor( "rule",
+                                                                                           "Rule" );
 
     // Alpha-specific
-    private final IPropertyDescriptor PROP_ALPHA_FIELD_NAME = new PropertyDescriptor( "fieldName",
-                                                                                      "Field Name" );
-    private final IPropertyDescriptor PROP_ALPHA_EVALUATOR  = new PropertyDescriptor( "evaluator",
-                                                                                      "Evaluator" );
-    private final IPropertyDescriptor PROP_ALPHA_VALUE      = new PropertyDescriptor( "value",
-                                                                                      "Value" );
+    private final IPropertyDescriptor PROP_ALPHA_FIELD_NAME      = new PropertyDescriptor( "fieldName",
+                                                                                           "Field Name" );
+    private final IPropertyDescriptor PROP_ALPHA_EVALUATOR       = new PropertyDescriptor( "evaluator",
+                                                                                           "Evaluator" );
+    private final IPropertyDescriptor PROP_ALPHA_VALUE           = new PropertyDescriptor( "value",
+                                                                                           "Value" );
 
     // ObjectType specific
-    private final IPropertyDescriptor PROP_OBJ_TYPE         = new PropertyDescriptor( "objectType",
-                                                                                      "Object Type" );
+    private final IPropertyDescriptor PROP_OBJ_TYPE              = new PropertyDescriptor( "objectType",
+                                                                                           "Object Type" );
 
-    private final static String       CAT_GENERAL           = "General";
-    private final static String       CAT_OTHER             = "Other";
+    private final static String       CAT_GENERAL                = "General";
+    private final static String       CAT_OTHER                  = "Other";
 
-    protected BaseVertex              vertex                = null;
+    protected BaseVertex              vertex                     = null;
 
     // Map<String,NodeValue>
-    private Map                       values                = new HashMap();
+    private Map                       values                     = new HashMap();
 
     /**
      * Constructor initializing properties from <code>vertex</code>
@@ -96,8 +117,7 @@ public class VertexPropertySource
                                     descriptorList,
                                     values );
         } else if ( vertex instanceof RightInputAdapterNodeVertex ) {
-            initRightInputAdapterNodeProperties( (RightInputAdapterNodeVertex) vertex,
-                                                 descriptorList,
+            initRightInputAdapterNodeProperties( descriptorList,
                                                  values );
         } else if ( vertex instanceof LeftInputAdapterNodeVertex ) {
             initLeftInputAdapterNodeProperties( (LeftInputAdapterNodeVertex) vertex,
@@ -124,7 +144,7 @@ public class VertexPropertySource
                                         List descriptorList,
                                         Map valueMap) {
         addProperty( PROP_NAME,
-                     "Rete BaseVertex",
+                     VERTEX_RETE,
                      descriptorList,
                      valueMap );
         addProperty( PROP_ID,
@@ -137,7 +157,7 @@ public class VertexPropertySource
                                               List descriptorList,
                                               Map valueMap) {
         addProperty( PROP_NAME,
-                     "Object Type BaseVertex",
+                     VERTEX_OBJECT_TYPE,
                      descriptorList,
                      valueMap );
         addProperty( PROP_OBJ_TYPE,
@@ -151,7 +171,7 @@ public class VertexPropertySource
                                          List descriptorList,
                                          Map valueMap) {
         addProperty( PROP_NAME,
-                     "Alpha BaseVertex",
+                     VERTEX_ALPHA,
                      descriptorList,
                      valueMap );
         addProperty( PROP_ALPHA_FIELD_NAME,
@@ -171,8 +191,8 @@ public class VertexPropertySource
         if ( constraint == null ) {
             return;
         }
-        IPropertyDescriptor prop = new PropertyDescriptor( "constraint",
-                                                           "Constraint" );
+        IPropertyDescriptor prop = new PropertyDescriptor( CONSTRAINT,
+                                                           CONSTRAINT_CAP );
         addProperty( prop,
                      constraint.toString(),
                      descriptorList,
@@ -184,7 +204,7 @@ public class VertexPropertySource
                                                     List descriptorList,
                                                     Map valueMap) {
         addProperty( PROP_NAME,
-                     "Left Input Adapter BaseVertex",
+                     VERTEX_LEFT_INPUT_ADAPTER,
                      descriptorList,
                      valueMap );
 
@@ -193,8 +213,8 @@ public class VertexPropertySource
             return;
         }
         for ( int i = 0, length = constraints.length; i < length; i++ ) {
-            PropertyDescriptor prop = new PropertyDescriptor( "constraint" + (i + 1),
-                                                              "Constraint " + (i + 1) );
+            PropertyDescriptor prop = new PropertyDescriptor( CONSTRAINT + (i + 1),
+                                                              CONSTRAINT_CAP + " " + (i + 1) );
             addOther( prop,
                       constraints[i].toString(),
                       descriptorList,
@@ -203,11 +223,10 @@ public class VertexPropertySource
 
     }
 
-    private void initRightInputAdapterNodeProperties(RightInputAdapterNodeVertex vertex,
-                                                     List descriptorList,
+    private void initRightInputAdapterNodeProperties(List descriptorList,
                                                      Map valueMap) {
         addProperty( PROP_NAME,
-                     "Right Input Adapter BaseVertex",
+                     VERTEX_RIGHT_INPUT_ADAPTER,
                      descriptorList,
                      valueMap );
     }
@@ -217,7 +236,7 @@ public class VertexPropertySource
                                         Map valueMap) {
 
         addProperty( PROP_NAME,
-                     "Join BaseVertex",
+                     VERTEX_JOIN,
                      descriptorList,
                      valueMap );
         addProperty( PROP_ID,
@@ -232,8 +251,8 @@ public class VertexPropertySource
         }
 
         for ( int i = 0, length = constraints.length; i < length; i++ ) {
-            PropertyDescriptor prop = new PropertyDescriptor( "constraint" + (i + 1),
-                                                              "Constraint " + (i + 1) );
+            PropertyDescriptor prop = new PropertyDescriptor( CONSTRAINT + (i + 1),
+                                                              CONSTRAINT_CAP + " " + (i + 1) );
             addOther( prop,
                       constraints[i].toString(),
                       descriptorList,
@@ -246,7 +265,7 @@ public class VertexPropertySource
                                        List descriptorList,
                                        Map valueMap) {
         addProperty( PROP_NAME,
-                     "Not BaseVertex",
+                     VERTEX_NOT,
                      descriptorList,
                      valueMap );
         addProperty( PROP_ID,
@@ -259,7 +278,7 @@ public class VertexPropertySource
                                                  List descriptorList,
                                                  Map valueMap) {
         addProperty( PROP_NAME,
-                     "Eval Condition BaseVertex",
+                     VERTEX_EVAL_CONDITION,
                      descriptorList,
                      valueMap );
         addProperty( PROP_ID,
@@ -273,7 +292,7 @@ public class VertexPropertySource
                                             Map valueMap) {
 
         addProperty( PROP_NAME,
-                     "Terminal BaseVertex",
+                     VERTEX_TERMINAL,
                      descriptorList,
                      valueMap );
         addProperty( PROP_ID,
@@ -347,19 +366,8 @@ public class VertexPropertySource
      */
     public void setPropertyValue(Object propName,
                                  Object value) {
-        setPropertyValue( (String) propName,
+        setPropertyValue( propName,
                           value );
-    }
-
-    /**
-     * Doing nothing as changing properties from property sheet is not possible.
-     * 
-     * @param propName
-     * @param value
-     */
-    public void setPropertyValue(String propName,
-                                 Object value) {
-        // Can't be changed
     }
 
     /* (non-Javadoc)

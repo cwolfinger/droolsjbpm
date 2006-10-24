@@ -12,6 +12,9 @@ import org.eclipse.swt.graphics.Color;
  *
  */
 public class ObjectTypeNodeVertex extends BaseVertex {
+
+    private static final String  NODE_NAME = "ObjectTypeNode";
+
     private final ObjectTypeNode node;
 
     /**
@@ -28,14 +31,14 @@ public class ObjectTypeNodeVertex extends BaseVertex {
      * @see org.drools.reteoo.BaseNodeVertex#getHtml()
      */
     public String getHtml() {
-        return "ObjectTypeNode : " + this.node.getObjectType();
+        return NODE_NAME + " : " + this.node.getObjectType();
     }
 
     /* (non-Javadoc)
      * @see org.drools.ide.editors.rete.model.BaseVertex#toString()
      */
     public String toString() {
-        return "ObjectTypeNode";
+        return NODE_NAME;
     }
 
     /* (non-Javadoc)
