@@ -1,4 +1,5 @@
 package org.drools.ide.editors;
+
 /*
  * Copyright 2006 JBoss Inc
  * 
@@ -33,7 +34,7 @@ import org.eclipse.ui.forms.editor.FormEditor;
  * @author Ahti Kitsik
  */
 public class DRLRuleEditor2 extends FormEditor {
- 
+
     private DRLRuleEditor             textEditor;
 
     private ReteViewer                reteViewer;
@@ -71,7 +72,7 @@ public class DRLRuleEditor2 extends FormEditor {
                     DRLRuleEditor2.this.setPartName( partName );
                 }
             };
-            reteViewer = new ReteViewer(textEditor.getDocumentProvider() );
+            reteViewer = new ReteViewer( textEditor.getDocumentProvider() );
 
             int text = addPage( textEditor,
                                 getEditorInput() );
@@ -116,22 +117,22 @@ public class DRLRuleEditor2 extends FormEditor {
      * @see org.eclipse.ui.part.MultiPageEditorPart#getAdapter(java.lang.Class)
      */
     public Object getAdapter(Class adapter) {
-        if (adapter == ZoomManager.class) {
-            
+        if ( adapter == ZoomManager.class ) {
+
             if ( getActiveEditor() instanceof ReteViewer ) {
                 return reteViewer.getAdapter( adapter );
             } else if ( getActiveEditor() instanceof DRLRuleEditor ) {
                 return null;
-            }            
-            
-        } else if (adapter == ZoomInAction2.class) {
+            }
+
+        } else if ( adapter == ZoomInAction2.class ) {
             return zoomIn;
-        } else if (adapter == ZoomOutAction2.class) {
+        } else if ( adapter == ZoomOutAction2.class ) {
             return zoomOut;
-        } else if (adapter == ZoomComboContributionItem.class) {
+        } else if ( adapter == ZoomComboContributionItem.class ) {
             return zitem;
-        } 
-        
+        }
+
         return textEditor.getAdapter( adapter );
     }
 
@@ -139,22 +140,34 @@ public class DRLRuleEditor2 extends FormEditor {
      * Updates ZoomManagers for contributed actions.
      */
     private void updateZoomItems() {
-        final ZoomManager zoomManager = (ZoomManager) getAdapter( ZoomManager.class );
-        
-        boolean zoomActive = zoomManager != null;
-        
-        if (zoomIn!=null && zoomOut!=null && zitem!=null) {
-            
-            zoomIn.setZoomManager( zoomManager );
-            zoomIn.setEnabled( zoomActive );
-            
-            zoomOut.setZoomManager( zoomManager );
-            zoomOut.setEnabled( zoomActive );
-            
-            zitem.setZoomManager( zoomManager );
-            
+        updateZoomIn();
+
+        updateZoomOut();
+
+        updateZoomCombo();
+
+    }
+
+    private void updateZoomCombo() {
+        if ( zitem != null ) {
+            zitem.setZoomManager( getZoomManager() );
         }
-        
+    }
+
+    private void updateZoomIn() {
+        boolean zoomActive = getZoomManager() != null;
+        if ( zoomIn != null ) {
+            zoomIn.setZoomManager( getZoomManager() );
+            zoomIn.setEnabled( zoomActive );
+        }
+    }
+
+    private void updateZoomOut() {
+        boolean zoomActive = getZoomManager() != null;
+        if ( zoomOut != null ) {
+            zoomOut.setZoomManager( getZoomManager() );
+            zoomOut.setEnabled( zoomActive );
+        }
     }
 
     /**
@@ -165,16 +178,22 @@ public class DRLRuleEditor2 extends FormEditor {
      */
     public void setZoomComboContributionItem(ZoomComboContributionItem zitem) {
         this.zitem = zitem;
+        updateZoomCombo();
+    }
+
+    private ZoomManager getZoomManager() {
+        return (ZoomManager) getAdapter( ZoomManager.class );
     }
 
     /**
      * Sets ZoomOutAction2 to be used for updating it's
      * ZoomManager when multipage tab is switched.
      * 
-     * @param zoomOut zoom action
+     * @param zoomOutAction zoom action
      */
-    public void setZoomOutAction(ZoomOutAction2 zoomOut) {
-        this.zoomOut = zoomOut;
+    public void setZoomOutAction(ZoomOutAction2 zoomOutAction) {
+        this.zoomOut = zoomOutAction;
+        updateZoomOut();
     }
 
     /**
@@ -184,8 +203,9 @@ public class DRLRuleEditor2 extends FormEditor {
      */
     public void setZoomInAction(ZoomInAction2 zoomInAction) {
         this.zoomIn = zoomInAction;
+        updateZoomIn();
     }
-    
+
     public void setFocus() {
         super.setFocus();
         updateZoomItems();

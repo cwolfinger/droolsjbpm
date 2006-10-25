@@ -141,13 +141,42 @@ public class ZoomControlTest extends TestCase {
 
     }
 
+    public void testSecondEditorAfterFirst() throws PartInitException {
+
+        IWorkbench workbench = PlatformUI.getWorkbench();
+        IWorkbenchPage page = workbench.getActiveWorkbenchWindow().getActivePage();
+
+        DRLRuleEditor2 part1 = (DRLRuleEditor2) IDE.openEditor( page,
+                                                                fFile1 );
+
+        // Editor1 active
+        page.activate( part1 );
+        part1.setActivePage( 1 );
+        checkVisibility( part1,
+                         null,
+                         true );
+
+        DRLRuleEditor2 part2 = (DRLRuleEditor2) IDE.openEditor( page,
+                                                                fFile2 );
+        page.activate( part2 );
+        checkVisibility( part1,
+                         part2,
+                         false );
+
+    }
+
     private void checkVisibility(DRLRuleEditor2 part1,
                                  DRLRuleEditor2 part2,
                                  boolean enabled) {
-        checkVisibility( part1,
-                         enabled );
-        checkVisibility( part2,
-                         enabled );
+        if ( part1 != null ) {
+            checkVisibility( part1,
+                             enabled );
+        }
+
+        if ( part2 != null ) {
+            checkVisibility( part2,
+                             enabled );
+        }
     }
 
     private void checkVisibility(DRLRuleEditor2 editor,
