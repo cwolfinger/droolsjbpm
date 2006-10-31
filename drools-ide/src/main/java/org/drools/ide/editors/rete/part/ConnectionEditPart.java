@@ -20,7 +20,6 @@ import java.beans.PropertyChangeListener;
 
 import org.drools.ide.editors.rete.figure.ConnectionFigure;
 import org.drools.ide.editors.rete.model.ModelElement;
-import org.eclipse.draw2d.BendpointConnectionRouter;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.PolylineConnection;
 import org.eclipse.draw2d.PolylineDecoration;
@@ -60,8 +59,6 @@ class ConnectionEditPart extends AbstractConnectionEditPart
         PolylineConnection connection = new ConnectionFigure();
         PolylineDecoration decoration = new PolylineDecoration();
         connection.setTargetDecoration( decoration );
-        BendpointConnectionRouter router = new BendpointConnectionRouter();
-        connection.setConnectionRouter( router );
         return connection;
     }
 

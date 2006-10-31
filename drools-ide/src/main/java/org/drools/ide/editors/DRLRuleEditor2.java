@@ -16,11 +16,18 @@ package org.drools.ide.editors;
  * limitations under the License.
  */
 
+import java.lang.reflect.InvocationTargetException;
+
 import org.drools.ide.DroolsIDEPlugin;
 import org.drools.ide.editors.rete.ReteViewer;
+import org.drools.ide.editors.rete.model.ReteGraph;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.gef.editparts.ZoomManager;
 import org.eclipse.gef.ui.actions.ZoomComboContributionItem;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.jface.text.DocumentEvent;
+import org.eclipse.jface.text.IDocumentListener;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
@@ -43,6 +50,8 @@ public class DRLRuleEditor2 extends FormEditor {
 
     private ZoomInAction2             zoomIn;
     private ZoomOutAction2            zoomOut;
+
+    protected ReteGraph               graph;
 
     /* (non-Javadoc)
      * @see org.eclipse.ui.forms.editor.FormEditor#init(org.eclipse.ui.IEditorSite, org.eclipse.ui.IEditorInput)
@@ -72,7 +81,8 @@ public class DRLRuleEditor2 extends FormEditor {
                     DRLRuleEditor2.this.setPartName( partName );
                 }
             };
-            reteViewer = new ReteViewer( textEditor.getDocumentProvider() );
+
+            reteViewer = new ReteViewer();
 
             int text = addPage( textEditor,
                                 getEditorInput() );
@@ -84,6 +94,18 @@ public class DRLRuleEditor2 extends FormEditor {
                          "Text Editor" );
             setPageText( rete,
                          "Rete Tree" );
+
+            textEditor.getDocumentProvider().getDocument( getEditorInput() ).addDocumentListener( new IDocumentListener() {
+
+                public void documentAboutToBeChanged(DocumentEvent event) {
+                }
+
+                public void documentChanged(DocumentEvent event) {
+                    reteViewer.fireDocumentChanged();
+                }
+
+            } );
+
         } catch ( PartInitException e ) {
             DroolsIDEPlugin.log( e );
         }
@@ -95,7 +117,6 @@ public class DRLRuleEditor2 extends FormEditor {
     public void doSave(IProgressMonitor monitor) {
         textEditor.doSave( monitor );
         setInput( getEditorInput() );
-        reteViewer.loadReteModel();
     }
 
     /* (non-Javadoc)
@@ -103,7 +124,6 @@ public class DRLRuleEditor2 extends FormEditor {
      */
     public void doSaveAs() {
         textEditor.doSaveAs();
-        reteViewer.loadReteModel();
     }
 
     /* (non-Javadoc)
@@ -207,8 +227,71 @@ public class DRLRuleEditor2 extends FormEditor {
     }
 
     public void setFocus() {
+        if ( getActivePage() == 1 ) {
+            boolean reteFailed = false;
+            graph = null;
+            try {
+                final String contents = textEditor.getDocumentProvider().getDocument( getEditorInput() ).get();
+                final IRunnableWithProgress runnable = new IRunnableWithProgress() {
+
+                    public void run(IProgressMonitor monitor) throws InvocationTargetException,
+                                                             InterruptedException {
+                        try {
+                            graph = reteViewer.loadReteModel( monitor,
+                                                              contents );
+                        } catch ( Throwable e ) {
+                            if ( e instanceof InvocationTargetException ) {
+                                throw (InvocationTargetException) e;
+                            } else if ( e instanceof InterruptedException ) {
+                                throw (InterruptedException) e;
+                            }
+                            throw new InvocationTargetException( e );
+                        }
+
+                    }
+
+                };
+
+                getEditorSite().getWorkbenchWindow().getWorkbench().getProgressService().busyCursorWhile( runnable );
+
+                reteViewer.drawGraph( graph );
+
+            } catch ( InvocationTargetException e ) {
+                handleError( e );
+                reteFailed = true;
+            } catch ( InterruptedException e ) {
+                MessageDialog.openError( getSite().getShell(),
+                                         "Rete Tree Error!",
+                                         "Rete Tree Calculation Cancelled!" );
+                reteFailed = true;
+            } catch ( Throwable t ) {
+                handleError( t );
+                reteFailed = true;
+            }
+            if ( reteFailed ) {
+                setActivePage( 0 );
+            }
+        }
+
         super.setFocus();
         updateZoomItems();
+
+    }
+
+    private void handleError(Throwable t) {
+        DroolsIDEPlugin.log( t );
+        Throwable cause = t.getCause();
+        if ( cause == null ) {
+            cause = t;
+        }
+        String message = cause.getMessage();
+        if ( message == null || message.length() == 0 ) {
+            message = "Uncategorized Error!";
+        }
+        MessageDialog.openError( getSite().getShell(),
+                                 "Rete Tree Error!",
+                                 message );
+
     }
 
     /**
@@ -217,4 +300,5 @@ public class DRLRuleEditor2 extends FormEditor {
     public void setActivePage(int pageIndex) {
         super.setActivePage( pageIndex );
     }
+
 }

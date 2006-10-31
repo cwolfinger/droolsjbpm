@@ -1,6 +1,7 @@
 package org.drools.ide.editors.rete.model;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.drools.reteoo.BaseVertex;
@@ -64,6 +65,14 @@ public class ReteGraph extends ModelElement {
     public void removeAll() {
         while ( vertices.size() > 0 ) {
             removeChild( ((BaseVertex) vertices.get( 0 )) );
+        }
+    }
+
+    public void addAll(List children) {
+        final Iterator iter = children.iterator();
+        while ( iter.hasNext() ) {
+            BaseVertex vertex = (BaseVertex) iter.next();
+            addChild( vertex );
         }
     }
 

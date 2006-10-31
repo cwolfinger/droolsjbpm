@@ -39,14 +39,20 @@ import org.drools.rule.Package;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.draw2d.ColorConstants;
+import org.eclipse.draw2d.ConnectionLayer;
+import org.eclipse.draw2d.ConnectionRouter;
 import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.ShortestPathConnectionRouter;
+import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.gef.DefaultEditDomain;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.GraphicalViewer;
+import org.eclipse.gef.LayerConstants;
 import org.eclipse.gef.MouseWheelHandler;
 import org.eclipse.gef.MouseWheelZoomHandler;
+import org.eclipse.gef.editparts.LayerManager;
 import org.eclipse.gef.editparts.ScalableFreeformRootEditPart;
 import org.eclipse.gef.editparts.ZoomManager;
 import org.eclipse.gef.ui.parts.GraphicalEditor;
@@ -55,7 +61,6 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.swt.SWT;
 import org.eclipse.ui.IFileEditorInput;
-import org.eclipse.ui.texteditor.IDocumentProvider;
 
 /**
  * GEF-based RETE Viewer
@@ -65,22 +70,25 @@ import org.eclipse.ui.texteditor.IDocumentProvider;
  */
 public class ReteViewer extends GraphicalEditor {
 
-    private static final String  JAVA_NATURE  = "org.eclipse.jdt.core.javanature";
+    private static final String  MSG_PARSE_ERROR         = "Unable to parse rules to show RETE view!";
 
-    ScalableFreeformRootEditPart rootEditPart = new ScalableFreeformRootEditPart();
+    private static final String  JAVA_NATURE             = "org.eclipse.jdt.core.javanature";
 
-    private IDocumentProvider    documentProvider;
+    private static final int     SIMPLE_ROUTER_MIN_NODES = 100;
 
-    private ReteGraph            diagram      = new ReteGraph();
+    ScalableFreeformRootEditPart rootEditPart            = new ScalableFreeformRootEditPart();
+
+    private ReteGraph            diagram                 = new ReteGraph();
+
+    private boolean              relayoutRequired        = true;
 
     /**
      * Constructor.
      * 
      * @param documentProvider documentProvider must contain Document with rules.
      */
-    public ReteViewer(IDocumentProvider documentProvider) {
+    public ReteViewer() {
         super();
-        this.documentProvider = documentProvider;
         setEditDomain( new DefaultEditDomain( this ) );
     }
 
@@ -108,10 +116,9 @@ public class ReteViewer extends GraphicalEditor {
         return super.getAdapter( type );
     }
 
-    private RuleBase getRuleBase() {
+    private RuleBase getRuleBase(String contents) {
         if ( getEditorInput() instanceof IFileEditorInput ) {
             try {
-                String contents = documentProvider.getDocument( getEditorInput() ).get();
 
                 ClassLoader oldLoader = Thread.currentThread().getContextClassLoader();
                 ClassLoader newLoader = DroolsBuilder.class.getClassLoader();
@@ -180,31 +187,62 @@ public class ReteViewer extends GraphicalEditor {
     /**
      * Loads model from rule base,
      * calculates rete view and initializes diagram model.
+     * @param monitor 
+     * @param contents 
+     * @return
      */
-    public void loadReteModel() {
+    public ReteGraph loadReteModel(IProgressMonitor monitor,
+                                   String contents) throws Throwable {
+        if ( relayoutRequired == false ) {
+            return diagram;
+        }
+
+        ReteGraph newDiagram = new ReteGraph();
+
         try {
 
-            diagram.removeAll();
+            monitor.beginTask( "Loading RETE Tree",
+                               100 );
 
-            RuleBase ruleBase = getRuleBase();
+            monitor.subTask( "Loading Rule Base" );
+            RuleBase ruleBase = getRuleBase( contents );
             if ( ruleBase == null ) {
-                DroolsIDEPlugin.log( new Exception( "Unable to load rule base!" ) );
-            } else {
-
-                final ReteooVisitor visitor = new ReteooVisitor( diagram );
-                visitor.visit( ruleBase );
-
-                BaseVertex rootVertex = visitor.getRootVertex();
-
-                RowList rowList = ReteooLayoutFactory.calculateReteRows( rootVertex );
-                ReteooLayoutFactory.layoutRowList( diagram,
-                                                   rowList );
-
+                final Exception error = new Exception( MSG_PARSE_ERROR );
+                throw error;
             }
+            monitor.worked( 50 );
+            if ( monitor.isCanceled() ) {
+                throw new InterruptedException();
+            }
+
+            monitor.subTask( "Building RETE Tree" );
+            final ReteooVisitor visitor = new ReteooVisitor( newDiagram );
+            visitor.visit( ruleBase );
+            monitor.worked( 30 );
+            if ( monitor.isCanceled() ) {
+                throw new InterruptedException();
+            }
+
+            monitor.subTask( "Calculating RETE Tree Layout" );
+            BaseVertex rootVertex = visitor.getRootVertex();
+            RowList rowList = ReteooLayoutFactory.calculateReteRows( rootVertex );
+            ReteooLayoutFactory.layoutRowList( newDiagram,
+                                               rowList );
+            zeroBaseDiagram( newDiagram );
+            monitor.worked( 20 );
+            if ( monitor.isCanceled() ) {
+                throw new InterruptedException();
+            }
+            monitor.done();
+
         } catch ( Throwable t ) {
-            t.printStackTrace();
-            DroolsIDEPlugin.log( t );
+            if ( !(t instanceof InterruptedException) ) {
+                DroolsIDEPlugin.log( t );
+            }
+            throw t;
         }
+        relayoutRequired = false;
+        return newDiagram;
     }
 
     private ReteGraph getModel() {
@@ -216,16 +254,6 @@ public class ReteViewer extends GraphicalEditor {
      * 
      */
     protected void initializeGraphicalViewer() {
-        GraphicalViewer viewer = getGraphicalViewer();
-
-        // Generate rete and layout
-        loadReteModel();
-
-        zeroBaseDiagram();
-
-        // Make rete graph visible
-        viewer.setContents( getModel() ); // set the contents of this editor
-
         ZoomManager zoomManager = rootEditPart.getZoomManager();
 
         //List<String>
@@ -248,22 +276,27 @@ public class ReteViewer extends GraphicalEditor {
      * and shifting to right if neccessary to get rid of negative XY coordinates.
      * 
      */
-    private void zeroBaseDiagram() {
-        int minx = 0;
-        int miny = 0;
+    private void zeroBaseDiagram(ReteGraph graph) {
 
-        final Iterator nodeIter = diagram.getChildren().iterator();
+        Dimension dim = rootEditPart.getContentPane().getSize();
+
+        int minx = 0, miny = 0, maxx = 0, x = dim.width;
+
+        final Iterator nodeIter = graph.getChildren().iterator();
         while ( nodeIter.hasNext() ) {
             Point loc = ((BaseVertex) (nodeIter.next())).getLocation();
             minx = Math.min( loc.x,
                              minx );
+            maxx = Math.max( loc.x,
+                             maxx );
             miny = Math.min( loc.y,
                              miny );
         }
 
-        minx = minx - 10;
+        int delta = (x - (maxx - minx + 20)) / 2;
+        minx = minx - (delta);
 
-        final Iterator nodeIter2 = diagram.getChildren().iterator();
+        final Iterator nodeIter2 = graph.getChildren().iterator();
         while ( nodeIter2.hasNext() ) {
             final BaseVertex vertex = (BaseVertex) (nodeIter2.next());
             Point loc = vertex.getLocation();
@@ -286,6 +319,50 @@ public class ReteViewer extends GraphicalEditor {
      */
     public boolean isDirty() {
         return false;
+    }
+
+    /**
+     * Fired when underlying source is modified.
+     * Marks graph viewer to be relayouted when activated.
+     */
+    public void fireDocumentChanged() {
+        relayoutRequired = true;
+    }
+
+    /**
+     * Draws graph.
+     * 
+     * @param newGraph used to replace existing graph. if null then existing graph is simply redrawn.
+     */
+    public void drawGraph(ReteGraph newGraph) {
+
+        LayerManager manager = (LayerManager) getGraphicalViewer().getEditPartRegistry().get( LayerManager.ID );
+        ConnectionLayer connLayer = (ConnectionLayer) manager.getLayer( LayerConstants.CONNECTION_LAYER );
+
+        // Lazy-init model initialization
+        if ( getGraphicalViewer().getContents() == null ) {
+            getGraphicalViewer().setContents( getModel() );
+        }
+
+        final boolean isNewDiagram = newGraph != null && newGraph != diagram;
+
+        if ( isNewDiagram ) {
+            diagram.removeAll();
+        }
+
+        // Update connection router according to new model size
+        ConnectionRouter router;
+        if ( (isNewDiagram && newGraph.getChildren().size() < SIMPLE_ROUTER_MIN_NODES) || (!isNewDiagram && getModel().getChildren().size() < SIMPLE_ROUTER_MIN_NODES) ) {
+            router = new ShortestPathConnectionRouter( (IFigure) rootEditPart.getContentPane().getChildren().get( 0 ) );
+        } else {
+            router = ConnectionRouter.NULL;
+        }
+        connLayer.setConnectionRouter( router );
+
+        if ( newGraph != null && newGraph != diagram ) {
+            diagram.addAll( newGraph.getChildren() );
+        }
+
     }
 
 }

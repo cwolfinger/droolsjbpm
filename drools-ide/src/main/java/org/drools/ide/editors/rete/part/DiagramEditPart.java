@@ -23,17 +23,14 @@ import org.drools.ide.editors.rete.commands.NodeSetConstraintCommand;
 import org.drools.ide.editors.rete.model.ModelElement;
 import org.drools.ide.editors.rete.model.ReteGraph;
 import org.drools.reteoo.BaseVertex;
-import org.eclipse.draw2d.ConnectionLayer;
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.FreeformLayer;
 import org.eclipse.draw2d.FreeformLayout;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.MarginBorder;
-import org.eclipse.draw2d.ShortestPathConnectionRouter;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPolicy;
-import org.eclipse.gef.LayerConstants;
 import org.eclipse.gef.NodeEditPart;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
@@ -46,7 +43,7 @@ import org.eclipse.gef.requests.CreateRequest;
  * EditPart for ReteGraph
  * 
  */
-class DiagramEditPart extends AbstractGraphicalEditPart
+public class DiagramEditPart extends AbstractGraphicalEditPart
     implements
     PropertyChangeListener {
 
@@ -77,9 +74,6 @@ class DiagramEditPart extends AbstractGraphicalEditPart
         Figure f = new FreeformLayer();
         f.setBorder( new MarginBorder( 3 ) );
         f.setLayoutManager( new FreeformLayout() );
-
-        ConnectionLayer connLayer = (ConnectionLayer) getLayer( LayerConstants.CONNECTION_LAYER );
-        connLayer.setConnectionRouter( new ShortestPathConnectionRouter( f ) );
         return f;
     }
 
