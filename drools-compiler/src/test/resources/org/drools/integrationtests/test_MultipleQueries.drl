@@ -1,0 +1,20 @@
+package org.drools;
+
+rule "Assert cheesery" 
+when
+then
+    assert( new Cheese( "stilton", 5 ) );
+    assert( new Cheese( "stilton", 10 ) );
+    assert( new Cheese( "muzzarela", 5 ) );
+    assert( new Cheese( "muzzarela", 6 ) );
+    assert( new Cheese( "muzzarela", 7 ) );
+end
+
+query "StiltonCheese"
+    $cheese : Cheese( type == "stilton" );
+end
+
+query "MuzzarelaCheese"
+    $cheese : Cheese( type == "muzzarela" );
+end
+
