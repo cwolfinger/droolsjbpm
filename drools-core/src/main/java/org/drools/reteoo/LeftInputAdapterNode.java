@@ -93,10 +93,12 @@ class LeftInputAdapterNode extends TupleSource
     }
 
     public FieldConstraint[] getConstraints() {
-        
+
         // Sanity check
-        if (binder==null) {return null;}
-        
+        if ( binder == null ) {
+            return null;
+        }
+
         return this.binder.getConstraints();
     }
 
@@ -164,11 +166,12 @@ class LeftInputAdapterNode extends TupleSource
 
         final LinkedList list = new LinkedList();
 
-        ReteTuple tuple = new ReteTuple( handle );
-
-        list.add( new LinkedListObjectWrapper( tuple ) );
-
         if ( !getTupleSinks().isEmpty() ) {
+
+            ReteTuple tuple = new ReteTuple( handle );
+
+            list.add( new LinkedListObjectWrapper( tuple ) );
+
             // We do this one seperately so we avoid another tuple replication
             ((TupleSink) getTupleSinks().get( 0 )).assertTuple( tuple,
                                                                 context,
@@ -266,13 +269,17 @@ class LeftInputAdapterNode extends TupleSource
 
         // Iterate the memory and assert all tuples into the newly attached TupleSink
         final Map memory = (Map) workingMemory.getNodeMemory( this );
-        for ( final Iterator it = memory.values().iterator(); it.hasNext(); ) {
-            final LinkedList list = (LinkedList) it.next();
-            for ( LinkedListNode node = list.getFirst(); node != null; node = node.getNext() ) {
-                sink.assertTuple( (ReteTuple) ((LinkedListObjectWrapper) node).getObject(),
-                                  context,
-                                  workingMemory );
-            }
+        for ( final Iterator it = memory.entrySet().iterator(); it.hasNext(); ) {
+            Map.Entry entry = (Map.Entry) it.next();
+            DefaultFactHandle handle = (DefaultFactHandle) entry.getKey();
+            LinkedList list = (LinkedList) entry.getValue();
+
+            ReteTuple newTuple = new ReteTuple( handle );
+            list.add( new LinkedListObjectWrapper( newTuple ) );
+            sink.assertTuple( newTuple,
+                              context,
+                              workingMemory );
+
         }
 
         this.attachingNewNode = false;
@@ -280,8 +287,24 @@ class LeftInputAdapterNode extends TupleSource
 
     public void remove(final BaseNode node,
                        final ReteooWorkingMemory[] workingMemories) {
-        if( !node.isInUse() ) {
+        if ( !node.isInUse() ) {
+            final int index = this.getTupleSinks().indexOf( node );
             getTupleSinks().remove( node );
+            
+            // as we store the tuples propagated to each sink, 
+            // we need to remove all these tuples from memory
+            for ( int i = 0, length = workingMemories.length; i < length; i++ ) {
+                final Map memory = (Map) workingMemories[i].getNodeMemory( this );
+
+                for ( final Iterator it = memory.values().iterator(); it.hasNext(); ) {
+                    final LinkedList tuples = (LinkedList) it.next();
+                    LinkedListObjectWrapper wrapper = (LinkedListObjectWrapper) tuples.getFirst();
+                    for ( int j = 0; j < index; j++ ) {
+                        wrapper = (LinkedListObjectWrapper) wrapper.getNext();
+                    }
+                    tuples.remove( wrapper );
+                }
+            }
         }
         removeShare();
         if ( !this.isInUse() ) {
@@ -291,6 +314,7 @@ class LeftInputAdapterNode extends TupleSource
         }
         this.objectSource.remove( this,
                                   workingMemories );
+        
     }
 
     /**

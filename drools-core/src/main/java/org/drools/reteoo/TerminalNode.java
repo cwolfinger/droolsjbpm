@@ -296,6 +296,7 @@ final class TerminalNode extends BaseNode
             workingMemory.propagateQueuedActions();
         }
 
+        removeShare();
         this.tupleSource.remove( this,
                                  workingMemories );
     }
