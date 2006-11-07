@@ -109,11 +109,14 @@ final class QueryTerminalNode extends BaseNode
     public void retractTuple(final ReteTuple tuple,
                              final PropagationContext context,
                              final ReteooWorkingMemory workingMemory) {
+        final LinkedList list = (LinkedList) workingMemory.getNodeMemory( this );
+        list.remove( tuple );
     }
 
     public void modifyTuple(final ReteTuple tuple,
                             final PropagationContext context,
                             final ReteooWorkingMemory workingMemory) {
+        // mark: nothing to do here?
 
     }
 
