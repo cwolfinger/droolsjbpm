@@ -40,7 +40,6 @@ import org.drools.event.AgendaEventListener;
 import org.drools.event.AgendaEventSupport;
 import org.drools.event.WorkingMemoryEventListener;
 import org.drools.event.WorkingMemoryEventSupport;
-import org.drools.reteoo.ReteooWorkingMemory;
 import org.drools.rule.Rule;
 import org.drools.spi.Activation;
 import org.drools.spi.AgendaFilter;
@@ -584,11 +583,13 @@ public abstract class AbstractWorkingMemory
         try {
             object = getObject( handle );
 
-            final Method mehod = handle.getClass().getMethod( "removePropertyChangeListener",
-                                                              AbstractWorkingMemory.ADD_REMOVE_PROPERTY_CHANGE_LISTENER_ARG_TYPES );
+            if(object != null) {
+                final Method mehod = object.getClass().getMethod( "removePropertyChangeListener",
+                                                                  AbstractWorkingMemory.ADD_REMOVE_PROPERTY_CHANGE_LISTENER_ARG_TYPES );
 
-            mehod.invoke( handle,
-                          this.addRemovePropertyChangeListenerArgs );
+                mehod.invoke( object,
+                              this.addRemovePropertyChangeListenerArgs );
+            }
         } catch ( final NoSuchMethodException e ) {
             // The removePropertyChangeListener method on the class
             // was not found so Drools will be unable to
