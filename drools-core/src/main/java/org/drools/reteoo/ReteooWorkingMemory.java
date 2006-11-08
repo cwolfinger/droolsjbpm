@@ -27,7 +27,6 @@ import org.drools.WorkingMemory;
 import org.drools.base.DroolsQuery;
 import org.drools.common.AbstractWorkingMemory;
 import org.drools.common.DefaultAgenda;
-import org.drools.common.DefaultFactHandle;
 import org.drools.common.EqualityKey;
 import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalRuleBase;
@@ -155,19 +154,35 @@ public class ReteooWorkingMemory extends AbstractWorkingMemory {
     public QueryResults getQueryResults(final String query) {
         final FactHandle handle = assertObject( new DroolsQuery( query ) );
         final QueryTerminalNode node = (QueryTerminalNode) this.queryResults.remove( query );
+        Query queryObj = null;
+        List list = null;
+
         if ( node == null ) {
+            org.drools.rule.Package[] pkgs = this.ruleBase.getPackages();
+            for( int i = 0; i < pkgs.length; i++ ) {
+                Rule rule = pkgs[i].getRule( query );
+                if( ( rule != null ) && ( rule instanceof Query ) ) {
+                    queryObj = (Query) rule;
+                    break;
+                }
+            }
             retractObject( handle );
-            return null;
+            if( queryObj == null ) {
+                throw new IllegalArgumentException("Query '"+query+"' does not exist");
+            }
+            list = Collections.EMPTY_LIST;
+        } else {
+            list = (List) this.nodeMemories.remove( node.getId() );
+
+            retractObject( handle );
+            if ( list == null ) {
+                list = Collections.EMPTY_LIST;
+            }
+            queryObj = (Query) node.getRule();
         }
 
-        final List list = (List) this.nodeMemories.remove( node.getId() );
-
-        retractObject( handle );
-        if ( list == null ) {
-            return null;
-        }
         return new QueryResults( list,
-                                 (Query) node.getRule(),
+                                 queryObj,
                                  this );
     }
 

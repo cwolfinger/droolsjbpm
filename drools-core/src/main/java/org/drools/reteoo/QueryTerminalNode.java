@@ -109,6 +109,7 @@ final class QueryTerminalNode extends BaseNode
     public void retractTuple(final ReteTuple tuple,
                              final PropagationContext context,
                              final ReteooWorkingMemory workingMemory) {
+        // following code is needed because of queries that eventually uses "exists" 
         final LinkedList list = (LinkedList) workingMemory.getNodeMemory( this );
         list.remove( tuple );
     }
@@ -116,8 +117,6 @@ final class QueryTerminalNode extends BaseNode
     public void modifyTuple(final ReteTuple tuple,
                             final PropagationContext context,
                             final ReteooWorkingMemory workingMemory) {
-        // mark: nothing to do here?
-
     }
 
     public String toString() {

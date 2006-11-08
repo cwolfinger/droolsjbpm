@@ -16,8 +16,11 @@ package org.drools.reteoo;
  * limitations under the License.
  */
 
+import java.lang.reflect.Field;
 import java.util.Iterator;
+import java.util.Map;
 
+import junit.framework.Assert;
 import junit.framework.TestCase;
 
 import org.drools.FactHandle;
@@ -37,6 +40,7 @@ import org.drools.spi.MockField;
 public class QueryTerminalNodeTest extends TestCase {
     public void testQueryTerminalNode() {
         final ReteooRuleBase ruleBase = new ReteooRuleBase();
+        
         final Rete rete = ruleBase.getRete();
 
         final ClassObjectType queryObjectType = new ClassObjectType( DroolsQuery.class );
@@ -98,10 +102,23 @@ public class QueryTerminalNodeTest extends TestCase {
 
         queryNode.attach();
 
+        final org.drools.rule.Package pkg = new org.drools.rule.Package("com.drools.test");
+        pkg.addRule( query );
+        
+        try {
+            Field pkgField = ruleBase.getClass().getSuperclass().getDeclaredField( "pkgs" );
+            pkgField.setAccessible( true );
+            Map pkgs = (Map) pkgField.get( ruleBase );
+            pkgs.put( pkg.getName(), pkg );
+        } catch ( Exception e ) {
+            Assert.fail("Should not throw any exception: "+e.getMessage());
+        }
+        
         final WorkingMemory workingMemory = ruleBase.newWorkingMemory();
         QueryResults results = workingMemory.getQueryResults( "query-1" );
 
-        assertNull( results );
+        assertEquals( 0,
+                      results.size() );
 
         final Cheese stilton1 = new Cheese( "stilton",
                                             100 );
@@ -167,7 +184,8 @@ public class QueryTerminalNodeTest extends TestCase {
         workingMemory.retractObject( handle2 );
         results = workingMemory.getQueryResults( "query-1" );
 
-        assertNull( results );
+        assertEquals( 0,
+                      results.size() );
 
     }
 
