@@ -122,8 +122,8 @@ public class ReturnValueConstraint
         	if ( !this.requiredDeclarations[i].getExtractor().equals( other.requiredDeclarations[i].getExtractor() ) ) {
         		return false;
         	}        	
-        }        
-
-        return this.expression.equals( other.expression );
+        }       
+        
+        return this.evaluator.equals( other.evaluator ) && this.expression.equals( other.expression );
     }
 }

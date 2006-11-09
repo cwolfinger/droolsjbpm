@@ -64,6 +64,8 @@ import org.drools.event.ActivationCreatedEvent;
 import org.drools.event.AfterActivationFiredEvent;
 import org.drools.event.AgendaEventListener;
 import org.drools.event.BeforeActivationFiredEvent;
+import org.drools.event.DebugAgendaEventListener;
+import org.drools.event.DebugWorkingMemoryEventListener;
 import org.drools.event.DefaultAgendaEventListener;
 import org.drools.integrationtests.helloworld.Message;
 import org.drools.lang.DrlDumper;
@@ -3011,4 +3013,45 @@ public abstract class IntegrationCases extends TestCase {
         assertEquals( 2,
                       queryResults.size() );
     }
+
+    public void testReturnValueAndGlobal() throws Exception {
+
+        final PackageBuilder builder = new PackageBuilder();
+        builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_ReturnValueAndGlobal.drl" ) ) );
+        final Package pkg = builder.getPackage();
+
+        final RuleBase ruleBase = getRuleBase();
+        ruleBase.addPackage( pkg );
+        final WorkingMemory workingMemory = ruleBase.newWorkingMemory();
+
+        final List matchlist = new ArrayList();
+        workingMemory.setGlobal( "matchingList",
+                                 matchlist );
+
+        final List nonmatchlist = new ArrayList();
+        workingMemory.setGlobal( "nonMatchingList",
+                                 nonmatchlist );
+
+        workingMemory.setGlobal( "cheeseType",
+                                 "stilton" );
+
+        final Cheese stilton1 = new Cheese( "stilton",
+                                           5 );
+        final Cheese stilton2 = new Cheese( "stilton",
+                                           7 );
+        final Cheese brie = new Cheese( "brie",
+                                           4 );
+        workingMemory.assertObject( stilton1 );
+        workingMemory.assertObject( stilton2 );
+        workingMemory.assertObject( brie );
+
+        workingMemory.fireAllRules();
+
+        assertEquals( 2,
+                      matchlist.size() );
+        assertEquals( 1,
+                      nonmatchlist.size() );
+    }
+
+
 }
