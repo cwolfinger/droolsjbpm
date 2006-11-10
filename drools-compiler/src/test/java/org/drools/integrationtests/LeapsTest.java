@@ -19,7 +19,6 @@ package org.drools.integrationtests;
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,13 +28,9 @@ import org.drools.PersonInterface;
 import org.drools.QueryResults;
 import org.drools.RuleBase;
 import org.drools.WorkingMemory;
-import org.drools.compiler.DrlParser;
 import org.drools.compiler.PackageBuilder;
-import org.drools.lang.DrlDumper;
-import org.drools.lang.descr.PackageDescr;
 import org.drools.rule.Package;
 import org.drools.rule.Rule;
-import org.drools.xml.XmlDumper;
 
 /** 
  * This runs the integration test cases with the leaps implementation.
@@ -387,6 +382,8 @@ public class LeapsTest extends IntegrationCases {
         // FIXME
     }
 
-    
+    public void testDoubleQueryWithExists() throws Exception {
+        // FIXME
+    }    
     
 }
