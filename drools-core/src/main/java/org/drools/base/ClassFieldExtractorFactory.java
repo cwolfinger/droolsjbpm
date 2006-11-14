@@ -63,7 +63,11 @@ public class ClassFieldExtractorFactory {
                                        fieldType,
                                        clazz.isInterface() );
             // use bytes to get a class 
-            final ByteArrayClassLoader classLoader = new ByteArrayClassLoader( Thread.currentThread().getContextClassLoader() );
+            ClassLoader parent = Thread.currentThread().getContextClassLoader();
+            if( parent == null ) {
+                parent = ClassFieldExtractorFactory.class.getClassLoader();
+            }
+            final ByteArrayClassLoader classLoader = new ByteArrayClassLoader( parent );
             final Class newClass = classLoader.defineClass( className.replace( '/',
                                                                                '.' ),
                                                             bytes );
