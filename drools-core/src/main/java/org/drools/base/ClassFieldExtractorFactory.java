@@ -18,6 +18,9 @@ package org.drools.base;
 
 import java.beans.IntrospectionException;
 import java.lang.reflect.Method;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.security.ProtectionDomain;
 
 import org.drools.RuntimeDroolsException;
 import org.drools.asm.ClassWriter;
@@ -37,15 +40,21 @@ import org.drools.util.asm.ClassFieldInspector;
 
 public class ClassFieldExtractorFactory {
 
-    private static final String GETTER         = "get";
-
-    private static final String BOOLEAN_GETTER = "is";
-
     private static final String BASE_PACKAGE   = "org/drools/base";
 
     private static final String BASE_EXTRACTOR = "org/drools/base/BaseClassFieldExtractor";
+    
+    private static final ProtectionDomain PROTECTION_DOMAIN;
 
-    public static BaseClassFieldExtractor getClassFieldExtractor(final Class clazz,
+    static {
+            PROTECTION_DOMAIN = (ProtectionDomain) AccessController.doPrivileged( new PrivilegedAction() {
+                public Object run() {
+                    return ClassFieldExtractorFactory.class.getProtectionDomain();
+                }
+            } );
+    }
+
+        public static BaseClassFieldExtractor getClassFieldExtractor(final Class clazz,
                                                                  final String fieldName) {
         try {
             final ClassFieldInspector inspector = new ClassFieldInspector( clazz );
@@ -70,7 +79,8 @@ public class ClassFieldExtractorFactory {
             final ByteArrayClassLoader classLoader = new ByteArrayClassLoader( parent );
             final Class newClass = classLoader.defineClass( className.replace( '/',
                                                                                '.' ),
-                                                            bytes );
+                                                            bytes,
+                                                            PROTECTION_DOMAIN);
             // instantiating target class
             final Object[] params = {clazz, fieldName};
             return (BaseClassFieldExtractor) newClass.getConstructors()[0].newInstance( params );
@@ -352,11 +362,13 @@ public class ClassFieldExtractorFactory {
         }
 
         public Class defineClass(final String name,
-                                 final byte[] bytes) {
+                                 final byte[] bytes,
+                                 ProtectionDomain domain) {
             return defineClass( name,
                                 bytes,
                                 0,
-                                bytes.length );
+                                bytes.length,
+                                domain);
         }
     }
 }
