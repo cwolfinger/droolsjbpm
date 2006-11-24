@@ -1,0 +1,11 @@
+package org.drools;
+
+global java.util.List list;
+
+rule "Hello World"
+	when
+		$cheese : Cheese ( $type : type )
+		not( Cheese ( type == $type ) )
+	then
+		list.add( $cheese );
+end

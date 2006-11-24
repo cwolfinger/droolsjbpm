@@ -302,7 +302,7 @@ class ReteooBuilder
 
                 binder = attachColumn( column,
                                        and,
-                                       false );
+                                       true );
             }
 
             if ( object instanceof Not ) {
