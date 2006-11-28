@@ -386,4 +386,8 @@ public class LeapsTest extends IntegrationCases {
         // FIXME
     }    
     
+    public void testNotWithBindings2() throws Exception {
+        // FIXME
+    }
+    
 }
