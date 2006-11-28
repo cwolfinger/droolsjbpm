@@ -4,7 +4,7 @@
   <artifactId>drools</artifactId>
   <packaging>pom</packaging>
   <name>Drools</name>
-  <version>3.0.4</version>
+  <version>3.0.5</version>
 
   <issueManagement>
     <system>jira</system>
