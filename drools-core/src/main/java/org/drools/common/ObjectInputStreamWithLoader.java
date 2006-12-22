@@ -20,11 +20,16 @@ public class ObjectInputStreamWithLoader extends ObjectInputStream {
 
     protected Class resolveClass(final ObjectStreamClass desc) throws IOException,
                                                               ClassNotFoundException {
+        
         if ( this.classLoader == null ) {
             return super.resolveClass( desc );
         } else {
             final String name = desc.getName();
-            return this.classLoader.loadClass( name );
+            try{
+                return this.classLoader.loadClass( name );
+            } catch (ClassNotFoundException cnf) {
+                return super.resolveClass( desc );
+            }
         }
     }
 }
