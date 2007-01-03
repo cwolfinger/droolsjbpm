@@ -64,6 +64,8 @@ public class BetaMemoryFactory {
                                                                             bvc.getEvaluator() );
                             break;
                         case Evaluator.OBJECT_TYPE :
+                        case Evaluator.STRING_TYPE :
+                        case Evaluator.DATE_TYPE :
                         case Evaluator.SHORT_TYPE :
                         case Evaluator.INTEGER_TYPE :
                         case Evaluator.DOUBLE_TYPE :
@@ -129,6 +131,8 @@ public class BetaMemoryFactory {
                                                                              bvc.getEvaluator() );
                             break;
                         case Evaluator.OBJECT_TYPE :
+                        case Evaluator.STRING_TYPE :
+                        case Evaluator.DATE_TYPE :
                         case Evaluator.SHORT_TYPE :
                         case Evaluator.INTEGER_TYPE :
                         case Evaluator.DOUBLE_TYPE :
