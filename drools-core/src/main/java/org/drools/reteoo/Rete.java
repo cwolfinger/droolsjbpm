@@ -259,6 +259,11 @@ class Rete extends ObjectSource
     // propagations into the new node
     public void updateNewNode(final ReteooWorkingMemory workingMemory,
                               final PropagationContext context) {
+        // JBRULES-612: the cache MUST be invalidated when a new
+        // node type is added to the network
+        HashMap memory = (HashMap) workingMemory.getNodeMemory( this );
+        memory.clear();
+        
         if ( this.lastAddedNode != null ) {
             final ObjectType objType = this.lastAddedNode.getObjectType();
             for ( final Iterator i = workingMemory.getFactHandleMap().entrySet().iterator(); i.hasNext(); ) {
@@ -270,7 +275,6 @@ class Rete extends ObjectSource
                                                      workingMemory );
                 }
             }
-            this.lastAddedNode = null;
         }
     }
 

@@ -405,17 +405,25 @@ class ReteooBuilder
         if ( removeIdentities ) {
             // Check if this object type exists before
             // If it does we need stop instance equals cross product
+            List otherIndexes = null;
             for ( final Iterator it = this.objectType.entrySet().iterator(); it.hasNext(); ) {
                 final Map.Entry entry = (Map.Entry) it.next();
                 final Class previousClass = ((ClassObjectType) entry.getKey()).getClassType();
                 if ( thisClass.isAssignableFrom( previousClass ) ) {
-                    predicateConstraints.add( new InstanceNotEqualsConstraint( ((Integer) entry.getValue()).intValue() ) );
+                    otherIndexes = (List) entry.getValue();
+                    for ( Iterator indexes = otherIndexes.iterator(); indexes.hasNext(); ) {
+                        predicateConstraints.add( new InstanceNotEqualsConstraint( ((Integer) indexes.next()).intValue() ) );
+                    }
                 }
             }
+            if( otherIndexes == null ) {
+                otherIndexes = new ArrayList();
+            }
+            otherIndexes.add( new Integer( column.getFactIndex() ) );
 
             // Must be added after the checking, otherwise it matches against itself
             this.objectType.put( column.getObjectType(),
-                                 new Integer( column.getFactIndex() ) );
+                                 otherIndexes );
         }
 
         for ( final Iterator it = constraints.iterator(); it.hasNext(); ) {

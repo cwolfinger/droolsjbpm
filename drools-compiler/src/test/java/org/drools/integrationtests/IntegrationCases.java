@@ -52,6 +52,8 @@ import org.drools.Sensor;
 import org.drools.State;
 import org.drools.TestParam;
 import org.drools.WorkingMemory;
+import org.drools.FactA;
+import org.drools.FactB;
 import org.drools.compiler.DrlParser;
 import org.drools.compiler.DroolsError;
 import org.drools.compiler.DroolsParserException;
@@ -3080,6 +3082,43 @@ public abstract class IntegrationCases extends TestCase {
         
         assertEquals( 2, list.size() );
         
+    }
+
+    public void testDynamicRules() throws Exception {
+        final RuleBase ruleBase = getRuleBase();
+        final WorkingMemory workingMemory = ruleBase.newWorkingMemory();
+
+        Cheese a = new Cheese( "stilton", 10);
+        Cheese b = new Cheese( "stilton", 15);
+        Cheese c = new Cheese( "stilton", 20);
+        workingMemory.assertObject(a);
+        workingMemory.assertObject(b);
+        workingMemory.assertObject(c);
+
+        final PackageBuilder builder = new PackageBuilder();
+        builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_DynamicRules.drl" ) ) );
+        final Package pkg = builder.getPackage();
+        ruleBase.addPackage( pkg );
+
+        workingMemory.fireAllRules();
+    }
+
+    public void testDynamicRules2() throws Exception {
+        final RuleBase ruleBase = getRuleBase();
+        final WorkingMemory workingMemory = ruleBase.newWorkingMemory();
+
+        // Assert some simple facts
+        FactA a = new FactA("hello", new Integer(1), new Float(3.14));
+        FactB b = new FactB("hello", new Integer(2), new Float(6.28));
+        workingMemory.assertObject(a);
+        workingMemory.assertObject(b);
+
+        final PackageBuilder builder = new PackageBuilder();
+        builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_DynamicRules2.drl" ) ) );
+        final Package pkg = builder.getPackage();
+        ruleBase.addPackage( pkg );
+
+        workingMemory.fireAllRules();
     }
 
 
