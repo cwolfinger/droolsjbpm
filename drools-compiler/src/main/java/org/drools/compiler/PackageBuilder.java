@@ -331,7 +331,6 @@ public class PackageBuilder {
                                                   pkg.getPackageCompilationData().getClassLoader() );
             // make an automatic import for the current package
             typeResolver.addImport( pkg.getName() + ".*" );
-            typeResolver.addImport( "java.lang.*" );
         }
         return this.typeResolver;
     }

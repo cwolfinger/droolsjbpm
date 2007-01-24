@@ -121,6 +121,14 @@ public class ClassTypeResolver
                     validClazzCandidates.add( clazz );
                 }
             }
+            // make a last try using java.lang.* package
+            if( validClazzCandidates.isEmpty() ) {
+                clazz = importClass( "java.lang.*",
+                                     className );
+                if ( clazz != null ) {
+                    validClazzCandidates.add( clazz );
+                }
+            }
 
             // If there are more than one possible resolutions, complain about
             // the ambiguity
