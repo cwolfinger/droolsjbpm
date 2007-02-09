@@ -29,7 +29,6 @@ import org.antlr.stringtemplate.StringTemplate;
 import org.antlr.stringtemplate.StringTemplateGroup;
 import org.antlr.stringtemplate.language.AngleBracketTemplateLexer;
 import org.drools.RuntimeDroolsException;
-import org.drools.base.ClassFieldExtractor;
 import org.drools.base.ClassFieldExtractorCache;
 import org.drools.base.ClassObjectType;
 import org.drools.base.EvaluatorFactory;
@@ -112,7 +111,8 @@ public class RuleBuilder {
 
     private static final KnowledgeHelperFixer knowledgeHelperFixer = new KnowledgeHelperFixer();
     private static final FunctionFixer        functionFixer        = new FunctionFixer();
-
+    private static final DeclarationTypeFixer declarationTypeFixer = new DeclarationTypeFixer();
+    
     // @todo move to an interface so it can work as a decorator
     private final JavaExprAnalyzer            analyzer             = new JavaExprAnalyzer();
     private ClassFieldExtractorCache classFieldExtractorCache;
@@ -680,8 +680,7 @@ public class RuleBuilder {
         st.setAttribute( "declaration",
                          declaration );
         st.setAttribute( "declarationType",
-                         ((ClassObjectType) declaration.getObjectType()).getClassType().getName().replace( '$',
-                                                                                                           '.' ) );
+                         RuleBuilder.declarationTypeFixer.fix(declaration) );
 
         setStringTemplateAttributes( st,
                                      declarations,
@@ -711,8 +710,7 @@ public class RuleBuilder {
         st.setAttribute( "declaration",
                          declaration );
         st.setAttribute( "declarationType",
-                         ((ClassObjectType) declaration.getObjectType()).getClassType().getName().replace( '$',
-                                                                                                           '.' ) );
+                         RuleBuilder.declarationTypeFixer.fix(declaration) );
 
         setStringTemplateAttributes( st,
                                      declarations,
@@ -896,8 +894,7 @@ public class RuleBuilder {
                                              final String text) {
         final String[] declarationTypes = new String[declarations.length];
         for ( int i = 0, size = declarations.length; i < size; i++ ) {
-            declarationTypes[i] = ((ClassObjectType) declarations[i].getObjectType()).getClassType().getName().replace( '$',
-                                                                                                                        '.' );
+            declarationTypes[i] = RuleBuilder.declarationTypeFixer.fix(declarations[i]);
         }
 
         final List globalTypes = new ArrayList( globals.length );
