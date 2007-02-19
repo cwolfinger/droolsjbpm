@@ -156,8 +156,8 @@ public class RuleExecutionSetImpl
      *
      * @return A new WorkingMemory object.
      */
-    public WorkingMemory newWorkingMemory() {
-        return this.ruleBase.newWorkingMemory();
+    public WorkingMemory newWorkingMemory(boolean keepReference) {
+        return this.ruleBase.newWorkingMemory(keepReference);
     }
 
     // JSR94 interface methods start here -------------------------------------
