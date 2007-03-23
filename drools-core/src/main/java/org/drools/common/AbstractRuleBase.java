@@ -419,7 +419,6 @@ abstract public class AbstractRuleBase
             
             // as per the INVARIANT defined above, we need to iterate from lastAquiredLock-1 to 0. 
             for ( lastAquiredLock--; lastAquiredLock > -1; lastAquiredLock-- ) {
-                wms[lastAquiredLock].fireAllRules();
                 wms[lastAquiredLock].getLock().unlock();
             }
         }
