@@ -6,8 +6,12 @@ import org.drools.Cheese;
 
 global java.util.List list
 
+function void addToTheList( List list, Object element ) {
+    list.add( element );
+}
+
 function void addFive(List list) {
-	list.add( new Integer(5) );
+	addToTheList( list, new Integer(5) );
 }
 
 rule "global rule test"

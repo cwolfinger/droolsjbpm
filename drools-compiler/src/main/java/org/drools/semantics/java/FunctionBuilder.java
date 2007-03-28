@@ -26,7 +26,8 @@ import org.drools.rule.Package;
 
 public class FunctionBuilder {
     private static final StringTemplateGroup functionGroup = new StringTemplateGroup( new InputStreamReader( FunctionBuilder.class.getResourceAsStream( "javaFunction.stg" ) ),
-                                                                                AngleBracketTemplateLexer.class );
+                                                                                      AngleBracketTemplateLexer.class );
+    private FunctionFixer                    fixer         = new FunctionFixer();
 
     public FunctionBuilder() {
 
@@ -57,7 +58,7 @@ public class FunctionBuilder {
                          functionDescr.getParameterNames() );
 
         st.setAttribute( "text",
-                         functionDescr.getText() );
+                         fixer.fix( functionDescr.getText() ) );
 
         return st.toString();
 
