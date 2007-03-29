@@ -196,7 +196,7 @@ public class RuleParserTest extends TestCase {
 
         assertNotNull( rule );
 
-        assertEquals( "quoted string name",
+        assertEquals( "quoted \\\" \\\\ string name",
                       rule.getName() );
         assertNotNull( rule.getLhs() );
         assertEquals( "",

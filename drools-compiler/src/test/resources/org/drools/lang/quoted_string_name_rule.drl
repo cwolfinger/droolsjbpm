@@ -1,4 +1,4 @@
-rule "quoted string name"
+rule "quoted \" \\ string name"
   when
   then
 end
