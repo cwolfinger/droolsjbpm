@@ -26,6 +26,7 @@ import java.util.Map;
 
 import org.drools.InitialFact;
 import org.drools.RuleIntegrationException;
+import org.drools.RuntimeDroolsException;
 import org.drools.base.ClassFieldExtractor;
 import org.drools.base.ClassObjectType;
 import org.drools.base.DroolsQuery;
@@ -81,8 +82,8 @@ class ReteooBuilder
 
     private final ObjectTypeResolver        resolver;
 
-    /** Nodes that have been attached. */
-    private final Map                       attachedNodes;
+    //    /** Nodes that have been attached. */
+    //    private final Map                       attachedNodes;
 
     private TupleSource                     tupleSource;
 
@@ -114,7 +115,7 @@ class ReteooBuilder
         this.ruleBase = ruleBase;
         this.rete = this.ruleBase.getRete();
         this.resolver = resolver;
-        this.attachedNodes = new HashMap();
+        //        this.attachedNodes = new HashMap();
         this.rules = new HashMap();
 
         //Set to 1 as Rete node is set to 0
@@ -247,9 +248,9 @@ class ReteooBuilder
             if ( object instanceof EvalCondition ) {
                 final EvalCondition eval = (EvalCondition) object;
                 checkUnboundDeclarations( eval.getRequiredDeclarations() );
-                this.tupleSource = attachNode( new EvalConditionNode( this.id++,
-                                                                      this.tupleSource,
-                                                                      eval ) );
+                this.tupleSource = (TupleSource) attachNode( new EvalConditionNode( this.id++,
+                                                                                    this.tupleSource,
+                                                                                    eval ) );
                 continue;
             }
 
@@ -267,9 +268,9 @@ class ReteooBuilder
                 // into
                 // a TupleSource using LeftInputAdapterNode
                 if ( this.tupleSource == null ) {
-                    this.tupleSource = attachNode( new LeftInputAdapterNode( this.id++,
-                                                                             this.objectSource,
-                                                                             binder ) );
+                    this.tupleSource = (TupleSource) attachNode( new LeftInputAdapterNode( this.id++,
+                                                                                           this.objectSource,
+                                                                                           binder ) );
 
                     // objectSource is created by the attachColumn method, if we
                     // adapt this to
@@ -291,13 +292,14 @@ class ReteooBuilder
                     // adjusting offset as all tuples will now contain initial-fact at index 0
                     this.currentOffsetAdjustment = 1;
 
-                    final ObjectSource objectSource = attachNode( new ObjectTypeNode( this.id++,
-                                                                                      this.sinklistFactory.newObjectSinkList( ObjectTypeNode.class ),
-                                                                                      new ClassObjectType( InitialFact.class ),
-                                                                                      this.rete ) );
+                    this.objectSource = (ObjectSource) attachNode( new ObjectTypeNode( this.id++,
+                                                                                       this.sinklistFactory.newObjectSinkList( ObjectTypeNode.class ),
+                                                                                       new ClassObjectType( InitialFact.class ),
+                                                                                       this.rete ) );
 
-                    this.tupleSource = attachNode( new LeftInputAdapterNode( this.id++,
-                                                                             objectSource ) );
+                    this.tupleSource = (TupleSource) attachNode( new LeftInputAdapterNode( this.id++,
+                                                                                           this.objectSource ) );
+                    this.objectSource = null;
                 }
 
                 binder = attachColumn( column,
@@ -318,10 +320,10 @@ class ReteooBuilder
                               binder,
                               column );
             } else if ( this.objectSource != null ) {
-                this.tupleSource = attachNode( new JoinNode( this.id++,
-                                                             this.tupleSource,
-                                                             this.objectSource,
-                                                             binder ) );
+                this.tupleSource = (TupleSource) attachNode( new JoinNode( this.id++,
+                                                                           this.tupleSource,
+                                                                           this.objectSource,
+                                                                           binder ) );
             }
         }
     }
@@ -335,10 +337,10 @@ class ReteooBuilder
         // first column
         this.currentOffsetAdjustment += 1;
 
-        final ObjectSource objectTypeSource = attachNode( new ObjectTypeNode( this.id++,
-                                                                              this.sinklistFactory.newObjectSinkList( ObjectTypeNode.class ),
-                                                                              new ClassObjectType( DroolsQuery.class ),
-                                                                              this.rete ) );
+        this.objectSource = (ObjectSource) attachNode( new ObjectTypeNode( this.id++,
+                                                                           this.sinklistFactory.newObjectSinkList( ObjectTypeNode.class ),
+                                                                           new ClassObjectType( DroolsQuery.class ),
+                                                                           this.rete ) );
 
         final ClassFieldExtractor extractor = new ClassFieldExtractor( DroolsQuery.class,
                                                                        "name" );
@@ -352,13 +354,14 @@ class ReteooBuilder
                                                                     extractor,
                                                                     evaluator );
 
-        final ObjectSource alphaNodeSource = attachNode( new AlphaNode( this.id++,
-                                                                        this.sinklistFactory.newObjectSinkList( AlphaNode.class ),
-                                                                        constraint,
-                                                                        objectTypeSource ) );
+        this.objectSource = (ObjectSource) attachNode( new AlphaNode( this.id++,
+                                                                      this.sinklistFactory.newObjectSinkList( AlphaNode.class ),
+                                                                      constraint,
+                                                                      this.objectSource ) );
 
-        this.tupleSource = attachNode( new LeftInputAdapterNode( this.id++,
-                                                                 alphaNodeSource ) );
+        this.tupleSource = (TupleSource) attachNode( new LeftInputAdapterNode( this.id++,
+                                                                               this.objectSource ) );
+        this.objectSource = null;
     }
 
     private BetaNodeBinder attachColumn(final Column column,
@@ -395,10 +398,10 @@ class ReteooBuilder
 
         final Class thisClass = ((ClassObjectType) column.getObjectType()).getClassType();
 
-        this.objectSource = attachNode( new ObjectTypeNode( this.id++,
-                                                            this.sinklistFactory.newObjectSinkList( ObjectTypeNode.class ),
-                                                            column.getObjectType(),
-                                                            this.rete ) );
+        this.objectSource = (ObjectSource) attachNode( new ObjectTypeNode( this.id++,
+                                                                           this.sinklistFactory.newObjectSinkList( ObjectTypeNode.class ),
+                                                                           column.getObjectType(),
+                                                                           this.rete ) );
 
         final List predicateConstraints = new ArrayList();
 
@@ -416,7 +419,7 @@ class ReteooBuilder
                     }
                 }
             }
-            if( otherIndexes == null ) {
+            if ( otherIndexes == null ) {
                 otherIndexes = new ArrayList();
             }
             otherIndexes.add( new Integer( column.getFactIndex() ) );
@@ -439,10 +442,10 @@ class ReteooBuilder
 
             final FieldConstraint fieldConstraint = (FieldConstraint) object;
             if ( fieldConstraint instanceof LiteralConstraint ) {
-                this.objectSource = attachNode( new AlphaNode( this.id++,
-                                                               this.sinklistFactory.newObjectSinkList( AlphaNode.class ),
-                                                               fieldConstraint,
-                                                               this.objectSource ) );
+                this.objectSource = (ObjectSource) attachNode( new AlphaNode( this.id++,
+                                                                              this.sinklistFactory.newObjectSinkList( AlphaNode.class ),
+                                                                              fieldConstraint,
+                                                                              this.objectSource ) );
             } else {
                 checkUnboundDeclarations( fieldConstraint.getRequiredDeclarations() );
                 predicateConstraints.add( fieldConstraint );
@@ -536,63 +539,75 @@ class ReteooBuilder
      * @param leafNodes
      *            The list to which the newly added node will be added.
      */
-    private TupleSource attachNode(final TupleSource candidate) {
-        TupleSource node = (TupleSource) this.attachedNodes.get( candidate );
-
-        if ( node == null ) {
-            if ( this.workingMemories.length == 0 ) {
-                candidate.attach();
-            } else {
-                candidate.attach( this.workingMemories );
+    private BaseNode attachNode(final BaseNode candidate) {
+        BaseNode node = null;
+        if ( candidate instanceof ObjectTypeNode ) {
+            ObjectTypeNode otn = (ObjectTypeNode) candidate;
+            otn = this.rete.getObjectTypeNode( otn.getObjectType() );
+            if ( otn != null ) {
+                node = otn;
+                node.addShare();
+                this.id--;
             }
-
-            this.attachedNodes.put( candidate,
-                                    candidate );
-
-            node = candidate;
-        } else {
-            if( !node.isInUse() ) {
-                if ( this.workingMemories.length == 0 ) {
-                    node.attach();
-                } else {
-                    node.attach( this.workingMemories );
+        } else if ( (this.tupleSource != null) && (candidate instanceof TupleSink) ) {
+            int idx = this.tupleSource.getTupleSinks().indexOf( candidate );
+            if ( idx > -1 ) {
+                node = (BaseNode) this.tupleSource.getTupleSinks().get( idx );
+                node.addShare();
+                this.id--;
+            }
+        } else if ( (this.objectSource != null) && (candidate instanceof ObjectSink) ) {
+            for ( Iterator it = this.objectSource.getObjectSinks().iterator(); it.hasNext(); ) {
+                ObjectSink sink = (ObjectSink) it.next();
+                if ( candidate.equals( sink ) ) {
+                    node = (BaseNode) sink;
+                    node.addShare();
+                    this.id--;
                 }
             }
-            node.addShare();
-            this.id--;
+        } else {
+            throw new RuntimeDroolsException( "This is a bug on node sharing verification. Please report to development team." );
         }
 
+        if ( node == null ) {
+            // only attach() if it is a new node
+            node = candidate;
+            if ( this.workingMemories.length == 0 ) {
+                node.attach();
+            } else {
+                node.attach( this.workingMemories );
+            }
+        }
         return node;
     }
 
-    private ObjectSource attachNode(final ObjectSource candidate) {
-        ObjectSource node = (ObjectSource) this.attachedNodes.get( candidate );
-
-        if ( node == null ) {
-            if ( this.workingMemories.length == 0 ) {
-                candidate.attach();
-            } else {
-                candidate.attach( this.workingMemories );
-            }
-
-            this.attachedNodes.put( candidate,
-                                    candidate );
-
-            node = candidate;
-        } else {
-            if( !node.isInUse() ) {
-                if ( this.workingMemories.length == 0 ) {
-                    node.attach();
-                } else {
-                    node.attach( this.workingMemories );
-                }
-            }
-            node.addShare();
-            this.id--;
-        }
-
-        return node;
-    }
+    //    private ObjectSource attachNode(final ObjectSource candidate) {
+    //        ObjectSource node = candidate;
+    //        if( this.tupleSource != null ) {
+    //            int idx = this.tupleSource.getTupleSinks().indexOf( candidate );
+    //            if( idx > -1 ) {
+    //                node = (ObjectSource) this.tupleSource.getTupleSinks().get( idx );
+    //                node.addShare();
+    //                this.id--;
+    //            }
+    //        } else if( this.objectSource != null ) {
+    //            for( Iterator it = this.objectSource.getObjectSinks().iterator(); it.hasNext(); ) {
+    //                ObjectSink sink = (ObjectSink) it.next();
+    //                if( candidate.equals( sink ) ) {
+    //                    node = (ObjectSource) sink;
+    //                    node.addShare();
+    //                    this.id--;
+    //                }
+    //            }
+    //        }
+    //
+    //        if ( this.workingMemories.length == 0 ) {
+    //            node.attach();
+    //        } else {
+    //            node.attach( this.workingMemories );
+    //        }
+    //        return node;
+    //    }
 
     public void removeRule(final Rule rule) {
         // reset working memories for potential propagation

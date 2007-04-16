@@ -48,6 +48,7 @@ import org.drools.Primitives;
 import org.drools.QueryResult;
 import org.drools.QueryResults;
 import org.drools.RuleBase;
+import org.drools.RuleBaseFactory;
 import org.drools.Sensor;
 import org.drools.State;
 import org.drools.TestParam;
@@ -3159,6 +3160,25 @@ public abstract class IntegrationCases extends TestCase {
         assertEquals( 3,
                       ((Integer)result.get( 0 )).intValue());
 
+    }
+    
+    public void testRuleBaseAddRemove() throws Exception
+    {
+        RuleBase ruleBase = RuleBaseFactory.newRuleBase();
+        
+        //add and remove
+        PackageBuilder builder = new PackageBuilder();
+        builder.addPackageFromDrl(new InputStreamReader( getClass().getResourceAsStream( "test_Dynamic1.drl" ) ));
+        Package pkg = builder.getPackage();
+        ruleBase.addPackage(pkg);
+        ruleBase.removePackage(pkg.getName());
+            
+        //add and remove again
+        builder = new PackageBuilder();
+        builder.addPackageFromDrl(new InputStreamReader( getClass().getResourceAsStream( "test_Dynamic1.drl" ) ));
+        pkg = builder.getPackage();
+        ruleBase.addPackage(pkg);
+        ruleBase.removePackage(pkg.getName());
     }
 
 }
