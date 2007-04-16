@@ -82,9 +82,6 @@ class ReteooBuilder
 
     private final ObjectTypeResolver        resolver;
 
-    //    /** Nodes that have been attached. */
-    //    private final Map                       attachedNodes;
-
     private TupleSource                     tupleSource;
 
     private ObjectSource                    objectSource;
@@ -115,7 +112,6 @@ class ReteooBuilder
         this.ruleBase = ruleBase;
         this.rete = this.ruleBase.getRete();
         this.resolver = resolver;
-        //        this.attachedNodes = new HashMap();
         this.rules = new HashMap();
 
         //Set to 1 as Rete node is set to 0
@@ -580,34 +576,6 @@ class ReteooBuilder
         }
         return node;
     }
-
-    //    private ObjectSource attachNode(final ObjectSource candidate) {
-    //        ObjectSource node = candidate;
-    //        if( this.tupleSource != null ) {
-    //            int idx = this.tupleSource.getTupleSinks().indexOf( candidate );
-    //            if( idx > -1 ) {
-    //                node = (ObjectSource) this.tupleSource.getTupleSinks().get( idx );
-    //                node.addShare();
-    //                this.id--;
-    //            }
-    //        } else if( this.objectSource != null ) {
-    //            for( Iterator it = this.objectSource.getObjectSinks().iterator(); it.hasNext(); ) {
-    //                ObjectSink sink = (ObjectSink) it.next();
-    //                if( candidate.equals( sink ) ) {
-    //                    node = (ObjectSource) sink;
-    //                    node.addShare();
-    //                    this.id--;
-    //                }
-    //            }
-    //        }
-    //
-    //        if ( this.workingMemories.length == 0 ) {
-    //            node.attach();
-    //        } else {
-    //            node.attach( this.workingMemories );
-    //        }
-    //        return node;
-    //    }
 
     public void removeRule(final Rule rule) {
         // reset working memories for potential propagation
