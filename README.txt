@@ -10,4 +10,5 @@ You can produce distribution builds, which puts everything into zips, as follows
 mvn -Declipse=true -Ddocumentation=true clean install -DlocalEclipseDrop=/folder/jboss-rules/local-eclipse-drop-mirror
 mvn -Ddocumentation -Declipse -Dmaven.test.skip package javadoc:javadoc assembly:assembly -DlocalEclipseDrop=/folder/jboss-rules/local-eclipse-drop-mirror
 
-Note that install must be done first as javadoc:javadoc won't work unless the jars are in the local maven repo, but the tests can be skipped on the second run.
+Note that install must be done first as javadoc:javadoc won't work unless the jars are in the local maven repo, but the tests can be skipped on the second run. The maven assembley targets need more memory, so you will need to set the following;
+set MAVEN_OPTS=-Xmx512m
