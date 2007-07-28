@@ -38,6 +38,21 @@
   </ciManagement>
   <inceptionYear>2001</inceptionYear>
 
+  <distributionManagement>
+  <repository>
+    <id>localrepo</id>
+    <name>Repository Name</name>
+    <url>scp://localhost/stash/repository</url>
+  </repository>
+
+ <snapshotRepository>
+    <id>localrepo</id>
+    <name>Repository Name</name>
+    <url>scp://localhost/stash/repository</url>
+  </snapshotRepository>
+  </distributionManagement>
+
+
   <mailingLists>
     <mailingList>
       <name>announce</name>
@@ -158,10 +173,10 @@
       <url>http://repository.jboss.com/maven2/</url>
     </repository>
 
-    <repository>
+    <!-- <repository>
       <id>basedir</id>
       <url>file://${basedir}/m2_repo</url>
-    </repository>
+    </repository> -->
 
     <repository>
       <id>Maven Snapshots</id>
@@ -187,11 +202,6 @@
      </releases>
    </repository>
 
-    <!-- this is needed for Seam which is not in the jboss repo or the maven one in a useful form -->
-    <repository>
-        <id>softeu-repo</id>
-        <url>http://maven.softeu.cz/</url>
-    </repository>
   </repositories>
 
   <pluginRepositories>
@@ -651,7 +661,7 @@
 	    <dependency>
 			  <groupId>org.mvel</groupId>
 			  <artifactId>mvel14</artifactId>
-			  <version>1.2rc1</version>
+			  <version>1.0-SNAPSHOT</version>
       </dependency>
 
       <!-- drools-compiler -->
@@ -663,7 +673,7 @@
       <dependency>
         <groupId>org.eclipse.jdt</groupId>
         <artifactId>core</artifactId>
-        <version>3.2.3.v_686_R32x</version>
+        <version>3.2.0.666</version>
       </dependency>
       <dependency>
         <groupId>janino</groupId>
@@ -796,25 +806,4 @@
       -->
     </dependencies>
   </dependencyManagement>
-
-  <distributionManagement>
-       <site>
-           <id>rules-site.jboss.org</id>
-           <url>${rules.site.deploy.dir}</url>
-       </site>
-    <!-- TODO configure this if it's needed -->
-    <!--<repository>-->
-      <!--<id>shell.jboss.org?</id>-->
-      <!--<url>scp://???.jboss.org/???/maven2</url>-->
-    <!--</repository>-->
-    <!--<snapshotRepository>-->
-      <!--<id>shell.jboss.org?</id>-->
-      <!--<url>scp://???.jboss.org/???/maven2snapshots???</url>-->
-    <!--</snapshotRepository>-->
-    <!--<site>-->
-      <!--<id>shell.jboss.org?</id>-->
-      <!--<url>scp://???/???/</url>-->
-    <!--</site>-->
-  </distributionManagement>
-
 </project>
