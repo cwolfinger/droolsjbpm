@@ -661,7 +661,7 @@
 	    <dependency>
 			  <groupId>org.mvel</groupId>
 			  <artifactId>mvel14</artifactId>
-			  <version>1.0-SNAPSHOT</version>
+			  <version>1.2rc1</version>
       </dependency>
 
       <!-- drools-compiler -->
@@ -673,7 +673,7 @@
       <dependency>
         <groupId>org.eclipse.jdt</groupId>
         <artifactId>core</artifactId>
-        <version>3.2.0.666</version>
+        <version>3.2.3.v_686_R32x</version>
       </dependency>
       <dependency>
         <groupId>janino</groupId>
