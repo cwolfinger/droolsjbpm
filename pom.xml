@@ -278,7 +278,8 @@
             <property><name>eclipse</name></property>
         </activation>
         <modules>
-            <module>drools-eclipse</module>
+            <module>drools-eclipse3.2</module>
+            <module>drools-eclipse3.3</module>
         </modules>
     </profile>
     <profile>
@@ -387,7 +388,8 @@
             <descriptor>src/main/assembly/bin.xml</descriptor>
             <descriptor>src/main/assembly/src.xml</descriptor>
             <descriptor>src/main/assembly/brms.xml</descriptor>
-            <descriptor>src/main/assembly/eclipse.xml</descriptor>
+            <descriptor>src/main/assembly/eclipse3.2.xml</descriptor>
+            <descriptor>src/main/assembly/eclipse3.3.xml</descriptor>
             <descriptor>src/main/assembly/examples.xml</descriptor>
           </descriptors>
         </configuration>
@@ -732,7 +734,7 @@
 	    <dependency>
         <groupId>org.mvel</groupId>
         <artifactId>mvel14</artifactId>
-        <version>1.2.8</version>
+        <version>1.2.10</version>
       </dependency>
 
       <!-- drools-compiler -->
