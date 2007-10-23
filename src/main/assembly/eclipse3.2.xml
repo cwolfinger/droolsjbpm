@@ -16,7 +16,7 @@
     </fileSet>
       
     <fileSet>
-      <directory>target/eclipse3.2</directory>
+      <directory>./target/eclipse3.2</directory>
       <outputDirectory></outputDirectory>
       <includes>
          <include>**/**</include>
