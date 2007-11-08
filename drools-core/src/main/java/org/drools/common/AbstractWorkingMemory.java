@@ -92,7 +92,7 @@ public abstract class AbstractWorkingMemory
     // ------------------------------------------------------------
     // Instance members
     // ------------------------------------------------------------
-    protected final long                            id;
+    protected long                                  id;
 
     /** The arguments used when adding/removing a property change listener. */
     protected final Object[]                        addRemovePropertyChangeListenerArgs           = new Object[]{this};
@@ -201,7 +201,7 @@ public abstract class AbstractWorkingMemory
     // Instance methods
     // ------------------------------------------------------------    
 
-    void setRuleBase(final InternalRuleBase ruleBase) {
+    public void setRuleBase(final InternalRuleBase ruleBase) {
         this.ruleBase = ruleBase;
     }
 
@@ -381,6 +381,10 @@ public abstract class AbstractWorkingMemory
 
     public long getId() {
         return this.id;
+    }
+    
+    public void setId(long id) {
+        this.id = id;
     }
 
     public Object getGlobal(final String identifier) {

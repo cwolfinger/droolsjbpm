@@ -16,9 +16,13 @@ import org.drools.util.concurrent.locks.Lock;
 
 public interface InternalWorkingMemory
     extends
-    WorkingMemory {      
-    public long getId();    
+    WorkingMemory {
+    public long getId();
     
+    public void setId(long id);
+    
+    void setRuleBase(final InternalRuleBase ruleBase);
+
     public void setWorkingMemoryEventSupport(WorkingMemoryEventSupport workingMemoryEventSupport);
     
     public ObjectHashMap getAssertMap();
