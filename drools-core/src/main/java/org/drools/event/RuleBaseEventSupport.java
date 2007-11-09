@@ -38,7 +38,7 @@ public class RuleBaseEventSupport
      * 
      */
     private static final long serialVersionUID = 400L;
-    private final List<EventListener>        listeners        = Collections.synchronizedList( new ArrayList<EventListener>() );
+    private final List        listeners        = Collections.synchronizedList( new ArrayList() );
     private transient RuleBase    ruleBase;
 
     public RuleBaseEventSupport(final RuleBase ruleBase) {
@@ -56,8 +56,8 @@ public class RuleBaseEventSupport
     }
     
     public void removeEventListener(Class cls) {
-        for ( Iterator<EventListener> it = this.listeners.iterator(); it.hasNext(); ) {
-            EventListener listener = it.next();
+        for ( Iterator it = this.listeners.iterator(); it.hasNext(); ) {
+            EventListener listener = ( EventListener ) it.next();
             if ( cls.isAssignableFrom( listener.getClass() ) ) {
                 it.remove();
             }
@@ -68,7 +68,7 @@ public class RuleBaseEventSupport
         this.listeners.remove( listener );
     }
 
-    public List<EventListener> getEventListeners() {
+    public List getEventListeners() {
         return Collections.unmodifiableList( this.listeners );
     }
 
