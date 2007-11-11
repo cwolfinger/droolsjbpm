@@ -62,7 +62,7 @@
     <delete failonerror="false" file="${base}/eclipse/plugins/org.drools.eclipse_${droolsVersion}.jar"/>
     <delete failonerror="false" dir="${base}/eclipse/plugins/org.drools.eclipse.test_${droolsVersion}"/>            
 	</target>
-
+	
 	<!-- ===================================================================== -->
 	<!-- Steps to do after setup but before starting the build proper -->
 	<!-- ===================================================================== -->
