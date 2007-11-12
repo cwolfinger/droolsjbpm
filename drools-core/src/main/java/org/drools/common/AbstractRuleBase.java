@@ -726,6 +726,7 @@ abstract public class AbstractRuleBase
 
         final DroolsObjectInputStream streamWithLoader = new DroolsObjectInputStream( stream,
                                                                                       this.packageClassLoader );
+        streamWithLoader.setRuleBase( this );
 
         final StatefulSession session = (StatefulSession) streamWithLoader.readObject();
 
