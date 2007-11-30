@@ -44,6 +44,9 @@ import org.drools.Cell;
 import org.drools.Cheese;
 import org.drools.Cheesery;
 import org.drools.Child;
+import org.drools.FactA;
+import org.drools.FactB;
+import org.drools.FactC;
 import org.drools.FactHandle;
 import org.drools.FirstClass;
 import org.drools.FromTestClass;
@@ -4378,6 +4381,33 @@ public class MiscTest extends TestCase {
                       list.size() );
         assertTrue( list.contains( item11 ) );
         assertTrue( list.contains( item12 ) );
+    }
+
+    public void testAlphaEvalWithOrCE() throws Exception {
+        final PackageBuilder builder = new PackageBuilder();
+        builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_AlphaEvalWithOrCE.drl" ) ) );
+        final Package pkg = builder.getPackage();
+
+        final RuleBase ruleBase = getRuleBase();
+        ruleBase.addPackage( pkg );
+        final WorkingMemory workingMemory = ruleBase.newStatefulSession();
+
+        final List list = new ArrayList();
+        workingMemory.setGlobal( "results",
+                                 list );
+        
+        FactA a = new FactA();
+        a.setField1( "a value" );
+
+        workingMemory.insert( a );
+        workingMemory.insert( new FactB() );
+        workingMemory.insert( new FactC() );
+
+        workingMemory.fireAllRules();
+
+        assertEquals( "should not have fired", 
+                      0,
+                      list.size() );
     }
 
 }
