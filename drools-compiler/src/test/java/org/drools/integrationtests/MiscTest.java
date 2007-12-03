@@ -232,13 +232,13 @@ public class MiscTest extends TestCase {
         } );
 
         workingMemory.fireAllRules();
-        
+
         assertEquals(1, list.size() );
 
         assertEquals( new Integer( 5 ),
                       list.get( 0 ) );
     }
-    
+
     public void testCustomGlobalResolverWithWorkingMemoryObject() throws Exception {
         final PackageBuilder builder = new PackageBuilder();
         builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_globalCustomResolver.drl" ) ) );
@@ -256,7 +256,7 @@ public class MiscTest extends TestCase {
                  list );
         map.put( "string",
                  string );
-        
+
         workingMemory.setGlobalResolver( new GlobalResolver() {
             public Object resolveGlobal(String identifier) {
                 return map.get( identifier );
@@ -268,24 +268,24 @@ public class MiscTest extends TestCase {
                          value );
             }
 
-        } );                
-        
+        } );
+
         Cheese bree = new Cheese ();
         bree.setPrice( 100 );
-        
+
         workingMemory.insert( bree );
 
         workingMemory.fireAllRules();
 
-        assertEquals(2, list.size() );        
-        
+        assertEquals(2, list.size() );
+
         assertEquals( new Integer( 5 ),
                       list.get( 0 ) );
-        
+
         assertEquals( new Integer( 6 ),
-                      list.get( 1 ) );        
+                      list.get( 1 ) );
     }
-    
+
 
     public void testFieldBiningsAndEvalSharing() throws Exception {
         final String drl = "test_FieldBindingsAndEvalSharing.drl";
@@ -402,7 +402,7 @@ public class MiscTest extends TestCase {
                       list.size() );
 
     }
-    
+
     public void NullFieldOnCompositeSink() throws Exception {
         final PackageBuilder builder = new PackageBuilder();
         builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_NullFieldOnCompositeSink.drl" ) ) );
@@ -411,18 +411,18 @@ public class MiscTest extends TestCase {
         // add the package to a rulebase
         final RuleBase ruleBase = getRuleBase();
         ruleBase.addPackage( pkg );
-        
+
         WorkingMemory workingMemory = ruleBase.newStatefulSession();
         List list = new ArrayList();
         workingMemory.setGlobal("list", list);
-        
+
         workingMemory.insert(new Attribute());
         workingMemory.insert(new Message());
         workingMemory.fireAllRules();
-        
+
         assertEquals(1, list.size());
         assertEquals("X", list.get(0));
-    	
+
     }
 
     public void testEmptyPattern() throws Exception {
@@ -4348,7 +4348,7 @@ public class MiscTest extends TestCase {
         //        final PackageBuilder builder2 = new PackageBuilder();
         //        builder2.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_FinalClass2.drl" ) ) );
         //        ruleBase.addPackage( builder2.getPackage() );
-        //        
+        //
         //        // it will automatically fire the rule
         //        assertEquals( 2,
         //                      list.size() );
