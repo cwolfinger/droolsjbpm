@@ -44,9 +44,6 @@ import org.drools.Cell;
 import org.drools.Cheese;
 import org.drools.Cheesery;
 import org.drools.Child;
-import org.drools.FactA;
-import org.drools.FactB;
-import org.drools.FactC;
 import org.drools.FactHandle;
 import org.drools.FirstClass;
 import org.drools.FromTestClass;
@@ -60,7 +57,6 @@ import org.drools.Person;
 import org.drools.PersonFinal;
 import org.drools.PersonInterface;
 import org.drools.PersonWithEquals;
-import org.drools.PolymorphicFact;
 import org.drools.Primitives;
 import org.drools.QueryResult;
 import org.drools.QueryResults;
@@ -3068,8 +3064,6 @@ public class MiscTest extends TestCase {
                                            12 );
         final Cheese stilton2 = new Cheese( "stilton2",
                                             12 );
-        final Cheese agedStilton = new Cheese( "aged stilton",
-                                            12 );
         final Cheese brie = new Cheese( "brie",
                                         10 );
         final Cheese brie2 = new Cheese( "brie2",
@@ -3080,7 +3074,6 @@ public class MiscTest extends TestCase {
                                                10 );
         workingMemory.insert( stilton );
         workingMemory.insert( stilton2 );
-        workingMemory.insert( agedStilton );
         workingMemory.insert( brie );
         workingMemory.insert( brie2 );
         workingMemory.insert( muzzarella );
@@ -3088,15 +3081,13 @@ public class MiscTest extends TestCase {
 
         workingMemory.fireAllRules();
 
-        assertEquals( 3,
+        assertEquals( 2,
                       list.size() );
 
         assertEquals( stilton,
                       list.get( 0 ) );
         assertEquals( brie,
                       list.get( 1 ) );
-        assertEquals( agedStilton,
-                      list.get( 2 ) );
     }
 
     public void testAutomaticBindings() throws Exception {
@@ -4389,116 +4380,10 @@ public class MiscTest extends TestCase {
         assertTrue( list.contains( item12 ) );
     }
 
-    public void testAlphaEvalWithOrCE() throws Exception {
+    public void testConsequenceBuilderException() throws Exception {
         final PackageBuilder builder = new PackageBuilder();
-        builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_AlphaEvalWithOrCE.drl" ) ) );
-        final Package pkg = builder.getPackage();
-
-        final RuleBase ruleBase = getRuleBase();
-        ruleBase.addPackage( pkg );
-        final WorkingMemory workingMemory = ruleBase.newStatefulSession();
-
-        final List list = new ArrayList();
-        workingMemory.setGlobal( "results",
-                                 list );
+        builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_ConsequenceBuilderException.drl" ) ) );
         
-        FactA a = new FactA();
-        a.setField1( "a value" );
-
-        workingMemory.insert( a );
-        workingMemory.insert( new FactB() );
-        workingMemory.insert( new FactC() );
-
-        workingMemory.fireAllRules();
-
-        assertEquals( "should not have fired", 
-                      0,
-                      list.size() );
+        assertTrue( builder.hasErrors() );
     }
-    
-    public void testRuntimeTypeCoercion() throws Exception {
-        final PackageBuilder builder = new PackageBuilder();
-        builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_RuntimeTypeCoercion.drl" ) ) );
-        final Package pkg = builder.getPackage();
-
-        final RuleBase ruleBase = getRuleBase();
-        ruleBase.addPackage( pkg );
-        final WorkingMemory workingMemory = ruleBase.newStatefulSession();
-
-        final List list = new ArrayList();
-        workingMemory.setGlobal( "results",
-                                 list );
-        
-        final PolymorphicFact fact = new PolymorphicFact( new Integer( 10 ) );
-        final FactHandle handle = workingMemory.insert( fact );
-        
-        workingMemory.fireAllRules();
-        
-        assertEquals( 1, list.size() );
-        assertEquals( fact.getData(), list.get( 0 ) );
-        
-        fact.setData( "10" );
-        workingMemory.update( handle, fact );
-        workingMemory.fireAllRules();
-        
-        assertEquals( 2, list.size() );
-        assertEquals( fact.getData(), list.get( 1 ) );
-        
-        try {
-            fact.setData( new Boolean(true) );
-            workingMemory.update( handle, fact );
-            fail("Should not allow to compare < with a Boolean object");
-        } catch( ClassCastException cce ) {
-            // success, as can't use "<" to compare to a boolean
-        }
-        
-    }
-
-    public void testRuntimeTypeCoercion2() throws Exception {
-        final PackageBuilder builder = new PackageBuilder();
-        builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_RuntimeTypeCoercion2.drl" ) ) );
-        final Package pkg = builder.getPackage();
-
-        final RuleBase ruleBase = getRuleBase();
-        ruleBase.addPackage( pkg );
-        final WorkingMemory workingMemory = ruleBase.newStatefulSession();
-
-        final List list = new ArrayList();
-        workingMemory.setGlobal( "results",
-                                 list );
-        
-        final Primitives fact = new Primitives( );
-        fact.setBooleanPrimitive( true );
-        fact.setBooleanWrapper( new Boolean(true) );
-        fact.setObject( new Boolean(true) );
-        fact.setCharPrimitive( 'X' );
-        final FactHandle handle = workingMemory.insert( fact );
-        
-        workingMemory.fireAllRules();
-        
-        int index = 0;
-        assertEquals( list.toString(), 4, list.size() );
-        assertEquals( "boolean", list.get( index++ ));
-        assertEquals( "boolean wrapper", list.get( index++ ));
-        assertEquals( "boolean object", list.get( index++ ));
-        assertEquals( "char", list.get( index++ ));
-        
-        fact.setBooleanPrimitive( false );
-        fact.setBooleanWrapper( null );
-        fact.setCharPrimitive( '\0' );
-        fact.setObject( new Character('X') );
-        workingMemory.update( handle, fact );
-        workingMemory.fireAllRules();
-        assertEquals( 5, list.size() );
-        assertEquals( "char object", list.get( index++ ) );
-        
-        fact.setObject( null );
-        workingMemory.update( handle, fact );
-        workingMemory.fireAllRules();
-        assertEquals( 6, list.size() );
-        assertEquals( "null object", list.get( index++ ) );
-        
-    }
-
-    
 }
