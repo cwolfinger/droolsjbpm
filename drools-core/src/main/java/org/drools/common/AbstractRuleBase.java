@@ -729,6 +729,7 @@ abstract public class AbstractRuleBase
         synchronized ( this.pkgs ) {
             if ( this.reloadPackageCompilationData != null ) {
                 this.reloadPackageCompilationData.execute( this );
+				this.reloadPackageCompilationData = null;
             }
         }
     }
