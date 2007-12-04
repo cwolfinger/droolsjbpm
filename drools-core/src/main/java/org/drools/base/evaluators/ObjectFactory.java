@@ -565,16 +565,6 @@ public class ObjectFactory
             if( arg0 instanceof String ) {
                 return arg0.equals( arg1.toString() );
             }
-            if( arg0 instanceof Boolean ) {
-                if( arg1 instanceof String ) {
-                    return ((Boolean)arg0).booleanValue() == Boolean.valueOf( (String)arg1 ).booleanValue();
-                }
-            }
-            if( arg0 instanceof Character ) {
-                if( arg1 instanceof String && ((String) arg1).length() == 1 ) {
-                    return ((Character)arg0).charValue() == ((String)arg1).charAt( 0 );
-                }
-            }
             return arg0.equals( arg1 );
         }
     }
@@ -625,11 +615,7 @@ public class ObjectFactory
                 }
                 
             }
-            try {
-                return ((Comparable)arg0).compareTo( arg1 );
-            } catch ( ClassCastException cce ) {
-                throw new ClassCastException( "Not possible to compare a "+arg0.getClass()+" with a "+arg1.getClass());
-            }
+            return ((Comparable)arg0).compareTo( arg1 );
         }
     }
     
