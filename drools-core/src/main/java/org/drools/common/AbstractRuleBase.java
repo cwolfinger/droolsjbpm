@@ -42,6 +42,8 @@ import org.drools.RuleIntegrationException;
 import org.drools.StatefulSession;
 import org.drools.event.RuleBaseEventListener;
 import org.drools.event.RuleBaseEventSupport;
+import org.drools.objenesis.Objenesis;
+import org.drools.objenesis.ObjenesisStd;
 import org.drools.rule.CompositePackageClassLoader;
 import org.drools.rule.InvalidPatternException;
 import org.drools.rule.MapBackedClassLoader;
@@ -84,7 +86,9 @@ abstract public class AbstractRuleBase
 
     protected transient MapBackedClassLoader        classLoader;
 
-    /** The fact handle factory. */
+	private transient Objenesis                     objenesis;
+
+	/** The fact handle factory. */
     protected FactHandleFactory                     factHandleFactory;
 
     protected Map                                   globals;
@@ -152,7 +156,8 @@ abstract public class AbstractRuleBase
         this.processes = new HashMap();
         this.globals = new HashMap();
         this.statefulSessions = new ObjectHashSet();
-    }
+		this.objenesis = createObjenesis();
+	}
 
     // ------------------------------------------------------------
     // Instance methods
@@ -209,8 +214,9 @@ abstract public class AbstractRuleBase
         }
 
         this.packageClassLoader.addClassLoader( this.classLoader );
+		this.objenesis = createObjenesis();
 
-        for ( final Iterator it = this.pkgs.values().iterator(); it.hasNext(); ) {
+		for ( final Iterator it = this.pkgs.values().iterator(); it.hasNext(); ) {
             this.packageClassLoader.addClassLoader( ((Package) it.next()).getPackageCompilationData().getClassLoader() );
         }
 
@@ -240,7 +246,15 @@ abstract public class AbstractRuleBase
         }
     }
 
-    /**
+	/**
+	 * Creates Objenesis instance for the RuleBase. 
+	 * @return a standart Objenesis instanse with caching turned on.
+	 */
+	protected Objenesis createObjenesis() {
+		return new ObjenesisStd(true);
+	}
+
+	/**
      * @return the id
      */
     public String getId() {
@@ -666,7 +680,11 @@ abstract public class AbstractRuleBase
         return process;
     }
 
-    protected synchronized void addStatefulSession(final StatefulSession statefulSession) {
+	public Objenesis getObjenesis() {
+		return objenesis;
+	}
+
+	protected synchronized void addStatefulSession(final StatefulSession statefulSession) {
         this.statefulSessions.add( statefulSession );
     }
 
@@ -702,6 +720,7 @@ abstract public class AbstractRuleBase
 
         final DroolsObjectInputStream streamWithLoader = new DroolsObjectInputStream( stream,
                                                                                       this.packageClassLoader );
+        streamWithLoader.setRuleBase( this );
 
         final AbstractWorkingMemory workingMemory = (AbstractWorkingMemory) streamWithLoader.readObject();
 
