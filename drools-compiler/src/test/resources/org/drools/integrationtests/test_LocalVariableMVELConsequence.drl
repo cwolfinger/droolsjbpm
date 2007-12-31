@@ -7,6 +7,6 @@ rule "test local variable in mvel consequence"
 	when
 		$p : Person( $likes : likes ) 
 	then
-	    c = new Cheese( $likes );
+	    Cheese c = new Cheese( $likes );
 	    results.add( c );
 end
