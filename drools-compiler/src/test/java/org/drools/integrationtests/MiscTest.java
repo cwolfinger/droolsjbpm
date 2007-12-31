@@ -4667,34 +4667,4 @@ public class MiscTest extends TestCase {
         assertNotNull(fh2);
     }    
 
-    public void testLocalVariableMVELConsequence() throws Exception {
-        final PackageBuilder builder = new PackageBuilder();
-        builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_LocalVariableMVELConsequence.drl" ) ) );
-        final Package pkg = builder.getPackage();
-
-        final RuleBase ruleBase = getRuleBase();
-        ruleBase.addPackage( pkg );
-        final WorkingMemory workingMemory = ruleBase.newStatefulSession();
-
-        final List list = new ArrayList();
-        workingMemory.setGlobal( "results",
-                                 list );
-        
-        workingMemory.insert( new Person( "bob", "stilton" ) );
-        workingMemory.insert( new Person( "mark", "brie" ) );
-        
-        try {
-            workingMemory.fireAllRules();
-
-            assertEquals( "should have fired twice", 
-                          2,
-                          list.size() );
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail( "Should not raise any exception");
-        }
-
-    }
-    
 }
