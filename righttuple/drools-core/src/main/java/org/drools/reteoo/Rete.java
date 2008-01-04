@@ -1,0 +1,280 @@
+package org.drools.reteoo;
+
+/*
+ * Copyright 2005 JBoss Inc
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.drools.base.ShadowProxy;
+import org.drools.common.BaseNode;
+import org.drools.common.DroolsObjectInputStream;
+import org.drools.common.InternalRuleBase;
+import org.drools.common.InternalWorkingMemory;
+import org.drools.common.NodeMemory;
+import org.drools.rule.EntryPoint;
+import org.drools.spi.ObjectType;
+import org.drools.spi.PropagationContext;
+import org.drools.util.FactHashTable;
+import org.drools.util.Iterator;
+import org.drools.util.ObjectHashMap;
+import org.drools.util.ObjectHashMap.ObjectEntry;
+
+/**
+ * The Rete-OO network.
+ *
+ * The Rete class is the root <code>Object</code>. All objects are asserted into
+ * the Rete node where it propagates to all matching ObjectTypeNodes.
+ *
+ * The first time an  instance of a Class type is asserted it does a full
+ * iteration of all ObjectTyppeNodes looking for matches, any matches are
+ * then cached in a HashMap which is used for future assertions.
+ *
+ * While Rete  extends ObjectSource nad implements ObjectSink it nulls the
+ * methods attach(), remove() and  updateNewNode() as this is the root node
+ * they are no applicable
+ *
+ * @see ObjectTypeNode
+ *
+ * @author <a href="mailto:mark.proctor@jboss.com">Mark Proctor</a>
+ * @author <a href="mailto:bob@werken.com">Bob McWhirter</a>
+ */
+public class Rete extends RightTupleSource
+    implements
+    Serializable,
+    RightTupleSink {
+    // ------------------------------------------------------------
+    // Instance members
+    // ------------------------------------------------------------
+
+    /**
+     *
+     */
+    private static final long                    serialVersionUID = 400L;
+
+    private final Map<EntryPoint, ObjectHashMap> entryPoints;
+
+    private transient InternalRuleBase           ruleBase;
+
+    // ------------------------------------------------------------
+    // Constructors
+    // ------------------------------------------------------------
+
+    public Rete(InternalRuleBase ruleBase) {
+        super( 0 );
+        this.entryPoints = new HashMap<EntryPoint, ObjectHashMap>();
+        this.entryPoints.put( EntryPoint.DEFAULT,
+                              new ObjectHashMap() );
+        this.ruleBase = ruleBase;
+    }
+
+    private void readObject(ObjectInputStream stream) throws IOException,
+                                                     ClassNotFoundException {
+        stream.defaultReadObject();
+        this.ruleBase = ((DroolsObjectInputStream) stream).getRuleBase();
+    }
+
+    // ------------------------------------------------------------
+    // Instance methods
+    // ------------------------------------------------------------
+
+    /**
+     * This is the entry point into the network for all asserted Facts. Iterates a cache
+     * of matching <code>ObjectTypdeNode</code>s asserting the Fact. If the cache does not
+     * exist it first iteraes and builds the cache.
+     *
+     * @param rightTuple
+     *            The FactHandle of the fact to assert
+     * @param context
+     *            The <code>PropagationContext</code> of the <code>WorkingMemory</code> action
+     * @param workingMemory
+     *            The working memory session.
+     */
+    public void assertRightTuple(final RightTuple rightTuple,
+                                 final PropagationContext context,
+                                 final InternalWorkingMemory workingMemory) {
+        Object object = rightTuple.getHandle().getObject();
+
+        ObjectTypeConf objectTypeConf = workingMemory.getObjectTypeConf( context.getEntryPoint(),
+                                                                         object );
+
+        // checks if shadow is enabled
+        if ( objectTypeConf.isShadowEnabled() ) {
+            // need to improve this
+            if ( !(rightTuple.getHandle().getObject() instanceof ShadowProxy) ) {
+                // replaces the actual object by its shadow before propagating
+                rightTuple.getHandle().setObject( objectTypeConf.getShadow( object ) );
+                rightTuple.getHandle().setShadowFact( true );
+            } else {
+                ((ShadowProxy) object).updateProxy();
+            }
+        }
+
+        ObjectTypeNode[] cachedNodes = objectTypeConf.getObjectTypeNodes();
+
+        for ( int i = 0, length = cachedNodes.length; i < length; i++ ) {
+            cachedNodes[i].assertRightTuple( rightTuple,
+                                             context,
+                                             workingMemory );
+        }
+    }
+
+    /**
+     * Retract a fact object from this <code>RuleBase</code> and the specified
+     * <code>WorkingMemory</code>.
+     *
+     * @param rightTuple
+     *            The handle of the fact to retract.
+     * @param workingMemory
+     *            The working memory session.
+     */
+    public void retractRightTuple(final RightTuple rightTuple,
+                                  final PropagationContext context,
+                                  final InternalWorkingMemory workingMemory) {
+        final Object object = rightTuple.getHandle().getObject();
+
+        ObjectTypeConf objectTypeConf = workingMemory.getObjectTypeConf( context.getEntryPoint(),
+                                                                         object );
+        ObjectTypeNode[] cachedNodes = objectTypeConf.getObjectTypeNodes();
+
+        if ( cachedNodes == null ) {
+            // it is  possible that there are no ObjectTypeNodes for an  object being retracted
+            return;
+        }
+
+        for ( int i = 0; i < cachedNodes.length; i++ ) {
+            cachedNodes[i].retractRightTuple( rightTuple,
+                                              context,
+                                              workingMemory );
+        }
+    }
+
+    /**
+     * Adds the <code>ObjectSink</code> so that it may receive
+     * <code>Objects</code> propagated from this <code>ObjectSource</code>.
+     *
+     * @param objectSink
+     *            The <code>ObjectSink</code> to receive propagated
+     *            <code>Objects</code>. Rete only accepts <code>ObjectTypeNode</code>s
+     *            as parameters to this method, though.
+     */
+    protected void addObjectSink(final RightTupleSink objectSink) {
+        final ObjectTypeNode node = (ObjectTypeNode) objectSink;
+        ObjectHashMap map = this.entryPoints.get( node.getEntryPoint() );
+        if ( map == null ) {
+            map = new ObjectHashMap();
+            this.entryPoints.put( node.getEntryPoint(),
+                                  map );
+        }
+        map.put( node.getObjectType(),
+                 node,
+                 true );
+    }
+
+    protected void removeObjectSink(final RightTupleSink objectSink) {
+        final ObjectTypeNode node = (ObjectTypeNode) objectSink;
+        this.entryPoints.get( node.getEntryPoint() ).remove( node.getObjectType() );
+    }
+
+    public void attach() {
+        throw new UnsupportedOperationException( "cannot call attach() from the root Rete node" );
+    }
+
+    public void attach(final InternalWorkingMemory[] workingMemories) {
+        throw new UnsupportedOperationException( "cannot call attach() from the root Rete node" );
+    }
+
+    public void remove(final BaseNode node,
+                       final InternalWorkingMemory[] workingMemories) {
+        final ObjectTypeNode objectTypeNode = (ObjectTypeNode) node;
+        removeObjectSink( objectTypeNode );
+        for ( int i = 0; i < workingMemories.length; i++ ) {
+            // clear the node memory for each working memory.
+            workingMemories[i].clearNodeMemory( (NodeMemory) node );
+        }
+    }
+
+    public Map<ObjectType, ObjectTypeNode> getObjectTypeNodes() {
+        Map<ObjectType, ObjectTypeNode> allNodes = new HashMap<ObjectType, ObjectTypeNode>();
+        for ( ObjectHashMap map : this.entryPoints.values() ) {
+            Iterator it = map.iterator();
+            for ( ObjectEntry entry = (ObjectEntry) it.next(); entry != null; entry = (ObjectEntry) it.next() ) {
+                allNodes.put( (ObjectType) entry.getKey(),
+                              (ObjectTypeNode) entry.getValue() );
+            }
+        }
+        return allNodes;
+    }
+
+    public ObjectHashMap getObjectTypeNodes(EntryPoint entryPoint) {
+        return this.entryPoints.get( entryPoint );
+    }
+
+    public InternalRuleBase getRuleBase() {
+        return this.ruleBase;
+    }
+
+    public int hashCode() {
+        return this.entryPoints.hashCode();
+    }
+
+    public boolean equals(final Object object) {
+        if ( object == this ) {
+            return true;
+        }
+
+        if ( object == null || !(object instanceof Rete) ) {
+            return false;
+        }
+
+        final Rete other = (Rete) object;
+        return this.entryPoints.equals( other.entryPoints );
+    }
+
+    public void updateSink(final RightTupleSink sink,
+                           final PropagationContext context,
+                           final InternalWorkingMemory workingMemory) {
+        // JBRULES-612: the cache MUST be invalidated when a new node type is added to the network, so iterate and reset all caches.
+        final ObjectTypeNode node = (ObjectTypeNode) sink;
+        final ObjectType newObjectType = node.getObjectType();
+
+        for ( ObjectTypeConf objectTypeConf : workingMemory.getObjectTypeConfMap( context.getEntryPoint() ).values() ) {
+            if ( newObjectType.isAssignableFrom( objectTypeConf.getConcreteObjectTypeNode().getObjectType() ) ) {
+                objectTypeConf.resetCache();
+                ObjectTypeNode sourceNode = objectTypeConf.getConcreteObjectTypeNode();
+                FactHashTable table = (FactHashTable) workingMemory.getNodeMemory( sourceNode );
+                Iterator factIter = table.iterator();
+                for ( RightTuple factEntry = (RightTuple) factIter.next(); factEntry != null; factEntry = (RightTuple) factIter.next() ) {
+                    sink.assertRightTuple( factEntry,
+                                           context,
+                                           workingMemory );
+                }
+            }
+        }
+    }
+
+    public boolean isRightTupleMemoryEnabled() {
+        throw new UnsupportedOperationException( "Rete has no Object memory" );
+    }
+
+    public void setRightTupleMemoryEnabled(boolean objectMemoryEnabled) {
+        throw new UnsupportedOperationException( "ORete has no Object memory" );
+    }
+
+}
