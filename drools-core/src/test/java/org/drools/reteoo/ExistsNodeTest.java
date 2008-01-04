@@ -94,7 +94,7 @@ public class ExistsNodeTest extends DroolsTestCase {
                                            10 );
         final DefaultFactHandle f0 = (DefaultFactHandle) this.workingMemory.insert( cheddar );
 
-        final ReteTuple tuple1 = new ReteTuple( f0 );
+        final LeftTuple tuple1 = new LeftTuple( f0 );
 
         this.node.assertTuple( tuple1,
                                this.context,
@@ -112,7 +112,7 @@ public class ExistsNodeTest extends DroolsTestCase {
                                         10 );
         final DefaultFactHandle f1 = (DefaultFactHandle) this.workingMemory.insert( brie );
 
-        this.node.assertObject( f1,
+        this.node.assertRightTuple( f1,
                                 this.context,
                                 this.workingMemory );
 
@@ -123,13 +123,13 @@ public class ExistsNodeTest extends DroolsTestCase {
         assertLength( 0,
                       this.sink.getRetracted() );
 
-        assertEquals( new ReteTuple( f0 ),
+        assertEquals( new LeftTuple( f0 ),
                       ((Object[]) this.sink.getAsserted().get( 0 ))[0] );
 
         // assert tuple, will have matches, so propagate
         final DefaultFactHandle f2 = (DefaultFactHandle) this.workingMemory.insert( new Cheese( "gouda",
                                                                                                 10 ) );
-        final ReteTuple tuple2 = new ReteTuple( f2 );
+        final LeftTuple tuple2 = new LeftTuple( f2 );
         this.node.assertTuple( tuple2,
                                this.context,
                                this.workingMemory );
@@ -143,12 +143,12 @@ public class ExistsNodeTest extends DroolsTestCase {
 
         // check memory sizes
         assertEquals( 2,
-                      this.memory.getTupleMemory().size() );
+                      this.memory.getLeftTupleMemory().size() );
         assertEquals( 1,
-                      this.memory.getFactHandleMemory().size() );
+                      this.memory.getRightTupleMemory().size() );
 
         // When this is retracter both tuples should be retracted
-        this.node.retractObject( f1,
+        this.node.retractRightTuple( f1,
                                  this.context,
                                  this.workingMemory );
 
@@ -173,7 +173,7 @@ public class ExistsNodeTest extends DroolsTestCase {
                                            10 );
         final DefaultFactHandle f0 = (DefaultFactHandle) this.workingMemory.insert( cheddar );
 
-        final ReteTuple tuple1 = new ReteTuple( f0 );
+        final LeftTuple tuple1 = new LeftTuple( f0 );
 
         this.node.assertTuple( tuple1,
                                this.context,
@@ -191,7 +191,7 @@ public class ExistsNodeTest extends DroolsTestCase {
                                         10 );
         final DefaultFactHandle f1 = (DefaultFactHandle) this.workingMemory.insert( brie );
 
-        this.node.assertObject( f1,
+        this.node.assertRightTuple( f1,
                                 this.context,
                                 this.workingMemory );
 
@@ -205,7 +205,7 @@ public class ExistsNodeTest extends DroolsTestCase {
         // assert tuple, will have matches, so do assert propagation
         final DefaultFactHandle f2 = (DefaultFactHandle) this.workingMemory.insert( new Cheese( "gouda",
                                                                                                 10 ) );
-        final ReteTuple tuple2 = new ReteTuple( f2 );
+        final LeftTuple tuple2 = new LeftTuple( f2 );
         this.node.assertTuple( tuple2,
                                this.context,
                                this.workingMemory );
@@ -228,7 +228,7 @@ public class ExistsNodeTest extends DroolsTestCase {
             final Cheese cheddar = new Cheese( "cheddar",
                                                10 );
             final DefaultFactHandle f0 = (DefaultFactHandle) this.workingMemory.insert( cheddar );
-            final ReteTuple tuple1 = new ReteTuple( f0 );
+            final LeftTuple tuple1 = new LeftTuple( f0 );
 
             this.node.assertTuple( tuple1,
                                    this.context,
@@ -241,36 +241,36 @@ public class ExistsNodeTest extends DroolsTestCase {
 
             // Initially, no objects in right memory
             assertEquals( 0,
-                          this.memory.getFactHandleMemory().size() );
-            this.node.assertObject( f1,
+                          this.memory.getRightTupleMemory().size() );
+            this.node.assertRightTuple( f1,
                                     this.context,
                                     this.workingMemory );
 
             // Now, needs to have 1 object in right memory
             assertEquals( 1,
-                          this.memory.getFactHandleMemory().size() );
+                          this.memory.getRightTupleMemory().size() );
 
             // simulate modify
-            this.node.retractObject( f1,
+            this.node.retractRightTuple( f1,
                                      this.context,
                                      this.workingMemory );
-            this.node.assertObject( f1,
+            this.node.assertRightTuple( f1,
                                     this.context,
                                     this.workingMemory );
             // Memory should not change
             assertEquals( 1,
-                          this.memory.getFactHandleMemory().size() );
+                          this.memory.getRightTupleMemory().size() );
 
             // When this is retracter both tuples should assert
-            this.node.retractObject( f1,
+            this.node.retractRightTuple( f1,
                                      this.context,
                                      this.workingMemory );
             assertEquals( 0,
-                          this.memory.getFactHandleMemory().size() );
+                          this.memory.getRightTupleMemory().size() );
 
             // check memory sizes
             assertEquals( 1,
-                          this.memory.getTupleMemory().size() );
+                          this.memory.getLeftTupleMemory().size() );
 
             // simulate modify
             this.node.retractTuple( tuple1,
@@ -280,12 +280,12 @@ public class ExistsNodeTest extends DroolsTestCase {
                                    this.context,
                                    this.workingMemory );
             assertEquals( 1,
-                          this.memory.getTupleMemory().size() );
+                          this.memory.getLeftTupleMemory().size() );
             this.node.retractTuple( tuple1,
                                     this.context,
                                     this.workingMemory );
             assertEquals( 0,
-                          this.memory.getTupleMemory().size() );
+                          this.memory.getLeftTupleMemory().size() );
         } catch ( final Exception e ) {
             Assert.fail( "No exception should be raised in this procedure, but got: " + e.toString() );
         }

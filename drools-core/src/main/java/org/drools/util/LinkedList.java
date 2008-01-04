@@ -47,8 +47,8 @@ public class LinkedList
     Serializable {
     private static final long  serialVersionUID = 400L;
 
-    private LinkedListNode     firstNode;
-    private LinkedListNode     lastNode;
+    private Entry     firstNode;
+    private Entry     lastNode;
 
     private int                size;
 
@@ -68,7 +68,7 @@ public class LinkedList
      * @param node
      *      The <code>LinkedListNode</code> to be added
      */
-    public void add(final LinkedListNode node) {
+    public void add(final Entry node) {
         if ( this.firstNode == null ) {
             this.firstNode = node;
             this.lastNode = node;;
@@ -88,7 +88,7 @@ public class LinkedList
      * @param node
      *      The <code>LinkedListNode</code> to be removed.
      */
-    public void remove(final LinkedListNode node) {
+    public void remove(final Entry node) {
         if ( this.firstNode == node ) {
             removeFirst();
         } else if ( this.lastNode == node ) {
@@ -107,7 +107,7 @@ public class LinkedList
      * @return
      *      The first <code>LinkedListNode</code>.
      */
-    public final LinkedListNode getFirst() {
+    public Entry getFirst() {
         return this.firstNode;
     }
 
@@ -116,7 +116,7 @@ public class LinkedList
      * @return
      *      The last <code>LinkedListNode</code>.
      */
-    public final LinkedListNode getLast() {
+    public Entry getLast() {
         return this.lastNode;
     }
 
@@ -127,11 +127,11 @@ public class LinkedList
      * @return
      *      The first <code>LinkedListNode</code>.
      */
-    public LinkedListNode removeFirst() {
+    public Entry removeFirst() {
         if ( this.firstNode == null ) {
             return null;
         }
-        final LinkedListNode node = this.firstNode;
+        final Entry node = this.firstNode;
         this.firstNode = node.getNext();
         node.setNext( null );
         if ( this.firstNode != null ) {
@@ -143,8 +143,8 @@ public class LinkedList
         return node;
     }
 
-    public void insertAfter(final LinkedListNode existingNode,
-                            final LinkedListNode newNode) {
+    public void insertAfter(final Entry existingNode,
+                            final Entry newNode) {
         if ( newNode.getPrevious() != null || newNode.getNext() != null ) {
             //do nothing if this node is already inserted somewhere
             return;
@@ -156,7 +156,7 @@ public class LinkedList
                 this.lastNode = newNode;
             } else {
                 // if existing node is null, then insert it as a first node
-                final LinkedListNode node = this.firstNode;
+                final Entry node = this.firstNode;
                 node.setPrevious( newNode );
                 newNode.setNext( node );
                 this.firstNode = newNode;
@@ -181,11 +181,11 @@ public class LinkedList
      * @return
      *      The first <code>LinkedListNode</code>.
      */
-    public LinkedListNode removeLast() {
+    public Entry removeLast() {
         if ( this.lastNode == null ) {
             return null;
         }
-        final LinkedListNode node = this.lastNode;
+        final Entry node = this.lastNode;
         this.lastNode = node.getPrevious();
         node.setPrevious( null );
         if ( this.lastNode != null ) {
@@ -224,7 +224,7 @@ public class LinkedList
     public int hashCode() {
         final int PRIME = 31;
         int result = 1;
-        for ( LinkedListNode node = this.firstNode; node != null; node = node.getNext() ) {
+        for ( Entry node = this.firstNode; node != null; node = node.getNext() ) {
             result = PRIME * result + node.hashCode();
         }
         return result;
@@ -235,7 +235,7 @@ public class LinkedList
             return true;
         }
 
-        if ( object == null || !(object instanceof LinkedList) ) {
+        if ( object == null || !(object instanceof Entry) ) {
             return false;
         }
 
@@ -245,7 +245,7 @@ public class LinkedList
             return false;
         }
 
-        for ( LinkedListNode thisNode = this.firstNode, otherNode = other.firstNode; thisNode != null && otherNode != null; thisNode = thisNode.getNext(), otherNode = otherNode.getNext() ) {
+        for ( Entry thisNode = this.firstNode, otherNode = other.firstNode; thisNode != null && otherNode != null; thisNode = thisNode.getNext(), otherNode = otherNode.getNext() ) {
             if ( !thisNode.equals( otherNode ) ) {
                 return false;
             }
@@ -271,7 +271,7 @@ public class LinkedList
         Iterator,
         Serializable {
         private LinkedList     list;
-        private LinkedListNode current;
+        private Entry current;
 
         public void reset(final LinkedList list) {
             this.list = list;
@@ -282,7 +282,7 @@ public class LinkedList
             if ( this.current == null ) {
                 return null;
             }
-            final LinkedListNode node = this.current;
+            final Entry node = this.current;
             this.current = this.current.getNext();
             return node;
         }
@@ -293,8 +293,8 @@ public class LinkedList
         java.util.Iterator,
         Serializable {
         private LinkedList     list;
-        private LinkedListNode currentNode;
-        private LinkedListNode nextNode;
+        private Entry currentNode;
+        private Entry nextNode;
         private boolean        immutable;
 
         public JavaUtilIterator(final LinkedList list) {

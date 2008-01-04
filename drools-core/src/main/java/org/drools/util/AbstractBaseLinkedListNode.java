@@ -26,13 +26,13 @@ package org.drools.util;
  */
 public class AbstractBaseLinkedListNode
     implements
-    LinkedListNode {
+    Entry {
 
     private static final long serialVersionUID = 400L;
 
-    private LinkedListNode    previous;
+    private Entry    previous;
 
-    private LinkedListNode    next;
+    private Entry    next;
 
     /**
      * Empty Constructor
@@ -43,28 +43,28 @@ public class AbstractBaseLinkedListNode
     /* (non-Javadoc)
      * @see org.drools.reteoo.LinkedListNode#getNext()
      */
-    public LinkedListNode getNext() {
+    public Entry getNext() {
         return this.next;
     }
 
     /* (non-Javadoc)
      * @see org.drools.reteoo.LinkedListNode#setNext(org.drools.reteoo.LinkedListNode)
      */
-    public void setNext(final LinkedListNode next) {
+    public void setNext(final Entry next) {
         this.next = next;
     }
 
     /* (non-Javadoc)
      * @see org.drools.reteoo.LinkedListNode#getPrevious()
      */
-    public LinkedListNode getPrevious() {
+    public Entry getPrevious() {
         return this.previous;
     }
 
     /* (non-Javadoc)
      * @see org.drools.reteoo.LinkedListNode#setPrevious(org.drools.reteoo.LinkedListNode)
      */
-    public void setPrevious(final LinkedListNode previous) {
+    public void setPrevious(final Entry previous) {
         this.previous = previous;
     }
 }

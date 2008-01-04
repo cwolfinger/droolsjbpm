@@ -25,8 +25,8 @@ import org.drools.spi.Activation;
 import org.drools.spi.AgendaGroup;
 import org.drools.spi.PropagationContext;
 import org.drools.spi.Tuple;
+import org.drools.util.Entry;
 import org.drools.util.LinkedList;
-import org.drools.util.LinkedListNode;
 
 /**
  * Item entry in the <code>Agenda</code>.
@@ -37,7 +37,7 @@ public class ScheduledAgendaItem extends TimerTask
     implements
     Activation,
     Serializable,
-    LinkedListNode {
+    Entry {
     // ------------------------------------------------------------
     // Instance members
     // ------------------------------------------------------------
@@ -47,10 +47,10 @@ public class ScheduledAgendaItem extends TimerTask
      */
     private static final long        serialVersionUID = 400L;
 
-    private LinkedListNode           previous;
+    private Entry                    previous;
 
-    private LinkedListNode           next;
-
+    private Entry                    next;
+ 
     /** The tuple. */
     private final Tuple              tuple;
 
@@ -139,19 +139,19 @@ public class ScheduledAgendaItem extends TimerTask
         return this.activationNumber;
     }
 
-    public LinkedListNode getNext() {
+    public Entry getNext() {
         return this.next;
     }
 
-    public void setNext(final LinkedListNode next) {
+    public void setNext(final Entry next) {
         this.next = next;
     }
 
-    public LinkedListNode getPrevious() {
+    public Entry getPrevious() {
         return this.previous;
     }
 
-    public void setPrevious(final LinkedListNode previous) {
+    public void setPrevious(final Entry previous) {
         this.previous = previous;
     }
 

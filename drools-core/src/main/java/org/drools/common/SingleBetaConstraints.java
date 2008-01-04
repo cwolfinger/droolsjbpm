@@ -21,9 +21,10 @@ import java.io.Serializable;
 import org.drools.RuleBaseConfiguration;
 import org.drools.base.evaluators.Operator;
 import org.drools.reteoo.BetaMemory;
-import org.drools.reteoo.FactHandleMemory;
-import org.drools.reteoo.ReteTuple;
-import org.drools.reteoo.TupleMemory;
+import org.drools.reteoo.RightTuple;
+import org.drools.reteoo.RightTupleMemory;
+import org.drools.reteoo.LeftTuple;
+import org.drools.reteoo.LeftTupleMemory;
 import org.drools.rule.ContextEntry;
 import org.drools.rule.VariableConstraint;
 import org.drools.spi.BetaNodeFieldConstraint;
@@ -96,7 +97,7 @@ public class SingleBetaConstraints
      * @see org.drools.common.BetaNodeConstraints#updateFromTuple(org.drools.reteoo.ReteTuple)
      */
     public void updateFromTuple(final InternalWorkingMemory workingMemory,
-                                final ReteTuple tuple) {
+                                final LeftTuple tuple) {
         this.context.updateFromTuple( workingMemory,
                                       tuple );
     }
@@ -104,10 +105,10 @@ public class SingleBetaConstraints
     /* (non-Javadoc)
      * @see org.drools.common.BetaNodeConstraints#updateFromFactHandle(org.drools.common.InternalFactHandle)
      */
-    public void updateFromFactHandle(final InternalWorkingMemory workingMemory,
-                                     final InternalFactHandle handle) {
+    public void updateFromRightTuple(final InternalWorkingMemory workingMemory,
+                                     final RightTuple rightTuple) {
         this.context.updateFromFactHandle( workingMemory,
-                                           handle );
+                                           rightTuple.getHandle() );
     }
 
     /* (non-Javadoc)
@@ -121,7 +122,7 @@ public class SingleBetaConstraints
     /* (non-Javadoc)
      * @see org.drools.common.BetaNodeConstraints#isAllowedCachedRight(org.drools.reteoo.ReteTuple)
      */
-    public boolean isAllowedCachedRight(final ReteTuple tuple) {
+    public boolean isAllowedCachedRight(final LeftTuple tuple) {
         return this.constraint.isAllowedCachedRight( tuple,
                                                      this.context );
     }
@@ -145,14 +146,14 @@ public class SingleBetaConstraints
             final FieldIndex index = new FieldIndex( variableConstraint.getFieldExtractor(),
                                                      variableConstraint.getRequiredDeclarations()[0],
                                                      variableConstraint.getEvaluator() );
-            TupleMemory tupleMemory;
+            LeftTupleMemory tupleMemory;
             if ( this.conf.isIndexLeftBetaMemory() ) {
                 tupleMemory = new TupleIndexHashTable( new FieldIndex[]{index} );
             } else {
                 tupleMemory = new TupleHashTable();
             }
 
-            FactHandleMemory factHandleMemory;
+            RightTupleMemory factHandleMemory;
             if ( this.conf.isIndexRightBetaMemory() ) {
                 factHandleMemory = new FactHandleIndexHashTable( new FieldIndex[]{index} );
             } else {

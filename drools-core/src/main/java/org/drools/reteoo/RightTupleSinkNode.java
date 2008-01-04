@@ -1,4 +1,4 @@
-package org.drools.util;
+package org.drools.reteoo;
 
 /*
  * Copyright 2005 JBoss Inc
@@ -16,46 +16,44 @@ package org.drools.util;
  * limitations under the License.
  */
 
-import java.io.Serializable;
-
 /**
  * Items placed in a <code>LinkedList<code> must implement this interface .
  * 
- * @see LinkedList
+ * @see LeftTupleSinkNodeList
  * 
  * @author <a href="mailto:mark.proctor@jboss.com">Mark Proctor</a>
  * @author <a href="mailto:bob@werken.com">Bob McWhirter</a>
  */
-public interface LinkedListNode
+public interface RightTupleSinkNode
     extends
-    Serializable {
+    RightTupleSink {
 
     /**
      * Returns the next node
      * @return
      *      The next LinkedListNode
      */
-    public LinkedListNode getNext();
+    public RightTupleSinkNode getNextRightTupleSinkNode();
 
     /**
      * Sets the next node 
      * @param next
      *      The next LinkedListNode
      */
-    public void setNext(LinkedListNode next);
+    public void setNextRightTupleSinkNode(RightTupleSinkNode next);
 
     /**
      * Returns the previous node
      * @return
      *      The previous LinkedListNode
      */
-    public LinkedListNode getPrevious();
+    public RightTupleSinkNode getPreviousRightTupleSinkNode();
 
     /**
      * Sets the previous node 
      * @param previous
      *      The previous LinkedListNode
      */
-    public void setPrevious(LinkedListNode previous);
+    public void setPreviousRightTupleSinkNode(RightTupleSinkNode previous);
 
 }

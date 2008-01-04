@@ -139,6 +139,8 @@ public class ObjectHashMap extends AbstractHashTable {
         private int               hashCode;
 
         private Entry             next;
+        
+//      private Entry             previous;
 
         public ObjectEntry(final Object key,
                            final Object value,
@@ -158,11 +160,20 @@ public class ObjectHashMap extends AbstractHashTable {
 
         public Entry getNext() {
             return this.next;
+        }        
+        
+        public Entry getPrevious() {
+            return null;
+//          return this.previous;
         }
+
+        public void setPrevious(Entry previous) {
+//            this.previous = previous;            
+        }          
 
         public void setNext(final Entry next) {
             this.next = next;
-        }
+        }              
 
         public int hashCode() {
             return this.hashCode;

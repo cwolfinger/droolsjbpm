@@ -19,29 +19,28 @@ package org.drools.reteoo;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.spi.PropagationContext;
 
 public class MockObjectSink
     implements
-    ObjectSinkNode {
+    RightTupleSinkNode {
     private final List     asserted  = new ArrayList();
     private final List     retracted = new ArrayList();
 
-    private ObjectSinkNode previousObjectSinkNode;
-    private ObjectSinkNode nextObjectSinkNode;
+    private RightTupleSinkNode previousObjectSinkNode;
+    private RightTupleSinkNode nextObjectSinkNode;
 
-    public void assertObject(final InternalFactHandle handle,
+    public void assertRightTuple(final RightTuple rightTuple,
                              final PropagationContext context,
                              final InternalWorkingMemory workingMemory) {
-        this.asserted.add( new Object[]{handle, context, workingMemory} );
+        this.asserted.add( new Object[]{rightTuple, context, workingMemory} );
     }
 
-    public void retractObject(final InternalFactHandle handle,
+    public void retractRightTuple(final RightTuple rightTuple,
                               final PropagationContext context,
                               final InternalWorkingMemory workingMemory) {
-        this.retracted.add( new Object[]{handle, context, workingMemory} );
+        this.retracted.add( new Object[]{rightTuple, context, workingMemory} );
     }
 
     public List getAsserted() {
@@ -57,7 +56,7 @@ public class MockObjectSink
      * @return
      *      The next ObjectSinkNode
      */
-    public ObjectSinkNode getNextObjectSinkNode() {
+    public RightTupleSinkNode getNextRightTupleSinkNode() {
         return this.nextObjectSinkNode;
     }
 
@@ -66,7 +65,7 @@ public class MockObjectSink
      * @param next
      *      The next ObjectSinkNode
      */
-    public void setNextObjectSinkNode(final ObjectSinkNode next) {
+    public void setNextRightTupleSinkNode(final RightTupleSinkNode next) {
         this.nextObjectSinkNode = next;
     }
 
@@ -75,7 +74,7 @@ public class MockObjectSink
      * @return
      *      The previous ObjectSinkNode
      */
-    public ObjectSinkNode getPreviousObjectSinkNode() {
+    public RightTupleSinkNode getPreviousRightTupleSinkNode() {
         return this.previousObjectSinkNode;
     }
 
@@ -84,16 +83,16 @@ public class MockObjectSink
      * @param previous
      *      The previous ObjectSinkNode
      */
-    public void setPreviousObjectSinkNode(final ObjectSinkNode previous) {
+    public void setPreviousRightTupleSinkNode(final RightTupleSinkNode previous) {
         this.previousObjectSinkNode = previous;
     }
 
-    public boolean isObjectMemoryEnabled() {
+    public boolean isRightTupleMemoryEnabled() {
         // TODO Auto-generated method stub
         return false;
     }
 
-    public void setObjectMemoryEnabled(boolean objectMemoryOn) {
+    public void setRightTupleMemoryEnabled(boolean objectMemoryOn) {
         // TODO Auto-generated method stub
         
     }

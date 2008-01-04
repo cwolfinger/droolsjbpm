@@ -55,7 +55,7 @@ import org.drools.util.TupleHashTable;
  */
 public final class RuleTerminalNode extends BaseNode
     implements
-    TupleSinkNode,
+    LeftTupleSinkNode,
     NodeMemory,
     TerminalNode {
     // ------------------------------------------------------------
@@ -75,10 +75,10 @@ public final class RuleTerminalNode extends BaseNode
      * because declarations may have different offsets in each subrule
      */
     private final GroupElement subrule;
-    private final TupleSource  tupleSource;
+    private final LeftTupleSource  tupleSource;
 
-    private TupleSinkNode      previousTupleSinkNode;
-    private TupleSinkNode      nextTupleSinkNode;
+    private LeftTupleSinkNode      previousLeftTupleSinkNode;
+    private LeftTupleSinkNode      nextTupleSinkNode;
 
     protected boolean          tupleMemoryEnabled;
 
@@ -95,7 +95,7 @@ public final class RuleTerminalNode extends BaseNode
      *            The rule.
      */
     public RuleTerminalNode(final int id,
-                            final TupleSource source,
+                            final LeftTupleSource source,
                             final Rule rule,
                             final GroupElement subrule,
                             final BuildContext buildContext) {
@@ -131,7 +131,7 @@ public final class RuleTerminalNode extends BaseNode
     // org.drools.impl.TupleSink
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    public void assertTuple(final ReteTuple tuple,
+    public void assertTuple(final LeftTuple tuple,
                             final PropagationContext context,
                             final InternalWorkingMemory workingMemory) {
         assertTuple( tuple,
@@ -151,7 +151,7 @@ public final class RuleTerminalNode extends BaseNode
      * @throws AssertionException
      *             If an error occurs while asserting.
      */
-    public void assertTuple(final ReteTuple tuple,
+    public void assertTuple(final LeftTuple tuple,
                             final PropagationContext context,
                             final InternalWorkingMemory workingMemory,
                             final boolean fireActivationCreated) {
@@ -171,7 +171,7 @@ public final class RuleTerminalNode extends BaseNode
         }
 
         //we only have to clone the head fact to make sure the graph is not affected during consequence reads after a modify
-        final ReteTuple cloned = new ReteTuple( tuple );
+        final LeftTuple cloned = new LeftTuple( tuple );
 
         final InternalAgenda agenda = (InternalAgenda) workingMemory.getAgenda();
 
@@ -354,11 +354,11 @@ public final class RuleTerminalNode extends BaseNode
         }
     }
 
-    public void retractTuple(final ReteTuple leftTuple,
+    public void retractTuple(final LeftTuple leftTuple,
                              final PropagationContext context,
                              final InternalWorkingMemory workingMemory) {
         final TerminalNodeMemory memory = (TerminalNodeMemory) workingMemory.getNodeMemory( this );
-        final ReteTuple tuple = memory.getTupleMemory().remove( leftTuple );
+        final LeftTuple tuple = memory.getTupleMemory().remove( leftTuple );
         if ( tuple == null ) {
             // tuple should only be null if it was asserted and reached a no-loop causing it to exit early
             // before being added to the node memory and an activation created and attached
@@ -439,7 +439,7 @@ public final class RuleTerminalNode extends BaseNode
 
             final TerminalNodeMemory memory = (TerminalNodeMemory) workingMemory.getNodeMemory( this );
             final Iterator it = memory.getTupleMemory().iterator();
-            for ( ReteTuple tuple = (ReteTuple) it.next(); tuple != null; tuple = (ReteTuple) it.next() ) {
+            for ( LeftTuple tuple = (LeftTuple) it.next(); tuple != null; tuple = (LeftTuple) it.next() ) {
                 final Activation activation = tuple.getActivation();
 
                 if ( activation.isActivated() ) {
@@ -484,7 +484,7 @@ public final class RuleTerminalNode extends BaseNode
      * @return
      *      The next TupleSinkNode
      */
-    public TupleSinkNode getNextTupleSinkNode() {
+    public LeftTupleSinkNode getNextLeftTupleSinkNode() {
         return this.nextTupleSinkNode;
     }
 
@@ -493,7 +493,7 @@ public final class RuleTerminalNode extends BaseNode
      * @param next
      *      The next TupleSinkNode
      */
-    public void setNextTupleSinkNode(final TupleSinkNode next) {
+    public void setNextLeftTupleSinkNode(final LeftTupleSinkNode next) {
         this.nextTupleSinkNode = next;
     }
 
@@ -502,8 +502,8 @@ public final class RuleTerminalNode extends BaseNode
      * @return
      *      The previous TupleSinkNode
      */
-    public TupleSinkNode getPreviousTupleSinkNode() {
-        return this.previousTupleSinkNode;
+    public LeftTupleSinkNode getPreviousLeftTupleSinkNode() {
+        return this.previousLeftTupleSinkNode;
     }
 
     /**
@@ -511,8 +511,8 @@ public final class RuleTerminalNode extends BaseNode
      * @param previous
      *      The previous TupleSinkNode
      */
-    public void setPreviousTupleSinkNode(final TupleSinkNode previous) {
-        this.previousTupleSinkNode = previous;
+    public void setPreviousLeftTupleSinkNode(final LeftTupleSinkNode previous) {
+        this.previousLeftTupleSinkNode = previous;
     }
 
     public int hashCode() {

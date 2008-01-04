@@ -4,7 +4,8 @@ import java.io.Serializable;
 
 import org.drools.RuleBaseConfiguration;
 import org.drools.reteoo.BetaMemory;
-import org.drools.reteoo.ReteTuple;
+import org.drools.reteoo.LeftTuple;
+import org.drools.reteoo.RightTuple;
 import org.drools.util.LinkedList;
 
 public interface BetaConstraints
@@ -12,14 +13,14 @@ public interface BetaConstraints
     Serializable {
 
     public void updateFromTuple(InternalWorkingMemory workingMemory,
-                                ReteTuple tuple);
+                                LeftTuple tuple);
 
-    public void updateFromFactHandle(InternalWorkingMemory workingMemory,
-                                     InternalFactHandle handle);
+    public void updateFromRightTuple(InternalWorkingMemory workingMemory,
+                                     RightTuple rightTuple);
 
     public boolean isAllowedCachedLeft(InternalFactHandle handle);
 
-    public boolean isAllowedCachedRight(ReteTuple tuple);
+    public boolean isAllowedCachedRight(LeftTuple tuple);
 
     public LinkedList getConstraints();
 

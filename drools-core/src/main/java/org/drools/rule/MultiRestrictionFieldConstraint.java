@@ -2,7 +2,7 @@ package org.drools.rule;
 
 import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
-import org.drools.reteoo.ReteTuple;
+import org.drools.reteoo.LeftTuple;
 import org.drools.spi.AlphaNodeFieldConstraint;
 import org.drools.spi.BetaNodeFieldConstraint;
 import org.drools.spi.FieldExtractor;
@@ -83,7 +83,7 @@ public class MultiRestrictionFieldConstraint
                                                       handle );
     }
 
-    public boolean isAllowedCachedRight(final ReteTuple tuple,
+    public boolean isAllowedCachedRight(final LeftTuple tuple,
                                         final ContextEntry context) {
         return this.restrictions.isAllowedCachedRight( tuple,
                                                        context );

@@ -61,10 +61,10 @@ public class ReteooRuleBase extends AbstractRuleBase {
     private static final long serialVersionUID = 400L;
 
     /** The root Rete-OO for this <code>RuleBase</code>. */
-    private transient Rete              rete;
+    private transient Rete    rete;
 
     private ReteooBuilder     reteooBuilder;
-    
+
     // ------------------------------------------------------------
     // Constructors
     // ------------------------------------------------------------
@@ -149,12 +149,12 @@ public class ReteooRuleBase extends AbstractRuleBase {
     public void readExternal(final ObjectInput stream) throws IOException,
                                                       ClassNotFoundException {
         doReadExternal( stream );
-        
+
         // rebuild the Rete network from the pkg information
         this.reteooBuilder = new ReteooBuilder( this );
-        this.rete = new Rete( this );        
-        synchronized ( this.pkgs ) {            
-            for (Package pkg : this.pkgs.values() ) {
+        this.rete = new Rete( this );
+        synchronized ( this.pkgs ) {
+            for ( Package pkg : this.pkgs.values() ) {
                 for ( Rule rule : pkg.getRules() ) {
                     addRule( rule );
                 }
@@ -174,7 +174,7 @@ public class ReteooRuleBase extends AbstractRuleBase {
     public Rete getRete() {
         return this.rete;
     }
-    
+
     public ReteooBuilder getReteooBuilder() {
         return this.reteooBuilder;
     }
@@ -196,9 +196,9 @@ public class ReteooRuleBase extends AbstractRuleBase {
                              final Object object,
                              final PropagationContext context,
                              final InternalWorkingMemory workingMemory) throws FactException {
-        getRete().assertObject( (DefaultFactHandle) handle,
-                                context,
-                                workingMemory );
+        getRete().assertRightTuple( new RightTuple( (InternalFactHandle) handle ),
+                                    context,
+                                    workingMemory );
     }
 
     /**
@@ -215,55 +215,62 @@ public class ReteooRuleBase extends AbstractRuleBase {
     public void retractObject(final FactHandle handle,
                               final PropagationContext context,
                               final ReteooWorkingMemory workingMemory) throws FactException {
-        getRete().retractObject( (InternalFactHandle) handle,
-                                 context,
-                                 workingMemory );
+        getRete().retractRightTuple( new RightTuple( (InternalFactHandle) handle ),
+                                     context,
+                                     workingMemory );
     }
 
-    public synchronized StatefulSession newStatefulSession( final boolean keepReference ) {
-        return newStatefulSession( keepReference, null );
+    public synchronized StatefulSession newStatefulSession(final boolean keepReference) {
+        return newStatefulSession( keepReference,
+                                   null );
     }
-    
-    public synchronized TemporalSession newTemporalSession( final ClockType clockType ) {
-        return (TemporalSession) newStatefulSession( true, clockType);
+
+    public synchronized TemporalSession newTemporalSession(final ClockType clockType) {
+        return (TemporalSession) newStatefulSession( true,
+                                                     clockType );
     }
-    
-    public synchronized TemporalSession newTemporalSession( final boolean keepReference, final ClockType clockType ) {
-        return (TemporalSession) newStatefulSession( keepReference, clockType );
+
+    public synchronized TemporalSession newTemporalSession(final boolean keepReference,
+                                                           final ClockType clockType) {
+        return (TemporalSession) newStatefulSession( keepReference,
+                                                     clockType );
     }
-    
+
     /**
      * @see RuleBase
      */
-    private StatefulSession newStatefulSession( final boolean keepReference, final ClockType clockType ) {
+    private StatefulSession newStatefulSession(final boolean keepReference,
+                                               final ClockType clockType) {
         if ( this.config.isSequential() ) {
             throw new RuntimeException( "Cannot have a stateful rule session, with sequential configuration set to true" );
         }
         ReteooStatefulSession session = null;
 
         synchronized ( this.pkgs ) {
-            ExecutorService executor = ExecutorServiceFactory.createExecutorService(  this.config.getExecutorService() );;
-            if( clockType == null ) {
+            ExecutorService executor = ExecutorServiceFactory.createExecutorService( this.config.getExecutorService() );;
+            if ( clockType == null ) {
                 session = new ReteooStatefulSession( nextWorkingMemoryCounter(),
                                                      this,
                                                      executor );
             } else {
                 session = new ReteooTemporalSession( nextWorkingMemoryCounter(),
-                                                             this,
-                                                             executor,
-                                                             clockType.createInstance() );
+                                                     this,
+                                                     executor,
+                                                     clockType.createInstance() );
             }
 
             executor.setCommandExecutor( new CommandExecutor( session ) );
 
             if ( keepReference ) {
                 super.addStatefulSession( session );
-                for( Iterator it = session.getRuleBaseUpdateListeners().iterator(); it.hasNext(); ) {
-                    addEventListener( (RuleBaseEventListener) it.next() ); 
+                for ( Iterator it = session.getRuleBaseUpdateListeners().iterator(); it.hasNext(); ) {
+                    addEventListener( (RuleBaseEventListener) it.next() );
                 }
             }
 
-            final InitialFactHandle handle = new InitialFactHandle( session.getFactHandleFactory().newFactHandle( new InitialFactHandleDummyObject(), false, session ) );
+            final InitialFactHandle handle = new InitialFactHandle( session.getFactHandleFactory().newFactHandle( new InitialFactHandleDummyObject(),
+                                                                                                                  false,
+                                                                                                                  session ) );
 
             session.queueWorkingMemoryAction( new WorkingMemoryReteAssertAction( handle,
                                                                                  false,
@@ -271,10 +278,10 @@ public class ReteooRuleBase extends AbstractRuleBase {
                                                                                  null,
                                                                                  null ) );
         }
-        
+
         return session;
     }
-    
+
     public StatelessSession newStatelessSession() {
 
         //orders the rules
@@ -301,5 +308,5 @@ public class ReteooRuleBase extends AbstractRuleBase {
         Serializable {
         private static final long serialVersionUID = 400L;
     }
-    
+
 }

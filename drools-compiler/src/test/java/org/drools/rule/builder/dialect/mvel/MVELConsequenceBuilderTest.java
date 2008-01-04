@@ -29,7 +29,7 @@ import org.drools.compiler.PackageBuilderConfiguration;
 import org.drools.lang.descr.ActionDescr;
 import org.drools.lang.descr.PackageDescr;
 import org.drools.lang.descr.RuleDescr;
-import org.drools.reteoo.ReteTuple;
+import org.drools.reteoo.LeftTuple;
 import org.drools.rule.Declaration;
 import org.drools.rule.Package;
 import org.drools.rule.Pattern;
@@ -88,7 +88,7 @@ public class MVELConsequenceBuilderTest extends TestCase {
         final Cheese cheddar = new Cheese( "cheddar",
                                            10 );
         final InternalFactHandle f0 = (InternalFactHandle) wm.insert( cheddar );
-        final ReteTuple tuple = new ReteTuple( f0 );
+        final LeftTuple tuple = new LeftTuple( f0 );
 
         final AgendaItem item = new AgendaItem( 0,
                                                 tuple,
@@ -156,7 +156,7 @@ public class MVELConsequenceBuilderTest extends TestCase {
         final Cheese cheddar = new Cheese( "cheddar",
                                            10 );
         final InternalFactHandle f0 = (InternalFactHandle) wm.insert( cheddar );
-        final ReteTuple tuple = new ReteTuple( f0 );
+        final LeftTuple tuple = new LeftTuple( f0 );
 
         final AgendaItem item = new AgendaItem( 0,
                                                 tuple,

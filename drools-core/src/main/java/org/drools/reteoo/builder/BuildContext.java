@@ -25,10 +25,10 @@ import java.util.Map;
 import org.drools.common.BetaConstraints;
 import org.drools.common.InternalRuleBase;
 import org.drools.common.InternalWorkingMemory;
-import org.drools.reteoo.ObjectSource;
+import org.drools.reteoo.RightTupleSource;
 import org.drools.reteoo.ReteooBuilder;
 import org.drools.reteoo.ReteooRuleBase;
-import org.drools.reteoo.TupleSource;
+import org.drools.reteoo.LeftTupleSource;
 import org.drools.rule.EntryPoint;
 import org.drools.rule.RuleConditionElement;
 
@@ -40,10 +40,10 @@ import org.drools.rule.RuleConditionElement;
 public class BuildContext {
 
     // tuple source to attach next node to
-    private TupleSource               tupleSource;
+    private LeftTupleSource               tupleSource;
 
     // object source to attach next node to
-    private ObjectSource              objectSource;
+    private RightTupleSource              objectSource;
 
     // object type cache to check for cross products
     private LinkedList                objectType;
@@ -131,14 +131,14 @@ public class BuildContext {
     /**
      * @return the objectSource
      */
-    public ObjectSource getObjectSource() {
+    public RightTupleSource getObjectSource() {
         return this.objectSource;
     }
 
     /**
      * @param objectSource the objectSource to set
      */
-    public void setObjectSource(final ObjectSource objectSource) {
+    public void setObjectSource(final RightTupleSource objectSource) {
         this.objectSource = objectSource;
     }
 
@@ -165,14 +165,14 @@ public class BuildContext {
     /**
      * @return the tupleSource
      */
-    public TupleSource getTupleSource() {
+    public LeftTupleSource getTupleSource() {
         return this.tupleSource;
     }
 
     /**
      * @param tupleSource the tupleSource to set
      */
-    public void setTupleSource(final TupleSource tupleSource) {
+    public void setTupleSource(final LeftTupleSource tupleSource) {
         this.tupleSource = tupleSource;
     }
 

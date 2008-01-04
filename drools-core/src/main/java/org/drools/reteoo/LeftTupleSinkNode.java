@@ -19,41 +19,41 @@ package org.drools.reteoo;
 /**
  * Items placed in a <code>LinkedList<code> must implement this interface .
  * 
- * @see TupleSinkNodeList
+ * @see LeftTupleSinkNodeList
  * 
  * @author <a href="mailto:mark.proctor@jboss.com">Mark Proctor</a>
  * @author <a href="mailto:bob@werken.com">Bob McWhirter</a>
  */
-public interface ObjectSinkNode
+public interface LeftTupleSinkNode
     extends
-    ObjectSink {
+    LeftTupleSink {
 
     /**
      * Returns the next node
      * @return
      *      The next LinkedListNode
      */
-    public ObjectSinkNode getNextObjectSinkNode();
+    public LeftTupleSinkNode getNextLeftTupleSinkNode();
 
     /**
      * Sets the next node 
      * @param next
      *      The next LinkedListNode
      */
-    public void setNextObjectSinkNode(ObjectSinkNode next);
+    public void setNextLeftTupleSinkNode(LeftTupleSinkNode next);
 
     /**
      * Returns the previous node
      * @return
      *      The previous LinkedListNode
      */
-    public ObjectSinkNode getPreviousObjectSinkNode();
+    public LeftTupleSinkNode getPreviousLeftTupleSinkNode();
 
     /**
      * Sets the previous node 
      * @param previous
      *      The previous LinkedListNode
      */
-    public void setPreviousObjectSinkNode(ObjectSinkNode previous);
+    public void setPreviousLeftTupleSinkNode(LeftTupleSinkNode previous);
 
 }

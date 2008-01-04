@@ -25,7 +25,7 @@ import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.spi.PropagationContext;
 
-public class MockObjectSource extends ObjectSource {
+public class MockObjectSource extends RightTupleSource {
     /**
      * 
      */
@@ -59,13 +59,13 @@ public class MockObjectSource extends ObjectSource {
         this.facts.add( handle );
     }
 
-    public void updateSink(final ObjectSink sink,
+    public void updateSink(final RightTupleSink sink,
                            final PropagationContext context,
                            final InternalWorkingMemory workingMemory) {
         this.updated++;
         for ( final Iterator it = this.facts.iterator(); it.hasNext(); ) {
             final InternalFactHandle handle = (InternalFactHandle) it.next();
-            sink.assertObject( handle,
+            sink.assertRightTuple( handle,
                                context,
                                workingMemory );
         }

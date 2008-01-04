@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.drools.base.ValueType;
 import org.drools.base.evaluators.Operator;
-import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.rule.LiteralConstraint;
 import org.drools.spi.AlphaNodeFieldConstraint;
@@ -15,15 +14,15 @@ import org.drools.spi.Extractor;
 import org.drools.spi.FieldExtractor;
 import org.drools.spi.FieldValue;
 import org.drools.spi.PropagationContext;
+import org.drools.util.Entry;
 import org.drools.util.Iterator;
 import org.drools.util.LinkedList;
-import org.drools.util.LinkedListNode;
 import org.drools.util.ObjectHashMap;
 import org.drools.util.ObjectHashMap.ObjectEntry;
 
-public class CompositeObjectSinkAdapter
+public class CompositeRightTupleSinkAdapter
     implements
-    ObjectSinkPropagator {
+    RightTupletSinkPropagator {
 
     //    /** You can override this property via a system property (eg -Ddrools.hashThreshold=4) */
     //    public static final String HASH_THRESHOLD_SYSTEM_PROPERTY = "drools.hashThreshold";
@@ -33,8 +32,8 @@ public class CompositeObjectSinkAdapter
     //                                                                                                      "3" ) );
 
     private static final long serialVersionUID = 400L;
-    ObjectSinkNodeList        otherSinks;
-    ObjectSinkNodeList        hashableSinks;
+    RightTupleSinkNodeList    otherSinks;
+    RightTupleSinkNodeList    hashableSinks;
 
     LinkedList                hashedFieldIndexes;
 
@@ -44,16 +43,16 @@ public class CompositeObjectSinkAdapter
 
     private final int         alphaNodeHashingThreshold;
 
-    public CompositeObjectSinkAdapter() {
+    public CompositeRightTupleSinkAdapter() {
         this( 3 );
     }
 
-    public CompositeObjectSinkAdapter(final int alphaNodeHashingThreshold) {
+    public CompositeRightTupleSinkAdapter(final int alphaNodeHashingThreshold) {
         this.hashKey = new HashKey();
         this.alphaNodeHashingThreshold = alphaNodeHashingThreshold;
     }
 
-    public void addObjectSink(final ObjectSink sink) {
+    public void addObjectSink(final RightTupleSink sink) {
         if ( sink instanceof AlphaNode ) {
             final AlphaNode alphaNode = (AlphaNode) sink;
             final AlphaNodeFieldConstraint fieldConstraint = alphaNode.getConstraint();
@@ -67,7 +66,7 @@ public class CompositeObjectSinkAdapter
                     final FieldIndex fieldIndex = registerFieldIndex( index,
                                                                       literalConstraint.getFieldExtractor() );
 
-                    if ( fieldIndex.getCount() >= this.alphaNodeHashingThreshold && this.alphaNodeHashingThreshold != 0) {
+                    if ( fieldIndex.getCount() >= this.alphaNodeHashingThreshold && this.alphaNodeHashingThreshold != 0 ) {
                         if ( !fieldIndex.isHashed() ) {
                             hashSinks( fieldIndex );
                         }
@@ -80,9 +79,9 @@ public class CompositeObjectSinkAdapter
                                                 false );
                     } else {
                         if ( this.hashableSinks == null ) {
-                            this.hashableSinks = new ObjectSinkNodeList();
+                            this.hashableSinks = new RightTupleSinkNodeList();
                         }
-                        this.hashableSinks.add( (ObjectSinkNode) sink );
+                        this.hashableSinks.add( (RightTupleSinkNode) sink );
                     }
                     return;
                 }
@@ -91,13 +90,13 @@ public class CompositeObjectSinkAdapter
         }
 
         if ( this.otherSinks == null ) {
-            this.otherSinks = new ObjectSinkNodeList();
+            this.otherSinks = new RightTupleSinkNodeList();
         }
 
-        this.otherSinks.add( (ObjectSinkNode) sink );
+        this.otherSinks.add( (RightTupleSinkNode) sink );
     }
 
-    public void removeObjectSink(final ObjectSink sink) {
+    public void removeObjectSink(final RightTupleSink sink) {
         if ( sink instanceof AlphaNode ) {
             final AlphaNode alphaNode = (AlphaNode) sink;
             final AlphaNodeFieldConstraint fieldConstraint = alphaNode.getConstraint();
@@ -121,7 +120,7 @@ public class CompositeObjectSinkAdapter
                             unHashSinks( fieldIndex );
                         }
                     } else {
-                        this.hashableSinks.remove( (ObjectSinkNode) sink );
+                        this.hashableSinks.remove( (RightTupleSinkNode) sink );
                     }
 
                     if ( this.hashableSinks != null && this.hashableSinks.isEmpty() ) {
@@ -133,7 +132,7 @@ public class CompositeObjectSinkAdapter
             }
         }
 
-        this.otherSinks.remove( (ObjectSinkNode) sink );
+        this.otherSinks.remove( (RightTupleSinkNode) sink );
 
         if ( this.otherSinks.isEmpty() ) {
             this.otherSinks = null;
@@ -149,7 +148,7 @@ public class CompositeObjectSinkAdapter
             this.hashedSinkMap = new ObjectHashMap();
         }
 
-        for ( ObjectSinkNode sink = this.hashableSinks.getFirst(); sink != null; sink = sink.getNextObjectSinkNode() ) {
+        for ( RightTupleSinkNode sink = this.hashableSinks.getFirst(); sink != null; sink = sink.getNextRightTupleSinkNode() ) {
             final AlphaNode alphaNode = (AlphaNode) sink;
             final AlphaNodeFieldConstraint fieldConstraint = alphaNode.getConstraint();
             final LiteralConstraint literalConstraint = (LiteralConstraint) fieldConstraint;
@@ -165,7 +164,7 @@ public class CompositeObjectSinkAdapter
         }
 
         for ( final java.util.Iterator it = list.iterator(); it.hasNext(); ) {
-            final ObjectSinkNode sink = (ObjectSinkNode) it.next();
+            final RightTupleSinkNode sink = (RightTupleSinkNode) it.next();
             this.hashableSinks.remove( sink );
         }
 
@@ -198,7 +197,7 @@ public class CompositeObjectSinkAdapter
             if ( evaluator.getOperator() == Operator.EQUAL && index == literalConstraint.getFieldExtractor().getIndex() ) {
                 final FieldValue value = literalConstraint.getField();
                 if ( this.hashableSinks == null ) {
-                    this.hashableSinks = new ObjectSinkNodeList();
+                    this.hashableSinks = new RightTupleSinkNodeList();
                 }
                 this.hashableSinks.add( sink );
                 this.hashedSinkMap.remove( new HashKey( index,
@@ -276,10 +275,10 @@ public class CompositeObjectSinkAdapter
         return null;
     }
 
-    public void propagateAssertObject(final InternalFactHandle handle,
-                                      final PropagationContext context,
-                                      final InternalWorkingMemory workingMemory) {
-        final Object object = handle.getObject();
+    public void propagateAssertRightTuple(final RightTuple rightTuple,
+                                          final PropagationContext context,
+                                          final InternalWorkingMemory workingMemory) {
+        final Object object = rightTuple.getHandle().getObject();
 
         // Iterates t he FieldIndex collection, which tells you if particularly field is hashed or not
         // if the field is hashed then it builds the hashkey to return the correct sink for the current objects slot's
@@ -296,43 +295,43 @@ public class CompositeObjectSinkAdapter
                 this.hashKey.setValue( index,
                                        object,
                                        extractor );
-                final ObjectSink sink = (ObjectSink) this.hashedSinkMap.get( this.hashKey );
+                final RightTupleSink sink = (RightTupleSink) this.hashedSinkMap.get( this.hashKey );
                 if ( sink != null ) {
                     // The sink exists so propagate
-                    sink.assertObject( handle,
-                                       context,
-                                       workingMemory );
+                    sink.assertRightTuple( new RightTuple( rightTuple ),
+                                           context,
+                                           workingMemory );
                 }
             }
         }
 
         // propagate unhashed
         if ( this.hashableSinks != null ) {
-            for ( ObjectSinkNode sink = this.hashableSinks.getFirst(); sink != null; sink = sink.getNextObjectSinkNode() ) {
-                sink.assertObject( handle,
-                                   context,
-                                   workingMemory );
+            for ( RightTupleSinkNode sink = this.hashableSinks.getFirst(); sink != null; sink = sink.getNextRightTupleSinkNode() ) {
+                sink.assertRightTuple( new RightTuple( rightTuple ),
+                                       context,
+                                       workingMemory );
             }
         }
 
         if ( this.otherSinks != null ) {
             // propagate others
-            for ( ObjectSinkNode sink = this.otherSinks.getFirst(); sink != null; sink = sink.getNextObjectSinkNode() ) {
-                sink.assertObject( handle,
-                                   context,
-                                   workingMemory );
+            for ( RightTupleSinkNode sink = this.otherSinks.getFirst(); sink != null; sink = sink.getNextRightTupleSinkNode() ) {
+                sink.assertRightTuple( new RightTuple( rightTuple ),
+                                       context,
+                                       workingMemory );
             }
         }
 
     }
 
-    public void propagateRetractObject(final InternalFactHandle handle,
-                                       final PropagationContext context,
-                                       final InternalWorkingMemory workingMemory,
-                                       final boolean useHash) {
+    public void propagateRetractRightTuple(final RightTuple rightTuple,
+                                           final PropagationContext context,
+                                           final InternalWorkingMemory workingMemory,
+                                           final boolean useHash) {
         if ( this.hashedFieldIndexes != null ) {
             if ( useHash && this.hashedSinkMap != null ) {
-                final Object object = handle.getObject();
+                final Object object = rightTuple.getHandle().getObject();
                 // Iterate the FieldIndexes to see if any are hashed        
                 for ( FieldIndex fieldIndex = (FieldIndex) this.hashedFieldIndexes.getFirst(); fieldIndex != null; fieldIndex = (FieldIndex) fieldIndex.getNext() ) {
                     // this field is hashed so set the existing hashKey and see if there is a sink for it
@@ -345,55 +344,55 @@ public class CompositeObjectSinkAdapter
                     this.hashKey.setValue( index,
                                            object,
                                            extractor );
-                    final ObjectSink sink = (ObjectSink) this.hashedSinkMap.get( this.hashKey );
+                    final RightTupleSink sink = (RightTupleSink) this.hashedSinkMap.get( this.hashKey );
                     if ( sink != null ) {
                         // The sink exists so propagate
-                        sink.retractObject( handle,
-                                            context,
-                                            workingMemory );
+                        sink.retractRightTuple( new RightTuple( rightTuple ),
+                                                context,
+                                                workingMemory );
                     }
                 }
             } else if ( this.hashedSinkMap != null ) {
                 final Iterator it = this.hashedSinkMap.newIterator();
                 for ( ObjectEntry entry = (ObjectEntry) it.next(); entry != null; entry = (ObjectEntry) it.next() ) {
-                    final ObjectSink sink = (ObjectSink) entry.getValue();
-                    sink.retractObject( handle,
-                                        context,
-                                        workingMemory );
+                    final RightTupleSink sink = (RightTupleSink) entry.getValue();
+                    sink.retractRightTuple( new RightTuple( rightTuple ),
+                                            context,
+                                            workingMemory );
                 }
             }
         }
 
         if ( this.hashableSinks != null ) {
             // we can't retrieve hashed sinks, as the field value might have changed, so we have to iterate and propagate to all hashed sinks
-            for ( ObjectSinkNode sink = this.hashableSinks.getFirst(); sink != null; sink = sink.getNextObjectSinkNode() ) {
-                sink.retractObject( handle,
-                                    context,
-                                    workingMemory );
+            for ( RightTupleSinkNode sink = this.hashableSinks.getFirst(); sink != null; sink = sink.getNextRightTupleSinkNode() ) {
+                sink.retractRightTuple( new RightTuple( rightTuple ),
+                                        context,
+                                        workingMemory );
             }
         }
 
         if ( this.otherSinks != null ) {
             // propagate others
-            for ( ObjectSinkNode sink = this.otherSinks.getFirst(); sink != null; sink = sink.getNextObjectSinkNode() ) {
-                sink.retractObject( handle,
-                                    context,
-                                    workingMemory );
+            for ( RightTupleSinkNode sink = this.otherSinks.getFirst(); sink != null; sink = sink.getNextRightTupleSinkNode() ) {
+                sink.retractRightTuple( new RightTuple( rightTuple ),
+                                        context,
+                                        workingMemory );
             }
         }
     }
 
-    public ObjectSink[] getSinks() {
+    public RightTupleSink[] getSinks() {
         final List list = new ArrayList();
 
         if ( this.otherSinks != null ) {
-            for ( ObjectSinkNode sink = this.otherSinks.getFirst(); sink != null; sink = sink.getNextObjectSinkNode() ) {
+            for ( RightTupleSinkNode sink = this.otherSinks.getFirst(); sink != null; sink = sink.getNextRightTupleSinkNode() ) {
                 list.add( sink );
             }
         }
 
         if ( this.hashableSinks != null ) {
-            for ( ObjectSinkNode sink = this.hashableSinks.getFirst(); sink != null; sink = sink.getNextObjectSinkNode() ) {
+            for ( RightTupleSinkNode sink = this.hashableSinks.getFirst(); sink != null; sink = sink.getNextRightTupleSinkNode() ) {
                 list.add( sink );
             }
         }
@@ -401,12 +400,12 @@ public class CompositeObjectSinkAdapter
         if ( this.hashedSinkMap != null ) {
             final Iterator it = this.hashedSinkMap.newIterator();
             for ( ObjectEntry entry = (ObjectEntry) it.next(); entry != null; entry = (ObjectEntry) it.next() ) {
-                final ObjectSink sink = (ObjectSink) entry.getValue();
+                final RightTupleSink sink = (RightTupleSink) entry.getValue();
                 list.add( sink );
             }
         }
 
-        return (ObjectSink[]) list.toArray( new ObjectSink[list.size()] );
+        return (RightTupleSink[]) list.toArray( new RightTupleSink[list.size()] );
     }
 
     public int size() {
@@ -434,7 +433,7 @@ public class CompositeObjectSinkAdapter
         private long              lvalue;
         private boolean           bvalue;
         private double            dvalue;
-        
+
         private boolean           isNull;
 
         private int               hashCode;
@@ -444,9 +443,9 @@ public class CompositeObjectSinkAdapter
 
         public HashKey(final int index,
                        final FieldValue value,
-                       final Extractor extractor ) {
+                       final Extractor extractor) {
             this.setValue( index,
-                           extractor, 
+                           extractor,
                            value );
         }
 
@@ -467,42 +466,47 @@ public class CompositeObjectSinkAdapter
                              final Extractor extractor) {
             this.index = index;
             final ValueType vtype = extractor.getValueType();
-            
-            isNull = extractor.isNullValue(null, value);
-            
+
+            isNull = extractor.isNullValue( null,
+                                            value );
+
             if ( vtype.isBoolean() ) {
                 this.type = BOOL;
-            	if ( !isNull ) {
-            		this.bvalue = extractor.getBooleanValue( null, value );
+                if ( !isNull ) {
+                    this.bvalue = extractor.getBooleanValue( null,
+                                                             value );
                     this.setHashCode( this.bvalue ? 1231 : 1237 );
-            	} else {
+                } else {
                     this.setHashCode( 0 );
-            	}
+                }
             } else if ( vtype.isIntegerNumber() || vtype.isChar() ) {
                 this.type = LONG;
                 if ( !isNull ) {
-                    this.lvalue = extractor.getLongValue( null, value );
+                    this.lvalue = extractor.getLongValue( null,
+                                                          value );
                     this.setHashCode( (int) (this.lvalue ^ (this.lvalue >>> 32)) );
                 } else {
                     this.setHashCode( 0 );
                 }
             } else if ( vtype.isFloatNumber() ) {
                 this.type = DOUBLE;
-            	if ( !isNull ) {                
-	                this.dvalue = extractor.getDoubleValue( null, value );
-	                final long temp = Double.doubleToLongBits( this.dvalue );
-	                this.setHashCode( (int) (temp ^ (temp >>> 32)) );
-            	} else {
-            		this.setHashCode( 0 );
-            	}
+                if ( !isNull ) {
+                    this.dvalue = extractor.getDoubleValue( null,
+                                                            value );
+                    final long temp = Double.doubleToLongBits( this.dvalue );
+                    this.setHashCode( (int) (temp ^ (temp >>> 32)) );
+                } else {
+                    this.setHashCode( 0 );
+                }
             } else {
                 this.type = OBJECT;
-            	if ( !isNull ) {
-            		this.ovalue = extractor.getValue( null, value );
-            		this.setHashCode( this.ovalue != null ? this.ovalue.hashCode() : 0 );
-            	} else {
-            		this.setHashCode( 0 );
-            	}                
+                if ( !isNull ) {
+                    this.ovalue = extractor.getValue( null,
+                                                      value );
+                    this.setHashCode( this.ovalue != null ? this.ovalue.hashCode() : 0 );
+                } else {
+                    this.setHashCode( 0 );
+                }
             }
         }
 
@@ -510,42 +514,42 @@ public class CompositeObjectSinkAdapter
                              final Extractor extractor,
                              final FieldValue value) {
             this.index = index;
-            
+
             this.isNull = value.isNull();
             final ValueType vtype = extractor.getValueType();
-            
+
             if ( vtype.isBoolean() ) {
                 this.type = BOOL;
-                if ( !isNull ) {      
-	                this.bvalue = value.getBooleanValue();
-	                this.setHashCode( this.bvalue ? 1231 : 1237 );
+                if ( !isNull ) {
+                    this.bvalue = value.getBooleanValue();
+                    this.setHashCode( this.bvalue ? 1231 : 1237 );
                 } else {
-             		this.setHashCode( 0 );
+                    this.setHashCode( 0 );
                 }
             } else if ( vtype.isIntegerNumber() ) {
                 this.type = LONG;
-                if ( !isNull ) {      
-	                this.lvalue = value.getLongValue();
-	                this.setHashCode( (int) (this.lvalue ^ (this.lvalue >>> 32)) );
+                if ( !isNull ) {
+                    this.lvalue = value.getLongValue();
+                    this.setHashCode( (int) (this.lvalue ^ (this.lvalue >>> 32)) );
                 } else {
-             		this.setHashCode( 0 );
+                    this.setHashCode( 0 );
                 }
             } else if ( vtype.isFloatNumber() ) {
                 this.type = DOUBLE;
-                if ( !isNull ) {      
-	                this.dvalue = value.getDoubleValue();
-	                final long temp = Double.doubleToLongBits( this.dvalue );
-	                this.setHashCode( (int) (temp ^ (temp >>> 32)) );
+                if ( !isNull ) {
+                    this.dvalue = value.getDoubleValue();
+                    final long temp = Double.doubleToLongBits( this.dvalue );
+                    this.setHashCode( (int) (temp ^ (temp >>> 32)) );
                 } else {
-             		this.setHashCode( 0 );
+                    this.setHashCode( 0 );
                 }
             } else {
                 this.type = OBJECT;
-                if ( !isNull ) {      
-	                this.ovalue = value.getValue();
-	                this.setHashCode( this.ovalue != null ? this.ovalue.hashCode() : 0 );
+                if ( !isNull ) {
+                    this.ovalue = value.getValue();
+                    this.setHashCode( this.ovalue != null ? this.ovalue.hashCode() : 0 );
                 } else {
-             		this.setHashCode( 0 );
+                    this.setHashCode( 0 );
                 }
             }
         }
@@ -646,9 +650,9 @@ public class CompositeObjectSinkAdapter
 
         public boolean equals(final Object object) {
             final HashKey other = (HashKey) object;
-            
+
             if ( this.isNull ) {
-            	return ( other.isNull );
+                return (other.isNull );
             }
 
             switch ( this.type ) {
@@ -663,7 +667,7 @@ public class CompositeObjectSinkAdapter
                     if ( (this.ovalue != null) && (this.ovalue instanceof Number) && (otherValue instanceof Number) ) {
                         return (this.index == other.index) && (((Number) this.ovalue).doubleValue() == ((Number) otherValue).doubleValue());
                     }
-                    return (this.index == other.index) && ( this.ovalue == null ? otherValue == null : this.ovalue.equals( otherValue ));
+                    return (this.index == other.index) && (this.ovalue == null ? otherValue == null : this.ovalue.equals( otherValue ));
             }
             return false;
         }
@@ -672,7 +676,7 @@ public class CompositeObjectSinkAdapter
 
     public static class FieldIndex
         implements
-        LinkedListNode {
+        Entry {
         private static final long serialVersionUID = 400L;
         private final int         index;
         private FieldExtractor    fieldExtactor;
@@ -681,8 +685,8 @@ public class CompositeObjectSinkAdapter
 
         private boolean           hashed;
 
-        private LinkedListNode    previous;
-        private LinkedListNode    next;
+        private Entry             previous;
+        private Entry             next;
 
         public FieldIndex(final int index,
                           final FieldExtractor fieldExtractor) {
@@ -722,20 +726,20 @@ public class CompositeObjectSinkAdapter
             this.count--;
         }
 
-        public LinkedListNode getNext() {
+        public Entry getNext() {
             return this.next;
         }
 
-        public LinkedListNode getPrevious() {
+        public Entry getPrevious() {
             return this.previous;
         }
 
-        public void setNext(final LinkedListNode next) {
+        public void setNext(final Entry next) {
             this.next = next;
 
         }
 
-        public void setPrevious(final LinkedListNode previous) {
+        public void setPrevious(final Entry previous) {
             this.previous = previous;
         }
     }

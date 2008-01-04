@@ -13,10 +13,10 @@ public class ProcessNodeBuilderRegistry {
     public ProcessNodeBuilderRegistry() {
         this.registry = new HashMap<Class< ? extends Node>, ProcessNodeBuilder>();
 
-        register( ActionNodeImpl.class,
-                  new StoreNodeBuilder() );
-        register( SplitImpl.class,
-                  new SplitNodeBuilder() );
+//        register( ActionNodeImpl.class,
+//                  new StoreNodeBuilder() );
+//        register( SplitImpl.class,
+//                  new SplitNodeBuilder() );
     }
 
     public void register(Class< ? extends Node> cls,

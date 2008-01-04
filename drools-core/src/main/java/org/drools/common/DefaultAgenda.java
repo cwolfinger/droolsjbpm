@@ -38,8 +38,7 @@ import org.drools.spi.ConsequenceException;
 import org.drools.spi.ConsequenceExceptionHandler;
 import org.drools.spi.KnowledgeHelper;
 import org.drools.spi.RuleFlowGroup;
-import org.drools.util.LinkedListNode;
-import org.drools.util.Queueable;
+import org.drools.util.Entry;
 
 /**
  * Rule-firing Agenda.
@@ -349,7 +348,7 @@ public class DefaultAgenda
      */
     public Activation[] getScheduledActivations() {
         final List list = new ArrayList( this.scheduledActivations.size() );
-        for ( LinkedListNode node = this.scheduledActivations.getFirst(); node != null; node = node.getNext() ) {
+        for ( Entry node = this.scheduledActivations.getFirst(); node != null; node = node.getNext() ) {
             list.add( node );
         }
         return (Activation[]) list.toArray( new Activation[list.size()] );

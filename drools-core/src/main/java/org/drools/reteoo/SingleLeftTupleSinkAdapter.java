@@ -1,72 +1,71 @@
 package org.drools.reteoo;
 
-import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.spi.PropagationContext;
 
-public class SingleTupleSinkAdapter
+public class SingleLeftTupleSinkAdapter
     implements
-    TupleSinkPropagator {
-    private TupleSink sink;
+    LeftTupleSinkPropagator {
+    private LeftTupleSink sink;
 
-    public SingleTupleSinkAdapter(final TupleSink sink) {
+    public SingleLeftTupleSinkAdapter(final LeftTupleSink sink) {
         this.sink = sink;
     }
 
-    public void propagateAssertTuple(final ReteTuple tuple,
-                                     final InternalFactHandle handle,
+    public void propagateAssertTuple(final LeftTuple leftTuple,
+                                     final RightTuple rightTuple,
                                      final PropagationContext context,
                                      final InternalWorkingMemory workingMemory) {
-        this.sink.assertTuple( new ReteTuple( tuple,
-                                              handle ),
+        this.sink.assertTuple( new LeftTuple( leftTuple,
+                                              rightTuple ),
                                context,
                                workingMemory );
     }
 
-    public void propagateAssertTuple(final ReteTuple tuple,
+    public void propagateAssertTuple(final LeftTuple tuple,
                                      final PropagationContext context,
                                      final InternalWorkingMemory workingMemory) {
-        this.sink.assertTuple( new ReteTuple( tuple ),
+        this.sink.assertTuple( new LeftTuple( tuple ),
                                context,
                                workingMemory );
     }
 
-    public void propagateRetractTuple(final ReteTuple tuple,
-                                      final InternalFactHandle handle,
+    public void propagateRetractTuple(final LeftTuple leftTuple,
+                                      final RightTuple rightTuple,
                                       final PropagationContext context,
                                       final InternalWorkingMemory workingMemory) {
-        this.sink.retractTuple( new ReteTuple( tuple,
-                                               handle ),
+        this.sink.retractTuple( new LeftTuple( leftTuple,
+                                               rightTuple ),
                                 context,
                                 workingMemory );
     }
 
-    public void propagateRetractTuple(final ReteTuple tuple,
+    public void propagateRetractTuple(final LeftTuple tuple,
                                       final PropagationContext context,
                                       final InternalWorkingMemory workingMemory) {
-        this.sink.retractTuple( new ReteTuple( tuple ),
+        this.sink.retractTuple( new LeftTuple( tuple ),
                                 context,
                                 workingMemory );
     }
 
-    public void createAndPropagateAssertTuple(final InternalFactHandle handle,
+    public void createAndPropagateAssertTuple(final RightTuple rightTuple,
                                               final PropagationContext context,
                                               final InternalWorkingMemory workingMemory) {
-        this.sink.assertTuple( new ReteTuple( handle ),
+        this.sink.assertTuple( new LeftTuple( rightTuple ),
                                context,
                                workingMemory );
     }
 
-    public void createAndPropagateRetractTuple(final InternalFactHandle handle,
+    public void createAndPropagateRetractTuple(final RightTuple rightTuple,
                                                final PropagationContext context,
                                                final InternalWorkingMemory workingMemory) {
-        this.sink.retractTuple( new ReteTuple( handle ),
+        this.sink.retractTuple( new LeftTuple( rightTuple ),
                                 context,
                                 workingMemory );
     }
 
-    public TupleSink[] getSinks() {
-        return new TupleSink[]{this.sink};
+    public LeftTupleSink[] getSinks() {
+        return new LeftTupleSink[]{this.sink};
     }
 
     public int size() {

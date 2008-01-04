@@ -2,40 +2,39 @@ package org.drools.reteoo;
 
 import java.io.Serializable;
 
-import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.spi.PropagationContext;
 
-public interface TupleSinkPropagator
+public interface LeftTupleSinkPropagator
     extends
     Serializable {
-    public void propagateAssertTuple(ReteTuple tuple,
-                                     InternalFactHandle handle,
+    public void propagateAssertTuple(LeftTuple leftTuple,
+                                     RightTuple rightTuple,
                                      PropagationContext context,
                                      InternalWorkingMemory workingMemory);
 
-    public void propagateAssertTuple(ReteTuple tuple,
+    public void propagateAssertTuple(LeftTuple tuple,
                                      PropagationContext context,
                                      InternalWorkingMemory workingMemory);
 
-    public void propagateRetractTuple(ReteTuple tuple,
-                                      InternalFactHandle handle,
+    public void propagateRetractTuple(LeftTuple leftTuple,
+                                      RightTuple rightTuple,
                                       PropagationContext context,
                                       InternalWorkingMemory workingMemory);
 
-    public void propagateRetractTuple(ReteTuple tuple,
+    public void propagateRetractTuple(LeftTuple tuple,
                                       PropagationContext context,
                                       InternalWorkingMemory workingMemory);
 
-    public void createAndPropagateAssertTuple(InternalFactHandle handle,
+    public void createAndPropagateAssertTuple(RightTuple rightTuple,
                                               PropagationContext context,
                                               InternalWorkingMemory workingMemory);
 
-    public void createAndPropagateRetractTuple(InternalFactHandle handle,
+    public void createAndPropagateRetractTuple(RightTuple rightTuple,
                                                PropagationContext context,
                                                InternalWorkingMemory workingMemory);
 
-    public TupleSink[] getSinks();
+    public LeftTupleSink[] getSinks();
 
     //    public void propagateNewTupleSink(TupleMatch tupleMatch,
     //                                      PropagationContext context,

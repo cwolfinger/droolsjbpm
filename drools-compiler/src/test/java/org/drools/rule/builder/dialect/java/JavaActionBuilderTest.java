@@ -33,7 +33,7 @@ import org.drools.lang.descr.ActionDescr;
 import org.drools.lang.descr.PackageDescr;
 import org.drools.lang.descr.ProcessDescr;
 import org.drools.lang.descr.RuleDescr;
-import org.drools.reteoo.ReteTuple;
+import org.drools.reteoo.LeftTuple;
 import org.drools.rule.Declaration;
 import org.drools.rule.Package;
 import org.drools.rule.Pattern;

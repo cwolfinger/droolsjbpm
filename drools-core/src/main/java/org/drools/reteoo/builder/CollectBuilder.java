@@ -22,9 +22,9 @@ import java.util.List;
 import org.drools.common.BetaConstraints;
 import org.drools.common.TupleStartEqualsConstraint;
 import org.drools.reteoo.CollectNode;
-import org.drools.reteoo.ObjectSource;
+import org.drools.reteoo.RightTupleSource;
 import org.drools.reteoo.RightInputAdapterNode;
-import org.drools.reteoo.TupleSource;
+import org.drools.reteoo.LeftTupleSource;
 import org.drools.rule.Collect;
 import org.drools.rule.Pattern;
 import org.drools.rule.RuleConditionElement;
@@ -57,7 +57,7 @@ public class CollectBuilder
         final ReteooComponentBuilder builder = utils.getBuilderFor( sourcePattern );
 
         // save tuple source and pattern offset for later if needed
-        final TupleSource tupleSource = context.getTupleSource();
+        final LeftTupleSource tupleSource = context.getTupleSource();
         final int currentPatternIndex = context.getCurrentPatternOffset();
         
         // builds the source pattern
@@ -69,7 +69,7 @@ public class CollectBuilder
         if ( context.getObjectSource() == null ) {
 
             // attach right input adapter node to convert tuple source into an object source
-            context.setObjectSource( (ObjectSource) utils.attachNode( context,
+            context.setObjectSource( (RightTupleSource) utils.attachNode( context,
                                                                       new RightInputAdapterNode( context.getNextId(),
                                                                                                  context.getTupleSource(),
                                                                                                  context ) ) );
@@ -88,7 +88,7 @@ public class CollectBuilder
         BetaConstraints binder = utils.createBetaNodeConstraint( context, context.getBetaconstraints(), false );
         BetaConstraints resultBinder = utils.createBetaNodeConstraint( context, resultBetaConstraints, false );
         
-        context.setTupleSource( (TupleSource) utils.attachNode( context,
+        context.setTupleSource( (LeftTupleSource) utils.attachNode( context,
                                                                 new CollectNode( context.getNextId(),
                                                                                  context.getTupleSource(),
                                                                                  context.getObjectSource(),

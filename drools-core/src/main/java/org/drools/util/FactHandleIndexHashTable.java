@@ -4,13 +4,14 @@
 package org.drools.util;
 
 import org.drools.common.InternalFactHandle;
-import org.drools.reteoo.FactHandleMemory;
-import org.drools.reteoo.ReteTuple;
+import org.drools.reteoo.RightTuple;
+import org.drools.reteoo.RightTupleMemory;
+import org.drools.reteoo.LeftTuple;
 import org.drools.util.TupleIndexHashTable.FieldIndexEntry;
 
 public class FactHandleIndexHashTable extends AbstractHashTable
     implements
-    FactHandleMemory {
+    RightTupleMemory {
 
     private static final long           serialVersionUID = 400L;
 
@@ -65,7 +66,7 @@ public class FactHandleIndexHashTable extends AbstractHashTable
         throw new UnsupportedOperationException( "FieldIndexHashTable does not support  iterator()" );
     }
 
-    public Iterator iterator(final ReteTuple tuple) {
+    public Iterator iterator(final LeftTuple tuple) {
         if ( this.tupleValueIterator == null ) {
             this.tupleValueIterator = new FieldIndexHashTableIterator();
         }
@@ -137,20 +138,20 @@ public class FactHandleIndexHashTable extends AbstractHashTable
         return result;
     }  
 
-    public boolean add(final InternalFactHandle handle) {
-        final FieldIndexEntry entry = getOrCreate( handle.getObject() );
-        entry.add( handle );
+    public boolean add(final RightTuple rightTuple) {
+        final FieldIndexEntry entry = getOrCreate( rightTuple.getHandle().getObject() );
+        entry.add( rightTuple );
         this.factSize++;
         return true;
     }
 
-    public boolean add(final InternalFactHandle handle,
+    public boolean add(final RightTuple rightTuple,
                        final boolean checkExists) {
         throw new UnsupportedOperationException( "FieldIndexHashTable does not support add(InternalFactHandle handle, boolean checkExists)" );
     }
 
-    public boolean remove(final InternalFactHandle handle) {
-        final Object object = handle.getObject();
+    public boolean remove(final RightTuple rightTuple) {
+        final Object object = rightTuple.getHandle().getObject();
         //this.index.setCachedValue( object );
         final int hashCode = this.index.hashCodeOf( object );
 
@@ -165,7 +166,7 @@ public class FactHandleIndexHashTable extends AbstractHashTable
             final FieldIndexEntry next = (FieldIndexEntry) current.next;
             if ( current.matches( object,
                                   hashCode ) ) {
-                current.remove( handle );
+                current.remove( rightTuple );
                 this.factSize--;
                 // If the FactEntryIndex is empty, then remove it from the hash table
                 if ( current.first == null ) {
@@ -185,8 +186,8 @@ public class FactHandleIndexHashTable extends AbstractHashTable
         return false;
     }
 
-    public boolean contains(final InternalFactHandle handle) {
-        final Object object = handle.getObject();
+    public boolean contains(final RightTuple  rightTuple) {
+        final Object object = rightTuple.getHandle().getObject();
         //this.index.setCachedValue( object );
 
         final int hashCode = this.index.hashCodeOf( object );
@@ -205,7 +206,7 @@ public class FactHandleIndexHashTable extends AbstractHashTable
         return false;
     }
 
-    public FieldIndexEntry get(final ReteTuple tuple) {
+    public FieldIndexEntry get(final LeftTuple tuple) {
         //this.index.setCachedValue( tuple );
 
         final int hashCode = this.index.hashCodeOf( tuple );
@@ -271,8 +272,9 @@ public class FactHandleIndexHashTable extends AbstractHashTable
         Entry {
 
         private static final long serialVersionUID = 400L;
+//      private Entry             entry;
         private Entry             next;
-        private FactEntryImpl         first;
+        private RightTuple        first;
         private final int         hashCode;
         private Index             index;
 
@@ -290,42 +292,41 @@ public class FactHandleIndexHashTable extends AbstractHashTable
             this.next = next;
         }
 
-        public FactEntryImpl getFirst() {
+        public RightTuple getFirst() {
             return this.first;
         }
 
-        public void add(final InternalFactHandle handle) {
-            final FactEntryImpl entry = new FactEntryImpl( handle );
-            entry.next = this.first;
-            this.first = entry;
+        public void add(final RightTuple rightTuple) {
+            rightTuple.setNext( this.first );
+            this.first = rightTuple;
         }
 
-        public FactEntryImpl get(final InternalFactHandle handle) {
-            final long id = handle.getId();
-            FactEntryImpl current = this.first;
+        public RightTuple get(final RightTuple rightTuple) {
+            InternalFactHandle handle = rightTuple.getHandle();
+            RightTuple current = this.first;
             while ( current != null ) {
-                if ( current.handle.getId() == id ) {
+                if ( current.getHandle() == handle ) {
                     return current;
                 }
-                current = (FactEntryImpl) current.next;
+                current = (RightTuple) current.getNext();
             }
             return null;
         }
 
-        public FactEntryImpl remove(final InternalFactHandle handle) {
-            final long id = handle.getId();
+        public RightTuple remove(final RightTuple rightTuple) {
+            InternalFactHandle handle = rightTuple.getHandle();
 
-            FactEntryImpl previous = this.first;
-            FactEntryImpl current = previous;
+            RightTuple previous = this.first;
+            RightTuple current = previous;
             while ( current != null ) {
-                final FactEntryImpl next = (FactEntryImpl) current.next;
-                if ( current.handle.getId() == id ) {
+                final RightTuple next = (RightTuple) current.getNext();
+                if ( current.getHandle() == handle ) {
                     if ( this.first == current ) {
                         this.first = next;
                     } else {
-                        previous.next = next;
+                        previous.setNext( next );
                     }
-                    current.next = null;
+                    current.setNext( null );
                     return current;
                 }
                 previous = current;
@@ -340,13 +341,13 @@ public class FactHandleIndexHashTable extends AbstractHashTable
 
         public boolean matches(final Object object,
                                final int objectHashCode) {
-            return this.hashCode == objectHashCode && this.index.equal( this.first.getFactHandle().getObject(),
+            return this.hashCode == objectHashCode && this.index.equal( this.first.getHandle().getObject(),
                                                                         object );
         }
 
-        public boolean matches(final ReteTuple tuple,
+        public boolean matches(final LeftTuple tuple,
                                final int tupleHashCode) {
-            return this.hashCode == tupleHashCode && this.index.equal( this.first.getFactHandle().getObject(),
+            return this.hashCode == tupleHashCode && this.index.equal( this.first.getHandle().getObject(),
                                                                        tuple );
         }
 
@@ -361,6 +362,15 @@ public class FactHandleIndexHashTable extends AbstractHashTable
 
         public String toString() {
             return "FieldIndexEntry( hashCode=" + this.hashCode + " first=" + this.first + " )";
+        }
+
+        public Entry getPrevious() {            
+            return null;
+//          return this.previous;            
+        }
+
+        public void setPrevious(Entry previous) {
+//          this.previous = previous;
         }
     }
 }

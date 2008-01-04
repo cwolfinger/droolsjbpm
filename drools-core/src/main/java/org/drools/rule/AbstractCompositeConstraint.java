@@ -19,7 +19,7 @@ import java.util.Arrays;
 
 import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
-import org.drools.reteoo.ReteTuple;
+import org.drools.reteoo.LeftTuple;
 import org.drools.spi.AlphaNodeFieldConstraint;
 import org.drools.spi.BetaNodeFieldConstraint;
 import org.drools.spi.Constraint;
@@ -222,7 +222,7 @@ public abstract class AbstractCompositeConstraint
         }
 
         public void updateFromTuple(InternalWorkingMemory workingMemory,
-                                    ReteTuple tuple) {
+                                    LeftTuple tuple) {
             for ( int i = 0; i < contexts.length; i++ ) {
                 contexts[i].updateFromTuple( workingMemory,
                                              tuple );

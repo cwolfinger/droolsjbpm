@@ -115,7 +115,7 @@ public class AlphaNodeTest extends DroolsTestCase {
                       memory.size() );
 
         // object should assert as it passes text
-        alphaNode.assertObject( f0,
+        alphaNode.assertRightTuple( f0,
                                 context,
                                 workingMemory );
 
@@ -135,7 +135,7 @@ public class AlphaNodeTest extends DroolsTestCase {
                                                             stilton );
 
         // object should NOT assert as it does not pass test
-        alphaNode.assertObject( f1,
+        alphaNode.assertRightTuple( f1,
                                 context,
                                 workingMemory );
 
@@ -202,7 +202,7 @@ public class AlphaNodeTest extends DroolsTestCase {
                       memory.size() );
 
         // object should assert as it passes text
-        alphaNode.assertObject( f0,
+        alphaNode.assertRightTuple( f0,
                                 context,
                                 workingMemory );
 
@@ -264,7 +264,7 @@ public class AlphaNodeTest extends DroolsTestCase {
                       memory.size() );
 
         // object should assert as it passes text
-        alphaNode.assertObject( f0,
+        alphaNode.assertRightTuple( f0,
                                 context,
                                 workingMemory );
 
@@ -284,7 +284,7 @@ public class AlphaNodeTest extends DroolsTestCase {
                                                             stilton );
 
         // object should NOT assert as it does not pass test
-        alphaNode.assertObject( f1,
+        alphaNode.assertRightTuple( f1,
                                 context,
                                 workingMemory );
 
@@ -351,7 +351,7 @@ public class AlphaNodeTest extends DroolsTestCase {
                       memory.size() );
 
         // object should assert as it passes text
-        alphaNode.assertObject( f0,
+        alphaNode.assertRightTuple( f0,
                                 context,
                                 workingMemory );
 
@@ -369,7 +369,7 @@ public class AlphaNodeTest extends DroolsTestCase {
                                                             stilton );
 
         // object should NOT assert as it does not pass test
-        alphaNode.assertObject( f1,
+        alphaNode.assertRightTuple( f1,
                                 context,
                                 workingMemory );
 
@@ -430,7 +430,7 @@ public class AlphaNodeTest extends DroolsTestCase {
                       sink.getAsserted() );
 
         // object should assert as it passes text
-        alphaNode.assertObject( f0,
+        alphaNode.assertRightTuple( f0,
                                 context,
                                 workingMemory );
 
@@ -447,7 +447,7 @@ public class AlphaNodeTest extends DroolsTestCase {
         sink.getAsserted().clear();
 
         // object should not assert as it does not pass text
-        alphaNode.assertObject( f0,
+        alphaNode.assertRightTuple( f0,
                                 context,
                                 workingMemory );
 
@@ -502,7 +502,7 @@ public class AlphaNodeTest extends DroolsTestCase {
                       memory.size() );
 
         // object should assert as it passes text
-        alphaNode.assertObject( f0,
+        alphaNode.assertRightTuple( f0,
                                 context,
                                 workingMemory );
 
@@ -513,7 +513,7 @@ public class AlphaNodeTest extends DroolsTestCase {
                                                             "cheese" );
 
         // object should NOT retract as it doesn't exist
-        alphaNode.retractObject( f1,
+        alphaNode.retractRightTuple( f1,
                                  context,
                                  workingMemory );
 
@@ -525,7 +525,7 @@ public class AlphaNodeTest extends DroolsTestCase {
                     memory.contains( f0 ) );
 
         // object should retract as it does exist
-        alphaNode.retractObject( f0,
+        alphaNode.retractRightTuple( f0,
                                  context,
                                  workingMemory );
 
@@ -585,7 +585,7 @@ public class AlphaNodeTest extends DroolsTestCase {
                       memory.size() );
 
         // object should assert as it passes text
-        alphaNode.assertObject( f0,
+        alphaNode.assertRightTuple( f0,
                                 context,
                                 workingMemory );
 
@@ -597,7 +597,7 @@ public class AlphaNodeTest extends DroolsTestCase {
                                                                         10 ) );
 
         // object should NOT retract as it doesn't exist
-        alphaNode.retractObject( f1,
+        alphaNode.retractRightTuple( f1,
                                  context,
                                  workingMemory );
 
@@ -610,7 +610,7 @@ public class AlphaNodeTest extends DroolsTestCase {
                      memory.contains( f0 ) );
 
         // object should retract as it does exist
-        alphaNode.retractObject( f0,
+        alphaNode.retractRightTuple( f0,
                                  context,
                                  workingMemory );
 
@@ -673,7 +673,7 @@ public class AlphaNodeTest extends DroolsTestCase {
         final DefaultFactHandle handle1 = new DefaultFactHandle( 1,
                                                                  cheese );
 
-        alphaNode.assertObject( handle1,
+        alphaNode.assertRightTuple( handle1,
                                 context,
                                 workingMemory );
 
@@ -685,7 +685,7 @@ public class AlphaNodeTest extends DroolsTestCase {
         // adding handle to the mock source
         source.addFact( handle2 );
 
-        alphaNode.assertObject( handle2,
+        alphaNode.assertRightTuple( handle2,
                                 context,
                                 workingMemory );
         assertLength( 1,
@@ -758,7 +758,7 @@ public class AlphaNodeTest extends DroolsTestCase {
         // adding handle to the mock source
         source.addFact( handle1 );
 
-        alphaNode.assertObject( handle1,
+        alphaNode.assertRightTuple( handle1,
                                 context,
                                 workingMemory );
 
@@ -770,7 +770,7 @@ public class AlphaNodeTest extends DroolsTestCase {
         // adding handle to the mock source
         source.addFact( handle2 );
 
-        alphaNode.assertObject( handle2,
+        alphaNode.assertRightTuple( handle2,
                                 context,
                                 workingMemory );
 

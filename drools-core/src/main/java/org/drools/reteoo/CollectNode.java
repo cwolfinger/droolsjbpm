@@ -38,8 +38,8 @@ import org.drools.util.ObjectHashMap.ObjectEntry;
  */
 public class CollectNode extends BetaNode
     implements
-    TupleSink,
-    ObjectSink {
+    LeftTupleSink,
+    RightTupleSink {
 
     private static final long                serialVersionUID = 400L;
 
@@ -67,8 +67,8 @@ public class CollectNode extends BetaNode
      *            The collect conditional element
      */
     public CollectNode(final int id,
-                       final TupleSource leftInput,
-                       final ObjectSource rightInput,
+                       final LeftTupleSource leftInput,
+                       final RightTupleSource rightInput,
                        final AlphaNodeFieldConstraint[] resultConstraints,
                        final BetaConstraints sourceBinder,
                        final BetaConstraints resultsBinder,
@@ -99,7 +99,7 @@ public class CollectNode extends BetaNode
      *  4.2. Propagate the tuple
      *  
      */
-    public void assertTuple(final ReteTuple leftTuple,
+    public void assertTuple(final LeftTuple leftTuple,
                             final PropagationContext context,
                             final InternalWorkingMemory workingMemory) {
 
@@ -113,14 +113,14 @@ public class CollectNode extends BetaNode
         
         // do not add tuple and result to the memory in sequential mode
         if ( this.tupleMemoryEnabled ) {
-            memory.getTupleMemory().add( leftTuple );
+            memory.getLeftTupleMemory().add( leftTuple );
             memory.getCreatedHandles().put( leftTuple,
                                             colresult,
                                             false );
         }
 
 
-        final Iterator it = memory.getFactHandleMemory().iterator( leftTuple );
+        final Iterator it = memory.getRightTupleMemory().iterator( leftTuple );
         this.constraints.updateFromTuple( workingMemory,
                                           leftTuple );
 
@@ -128,7 +128,7 @@ public class CollectNode extends BetaNode
             InternalFactHandle handle = entry.getFactHandle();
             if ( this.constraints.isAllowedCachedLeft( handle ) ) {
                 if( this.unwrapRightObject ) {
-                    handle = ((ReteTuple) handle.getObject()).getLastHandle(); 
+                    handle = ((LeftTuple) handle.getObject()).getLastHandle(); 
                 }
                 result.add( handle.getObject() );
             }
@@ -159,12 +159,12 @@ public class CollectNode extends BetaNode
     /**
      * @inheritDoc
      */
-    public void retractTuple(final ReteTuple leftTuple,
+    public void retractTuple(final LeftTuple leftTuple,
                              final PropagationContext context,
                              final InternalWorkingMemory workingMemory) {
 
         final BetaMemory memory = (BetaMemory) workingMemory.getNodeMemory( this );
-        memory.getTupleMemory().remove( leftTuple );
+        memory.getLeftTupleMemory().remove( leftTuple );
         CollectResult result = (CollectResult) memory.getCreatedHandles().remove( leftTuple );
         final InternalFactHandle handle = result.handle;
 
@@ -190,29 +190,29 @@ public class CollectNode extends BetaNode
      *  2. For each matching tuple, call a modify tuple
      *  
      */
-    public void assertObject(final InternalFactHandle handle,
+    public void assertRightTuple(final RightTuple rightTuple,
                              final PropagationContext context,
                              final InternalWorkingMemory workingMemory) {
 
         final BetaMemory memory = (BetaMemory) workingMemory.getNodeMemory( this );
-        memory.getFactHandleMemory().add( handle );
+        memory.getRightTupleMemory().add( rightTuple );
         
         if ( !this.tupleMemoryEnabled ) {
             // do nothing here, as we know there are no left tuples at this stage in sequential mode.
             return;
         }        
 
-        this.constraints.updateFromFactHandle( workingMemory,
-                                               handle );
+        this.constraints.updateFromRightTuple( workingMemory,
+                                               rightTuple );
 
         // need to clone the tuples to avoid concurrent modification exceptions
-        Entry[] tuples = memory.getTupleMemory().toArray();
+        Entry[] tuples = memory.getLeftTupleMemory().toArray();
         for ( int i = 0; i < tuples.length; i++ ) {
-            ReteTuple tuple = (ReteTuple) tuples[i];
+            LeftTuple tuple = (LeftTuple) tuples[i];
             if ( this.constraints.isAllowedCachedRight( tuple ) ) {
                 this.modifyTuple( true,
                                   tuple,
-                                  handle,
+                                  rightTuple,
                                   context,
                                   workingMemory );
             }
@@ -225,27 +225,27 @@ public class CollectNode extends BetaNode
      *  If an object is retract, call modify tuple for each
      *  tuple match.
      */
-    public void retractObject(final InternalFactHandle handle,
+    public void retractRightTuple(final RightTuple rightTuple,
                               final PropagationContext context,
                               final InternalWorkingMemory workingMemory) {
 
         final BetaMemory memory = (BetaMemory) workingMemory.getNodeMemory( this );
-        if ( !memory.getFactHandleMemory().remove( handle ) ) {
+        if ( !memory.getRightTupleMemory().remove( rightTuple ) ) {
             return;
         }
 
-        this.constraints.updateFromFactHandle( workingMemory,
-                                               handle );
+        this.constraints.updateFromRightTuple( workingMemory,
+                                               rightTuple );
 
         // need to clone the tuples to avoid concurrent modification exceptions
-        Entry[] tuples = memory.getTupleMemory().toArray();
+        Entry[] tuples = memory.getLeftTupleMemory().toArray();
         for ( int i = 0; i < tuples.length; i++ ) {
-            ReteTuple tuple = (ReteTuple) tuples[i];
+            LeftTuple tuple = (LeftTuple) tuples[i];
             if ( this.constraints.isAllowedCachedRight( tuple ) ) {
                 
                 this.modifyTuple( false,
                                   tuple,
-                                  handle,
+                                  rightTuple,
                                   context,
                                   workingMemory );
             }
@@ -262,7 +262,7 @@ public class CollectNode extends BetaNode
      * @param workingMemory
      */
     public void modifyTuple(final boolean isAssert,
-                            final ReteTuple leftTuple,
+                            final LeftTuple leftTuple,
                             InternalFactHandle handle,
                             final PropagationContext context,
                             final InternalWorkingMemory workingMemory) {
@@ -282,7 +282,7 @@ public class CollectNode extends BetaNode
         
         // if there is a subnetwork, we need to unwrapp the object from inside the tuple
         if( this.unwrapRightObject ) {
-            handle = ((ReteTuple) handle.getObject()).getLastHandle(); 
+            handle = ((LeftTuple) handle.getObject()).getLastHandle(); 
         }
 
         if ( context.getType() == PropagationContext.ASSERTION ) {
@@ -319,7 +319,7 @@ public class CollectNode extends BetaNode
         }
     }
 
-    public void updateSink(final TupleSink sink,
+    public void updateSink(final LeftTupleSink sink,
                            final PropagationContext context,
                            final InternalWorkingMemory workingMemory) {
         final BetaMemory memory = (BetaMemory) workingMemory.getNodeMemory( this );
@@ -328,7 +328,7 @@ public class CollectNode extends BetaNode
 
         for ( ObjectEntry entry = (ObjectEntry) it.next(); entry != null; entry = (ObjectEntry) it.next() ) {
             CollectResult result = (CollectResult) entry.getValue();
-            sink.assertTuple( new ReteTuple( (ReteTuple) entry.getKey(),
+            sink.assertTuple( new LeftTuple( (LeftTuple) entry.getKey(),
                                              result.handle ),
                               context,
                               workingMemory );

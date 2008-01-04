@@ -17,7 +17,7 @@ package org.drools.spi;
  */
 
 import java.io.Serializable;
-import org.drools.reteoo.ReteTuple;
+import org.drools.reteoo.LeftTuple;
 import org.drools.rule.EntryPoint;
 import org.drools.rule.Rule;
 
@@ -47,7 +47,7 @@ public interface PropagationContext
                                   Activation activation);
 
     public Activation removeRetractedTuple(Rule rule,
-                                           ReteTuple tuple);
+                                           LeftTuple tuple);
 
     public void clearRetractedTuples();
     

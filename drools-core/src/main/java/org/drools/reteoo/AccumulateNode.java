@@ -52,8 +52,8 @@ public class AccumulateNode extends BetaNode {
     private final BetaConstraints            resultBinder;
 
     public AccumulateNode(final int id,
-                          final TupleSource leftInput,
-                          final ObjectSource rightInput,
+                          final LeftTupleSource leftInput,
+                          final RightTupleSource rightInput,
                           final AlphaNodeFieldConstraint[] resultConstraints,
                           final BetaConstraints sourceBinder,
                           final BetaConstraints resultBinder,
@@ -90,7 +90,7 @@ public class AccumulateNode extends BetaNode {
      *   Object result = this.accumulator.accumulate( ... );
      *  
      */
-    public void assertTuple(final ReteTuple leftTuple,
+    public void assertTuple(final LeftTuple leftTuple,
                             final PropagationContext context,
                             final InternalWorkingMemory workingMemory) {
 
@@ -99,7 +99,7 @@ public class AccumulateNode extends BetaNode {
         AccumulateResult accresult = new AccumulateResult();
 
         if ( this.tupleMemoryEnabled ) {
-            memory.betaMemory.getTupleMemory().add( leftTuple );
+            memory.betaMemory.getLeftTupleMemory().add( leftTuple );
             memory.betaMemory.getCreatedHandles().put( leftTuple,
                                             accresult,
                                             false );
@@ -113,7 +113,7 @@ public class AccumulateNode extends BetaNode {
                               leftTuple,
                               workingMemory );
 
-        final Iterator it = memory.betaMemory.getFactHandleMemory().iterator( leftTuple );
+        final Iterator it = memory.betaMemory.getRightTupleMemory().iterator( leftTuple );
         this.constraints.updateFromTuple( workingMemory,
                                           leftTuple );
 
@@ -122,7 +122,7 @@ public class AccumulateNode extends BetaNode {
             if ( this.constraints.isAllowedCachedLeft( handle ) ) {
                 if ( this.unwrapRightObject ) {
                     // if there is a subnetwork, handle must be unwrapped
-                    ReteTuple tuple = (ReteTuple) handle.getObject(); 
+                    LeftTuple tuple = (LeftTuple) handle.getObject(); 
                     handle = tuple.getLastHandle();
                     this.accumulate.accumulate( memory.workingMemoryContext,
                                                 accContext,
@@ -185,11 +185,11 @@ public class AccumulateNode extends BetaNode {
      * it must always also retreat it.
      * 
      */
-    public void retractTuple(final ReteTuple leftTuple,
+    public void retractTuple(final LeftTuple leftTuple,
                              final PropagationContext context,
                              final InternalWorkingMemory workingMemory) {
         final AccumulateMemory memory = (AccumulateMemory) workingMemory.getNodeMemory( this );
-        memory.betaMemory.getTupleMemory().remove( leftTuple );
+        memory.betaMemory.getLeftTupleMemory().remove( leftTuple );
         final AccumulateResult accresult = (AccumulateResult) memory.betaMemory.getCreatedHandles().remove( leftTuple );
 
         // if tuple was propagated
@@ -214,30 +214,30 @@ public class AccumulateNode extends BetaNode {
      *  2. For each matching tuple, call a modify tuple
      *  
      */
-    public void assertObject(final InternalFactHandle handle,
+    public void assertRightTuple(final RightTuple rightTuple,
                              final PropagationContext context,
                              final InternalWorkingMemory workingMemory) {
 
         final AccumulateMemory memory = (AccumulateMemory) workingMemory.getNodeMemory( this );
-        memory.betaMemory.getFactHandleMemory().add( handle );
+        memory.betaMemory.getRightTupleMemory().add( rightTuple );
 
         if ( ! this.tupleMemoryEnabled ) {
             // do nothing here, as we know there are no left tuples at this stage in sequential mode.
             return;
         }
 
-        this.constraints.updateFromFactHandle( workingMemory,
-                                               handle );
+        this.constraints.updateFromRightTuple( workingMemory,
+                                               rightTuple );
 
         // need to clone the tuples to avoid concurrent modification exceptions
-        Entry[] tuples = memory.betaMemory.getTupleMemory().toArray();
+        Entry[] tuples = memory.betaMemory.getLeftTupleMemory().toArray();
         for ( int i = 0; i < tuples.length; i++ ) {
-            ReteTuple tuple = (ReteTuple) tuples[i];
+            LeftTuple tuple = (LeftTuple) tuples[i];
             if ( this.constraints.isAllowedCachedRight( tuple ) ) {
                 if ( this.accumulate.supportsReverse() || context.getType() == PropagationContext.ASSERTION ) {
                     modifyTuple( true,
                                  tuple,
-                                 handle,
+                                 rightTuple,
                                  context,
                                  workingMemory );
                 } else {
@@ -259,25 +259,25 @@ public class AccumulateNode extends BetaNode {
      *  If an object is retract, call modify tuple for each
      *  tuple match.
      */
-    public void retractObject(final InternalFactHandle handle,
+    public void retractRightTuple(final RightTuple rightTuple,
                               final PropagationContext context,
                               final InternalWorkingMemory workingMemory) {
         final AccumulateMemory memory = (AccumulateMemory) workingMemory.getNodeMemory( this );
-        if ( !memory.betaMemory.getFactHandleMemory().remove( handle ) ) {
+        if ( !memory.betaMemory.getRightTupleMemory().remove( rightTuple ) ) {
             return;
         }
 
-        this.constraints.updateFromFactHandle( workingMemory,
-                                               handle );
+        this.constraints.updateFromRightTuple( workingMemory,
+                                               rightTuple );
         // need to clone the tuples to avoid concurrent modification exceptions
-        Entry[] tuples = memory.betaMemory.getTupleMemory().toArray();
+        Entry[] tuples = memory.betaMemory.getLeftTupleMemory().toArray();
         for ( int i = 0; i < tuples.length; i++ ) {
-            ReteTuple tuple = (ReteTuple) tuples[i];
+            LeftTuple tuple = (LeftTuple) tuples[i];
             if ( this.constraints.isAllowedCachedRight( tuple ) ) {
                 if ( this.accumulate.supportsReverse() ) {
                     this.modifyTuple( false,
                                       tuple,
-                                      handle,
+                                      rightTuple,
                                       context,
                                       workingMemory );
                 } else {
@@ -293,7 +293,7 @@ public class AccumulateNode extends BetaNode {
     }
 
     public void modifyTuple(final boolean isAssert,
-                            final ReteTuple leftTuple,
+                            final LeftTuple leftTuple,
                             InternalFactHandle handle,
                             final PropagationContext context,
                             final InternalWorkingMemory workingMemory) {
@@ -313,10 +313,10 @@ public class AccumulateNode extends BetaNode {
             accresult.handle = null;
         }
 
-        ReteTuple tuple = leftTuple;
+        LeftTuple tuple = leftTuple;
         if ( this.unwrapRightObject ) {
             // if there is a subnetwork, handle must be unwrapped
-            tuple = (ReteTuple) handle.getObject();
+            tuple = (LeftTuple) handle.getObject();
             handle = tuple.getLastHandle();
         }
 
@@ -399,7 +399,7 @@ public class AccumulateNode extends BetaNode {
         }
     }
 
-    public void updateSink(final TupleSink sink,
+    public void updateSink(final LeftTupleSink sink,
                            final PropagationContext context,
                            final InternalWorkingMemory workingMemory) {
         final AccumulateMemory memory = (AccumulateMemory) workingMemory.getNodeMemory( this );
@@ -408,7 +408,7 @@ public class AccumulateNode extends BetaNode {
 
         for ( ObjectEntry entry = (ObjectEntry) it.next(); entry != null; entry = (ObjectEntry) it.next() ) {
             AccumulateResult accresult = (AccumulateResult) entry.getValue();
-            sink.assertTuple( new ReteTuple( (ReteTuple) entry.getKey(),
+            sink.assertTuple( new LeftTuple( (LeftTuple) entry.getKey(),
                                              accresult.handle ),
                               context,
                               workingMemory );

@@ -25,14 +25,12 @@ import java.util.Map;
 import org.drools.base.ShadowProxy;
 import org.drools.common.BaseNode;
 import org.drools.common.DroolsObjectInputStream;
-import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalRuleBase;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.common.NodeMemory;
 import org.drools.rule.EntryPoint;
 import org.drools.spi.ObjectType;
 import org.drools.spi.PropagationContext;
-import org.drools.util.FactEntry;
 import org.drools.util.FactHashTable;
 import org.drools.util.Iterator;
 import org.drools.util.ObjectHashMap;
@@ -57,10 +55,10 @@ import org.drools.util.ObjectHashMap.ObjectEntry;
  * @author <a href="mailto:mark.proctor@jboss.com">Mark Proctor</a>
  * @author <a href="mailto:bob@werken.com">Bob McWhirter</a>
  */
-public class Rete extends ObjectSource
+public class Rete extends RightTupleSource
     implements
     Serializable,
-    ObjectSink {
+    RightTupleSink {
     // ------------------------------------------------------------
     // Instance members
     // ------------------------------------------------------------
@@ -101,38 +99,39 @@ public class Rete extends ObjectSource
      * of matching <code>ObjectTypdeNode</code>s asserting the Fact. If the cache does not
      * exist it first iteraes and builds the cache.
      *
-     * @param handle
+     * @param rightTuple
      *            The FactHandle of the fact to assert
      * @param context
      *            The <code>PropagationContext</code> of the <code>WorkingMemory</code> action
      * @param workingMemory
      *            The working memory session.
      */
-    public void assertObject(final InternalFactHandle handle,
-                             final PropagationContext context,
-                             final InternalWorkingMemory workingMemory) {
+    public void assertRightTuple(final RightTuple rightTuple,
+                                 final PropagationContext context,
+                                 final InternalWorkingMemory workingMemory) {
+        Object object = rightTuple.getHandle().getObject();
 
         ObjectTypeConf objectTypeConf = workingMemory.getObjectTypeConf( context.getEntryPoint(),
-                                                                         handle.getObject() );
+                                                                         object );
 
         // checks if shadow is enabled
         if ( objectTypeConf.isShadowEnabled() ) {
             // need to improve this
-            if ( !(handle.getObject() instanceof ShadowProxy) ) {
+            if ( !(rightTuple.getHandle().getObject() instanceof ShadowProxy) ) {
                 // replaces the actual object by its shadow before propagating
-                handle.setObject( objectTypeConf.getShadow( handle.getObject() ) );
-                handle.setShadowFact( true );
+                rightTuple.getHandle().setObject( objectTypeConf.getShadow( object ) );
+                rightTuple.getHandle().setShadowFact( true );
             } else {
-                ((ShadowProxy) handle.getObject()).updateProxy();
+                ((ShadowProxy) object).updateProxy();
             }
         }
 
         ObjectTypeNode[] cachedNodes = objectTypeConf.getObjectTypeNodes();
 
         for ( int i = 0, length = cachedNodes.length; i < length; i++ ) {
-            cachedNodes[i].assertObject( handle,
-                                         context,
-                                         workingMemory );
+            cachedNodes[i].assertRightTuple( rightTuple,
+                                             context,
+                                             workingMemory );
         }
     }
 
@@ -140,15 +139,15 @@ public class Rete extends ObjectSource
      * Retract a fact object from this <code>RuleBase</code> and the specified
      * <code>WorkingMemory</code>.
      *
-     * @param handle
+     * @param rightTuple
      *            The handle of the fact to retract.
      * @param workingMemory
      *            The working memory session.
      */
-    public void retractObject(final InternalFactHandle handle,
-                              final PropagationContext context,
-                              final InternalWorkingMemory workingMemory) {
-        final Object object = handle.getObject();
+    public void retractRightTuple(final RightTuple rightTuple,
+                                  final PropagationContext context,
+                                  final InternalWorkingMemory workingMemory) {
+        final Object object = rightTuple.getHandle().getObject();
 
         ObjectTypeConf objectTypeConf = workingMemory.getObjectTypeConf( context.getEntryPoint(),
                                                                          object );
@@ -160,9 +159,9 @@ public class Rete extends ObjectSource
         }
 
         for ( int i = 0; i < cachedNodes.length; i++ ) {
-            cachedNodes[i].retractObject( handle,
-                                          context,
-                                          workingMemory );
+            cachedNodes[i].retractRightTuple( rightTuple,
+                                              context,
+                                              workingMemory );
         }
     }
 
@@ -175,7 +174,7 @@ public class Rete extends ObjectSource
      *            <code>Objects</code>. Rete only accepts <code>ObjectTypeNode</code>s
      *            as parameters to this method, though.
      */
-    protected void addObjectSink(final ObjectSink objectSink) {
+    protected void addObjectSink(final RightTupleSink objectSink) {
         final ObjectTypeNode node = (ObjectTypeNode) objectSink;
         ObjectHashMap map = this.entryPoints.get( node.getEntryPoint() );
         if ( map == null ) {
@@ -188,7 +187,7 @@ public class Rete extends ObjectSource
                  true );
     }
 
-    protected void removeObjectSink(final ObjectSink objectSink) {
+    protected void removeObjectSink(final RightTupleSink objectSink) {
         final ObjectTypeNode node = (ObjectTypeNode) objectSink;
         this.entryPoints.get( node.getEntryPoint() ).remove( node.getObjectType() );
     }
@@ -213,10 +212,11 @@ public class Rete extends ObjectSource
 
     public Map<ObjectType, ObjectTypeNode> getObjectTypeNodes() {
         Map<ObjectType, ObjectTypeNode> allNodes = new HashMap<ObjectType, ObjectTypeNode>();
-        for( ObjectHashMap map : this.entryPoints.values() ) {
+        for ( ObjectHashMap map : this.entryPoints.values() ) {
             Iterator it = map.iterator();
             for ( ObjectEntry entry = (ObjectEntry) it.next(); entry != null; entry = (ObjectEntry) it.next() ) {
-                allNodes.put( (ObjectType) entry.getKey(), (ObjectTypeNode) entry.getValue() );
+                allNodes.put( (ObjectType) entry.getKey(),
+                              (ObjectTypeNode) entry.getValue() );
             }
         }
         return allNodes;
@@ -247,7 +247,7 @@ public class Rete extends ObjectSource
         return this.entryPoints.equals( other.entryPoints );
     }
 
-    public void updateSink(final ObjectSink sink,
+    public void updateSink(final RightTupleSink sink,
                            final PropagationContext context,
                            final InternalWorkingMemory workingMemory) {
         // JBRULES-612: the cache MUST be invalidated when a new node type is added to the network, so iterate and reset all caches.
@@ -260,20 +260,20 @@ public class Rete extends ObjectSource
                 ObjectTypeNode sourceNode = objectTypeConf.getConcreteObjectTypeNode();
                 FactHashTable table = (FactHashTable) workingMemory.getNodeMemory( sourceNode );
                 Iterator factIter = table.iterator();
-                for ( FactEntry factEntry = (FactEntry) factIter.next(); factEntry != null; factEntry = (FactEntry) factIter.next() ) {
-                    sink.assertObject( factEntry.getFactHandle(),
-                                       context,
-                                       workingMemory );
+                for ( RightTuple factEntry = (RightTuple) factIter.next(); factEntry != null; factEntry = (RightTuple) factIter.next() ) {
+                    sink.assertRightTuple( factEntry,
+                                           context,
+                                           workingMemory );
                 }
             }
         }
     }
 
-    public boolean isObjectMemoryEnabled() {
+    public boolean isRightTupleMemoryEnabled() {
         throw new UnsupportedOperationException( "Rete has no Object memory" );
     }
 
-    public void setObjectMemoryEnabled(boolean objectMemoryEnabled) {
+    public void setRightTupleMemoryEnabled(boolean objectMemoryEnabled) {
         throw new UnsupportedOperationException( "ORete has no Object memory" );
     }
 

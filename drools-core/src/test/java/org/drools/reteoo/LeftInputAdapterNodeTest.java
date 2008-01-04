@@ -65,9 +65,9 @@ public class LeftInputAdapterNodeTest extends DroolsTestCase {
         final LeftInputAdapterNode liaNode = new LeftInputAdapterNode( 1,
                                                                        source,
                                                                        buildContext );
-        final Field field = ObjectSource.class.getDeclaredField( "sink" );
+        final Field field = RightTupleSource.class.getDeclaredField( "sink" );
         field.setAccessible( true );
-        ObjectSinkPropagator sink = (ObjectSinkPropagator) field.get( source );
+        RightTupletSinkPropagator sink = (RightTupletSinkPropagator) field.get( source );
 
         assertEquals( 1,
                       liaNode.getId() );
@@ -75,7 +75,7 @@ public class LeftInputAdapterNodeTest extends DroolsTestCase {
 
         liaNode.attach();
 
-        sink = (ObjectSinkPropagator) field.get( source );
+        sink = (RightTupletSinkPropagator) field.get( source );
 
         assertEquals( 1,
                       sink.getSinks().length );
@@ -108,7 +108,7 @@ public class LeftInputAdapterNodeTest extends DroolsTestCase {
 
         // assert object
         final DefaultFactHandle f0 = (DefaultFactHandle) workingMemory.insert( string1 );
-        liaNode.assertObject( f0,
+        liaNode.assertRightTuple( f0,
                               context,
                               workingMemory );
 
@@ -143,13 +143,13 @@ public class LeftInputAdapterNodeTest extends DroolsTestCase {
         final MockTupleSink sink = new MockTupleSink();
         liaNode.addTupleSink( sink );
 
-        liaNode.setObjectMemoryEnabled( true );
+        liaNode.setRightTupleMemoryEnabled( true );
 
         final Object string1 = "cheese";
 
         // assert object
         final DefaultFactHandle f0 = (DefaultFactHandle) workingMemory.insert( string1 );
-        liaNode.assertObject( f0,
+        liaNode.assertRightTuple( f0,
                               context,
                               workingMemory );
 
@@ -168,7 +168,7 @@ public class LeftInputAdapterNodeTest extends DroolsTestCase {
 
         // check memory works with multiple handles
         final DefaultFactHandle f1 = (DefaultFactHandle) workingMemory.insert( "test1" );
-        liaNode.assertObject( f1,
+        liaNode.assertRightTuple( f1,
                               context,
                               workingMemory );
 
@@ -211,13 +211,13 @@ public class LeftInputAdapterNodeTest extends DroolsTestCase {
         final DefaultFactHandle f0 = (DefaultFactHandle) workingMemory.insert( "f1" );
 
         // assert object 
-        liaNode.assertObject( f0,
+        liaNode.assertRightTuple( f0,
                               context,
                               workingMemory );
 
         final Tuple tuple = (Tuple) ((Object[]) sink.getAsserted().get( 0 ))[0];
 
-        liaNode.retractObject( f0,
+        liaNode.retractRightTuple( f0,
                                context,
                                workingMemory );
 
@@ -242,7 +242,7 @@ public class LeftInputAdapterNodeTest extends DroolsTestCase {
                                                                        new MockObjectSource( idGenerator.getNextId() ),
                                                                        buildContext );
         //force liaNode to have memory
-        liaNode.setObjectMemoryEnabled( true );
+        liaNode.setRightTupleMemoryEnabled( true );
 
         final MockTupleSink sink = new MockTupleSink();
         liaNode.addTupleSink( sink );
@@ -250,7 +250,7 @@ public class LeftInputAdapterNodeTest extends DroolsTestCase {
         final DefaultFactHandle f0 = (DefaultFactHandle) workingMemory.insert( "f1" );
 
         // assert object
-        liaNode.assertObject( f0,
+        liaNode.assertRightTuple( f0,
                               context,
                               workingMemory );
 
@@ -259,7 +259,7 @@ public class LeftInputAdapterNodeTest extends DroolsTestCase {
         final FactHashTable map = (FactHashTable) workingMemory.getNodeMemory( liaNode );
         assertTrue( map.contains( f0 ) );
 
-        liaNode.retractObject( f0,
+        liaNode.retractRightTuple( f0,
                                context,
                                workingMemory );
 

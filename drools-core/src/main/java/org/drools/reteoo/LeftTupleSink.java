@@ -16,53 +16,44 @@ package org.drools.reteoo;
  * limitations under the License.
  */
 
-import org.drools.common.InternalFactHandle;
+import java.io.Serializable;
+
 import org.drools.common.InternalWorkingMemory;
 import org.drools.spi.PropagationContext;
 
 /**
- * Receiver of propagated <code>FactHandleImpl</code>s from a
- * <code>ObjectSource</code>.
+ * Receiver of propagated <code>ReteTuple</code>s from a
+ * <code>TupleSource</code>.
  * 
- * @see ObectSource
+ * @see LeftTupleSource
  * 
  * @author <a href="mailto:mark.proctor@jboss.com">Mark Proctor</a>
  * @author <a href="mailto:bob@werken.com">Bob McWhirter</a>
- *
  */
-public interface ObjectSink
+public interface LeftTupleSink
     extends
+    Serializable,
     Sink {
 
     /**
-     * Assert a new <code>FactHandleImpl</code>.
+     * Assert a new <code>ReteTuple</code>.
      * 
-     * @param handle
-     *            The asserted <code>FactHandle/code>.
+     * @param tuple
+     *            The <code>ReteTuple</code> to propagate.
      * @param context
-     *             The <code>PropagationContext</code> of the <code>WorkingMemory<code> action.           
+     *             The <code>PropagationContext</code> of the <code>WorkingMemory<code> action            
      * @param workingMemory
      *            the <code>WorkingMemory</code> session.
      */
-    void assertObject(InternalFactHandle handle,
+    void assertTuple(LeftTuple tuple,
+                     PropagationContext context,
+                     InternalWorkingMemory workingMemory);
+
+    void retractTuple(LeftTuple tuple,
                       PropagationContext context,
                       InternalWorkingMemory workingMemory);
+    
+    public boolean isTupleMemoryEnabled();
 
-    /**
-     * Retract an existing <code>FactHandleImpl</code>.
-     * 
-     * @param handle
-     *            The <code>FactHandle/code> to retract.
-     * @param context
-     *             The <code>PropagationContext</code> of the <code>WorkingMemory<code> action.           
-     * @param workingMemory
-     *            the <code>WorkingMemory</code> session.
-     */
-    void retractObject(InternalFactHandle handle,
-                       PropagationContext context,
-                       InternalWorkingMemory workingMemory);
-
-    public boolean isObjectMemoryEnabled();
-
-    public void setObjectMemoryEnabled(boolean objectMemoryOn);
+    public void setTupleMemoryEnabled(boolean tupleMemoryEnabled);       
 }

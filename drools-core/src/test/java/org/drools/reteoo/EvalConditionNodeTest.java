@@ -105,7 +105,7 @@ public class EvalConditionNodeTest extends DroolsTestCase {
         // Create the Tuple
         final DefaultFactHandle f0 = new DefaultFactHandle( 0,
                                                             "stilton" );
-        final ReteTuple tuple0 = new ReteTuple( f0 );
+        final LeftTuple tuple0 = new LeftTuple( f0 );
 
         // Tuple should pass and propagate 
         node.assertTuple( tuple0,
@@ -115,7 +115,7 @@ public class EvalConditionNodeTest extends DroolsTestCase {
         // Create the Tuple
         final DefaultFactHandle f1 = new DefaultFactHandle( 1,
                                                             "cheddar" );
-        final ReteTuple tuple1 = new ReteTuple( f1 );
+        final LeftTuple tuple1 = new LeftTuple( f1 );
 
         // Tuple should pass and propagate 
         node.assertTuple( tuple1,
@@ -151,7 +151,7 @@ public class EvalConditionNodeTest extends DroolsTestCase {
         // Create the Tuple
         final DefaultFactHandle f0 = new DefaultFactHandle( 0,
                                                             "stilton" );
-        final ReteTuple tuple0 = new ReteTuple( f0 );
+        final LeftTuple tuple0 = new LeftTuple( f0 );
 
         // Tuple should pass and propagate 
         node.assertTuple( tuple0,
@@ -162,7 +162,7 @@ public class EvalConditionNodeTest extends DroolsTestCase {
         // Create the Tuple
         final DefaultFactHandle f1 = new DefaultFactHandle( 1,
                                                             "cheddar" );
-        final ReteTuple tuple1 = new ReteTuple( f1 );
+        final LeftTuple tuple1 = new LeftTuple( f1 );
 
         // Tuple should pass and propagate 
         node.assertTuple( tuple1,
@@ -225,7 +225,7 @@ public class EvalConditionNodeTest extends DroolsTestCase {
         // Create the Tuple
         final DefaultFactHandle f0 = new DefaultFactHandle( 0,
                                                             "stilton" );
-        final ReteTuple tuple0 = new ReteTuple( f0 );
+        final LeftTuple tuple0 = new LeftTuple( f0 );
 
         // Tuple should fail and not propagate
         node.assertTuple( tuple0,
@@ -235,7 +235,7 @@ public class EvalConditionNodeTest extends DroolsTestCase {
         // Create the Tuple
         final DefaultFactHandle f1 = new DefaultFactHandle( 1,
                                                             "cheddar" );
-        final ReteTuple tuple1 = new ReteTuple( f1 );
+        final LeftTuple tuple1 = new LeftTuple( f1 );
 
         // Tuple should fail and not propagate 
         node.assertTuple( tuple1,
@@ -280,7 +280,7 @@ public class EvalConditionNodeTest extends DroolsTestCase {
         final DefaultFactHandle f0 = new DefaultFactHandle( 0,
                                                             "string0" );
 
-        final ReteTuple tuple1 = new ReteTuple( f0 );
+        final LeftTuple tuple1 = new LeftTuple( f0 );
 
         node.assertTuple( tuple1,
                           this.context,

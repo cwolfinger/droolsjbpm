@@ -16,7 +16,7 @@ package org.drools.common;
  * limitations under the License.
  */
 
-import org.drools.reteoo.ReteTuple;
+import org.drools.reteoo.LeftTuple;
 import org.drools.rule.EntryPoint;
 import org.drools.rule.Rule;
 import org.drools.spi.Activation;
@@ -119,7 +119,7 @@ public class PropagationContextImpl
             this.retracted = new ObjectHashMap();
         }
 
-        ReteTuple tuple = (ReteTuple) activation.getTuple();
+        LeftTuple tuple = (LeftTuple) activation.getTuple();
 
         ObjectHashMap tuples = (ObjectHashMap) this.retracted.get( rule );
         if ( tuples == null ) {
@@ -132,7 +132,7 @@ public class PropagationContextImpl
     }
 
     public Activation removeRetractedTuple(final Rule rule,
-                                           final ReteTuple tuple) {
+                                           final LeftTuple tuple) {
         if ( this.retracted == null ) {
             return null;
         }

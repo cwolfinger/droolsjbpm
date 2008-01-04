@@ -93,7 +93,7 @@ public class SchedulerTest extends DroolsTestCase {
                                                                        null,
                                                                        null );
 
-        final ReteTuple tuple = new ReteTuple( new DefaultFactHandle( 1,
+        final LeftTuple tuple = new LeftTuple( new DefaultFactHandle( 1,
                                                                       "cheese" ) );
 
         assertEquals( 0,
@@ -155,7 +155,7 @@ public class SchedulerTest extends DroolsTestCase {
                                                                                     0,
                                                                                     rule,
                                                                                     knowledgeHelper.getActivation() );
-                    final ReteTuple tuple2 = new ReteTuple( new DefaultFactHandle( 2,
+                    final LeftTuple tuple2 = new LeftTuple( new DefaultFactHandle( 2,
                                                                                    "cheese" ) );
                     node.assertTuple( tuple2,
                                       context2,
@@ -170,7 +170,7 @@ public class SchedulerTest extends DroolsTestCase {
                                                                         null,
                                                                         null );
 
-        final ReteTuple tuple1 = new ReteTuple( new DefaultFactHandle( 1,
+        final LeftTuple tuple1 = new LeftTuple( new DefaultFactHandle( 1,
                                                                        "cheese" ) );
 
         node.assertTuple( tuple1,
@@ -236,7 +236,7 @@ public class SchedulerTest extends DroolsTestCase {
                                                                                     0,
                                                                                     rule,
                                                                                     knowledgeHelper.getActivation() );
-                    final ReteTuple tuple2 = new ReteTuple( new DefaultFactHandle( 2,
+                    final LeftTuple tuple2 = new LeftTuple( new DefaultFactHandle( 2,
                                                                                    "cheese" ) );
                     node.assertTuple( tuple2,
                                       context2,
@@ -251,7 +251,7 @@ public class SchedulerTest extends DroolsTestCase {
                                                                         null,
                                                                         null );
 
-        final ReteTuple tuple1 = new ReteTuple( new DefaultFactHandle( 1,
+        final LeftTuple tuple1 = new LeftTuple( new DefaultFactHandle( 1,
                                                                        "cheese" ) );
         node.assertTuple( tuple1,
                           context1,

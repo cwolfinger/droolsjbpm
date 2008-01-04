@@ -29,13 +29,13 @@ import org.drools.spi.PropagationContext;
  * Nodes that propagate <code>Tuples</code> extend this class.
  * </p>
  * 
- * @see TupleSource
- * @see ReteTuple
+ * @see LeftTupleSource
+ * @see LeftTuple
  * 
  * @author <a href="mailto:mark.proctor@jboss.com">Mark Proctor</a>
  * @author <a href="mailto:bob@werken.com">Bob McWhirter</a>
  */
-public abstract class TupleSource extends BaseNode
+public abstract class LeftTupleSource extends BaseNode
     implements
     Serializable {
     // ------------------------------------------------------------
@@ -43,7 +43,7 @@ public abstract class TupleSource extends BaseNode
     // ------------------------------------------------------------
 
     /** The destination for <code>Tuples</code>. */
-    protected TupleSinkPropagator sink;
+    protected LeftTupleSinkPropagator sink;
 
     // ------------------------------------------------------------
     // Constructors
@@ -54,9 +54,9 @@ public abstract class TupleSource extends BaseNode
      * 
      * @param id
      */
-    TupleSource(final int id) {
+    LeftTupleSource(final int id) {
         super( id );
-        this.sink = EmptyTupleSinkAdapter.getInstance();
+        this.sink = EmptyLeftTupleSinkAdapter.getInstance();
     }
 
     // ------------------------------------------------------------
@@ -71,10 +71,10 @@ public abstract class TupleSource extends BaseNode
      *            The <code>TupleSink</code> to receive propagated
      *            <code>Tuples</code>.
      */
-    protected void addTupleSink(final TupleSink tupleSink) {
-        if ( this.sink == EmptyTupleSinkAdapter.getInstance() ) {
-            this.sink = new SingleTupleSinkAdapter( tupleSink );
-        } else if ( this.sink instanceof SingleTupleSinkAdapter ) {
+    protected void addTupleSink(final LeftTupleSink tupleSink) {
+        if ( this.sink == EmptyLeftTupleSinkAdapter.getInstance() ) {
+            this.sink = new SingleLeftTupleSinkAdapter( tupleSink );
+        } else if ( this.sink instanceof SingleLeftTupleSinkAdapter ) {
             final CompositeTupleSinkAdapter sinkAdapter = new CompositeTupleSinkAdapter();
             sinkAdapter.addTupleSink( this.sink.getSinks()[0] );
             sinkAdapter.addTupleSink( tupleSink );
@@ -90,27 +90,27 @@ public abstract class TupleSource extends BaseNode
      * @param tupleSink
      *            The <code>TupleSink</code> to remove
      */
-    protected void removeTupleSink(final TupleSink tupleSink) {
-        if ( this.sink == EmptyTupleSinkAdapter.getInstance() ) {
+    protected void removeTupleSink(final LeftTupleSink tupleSink) {
+        if ( this.sink == EmptyLeftTupleSinkAdapter.getInstance() ) {
             throw new IllegalArgumentException( "Cannot remove a sink, when the list of sinks is null" );
         }
 
-        if ( this.sink instanceof SingleTupleSinkAdapter ) {
-            this.sink = EmptyTupleSinkAdapter.getInstance();
+        if ( this.sink instanceof SingleLeftTupleSinkAdapter ) {
+            this.sink = EmptyLeftTupleSinkAdapter.getInstance();
         } else {
             final CompositeTupleSinkAdapter sinkAdapter = (CompositeTupleSinkAdapter) this.sink;
             sinkAdapter.removeTupleSink( tupleSink );
             if ( sinkAdapter.size() == 1 ) {
-                this.sink = new SingleTupleSinkAdapter( sinkAdapter.getSinks()[0] );
+                this.sink = new SingleLeftTupleSinkAdapter( sinkAdapter.getSinks()[0] );
             }
         }
     }
 
-    public TupleSinkPropagator getSinkPropagator() {
+    public LeftTupleSinkPropagator getSinkPropagator() {
         return this.sink;
     }
 
-    public abstract void updateSink(TupleSink sink,
+    public abstract void updateSink(LeftTupleSink sink,
                                     PropagationContext context,
                                     InternalWorkingMemory workingMemory);    
 }

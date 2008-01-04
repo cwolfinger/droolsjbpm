@@ -4,12 +4,13 @@
 package org.drools.util;
 
 import org.drools.common.InternalFactHandle;
-import org.drools.reteoo.FactHandleMemory;
-import org.drools.reteoo.ReteTuple;
+import org.drools.reteoo.RightTupleMemory;
+import org.drools.reteoo.LeftTuple;
+import org.drools.reteoo.RightTuple;
 
 public class FactHashTable extends AbstractHashTable
     implements
-    FactHandleMemory {
+    RightTupleMemory {
     private static final long serialVersionUID = 400L;
 
     public FactHashTable() {
@@ -23,37 +24,37 @@ public class FactHashTable extends AbstractHashTable
                loadFactor );
     }
 
-    public Iterator iterator(final ReteTuple tuple) {
+    public Iterator iterator(final LeftTuple tuple) {
         return iterator();
     }
 
-    public boolean add(final InternalFactHandle handle) {
-        return add( handle,
+    public boolean add(final RightTuple tuple) {
+        return add( tuple,
                     true );
     }
 
-    public boolean add(final InternalFactHandle handle,
+    public boolean add(final RightTuple tuple,
                        final boolean checkExists) {
-        final int hashCode = this.comparator.hashCodeOf( handle );
+        final int hashCode = this.comparator.hashCodeOf( tuple.getHandle() );
+        tuple.setHashCode(hashCode);
+        
         final int index = indexOf( hashCode,
                                    this.table.length );
-
+        
+        InternalFactHandle handle = tuple.getHandle();
         // scan the linked entries to see if it exists
         if ( checkExists ) {
-            FactEntryImpl current = (FactEntryImpl) this.table[index];
+        	RightTuple current = (RightTuple) this.table[index];        	
             while ( current != null ) {
-                if ( hashCode == current.hashCode && handle.getId() == current.handle.getId() ) {
+                if ( hashCode == current.hashCode() && handle == current.getHandle() ) {
                     return false;
                 }
-                current = (FactHashTable.FactEntryImpl) current.getNext();
+                current = (RightTuple) current.getNext();
             }
         }
-
-        // We aren't checking the key exists, or it didn't find the key
-        final FactEntryImpl entry = new FactEntryImpl( handle,
-                                               hashCode );
-        entry.next = this.table[index];
-        this.table[index] = entry;
+        
+        tuple.setNext( this.table[index]);
+        this.table[index] = tuple;
 
         if ( this.size++ >= this.threshold ) {
             resize( 2 * this.table.length );
@@ -61,31 +62,36 @@ public class FactHashTable extends AbstractHashTable
         return true;
     }
 
-    public boolean contains(final InternalFactHandle handle) {
-        final int hashCode = this.comparator.hashCodeOf( handle );
+    public boolean contains(final RightTuple tuple) {
+    	final int hashCode = this.comparator.hashCodeOf( tuple.getHandle() );
+    	
         final int index = indexOf( hashCode,
                                    this.table.length );
 
-        FactEntryImpl current = (FactEntryImpl) this.table[index];
+        InternalFactHandle handle = tuple.getHandle();
+    	RightTuple current = (RightTuple) this.table[index];        	
         while ( current != null ) {
-            if ( hashCode == current.hashCode && handle.getId() == current.handle.getId() ) {
+            if ( hashCode == current.hashCode() && handle == current.getHandle() ) {
                 return true;
             }
-            current = (FactEntryImpl) current.getNext();
+            current = (RightTuple) current.getNext();
         }
         return false;
     }
 
-    public boolean remove(final InternalFactHandle handle) {
-        final int hashCode = this.comparator.hashCodeOf( handle );
+    public boolean remove(final RightTuple tuple) {
+    	final int hashCode = this.comparator.hashCodeOf( tuple.getHandle() );
+    	
         final int index = indexOf( hashCode,
                                    this.table.length );
 
-        FactEntryImpl previous = (FactEntryImpl) this.table[index];
-        FactEntryImpl current = previous;
+        InternalFactHandle handle = tuple.getHandle();
+        
+        RightTuple previous = (RightTuple) this.table[index];
+        RightTuple current = previous;
         while ( current != null ) {
-            final FactEntryImpl next = (FactEntryImpl) current.getNext();
-            if ( hashCode == current.hashCode && handle.getId() == current.handle.getId() ) {
+            final RightTuple next = (RightTuple) current.getNext();
+            if ( hashCode == current.hashCode() && handle == current.getHandle() ) {
                 if ( previous == current ) {
                     this.table[index] = next;
                 } else {

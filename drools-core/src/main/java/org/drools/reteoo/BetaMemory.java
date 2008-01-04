@@ -4,34 +4,32 @@ import java.io.Serializable;
 
 import org.drools.util.ObjectHashMap;
 
-public class BetaMemory
-    implements
-    Serializable {
+public class BetaMemory implements Serializable {
 
-    private static final long serialVersionUID = 400L;
+	private static final long serialVersionUID = 400L;
 
-    private TupleMemory       tupleMemory;
-    private FactHandleMemory  factHandleMemory;
-    private ObjectHashMap     createdHandles;
+	private LeftTupleMemory leftTupleMemory;
+	private RightTupleMemory rightTupleMemory;
+	private ObjectHashMap createdHandles;
 
-    public BetaMemory(final TupleMemory tupleMemory,
-                      final FactHandleMemory objectMemory) {
-        this.tupleMemory = tupleMemory;
-        this.factHandleMemory = objectMemory;
-    }
+	public BetaMemory(final LeftTupleMemory leftTupleMemory,
+		final RightTupleMemory rightTupleMemory) {
+		this.leftTupleMemory = leftTupleMemory;
+		this.rightTupleMemory = rightTupleMemory;
+	}
 
-    public FactHandleMemory getFactHandleMemory() {
-        return this.factHandleMemory;
-    }
+	public RightTupleMemory getRightTupleMemory() {
+		return this.rightTupleMemory;
+	}
 
-    public TupleMemory getTupleMemory() {
-        return this.tupleMemory;
-    }
+	public LeftTupleMemory getLeftTupleMemory() {
+		return this.leftTupleMemory;
+	}
 
-    public ObjectHashMap getCreatedHandles() {
-        if ( this.createdHandles == null ) {
-            this.createdHandles = new ObjectHashMap();
-        }
-        return this.createdHandles;
-    }
+	public ObjectHashMap getCreatedHandles() {
+		if (this.createdHandles == null) {
+			this.createdHandles = new ObjectHashMap();
+		}
+		return this.createdHandles;
+	}
 }

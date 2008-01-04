@@ -20,7 +20,6 @@ import java.io.Serializable;
 
 import org.drools.RuleBaseConfiguration;
 import org.drools.common.BaseNode;
-import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.common.NodeMemory;
 import org.drools.common.PropagationContextImpl;
@@ -30,7 +29,6 @@ import org.drools.rule.EntryPoint;
 import org.drools.spi.Constraint;
 import org.drools.spi.ObjectType;
 import org.drools.spi.PropagationContext;
-import org.drools.util.FactEntry;
 import org.drools.util.FactHashTable;
 import org.drools.util.Iterator;
 
@@ -53,9 +51,9 @@ import org.drools.util.Iterator;
  * @author <a href="mailto:mark.proctor@jboss.com">Mark Proctor</a>
  * @author <a href="mailto:bob@werken.com">Bob McWhirter</a>
  */
-public class ObjectTypeNode extends ObjectSource
+public class ObjectTypeNode extends RightTupleSource
     implements
-    ObjectSink,
+    RightTupleSink,
     Serializable,
     NodeMemory
 
@@ -98,7 +96,7 @@ public class ObjectTypeNode extends ObjectSource
                context.getRuleBase().getConfiguration().getAlphaNodeHashingThreshold() );
         this.rete = (Rete) this.objectSource;
         this.objectType = objectType;
-        setObjectMemoryEnabled( context.isObjectTypeNodeMemoryEnabled() );
+        setRightTupleMemoryEnabled( context.isObjectTypeNodeMemoryEnabled() );
         this.entryPoint = context.getCurrentEntryPoint() == null ? EntryPoint.DEFAULT : context.getCurrentEntryPoint();
     }
 
@@ -133,16 +131,16 @@ public class ObjectTypeNode extends ObjectSource
      * <code>FactHandleImpl</code> should be remembered in the node memory, so that later runtime rule attachmnents
      * can have the matched facts propagated to them.
      * 
-     * @param handle
+     * @param rightTuple
      *            The fact handle.
      * @param object
      *            The object to assert.
      * @param workingMemory
      *            The working memory session.
      */
-    public void assertObject(final InternalFactHandle handle,
-                             final PropagationContext context,
-                             final InternalWorkingMemory workingMemory) {
+    public void assertRightTuple(final RightTuple rightTuple,
+                                 final PropagationContext context,
+                                 final InternalWorkingMemory workingMemory) {
         if ( context.getType() == PropagationContext.MODIFICATION && this.skipOnModify && context.getDormantActivations() == 0 ) {
             // we do this after the shadowproxy update, just so that its up to date for the future
             return;
@@ -150,52 +148,52 @@ public class ObjectTypeNode extends ObjectSource
 
         if ( this.objectMemoryEnabled ) {
             final FactHashTable memory = (FactHashTable) workingMemory.getNodeMemory( this );
-            memory.add( handle,
+            memory.add( rightTuple,
                         false );
         }
 
-        this.sink.propagateAssertObject( handle,
-                                         context,
-                                         workingMemory );
+        this.sink.propagateAssertRightTuple( rightTuple,
+                                             context,
+                                             workingMemory );
     }
 
     /**
      * Retract the <code>FactHandleimpl</code> from the <code>Rete</code> network. Also remove the 
      * <code>FactHandleImpl</code> from the node memory.
      * 
-     * @param handle
+     * @param rightTuple
      *            The fact handle.
      * @param object
      *            The object to assert.
      * @param workingMemory
      *            The working memory session.
      */
-    public void retractObject(final InternalFactHandle handle,
-                              final PropagationContext context,
-                              final InternalWorkingMemory workingMemory) {
+    public void retractRightTuple(final RightTuple rightTuple,
+                                  final PropagationContext context,
+                                  final InternalWorkingMemory workingMemory) {
 
         if ( context.getType() == PropagationContext.MODIFICATION && this.skipOnModify && context.getDormantActivations() == 0 ) {
             return;
         }
 
         final FactHashTable memory = (FactHashTable) workingMemory.getNodeMemory( this );
-        memory.remove( handle );
+        memory.remove( rightTuple );
 
-        this.sink.propagateRetractObject( handle,
-                                          context,
-                                          workingMemory,
-                                          true );
+        this.sink.propagateRetractRightTuple( rightTuple,
+                                              context,
+                                              workingMemory,
+                                              true );
     }
 
-    public void updateSink(final ObjectSink sink,
+    public void updateSink(final RightTupleSink sink,
                            final PropagationContext context,
                            final InternalWorkingMemory workingMemory) {
         final FactHashTable memory = (FactHashTable) workingMemory.getNodeMemory( this );
         final Iterator it = memory.iterator();
-        for ( FactEntry entry = (FactEntry) it.next(); entry != null; entry = (FactEntry) it.next() ) {
-            sink.assertObject( entry.getFactHandle(),
-                               context,
-                               workingMemory );
+        for ( RightTuple entry = (RightTuple) it.next(); entry != null; entry = (RightTuple) it.next() ) {
+            sink.assertRightTuple( entry,
+                                   context,
+                                   workingMemory );
         }
     }
 
@@ -228,7 +226,7 @@ public class ObjectTypeNode extends ObjectSource
     public void remove(final BaseNode node,
                        final InternalWorkingMemory[] workingMemories) {
         if ( !node.isInUse() ) {
-            removeObjectSink( (ObjectSink) node );
+            removeObjectSink( (RightTupleSink) node );
         }
         removeShare();
         if ( !this.isInUse() ) {
@@ -256,11 +254,11 @@ public class ObjectTypeNode extends ObjectSource
         return new FactHashTable();
     }
 
-    public boolean isObjectMemoryEnabled() {
+    public boolean isRightTupleMemoryEnabled() {
         return this.objectMemoryEnabled;
     }
 
-    public void setObjectMemoryEnabled(boolean objectMemoryEnabled) {
+    public void setRightTupleMemoryEnabled(boolean objectMemoryEnabled) {
         this.objectMemoryEnabled = objectMemoryEnabled;
     }
 
@@ -292,7 +290,7 @@ public class ObjectTypeNode extends ObjectSource
     /** 
      * @inheritDoc
      */
-    protected void addObjectSink(final ObjectSink objectSink) {
+    protected void addObjectSink(final RightTupleSink objectSink) {
         super.addObjectSink( objectSink );
         this.skipOnModify = canSkipOnModify( this.sink.getSinks() );
     }
@@ -300,7 +298,7 @@ public class ObjectTypeNode extends ObjectSource
     /**
      * @inheritDoc
      */
-    protected void removeObjectSink(final ObjectSink objectSink) {
+    protected void removeObjectSink(final RightTupleSink objectSink) {
         super.removeObjectSink( objectSink );
         this.skipOnModify = canSkipOnModify( this.sink.getSinks() );
     }
@@ -321,10 +319,10 @@ public class ObjectTypeNode extends ObjectSource
             } else if ( sinks[i] instanceof BetaNode && ((BetaNode) sinks[i]).getConstraints().length > 0 ) {
                 hasConstraints = this.usesDeclaration( ((BetaNode) sinks[i]).getConstraints() );
             }
-            if ( !hasConstraints && sinks[i] instanceof ObjectSource ) {
-                hasConstraints = this.canSkipOnModify( ((ObjectSource) sinks[i]).getSinkPropagator().getSinks() );
-            } else if ( sinks[i] instanceof TupleSource ) {
-                hasConstraints = this.canSkipOnModify( ((TupleSource) sinks[i]).getSinkPropagator().getSinks() );
+            if ( !hasConstraints && sinks[i] instanceof RightTupleSource ) {
+                hasConstraints = this.canSkipOnModify( ((RightTupleSource) sinks[i]).getSinkPropagator().getSinks() );
+            } else if ( sinks[i] instanceof LeftTupleSource ) {
+                hasConstraints = this.canSkipOnModify( ((LeftTupleSource) sinks[i]).getSinkPropagator().getSinks() );
             }
         }
 

@@ -43,57 +43,57 @@ import java.util.NoSuchElementException;
  * @author <a href="mailto:bob@werken.com">Bob McWhirter</a>
  *
  */
-public class TupleSinkNodeList
+public class RightTupleSinkNodeList
     implements
     Serializable {
     private static final long serialVersionUID = 400L;
 
-    private TupleSinkNode     firstNode;
-    private TupleSinkNode     lastNode;
+    private RightTupleSinkNode    firstNode;
+    private RightTupleSinkNode    lastNode;
 
     private int               size;
 
     /**
      * Construct an empty <code>LinkedList</code>
      */
-    public TupleSinkNodeList() {
+    public RightTupleSinkNodeList() {
 
     }
 
     /**
-     * Add a <code>TupleSinkNode</code> to the list. If the <code>LinkedList</code> is empty then the first and 
+     * Add a <code>ObjectSinkNode</code> to the list. If the <code>LinkedList</code> is empty then the first and 
      * last nodes are set to the added node.
      * 
      * @param node
-     *      The <code>TupleSinkNode</code> to be added
+     *      The <code>ObjectSinkNode</code> to be added
      */
-    public void add(final TupleSinkNode node) {
+    public void add(final RightTupleSinkNode node) {
         if ( this.firstNode == null ) {
             this.firstNode = node;
             this.lastNode = node;;
         } else {
-            this.lastNode.setNextTupleSinkNode( node );
-            node.setPreviousTupleSinkNode( this.lastNode );
+            this.lastNode.setNextRightTupleSinkNode( node );
+            node.setPreviousRightTupleSinkNode( this.lastNode );
             this.lastNode = node;
         }
         this.size++;
     }
 
     /**
-     * Removes a <code>TupleSinkNode</code> from the list. This works by attach the previous reference to the child reference.
+     * Removes a <code>ObjectSinkNode</code> from the list. This works by attach the previous reference to the child reference.
      * When the node to be removed is the first node it calls <code>removeFirst()</code>. When the node to be removed is the last node
      * it calls <code>removeLast()</code>.
      * 
      * @param node
-     *      The <code>TupleSinkNode</code> to be removed.
+     *      The <code>ObjectSinkNode</code> to be removed.
      */
-    public void remove(final TupleSinkNode node) {
+    public void remove(final RightTupleSinkNode node) {
         if ( (this.firstNode != node) && (this.lastNode != node) ) {
-            node.getPreviousTupleSinkNode().setNextTupleSinkNode( node.getNextTupleSinkNode() );
-            node.getNextTupleSinkNode().setPreviousTupleSinkNode( node.getPreviousTupleSinkNode() );
+            node.getPreviousRightTupleSinkNode().setNextRightTupleSinkNode( node.getNextRightTupleSinkNode() );
+            node.getNextRightTupleSinkNode().setPreviousRightTupleSinkNode( node.getPreviousRightTupleSinkNode() );
             this.size--;
-            node.setPreviousTupleSinkNode( null );
-            node.setNextTupleSinkNode( null );
+            node.setPreviousRightTupleSinkNode( null );
+            node.setNextRightTupleSinkNode( null );
 
         } else {
             if ( this.firstNode == node ) {
@@ -107,18 +107,18 @@ public class TupleSinkNodeList
     /**
      * Return the first node in the list
      * @return
-     *      The first <code>TupleSinkNode</code>.
+     *      The first <code>ObjectSinkNode</code>.
      */
-    public final TupleSinkNode getFirst() {
+    public final RightTupleSinkNode getFirst() {
         return this.firstNode;
     }
 
     /**
      * Return the last node in the list
      * @return
-     *      The last <code>TupleSinkNode</code>.
+     *      The last <code>ObjectSinkNode</code>.
      */
-    public final TupleSinkNode getLast() {
+    public final RightTupleSinkNode getLast() {
         return this.lastNode;
     }
 
@@ -127,17 +127,17 @@ public class TupleSinkNodeList
      * node then both first and last node references are set to null.
      * 
      * @return
-     *      The first <code>TupleSinkNode</code>.
+     *      The first <code>ObjectSinkNode</code>.
      */
-    public TupleSinkNode removeFirst() {
+    public RightTupleSinkNode removeFirst() {
         if ( this.firstNode == null ) {
             return null;
         }
-        final TupleSinkNode node = this.firstNode;
-        this.firstNode = node.getNextTupleSinkNode();
-        node.setNextTupleSinkNode( null );
+        final RightTupleSinkNode node = this.firstNode;
+        this.firstNode = node.getNextRightTupleSinkNode();
+        node.setNextRightTupleSinkNode( null );
         if ( this.firstNode != null ) {
-            this.firstNode.setPreviousTupleSinkNode( null );
+            this.firstNode.setPreviousRightTupleSinkNode( null );
         } else {
             this.lastNode = null;
         }
@@ -150,17 +150,17 @@ public class TupleSinkNodeList
      * node then both first and last node references are set to null.
      * 
      * @return
-     *      The first <code>TupleSinkNode</code>.
+     *      The first <code>ObjectSinkNode</code>.
      */
-    public TupleSinkNode removeLast() {
+    public RightTupleSinkNode removeLast() {
         if ( this.lastNode == null ) {
             return null;
         }
-        final TupleSinkNode node = this.lastNode;
-        this.lastNode = node.getPreviousTupleSinkNode();
-        node.setPreviousTupleSinkNode( null );
+        final RightTupleSinkNode node = this.lastNode;
+        this.lastNode = node.getPreviousRightTupleSinkNode();
+        node.setPreviousRightTupleSinkNode( null );
         if ( this.lastNode != null ) {
-            this.lastNode.setNextTupleSinkNode( null );
+            this.lastNode.setNextRightTupleSinkNode( null );
         } else {
             this.firstNode = this.lastNode;
         }
@@ -198,8 +198,8 @@ public class TupleSinkNodeList
      */
     public Iterator iterator() {
         return new Iterator() {
-            private TupleSinkNode currentNode = null;
-            private TupleSinkNode nextNode    = getFirst();
+            private RightTupleSinkNode currentNode = null;
+            private RightTupleSinkNode nextNode    = getFirst();
 
             public boolean hasNext() {
                 return (this.nextNode != null);
@@ -208,7 +208,7 @@ public class TupleSinkNodeList
             public Object next() {
                 this.currentNode = this.nextNode;
                 if ( this.currentNode != null ) {
-                    this.nextNode = this.currentNode.getNextTupleSinkNode();
+                    this.nextNode = this.currentNode.getNextRightTupleSinkNode();
                 } else {
                     throw new NoSuchElementException( "No more elements to return" );
                 }
@@ -217,7 +217,7 @@ public class TupleSinkNodeList
 
             public void remove() {
                 if ( this.currentNode != null ) {
-                    TupleSinkNodeList.this.remove( this.currentNode );
+                    RightTupleSinkNodeList.this.remove( this.currentNode );
                     this.currentNode = null;
                 } else {
                     throw new IllegalStateException( "No item to remove. Call next() before calling remove()." );

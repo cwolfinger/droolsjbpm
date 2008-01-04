@@ -21,7 +21,7 @@ import java.util.Arrays;
 import org.drools.RuntimeDroolsException;
 import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
-import org.drools.reteoo.ReteTuple;
+import org.drools.reteoo.LeftTuple;
 import org.drools.spi.AlphaNodeFieldConstraint;
 import org.drools.spi.BetaNodeFieldConstraint;
 import org.drools.spi.Extractor;
@@ -249,7 +249,7 @@ public class PredicateConstraint
         }
     }
 
-    public boolean isAllowedCachedRight(final ReteTuple tuple,
+    public boolean isAllowedCachedRight(final LeftTuple tuple,
                                         final ContextEntry context) {
         try {
             final PredicateContextEntry ctx = (PredicateContextEntry) context;
@@ -287,7 +287,7 @@ public class PredicateConstraint
 
         private static final long    serialVersionUID = 400L;
 
-        public ReteTuple             leftTuple;
+        public LeftTuple             leftTuple;
         public Object                rightObject;
         public InternalWorkingMemory workingMemory;
 
@@ -311,7 +311,7 @@ public class PredicateConstraint
         }
 
         public void updateFromTuple(final InternalWorkingMemory workingMemory,
-                                    final ReteTuple tuple) {
+                                    final LeftTuple tuple) {
             this.workingMemory = workingMemory;
             this.leftTuple = tuple;
         }

@@ -23,9 +23,10 @@ import java.util.List;
 import org.drools.RuleBaseConfiguration;
 import org.drools.base.evaluators.Operator;
 import org.drools.reteoo.BetaMemory;
-import org.drools.reteoo.FactHandleMemory;
-import org.drools.reteoo.ReteTuple;
-import org.drools.reteoo.TupleMemory;
+import org.drools.reteoo.RightTuple;
+import org.drools.reteoo.RightTupleMemory;
+import org.drools.reteoo.LeftTuple;
+import org.drools.reteoo.LeftTupleMemory;
 import org.drools.rule.ContextEntry;
 import org.drools.rule.VariableConstraint;
 import org.drools.spi.BetaNodeFieldConstraint;
@@ -132,7 +133,7 @@ public class DefaultBetaConstraints
      * @see org.drools.common.BetaNodeConstraints#updateFromTuple(org.drools.reteoo.ReteTuple)
      */
     public void updateFromTuple(final InternalWorkingMemory workingMemory,
-                                final ReteTuple tuple) {
+                                final LeftTuple tuple) {
         for ( ContextEntry context = this.contexts; context != null; context = context.getNext() ) {
             context.updateFromTuple( workingMemory,
                                      tuple );
@@ -142,11 +143,11 @@ public class DefaultBetaConstraints
     /* (non-Javadoc)
      * @see org.drools.common.BetaNodeConstraints#updateFromFactHandle(org.drools.common.InternalFactHandle)
      */
-    public void updateFromFactHandle(final InternalWorkingMemory workingMemory,
-                                     final InternalFactHandle handle) {
+    public void updateFromRightTuple(final InternalWorkingMemory workingMemory,
+                                     final RightTuple rightTuple) {
         for ( ContextEntry context = this.contexts; context != null; context = context.getNext() ) {
             context.updateFromFactHandle( workingMemory,
-                                          handle );
+                                          rightTuple.getHandle() );
         }
     }
 
@@ -172,7 +173,7 @@ public class DefaultBetaConstraints
     /* (non-Javadoc)
      * @see org.drools.common.BetaNodeConstraints#isAllowedCachedRight(org.drools.reteoo.ReteTuple)
      */
-    public boolean isAllowedCachedRight(final ReteTuple tuple) {
+    public boolean isAllowedCachedRight(final LeftTuple tuple) {
         // skip the indexed constraints
         LinkedListEntry entry = (LinkedListEntry) findNode( this.indexed );
 
@@ -218,24 +219,24 @@ public class DefaultBetaConstraints
             }
 
             final FieldIndex[] indexes = (FieldIndex[]) list.toArray( new FieldIndex[list.size()] );
-            TupleMemory tupleMemory;
+            LeftTupleMemory tupleMemory;
             if ( config.isIndexLeftBetaMemory() ) {
                 tupleMemory = new TupleIndexHashTable( indexes );
             } else {
                 tupleMemory = new TupleHashTable();
             }
 
-            FactHandleMemory factHandleMemory;
+            RightTupleMemory factHandleMemory;
             if ( config.isIndexRightBetaMemory() ) {
                 factHandleMemory = new FactHandleIndexHashTable( indexes );
             } else {
-                factHandleMemory = config.isSequential() ? (FactHandleMemory) new FactList() : (FactHandleMemory) new FactHashTable();
+                factHandleMemory = config.isSequential() ? (RightTupleMemory) new FactList() : (RightTupleMemory) new FactHashTable();
             }
             memory = new BetaMemory( config.isSequential() ? null : tupleMemory,
                                      factHandleMemory );
         } else {
             memory = new BetaMemory( config.isSequential() ? null : new TupleHashTable(),
-                                     config.isSequential() ? (FactHandleMemory) new FactList() : (FactHandleMemory) new FactHashTable() );
+                                     config.isSequential() ? (RightTupleMemory) new FactList() : (RightTupleMemory) new FactHashTable() );
         }
 
         return memory;

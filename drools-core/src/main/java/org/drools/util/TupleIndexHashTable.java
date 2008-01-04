@@ -4,12 +4,13 @@
 package org.drools.util;
 
 import org.drools.common.InternalFactHandle;
-import org.drools.reteoo.ReteTuple;
-import org.drools.reteoo.TupleMemory;
+import org.drools.reteoo.LeftTuple;
+import org.drools.reteoo.LeftTupleMemory;
+import org.drools.reteoo.RightTuple;
 
 public class TupleIndexHashTable extends AbstractHashTable
     implements
-    TupleMemory {
+    LeftTupleMemory {
 
     private static final long               serialVersionUID = 400L;
 
@@ -69,11 +70,11 @@ public class TupleIndexHashTable extends AbstractHashTable
         return this.tupleValueFullIterator;
     }
 
-    public Iterator iterator(final InternalFactHandle handle) {
+    public Iterator iterator(final RightTuple rightTuple) {
         if ( this.tupleValueIterator == null ) {
             this.tupleValueIterator = new FieldIndexHashTableIterator();
         }
-        final FieldIndexEntry entry = get( handle );
+        final FieldIndexEntry entry = get( rightTuple );
         this.tupleValueIterator.reset( (entry != null) ? entry.first : null );
         return this.tupleValueIterator;
     }
@@ -188,18 +189,18 @@ public class TupleIndexHashTable extends AbstractHashTable
         return result;
     }       
 
-    public void add(final ReteTuple tuple) {
+    public void add(final LeftTuple tuple) {
         final FieldIndexEntry entry = getOrCreate( tuple );
         entry.add( tuple );
         this.factSize++;
     }
 
-    public boolean add(final ReteTuple tuple,
+    public boolean add(final LeftTuple tuple,
                        final boolean checkExists) {
         throw new UnsupportedOperationException( "FieldIndexHashTable does not support add(ReteTuple tuple, boolean checkExists)" );
     }
 
-    public ReteTuple remove(final ReteTuple tuple) {
+    public LeftTuple remove(final LeftTuple tuple) {
         final int hashCode = this.index.hashCodeOf( tuple );
 
         final int index = indexOf( hashCode,
@@ -213,7 +214,7 @@ public class TupleIndexHashTable extends AbstractHashTable
             final FieldIndexEntry next = (FieldIndexEntry) current.next;
             if ( current.matches( tuple,
                                   hashCode ) ) {
-                final ReteTuple old = current.remove( tuple );
+                final LeftTuple old = current.remove( tuple );
                 this.factSize--;
                 // If the FactEntryIndex is empty, then remove it from the hash table
                 if ( current.first == null ) {
@@ -233,7 +234,7 @@ public class TupleIndexHashTable extends AbstractHashTable
         return null;
     }
 
-    public boolean contains(final ReteTuple tuple) {
+    public boolean contains(final LeftTuple tuple) {
         final int hashCode = this.index.hashCodeOf( tuple );
 
         final int index = indexOf( hashCode,
@@ -250,9 +251,9 @@ public class TupleIndexHashTable extends AbstractHashTable
         return false;
     }
 
-    public FieldIndexEntry get(final InternalFactHandle handle) {
-        final Object object = handle.getObject();
-        final int hashCode = this.index.hashCodeOf( handle.getObject() );
+    public FieldIndexEntry get(final RightTuple rightTuple) {
+        final Object object = rightTuple.getHandle().getObject();
+        final int hashCode = this.index.hashCodeOf( object );
 
         final int index = indexOf( hashCode,
                                    this.table.length );
@@ -276,7 +277,7 @@ public class TupleIndexHashTable extends AbstractHashTable
      * @param value
      * @return
      */
-    private FieldIndexEntry getOrCreate(final ReteTuple tuple) {
+    private FieldIndexEntry getOrCreate(final LeftTuple tuple) {
         final int hashCode = this.index.hashCodeOf( tuple );
 
         final int index = indexOf( hashCode,
@@ -315,8 +316,9 @@ public class TupleIndexHashTable extends AbstractHashTable
         Entry {
 
         private static final long serialVersionUID = 400L;
+//      private Entry             previous;
         private Entry             next;
-        private ReteTuple         first;
+        private LeftTuple         first;
         private final int         hashCode;
         private Index             index;
 
@@ -334,31 +336,31 @@ public class TupleIndexHashTable extends AbstractHashTable
             this.next = next;
         }
 
-        public ReteTuple getFirst() {
+        public LeftTuple getFirst() {
             return this.first;
         }
 
-        public void add(final ReteTuple tuple) {
+        public void add(final LeftTuple tuple) {
             tuple.setNext( this.first );
             this.first = tuple;
         }
 
-        public ReteTuple get(final ReteTuple tuple) {
-            ReteTuple current = this.first;
+        public LeftTuple get(final LeftTuple tuple) {
+            LeftTuple current = this.first;
             while ( current != null ) {
                 if ( tuple.equals( current ) ) {
                     return current;
                 }
-                current = (ReteTuple) current.getNext();
+                current = (LeftTuple) current.getNext();
             }
             return null;
         }
 
-        public ReteTuple remove(final ReteTuple tuple) {
-            ReteTuple previous = this.first;
-            ReteTuple current = previous;
+        public LeftTuple remove(final LeftTuple tuple) {
+            LeftTuple previous = this.first;
+            LeftTuple current = previous;
             while ( current != null ) {
-                final ReteTuple next = (ReteTuple) current.getNext();
+                final LeftTuple next = (LeftTuple) current.getNext();
                 if ( tuple.equals( current ) ) {
                     if ( this.first == current ) {
                         this.first = next;
@@ -380,7 +382,7 @@ public class TupleIndexHashTable extends AbstractHashTable
                                                                         this.first );
         }
 
-        public boolean matches(final ReteTuple tuple,
+        public boolean matches(final LeftTuple tuple,
                                final int tupleHashCode) {
             return this.hashCode == tupleHashCode && this.index.equal( this.first,
                                                                        tuple );
@@ -393,6 +395,14 @@ public class TupleIndexHashTable extends AbstractHashTable
         public boolean equals(final Object object) {
             final FieldIndexEntry other = (FieldIndexEntry) object;
             return this.hashCode == other.hashCode && this.index == other.index;
+        }
+
+        public Entry getPrevious() {
+            return null;
+        }
+
+        public void setPrevious(Entry previous) {
+//          this.previous = previous;           
         }
     }
 

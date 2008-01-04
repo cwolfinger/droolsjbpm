@@ -38,19 +38,19 @@ import org.drools.util.ObjectHashMap.ObjectEntry;
  * @author <a href="mailto:etirelli@redhat.com">Edson Tirelli</a>
  *
  */
-public class RightInputAdapterNode extends ObjectSource
+public class RightInputAdapterNode extends RightTupleSource
     implements
-    TupleSinkNode,
+    LeftTupleSinkNode,
     NodeMemory {
 
     private static final long serialVersionUID = 400L;
 
-    private final TupleSource tupleSource;
+    private final LeftTupleSource tupleSource;
     
     protected boolean          tupleMemoryEnabled;      
 
-    private TupleSinkNode       previousTupleSinkNode;
-    private TupleSinkNode       nextTupleSinkNode;
+    private LeftTupleSinkNode       previousTupleSinkNode;
+    private LeftTupleSinkNode       nextTupleSinkNode;
 
     /**
      * Constructor specifying the unique id of the node in the Rete network, the position of the propagating <code>FactHandleImpl</code> in
@@ -62,7 +62,7 @@ public class RightInputAdapterNode extends ObjectSource
      *      The <code>TupleSource</code> which propagates the received <code>ReteTuple</code>
      */
     public RightInputAdapterNode(final int id,
-                                 final TupleSource source,
+                                 final LeftTupleSource source,
                                  final BuildContext context) {
         super( id );
         this.tupleSource = source;
@@ -87,7 +87,7 @@ public class RightInputAdapterNode extends ObjectSource
      * @param workingMemory
      *            the <code>WorkingMemory</code> session.
      */
-    public void assertTuple(final ReteTuple tuple,
+    public void assertTuple(final LeftTuple tuple,
                             final PropagationContext context,
                             final InternalWorkingMemory workingMemory) {
 
@@ -102,7 +102,7 @@ public class RightInputAdapterNode extends ObjectSource
         }
 
         // propagate it
-        this.sink.propagateAssertObject( handle,
+        this.sink.propagateAssertRightTuple( handle,
                                          context,
                                          workingMemory );
     }
@@ -111,7 +111,7 @@ public class RightInputAdapterNode extends ObjectSource
      * Retracts the corresponding tuple by retrieving and retracting
      * the fact created for it
      */
-    public void retractTuple(final ReteTuple tuple,
+    public void retractTuple(final LeftTuple tuple,
                              final PropagationContext context,
                              final InternalWorkingMemory workingMemory) {
 
@@ -121,7 +121,7 @@ public class RightInputAdapterNode extends ObjectSource
         final InternalFactHandle handle = (InternalFactHandle) memory.remove( tuple );
 
         // propagate a retract for it
-        this.sink.propagateRetractObject( handle,
+        this.sink.propagateRetractRightTuple( handle,
                                           context,
                                           workingMemory,
                                           true );
@@ -149,7 +149,7 @@ public class RightInputAdapterNode extends ObjectSource
         }
     }
 
-    public void updateSink(final ObjectSink sink,
+    public void updateSink(final RightTupleSink sink,
                            final PropagationContext context,
                            final InternalWorkingMemory workingMemory) {
 
@@ -159,7 +159,7 @@ public class RightInputAdapterNode extends ObjectSource
 
         // iterates over all propagated handles and assert them to the new sink
         for ( ObjectEntry entry = (ObjectEntry) it.next(); entry != null; entry = (ObjectEntry) it.next() ) {
-            sink.assertObject( (InternalFactHandle) entry.getValue(),
+            sink.assertRightTuple( (InternalFactHandle) entry.getValue(),
                                context,
                                workingMemory );
         }
@@ -168,7 +168,7 @@ public class RightInputAdapterNode extends ObjectSource
     public void remove(final BaseNode node,
                        final InternalWorkingMemory[] workingMemories) {
         if ( !node.isInUse() ) {
-            removeObjectSink( (ObjectSink) node );
+            removeObjectSink( (RightTupleSink) node );
         }
         removeShare();
         this.tupleSource.remove( this,
@@ -188,7 +188,7 @@ public class RightInputAdapterNode extends ObjectSource
      * @return
      *      The next TupleSinkNode
      */
-    public TupleSinkNode getNextTupleSinkNode() {
+    public LeftTupleSinkNode getNextLeftTupleSinkNode() {
         return this.nextTupleSinkNode;
     }
 
@@ -197,7 +197,7 @@ public class RightInputAdapterNode extends ObjectSource
      * @param next
      *      The next TupleSinkNode
      */
-    public void setNextTupleSinkNode(final TupleSinkNode next) {
+    public void setNextLeftTupleSinkNode(final LeftTupleSinkNode next) {
         this.nextTupleSinkNode = next;
     }
 
@@ -206,7 +206,7 @@ public class RightInputAdapterNode extends ObjectSource
      * @return
      *      The previous TupleSinkNode
      */
-    public TupleSinkNode getPreviousTupleSinkNode() {
+    public LeftTupleSinkNode getPreviousRightTupleSinkNode() {
         return this.previousTupleSinkNode;
     }
 
@@ -215,7 +215,7 @@ public class RightInputAdapterNode extends ObjectSource
      * @param previous
      *      The previous TupleSinkNode
      */
-    public void setPreviousTupleSinkNode(final TupleSinkNode previous) {
+    public void setPreviousLeftTupleSinkNode(final LeftTupleSinkNode previous) {
         this.previousTupleSinkNode = previous;
     }
 

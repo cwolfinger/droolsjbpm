@@ -23,9 +23,10 @@ import java.util.List;
 import org.drools.RuleBaseConfiguration;
 import org.drools.base.evaluators.Operator;
 import org.drools.reteoo.BetaMemory;
-import org.drools.reteoo.FactHandleMemory;
-import org.drools.reteoo.ReteTuple;
-import org.drools.reteoo.TupleMemory;
+import org.drools.reteoo.RightTuple;
+import org.drools.reteoo.RightTupleMemory;
+import org.drools.reteoo.LeftTuple;
+import org.drools.reteoo.LeftTupleMemory;
 import org.drools.rule.ContextEntry;
 import org.drools.rule.VariableConstraint;
 import org.drools.spi.BetaNodeFieldConstraint;
@@ -121,7 +122,7 @@ public class DoubleBetaConstraints
      * @see org.drools.common.BetaNodeConstraints#updateFromTuple(org.drools.reteoo.ReteTuple)
      */
     public void updateFromTuple(final InternalWorkingMemory workingMemory,
-                                final ReteTuple tuple) {
+                                final LeftTuple tuple) {
         this.context0.updateFromTuple( workingMemory,
                                        tuple );
         this.context1.updateFromTuple( workingMemory,
@@ -131,12 +132,12 @@ public class DoubleBetaConstraints
     /* (non-Javadoc)
      * @see org.drools.common.BetaNodeConstraints#updateFromFactHandle(org.drools.common.InternalFactHandle)
      */
-    public void updateFromFactHandle(final InternalWorkingMemory workingMemory,
-                                     final InternalFactHandle handle) {
+    public void updateFromRightTuple(final InternalWorkingMemory workingMemory,
+                                     final RightTuple rightTuple) {
         this.context0.updateFromFactHandle( workingMemory,
-                                            handle );
+                                            rightTuple.getHandle() );
         this.context1.updateFromFactHandle( workingMemory,
-                                            handle );
+                                            rightTuple.getHandle() );
     }
 
     /* (non-Javadoc)
@@ -151,7 +152,7 @@ public class DoubleBetaConstraints
     /* (non-Javadoc)
      * @see org.drools.common.BetaNodeConstraints#isAllowedCachedRight(org.drools.reteoo.ReteTuple)
      */
-    public boolean isAllowedCachedRight(final ReteTuple tuple) {
+    public boolean isAllowedCachedRight(final LeftTuple tuple) {
         return this.constraint0.isAllowedCachedRight( tuple,
                                                       this.context0 ) && this.constraint1.isAllowedCachedRight( tuple,
                                                                                                                 this.context1 );
@@ -200,24 +201,24 @@ public class DoubleBetaConstraints
         if ( !list.isEmpty() ) {
             final FieldIndex[] indexes = (FieldIndex[]) list.toArray( new FieldIndex[list.size()] );
 
-            TupleMemory tupleMemory;
+            LeftTupleMemory tupleMemory;
             if ( config.isIndexLeftBetaMemory() ) {
                 tupleMemory = new TupleIndexHashTable( indexes );
             } else {
                 tupleMemory = new TupleHashTable();
             }
 
-            FactHandleMemory factHandleMemory;
+            RightTupleMemory factHandleMemory;
             if ( config.isIndexRightBetaMemory() ) {
                 factHandleMemory = new FactHandleIndexHashTable( indexes );
             } else {
-                factHandleMemory = config.isSequential() ? (FactHandleMemory) new FactList() : (FactHandleMemory) new FactHashTable();
+                factHandleMemory = config.isSequential() ? (RightTupleMemory) new FactList() : (RightTupleMemory) new FactHashTable();
             }
             memory = new BetaMemory( config.isSequential() ? null : tupleMemory,
                                      factHandleMemory );
         } else {
             memory = new BetaMemory( config.isSequential() ? null : new TupleHashTable(),
-                                     config.isSequential() ? (FactHandleMemory) new FactList() : (FactHandleMemory) new FactHashTable() );
+                                     config.isSequential() ? (RightTupleMemory) new FactList() : (RightTupleMemory) new FactHashTable() );
         }
 
         return memory;

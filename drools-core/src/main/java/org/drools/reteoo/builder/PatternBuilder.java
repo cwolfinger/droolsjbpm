@@ -25,7 +25,7 @@ import org.drools.base.DroolsQuery;
 import org.drools.common.InstanceNotEqualsConstraint;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.reteoo.AlphaNode;
-import org.drools.reteoo.ObjectSource;
+import org.drools.reteoo.RightTupleSource;
 import org.drools.reteoo.ObjectTypeNode;
 import org.drools.rule.Declaration;
 import org.drools.rule.EntryPoint;
@@ -189,7 +189,7 @@ public class PatternBuilder
             }
         }
 
-        context.setObjectSource( (ObjectSource) utils.attachNode( context,
+        context.setObjectSource( (RightTupleSource) utils.attachNode( context,
                                                                   new ObjectTypeNode( context.getNextId(),
                                                                                       pattern.getObjectType(),
                                                                                       context ) ) );
@@ -197,7 +197,7 @@ public class PatternBuilder
         for ( final Iterator it = alphaConstraints.iterator(); it.hasNext(); ) {
             final AlphaNodeFieldConstraint constraint = (AlphaNodeFieldConstraint) it.next();
 
-            context.setObjectSource( (ObjectSource) utils.attachNode( context,
+            context.setObjectSource( (RightTupleSource) utils.attachNode( context,
                                                                       new AlphaNode( context.getNextId(),
                                                                                      (AlphaNodeFieldConstraint) constraint,
                                                                                      context.getObjectSource(),

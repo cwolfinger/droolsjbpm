@@ -37,14 +37,14 @@ import org.drools.util.TupleHashTable;
  * 
  * @see EvalConditionNode
  * @see Eval
- * @see ReteTuple
+ * @see LeftTuple
  * 
  * @author <a href="mailto:mark.proctor@jboss.com">Mark Proctor</a>
  * @author <a href="mailto:bob@werken.com">Bob McWhirter</a>
  */
-public class EvalConditionNode extends TupleSource
+public class EvalConditionNode extends LeftTupleSource
     implements
-    TupleSinkNode,
+    LeftTupleSinkNode,
     NodeMemory {
     // ------------------------------------------------------------
     // Instance members
@@ -59,12 +59,12 @@ public class EvalConditionNode extends TupleSource
     private final EvalCondition condition;
 
     /** The source of incoming <code>Tuples</code>. */
-    private final TupleSource   tupleSource;
+    private final LeftTupleSource   tupleSource;
     
     protected boolean          tupleMemoryEnabled;        
 
-    private TupleSinkNode       previousTupleSinkNode;
-    private TupleSinkNode       nextTupleSinkNode;
+    private LeftTupleSinkNode       previousTupleSinkNode;
+    private LeftTupleSinkNode       nextTupleSinkNode;
 
     // ------------------------------------------------------------
     // Constructors
@@ -80,7 +80,7 @@ public class EvalConditionNode extends TupleSource
      * @param eval
      */
     public EvalConditionNode(final int id,
-                             final TupleSource tupleSource,
+                             final LeftTupleSource tupleSource,
                              final EvalCondition eval,
                              final BuildContext context) {
         super( id );
@@ -138,7 +138,7 @@ public class EvalConditionNode extends TupleSource
      * @throws AssertionException
      *             If an error occurs while asserting.
      */
-    public void assertTuple(final ReteTuple tuple,
+    public void assertTuple(final LeftTuple tuple,
                             final PropagationContext context,
                             final InternalWorkingMemory workingMemory) {
 
@@ -157,13 +157,13 @@ public class EvalConditionNode extends TupleSource
         }
     }
 
-    public void retractTuple(final ReteTuple tuple,
+    public void retractTuple(final LeftTuple tuple,
                              final PropagationContext context,
                              final InternalWorkingMemory workingMemory) {
         final TupleHashTable memory = (TupleHashTable) workingMemory.getNodeMemory( this );
 
         // can we improve that?
-        final ReteTuple memTuple = memory.remove( tuple );
+        final LeftTuple memTuple = memory.remove( tuple );
         if ( memTuple != null ) {
             this.sink.propagateRetractTuple( memTuple,
                                              context,
@@ -205,14 +205,14 @@ public class EvalConditionNode extends TupleSource
     /* (non-Javadoc)
      * @see org.drools.reteoo.BaseNode#updateNewNode(org.drools.reteoo.WorkingMemoryImpl, org.drools.spi.PropagationContext)
      */
-    public void updateSink(final TupleSink sink,
+    public void updateSink(final LeftTupleSink sink,
                            final PropagationContext context,
                            final InternalWorkingMemory workingMemory) {
 
         final TupleHashTable memory = (TupleHashTable) workingMemory.getNodeMemory( this );
 
         final Iterator it = memory.iterator();
-        for ( ReteTuple tuple = (ReteTuple) it.next(); tuple != null; tuple = (ReteTuple) it.next() ) {
+        for ( LeftTuple tuple = (LeftTuple) it.next(); tuple != null; tuple = (LeftTuple) it.next() ) {
             sink.assertTuple( tuple,
                               context,
                               workingMemory );
@@ -222,7 +222,7 @@ public class EvalConditionNode extends TupleSource
     public void remove(final BaseNode node,
                        final InternalWorkingMemory[] workingMemories) {
         if ( !node.isInUse() ) {
-            removeTupleSink( (TupleSink) node );
+            removeTupleSink( (LeftTupleSink) node );
         }
         removeShare();
         if ( !this.isInUse() ) {
@@ -248,7 +248,7 @@ public class EvalConditionNode extends TupleSource
      * @return
      *      The next TupleSinkNode
      */
-    public TupleSinkNode getNextTupleSinkNode() {
+    public LeftTupleSinkNode getNextLeftTupleSinkNode() {
         return this.nextTupleSinkNode;
     }
 
@@ -257,7 +257,7 @@ public class EvalConditionNode extends TupleSource
      * @param next
      *      The next TupleSinkNode
      */
-    public void setNextTupleSinkNode(final TupleSinkNode next) {
+    public void setNextLeftTupleSinkNode(final LeftTupleSinkNode next) {
         this.nextTupleSinkNode = next;
     }
 
@@ -266,7 +266,7 @@ public class EvalConditionNode extends TupleSource
      * @return
      *      The previous TupleSinkNode
      */
-    public TupleSinkNode getPreviousTupleSinkNode() {
+    public LeftTupleSinkNode getPreviousRightTupleSinkNode() {
         return this.previousTupleSinkNode;
     }
 
@@ -275,7 +275,7 @@ public class EvalConditionNode extends TupleSource
      * @param previous
      *      The previous TupleSinkNode
      */
-    public void setPreviousTupleSinkNode(final TupleSinkNode previous) {
+    public void setPreviousLeftTupleSinkNode(final LeftTupleSinkNode previous) {
         this.previousTupleSinkNode = previous;
     }
 

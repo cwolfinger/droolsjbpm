@@ -143,7 +143,9 @@ public class ObjectHashSet extends AbstractHashTable {
 
         private int               hashCode;
 
-        private Entry             next;
+//        private Entry             previous;
+        
+        private Entry             next;        
 
         public ObjectEntry(final Object value,
                            final int hashCode) {
@@ -154,6 +156,15 @@ public class ObjectHashSet extends AbstractHashTable {
         public Object getValue() {
             return this.value;
         }
+        
+        public void setPrevious(Entry previous) {
+//            this.previous = previous;            
+        }        
+        
+        public Entry getPrevious() {
+            return null;
+//            return this.previous;
+        }        
 
         public Entry getNext() {
             return this.next;
@@ -161,7 +172,7 @@ public class ObjectHashSet extends AbstractHashTable {
 
         public void setNext(final Entry next) {
             this.next = next;
-        }
+        }              
 
         public int hashCode() {
             return this.hashCode;

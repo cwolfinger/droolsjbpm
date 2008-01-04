@@ -117,7 +117,7 @@ public class ReteTest extends DroolsTestCase {
         // ArrayList matches all three ObjectTypeNodes
         final DefaultFactHandle h1 = new DefaultFactHandle( 1,
                                                             new ArrayList() );
-        rete.assertObject( h1,
+        rete.assertRightTuple( h1,
                            new PropagationContextImpl( 0,
                                                        PropagationContext.ASSERTION,
                                                        null,
@@ -126,7 +126,7 @@ public class ReteTest extends DroolsTestCase {
 
         // LinkedList matches two ObjectTypeNodes        
         h1.setObject( new LinkedList() );
-        rete.assertObject( h1,
+        rete.assertRightTuple( h1,
                            new PropagationContextImpl( 0,
                                                        PropagationContext.ASSERTION,
                                                        null,
@@ -167,7 +167,7 @@ public class ReteTest extends DroolsTestCase {
         final DefaultFactHandle h1 = new DefaultFactHandle( 1,
                                                             string );
 
-        rete.assertObject( h1,
+        rete.assertRightTuple( h1,
                            new PropagationContextImpl( 0,
                                                        PropagationContext.ASSERTION,
                                                        null,
@@ -182,7 +182,7 @@ public class ReteTest extends DroolsTestCase {
         final DefaultFactHandle h2 = new DefaultFactHandle( 1,
                                                             list );
 
-        rete.assertObject( h2,
+        rete.assertRightTuple( h2,
                            new PropagationContextImpl( 0,
                                                        PropagationContext.ASSERTION,
                                                        null,
@@ -305,7 +305,7 @@ public class ReteTest extends DroolsTestCase {
         final DefaultFactHandle h1 = new DefaultFactHandle( 1,
                                                             string );
 
-        rete.assertObject( h1,
+        rete.assertRightTuple( h1,
                            new PropagationContextImpl( 0,
                                                        PropagationContext.ASSERTION,
                                                        null,
@@ -322,14 +322,14 @@ public class ReteTest extends DroolsTestCase {
                                                             list );
 
         // need  to assert first, to force it to build  up the cache
-        rete.assertObject( h2,
+        rete.assertRightTuple( h2,
                            new PropagationContextImpl( 0,
                                                        PropagationContext.ASSERTION,
                                                        null,
                                                        null ),
                            workingMemory );
 
-        rete.retractObject( h2,
+        rete.retractRightTuple( h2,
                             new PropagationContextImpl( 0,
                                                         PropagationContext.ASSERTION,
                                                         null,
@@ -364,7 +364,7 @@ public class ReteTest extends DroolsTestCase {
         final DefaultFactHandle h1 = new DefaultFactHandle( 1,
                                                             cheese );
 
-        rete.assertObject( h1,
+        rete.assertRightTuple( h1,
                            new PropagationContextImpl( 0,
                                                        PropagationContext.ASSERTION,
                                                        null,
@@ -404,7 +404,7 @@ public class ReteTest extends DroolsTestCase {
         final DefaultFactHandle h1 = new DefaultFactHandle( 1,
                                                             cheese );
 
-        rete.assertObject( h1,
+        rete.assertRightTuple( h1,
                            new PropagationContextImpl( 0,
                                                        PropagationContext.ASSERTION,
                                                        null,

@@ -6,12 +6,13 @@ package org.drools.util;
 import java.io.Serializable;
 
 import org.drools.common.InternalFactHandle;
-import org.drools.reteoo.FactHandleMemory;
-import org.drools.reteoo.ReteTuple;
+import org.drools.reteoo.RightTuple;
+import org.drools.reteoo.RightTupleMemory;
+import org.drools.reteoo.LeftTuple;
 
 public class FactList
     implements
-    FactHandleMemory {
+    RightTupleMemory {
     private static final long serialVersionUID = 400L;
 
     private final LinkedList list;
@@ -20,22 +21,23 @@ public class FactList
         this.list = new LinkedList();
     }
 
-    public Iterator iterator(final ReteTuple tuple) {
+    public Iterator iterator(final LeftTuple tuple) {
         return iterator();
     }
 
-    public boolean add(final InternalFactHandle handle) {
-        return add( handle,
+    public boolean add(final RightTuple rightTuple) {
+        return add( rightTuple,
                     true );
     }
 
-    public boolean add(final InternalFactHandle handle,
+    public boolean add(final RightTuple rightTuple,
                        final boolean checkExists) {
-        this.list.add( new FactEntryImpl( handle ) );
+        this.list.add( rightTuple );
         return true;
     }
 
-    public boolean contains(final InternalFactHandle handle) {
+    public boolean contains(final RightTuple rightTuple) {
+        InternalFactHandle handle = rightTuple.getHandle();
         Iterator it = this.list.iterator();
         for ( Object object = it.next(); object != null; object = it.next() ) {
             if ( handle.equals( ((LinkedListEntry)object).getObject() ) ) {
@@ -45,11 +47,12 @@ public class FactList
         return false;
     }
 
-    public boolean remove(final InternalFactHandle handle) {
-        Iterator it = this.list.iterator();
+    public boolean remove(final RightTuple rightTuple) {
+        InternalFactHandle handle = rightTuple.getHandle();
+        Iterator it = this.list.iterator();        
         for ( Object object = it.next(); object != null; object = it.next() ) {
             if ( handle.equals( ((LinkedListEntry)object).getObject() ) ) {
-                this.list.remove( (LinkedListEntry)object );
+                this.list.remove( rightTuple );
                 return true;
             }
         }
@@ -66,16 +69,5 @@ public class FactList
 
     public boolean isIndexed() {
         return false;
-    }
-    
-    public static class FactEntryImpl extends LinkedListEntry implements FactEntry, Serializable {    
-        public FactEntryImpl(InternalFactHandle handle) {
-            super(handle);
-        }
-
-        public InternalFactHandle getFactHandle() {
-            return (InternalFactHandle) getObject();
-        }
-        
     }
 }

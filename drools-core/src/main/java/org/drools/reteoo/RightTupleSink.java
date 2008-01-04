@@ -16,44 +16,52 @@ package org.drools.reteoo;
  * limitations under the License.
  */
 
-import java.io.Serializable;
-
 import org.drools.common.InternalWorkingMemory;
 import org.drools.spi.PropagationContext;
 
 /**
- * Receiver of propagated <code>ReteTuple</code>s from a
- * <code>TupleSource</code>.
+ * Receiver of propagated <code>FactHandleImpl</code>s from a
+ * <code>ObjectSource</code>.
  * 
- * @see TupleSource
+ * @see ObectSource
  * 
  * @author <a href="mailto:mark.proctor@jboss.com">Mark Proctor</a>
  * @author <a href="mailto:bob@werken.com">Bob McWhirter</a>
+ *
  */
-public interface TupleSink
+public interface RightTupleSink
     extends
-    Serializable,
     Sink {
 
     /**
-     * Assert a new <code>ReteTuple</code>.
+     * Assert a new <code>FactHandleImpl</code>.
      * 
-     * @param tuple
-     *            The <code>ReteTuple</code> to propagate.
+     * @param rightTuple
+     *            The asserted <code>FactHandle/code>.
      * @param context
-     *             The <code>PropagationContext</code> of the <code>WorkingMemory<code> action            
+     *             The <code>PropagationContext</code> of the <code>WorkingMemory<code> action.           
      * @param workingMemory
      *            the <code>WorkingMemory</code> session.
      */
-    void assertTuple(ReteTuple tuple,
-                     PropagationContext context,
-                     InternalWorkingMemory workingMemory);
-
-    void retractTuple(ReteTuple tuple,
+    void assertRightTuple(RightTuple rightTuple,
                       PropagationContext context,
                       InternalWorkingMemory workingMemory);
-    
-    public boolean isTupleMemoryEnabled();
 
-    public void setTupleMemoryEnabled(boolean tupleMemoryEnabled);       
+    /**
+     * Retract an existing <code>FactHandleImpl</code>.
+     * 
+     * @param rightTuple
+     *            The <code>FactHandle/code> to retract.
+     * @param context
+     *             The <code>PropagationContext</code> of the <code>WorkingMemory<code> action.           
+     * @param workingMemory
+     *            the <code>WorkingMemory</code> session.
+     */
+    void retractRightTuple(RightTuple rightTuple,
+                       PropagationContext context,
+                       InternalWorkingMemory workingMemory);
+
+    public boolean isRightTupleMemoryEnabled();
+
+    public void setRightTupleMemoryEnabled(boolean objectMemoryOn);
 }

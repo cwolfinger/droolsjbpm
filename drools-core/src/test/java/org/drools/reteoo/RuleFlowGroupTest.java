@@ -198,31 +198,31 @@ public class RuleFlowGroupTest extends DroolsTestCase {
         final RuleFlowGroupImpl ruleFlowGroup2 = (RuleFlowGroupImpl) agenda.getRuleFlowGroup( "rule-flow-group-2" );
         final RuleFlowGroupImpl ruleFlowGroup3 = (RuleFlowGroupImpl) agenda.getRuleFlowGroup( "rule-flow-group-3" );
 
-        final ReteTuple tuple0 = new ReteTuple( new DefaultFactHandle( 1,
+        final LeftTuple tuple0 = new LeftTuple( new DefaultFactHandle( 1,
                                                                        "cheese" ) );
         node0.assertTuple( tuple0,
                            context0,
                            workingMemory );
 
-        final ReteTuple tuple1 = new ReteTuple( new DefaultFactHandle( 1,
+        final LeftTuple tuple1 = new LeftTuple( new DefaultFactHandle( 1,
                                                                        "cheese" ) );
         node0.assertTuple( tuple1,
                            context0,
                            workingMemory );
 
-        final ReteTuple tuple2 = new ReteTuple( new DefaultFactHandle( 1,
+        final LeftTuple tuple2 = new LeftTuple( new DefaultFactHandle( 1,
                                                                        "cheese" ) );
         node1.assertTuple( tuple2,
                            context0,
                            workingMemory );
 
-        final ReteTuple tuple3 = new ReteTuple( new DefaultFactHandle( 1,
+        final LeftTuple tuple3 = new LeftTuple( new DefaultFactHandle( 1,
                                                                        "cheese" ) );
         node2.assertTuple( tuple3,
                            context0,
                            workingMemory );
 
-        final ReteTuple tuple4 = new ReteTuple( new DefaultFactHandle( 1,
+        final LeftTuple tuple4 = new LeftTuple( new DefaultFactHandle( 1,
                                                                        "cheese" ) );
         node3.assertTuple( tuple4,
                            context0,
@@ -472,43 +472,43 @@ public class RuleFlowGroupTest extends DroolsTestCase {
         final RuleFlowGroupImpl ruleFlowGroup2 = (RuleFlowGroupImpl) agenda.getRuleFlowGroup( "rule-flow-group-2" );
         final RuleFlowGroupImpl ruleFlowGroup3 = (RuleFlowGroupImpl) agenda.getRuleFlowGroup( "rule-flow-group-3" );
 
-        final ReteTuple tuple0 = new ReteTuple( new DefaultFactHandle( 1,
+        final LeftTuple tuple0 = new LeftTuple( new DefaultFactHandle( 1,
                                                                        "cheese" ) );
         node0.assertTuple( tuple0,
                            context0,
                            workingMemory );
 
-        final ReteTuple tuple1 = new ReteTuple( new DefaultFactHandle( 1,
+        final LeftTuple tuple1 = new LeftTuple( new DefaultFactHandle( 1,
                                                                        "cheese" ) );
         node0.assertTuple( tuple1,
                            context0,
                            workingMemory );
 
-        final ReteTuple tuple2 = new ReteTuple( new DefaultFactHandle( 1,
+        final LeftTuple tuple2 = new LeftTuple( new DefaultFactHandle( 1,
                                                                        "cheese" ) );
         node1.assertTuple( tuple2,
                            context0,
                            workingMemory );
 
-        final ReteTuple tuple3 = new ReteTuple( new DefaultFactHandle( 1,
+        final LeftTuple tuple3 = new LeftTuple( new DefaultFactHandle( 1,
                                                                        "cheese" ) );
         node2.assertTuple( tuple3,
                            context0,
                            workingMemory );
 
-        final ReteTuple tuple4 = new ReteTuple( new DefaultFactHandle( 1,
+        final LeftTuple tuple4 = new LeftTuple( new DefaultFactHandle( 1,
                                                                        "cheese" ) );
         node3.assertTuple( tuple4,
                            context0,
                            workingMemory );
 
-        final ReteTuple splitTuple1 = new ReteTuple( new DefaultFactHandle( 1,
+        final LeftTuple splitTuple1 = new LeftTuple( new DefaultFactHandle( 1,
                                                                             "cheese" ) );
         splitNode1.assertTuple( splitTuple1,
                                 context0,
                                 workingMemory );
 
-        final ReteTuple splitTuple2 = new ReteTuple( new DefaultFactHandle( 1,
+        final LeftTuple splitTuple2 = new LeftTuple( new DefaultFactHandle( 1,
                                                                             "cheese" ) );
         splitNode2.assertTuple( splitTuple2,
                                 context0,

@@ -105,7 +105,7 @@ public class ObjectTypeNodeTest extends DroolsTestCase {
         final InternalFactHandle handle1 = (InternalFactHandle) workingMemory.insert( string1 );
 
         // should assert as ObjectType matches
-        objectTypeNode.assertObject( handle1,
+        objectTypeNode.assertRightTuple( handle1,
                                      context,
                                      workingMemory );
 
@@ -152,7 +152,7 @@ public class ObjectTypeNodeTest extends DroolsTestCase {
         final InternalFactHandle handle1 = (InternalFactHandle) workingMemory.insert( string1 );
 
         // should assert as ObjectType matches
-        objectTypeNode.assertObject( handle1,
+        objectTypeNode.assertRightTuple( handle1,
                                      context,
                                      workingMemory );
 
@@ -232,7 +232,7 @@ public class ObjectTypeNodeTest extends DroolsTestCase {
                                                                  string1 );
 
         /* should assert as ObjectType matches */
-        objectTypeNode.assertObject( handle1,
+        objectTypeNode.assertRightTuple( handle1,
                                      context,
                                      workingMemory );
         /* check asserted object was added to memory */
@@ -241,7 +241,7 @@ public class ObjectTypeNodeTest extends DroolsTestCase {
                       memory.size() );
 
         /* should retract as ObjectType matches */
-        objectTypeNode.retractObject( handle1,
+        objectTypeNode.retractRightTuple( handle1,
                                       context,
                                       workingMemory );
         /* check asserted object was removed from memory */
@@ -286,11 +286,11 @@ public class ObjectTypeNodeTest extends DroolsTestCase {
         final DefaultFactHandle handle2 = new DefaultFactHandle( 2,
                                                                  string2 );
 
-        objectTypeNode.assertObject( handle1,
+        objectTypeNode.assertRightTuple( handle1,
                                      context,
                                      workingMemory );
 
-        objectTypeNode.assertObject( handle2,
+        objectTypeNode.assertRightTuple( handle2,
                                      context,
                                      workingMemory );
 
@@ -315,7 +315,7 @@ public class ObjectTypeNodeTest extends DroolsTestCase {
         final DefaultFactHandle handle3 = new DefaultFactHandle( 3,
                                                                  string3 );
 
-        objectTypeNode.assertObject( handle3,
+        objectTypeNode.assertRightTuple( handle3,
                                      context,
                                      workingMemory );
 
@@ -389,7 +389,7 @@ public class ObjectTypeNodeTest extends DroolsTestCase {
         final InternalFactHandle handle1 = (InternalFactHandle) workingMemory.insert( person );
 
         // should assert as ObjectType matches
-        objectTypeNode.assertObject( handle1,
+        objectTypeNode.assertRightTuple( handle1,
                                      context,
                                      workingMemory );
 

@@ -87,7 +87,7 @@ public class LogicalAssertionTest extends DroolsTestCase {
         rule1.setConsequence( consequence );
 
         final DefaultFactHandle handle1 = (DefaultFactHandle) workingMemory.insert( "o1" );
-        final ReteTuple tuple1 = new ReteTuple( handle1 );
+        final LeftTuple tuple1 = new LeftTuple( handle1 );
 
         final PropagationContext context1 = new PropagationContextImpl( 0,
                                                                         PropagationContext.ASSERTION,
@@ -189,7 +189,7 @@ public class LogicalAssertionTest extends DroolsTestCase {
 
         final DefaultFactHandle handle1 = new DefaultFactHandle( 1,
                                                                  "cheese" );
-        final ReteTuple tuple1 = new ReteTuple( handle1 );
+        final LeftTuple tuple1 = new LeftTuple( handle1 );
 
         final PropagationContext context1 = new PropagationContextImpl( 0,
                                                                         PropagationContext.ASSERTION,
@@ -278,7 +278,7 @@ public class LogicalAssertionTest extends DroolsTestCase {
 
         final DefaultFactHandle handle1 = new DefaultFactHandle( 1,
                                                                  "cheese" );
-        final ReteTuple tuple1 = new ReteTuple( handle1 );
+        final LeftTuple tuple1 = new LeftTuple( handle1 );
 
         final PropagationContext context1 = new PropagationContextImpl( 0,
                                                                         PropagationContext.ASSERTION,
@@ -419,7 +419,7 @@ public class LogicalAssertionTest extends DroolsTestCase {
 
         final DefaultFactHandle handle1 = new DefaultFactHandle( 1,
                                                                  "cheese" );
-        final ReteTuple tuple1 = new ReteTuple( handle1 );
+        final LeftTuple tuple1 = new LeftTuple( handle1 );
 
         final PropagationContext context1 = new PropagationContextImpl( 0,
                                                                         PropagationContext.ASSERTION,
@@ -508,7 +508,7 @@ public class LogicalAssertionTest extends DroolsTestCase {
 
         final DefaultFactHandle handle1 = new DefaultFactHandle( 1,
                                                                  "cheese" );
-        final ReteTuple tuple1 = new ReteTuple( handle1 );
+        final LeftTuple tuple1 = new LeftTuple( handle1 );
 
         final PropagationContext context = new PropagationContextImpl( 0,
                                                                        PropagationContext.ASSERTION,
@@ -538,7 +538,7 @@ public class LogicalAssertionTest extends DroolsTestCase {
 
         final DefaultFactHandle handle2 = new DefaultFactHandle( 2,
                                                                  "cheese" );
-        final ReteTuple tuple2 = new ReteTuple( handle2 );
+        final LeftTuple tuple2 = new LeftTuple( handle2 );
 
         node.assertTuple( tuple2,
                           context,
@@ -609,7 +609,7 @@ public class LogicalAssertionTest extends DroolsTestCase {
 
         final DefaultFactHandle handle1 = new DefaultFactHandle( 1,
                                                                  "cheese" );
-        final ReteTuple tuple1 = new ReteTuple( handle1 );
+        final LeftTuple tuple1 = new LeftTuple( handle1 );
 
         final PropagationContext context1 = new PropagationContextImpl( 0,
                                                                         PropagationContext.ASSERTION,
@@ -631,7 +631,7 @@ public class LogicalAssertionTest extends DroolsTestCase {
 
         final DefaultFactHandle handle2 = new DefaultFactHandle( 2,
                                                                  "cheese" );
-        final ReteTuple tuple2 = new ReteTuple( handle2 );
+        final LeftTuple tuple2 = new LeftTuple( handle2 );
 
         final PropagationContext context2 = new PropagationContextImpl( 0,
                                                                         PropagationContext.ASSERTION,
@@ -738,7 +738,7 @@ public class LogicalAssertionTest extends DroolsTestCase {
 
         final DefaultFactHandle handle1 = new DefaultFactHandle( 1,
                                                                  "cheese" );
-        final ReteTuple tuple1 = new ReteTuple( handle1 );
+        final LeftTuple tuple1 = new LeftTuple( handle1 );
 
         final PropagationContext context1 = new PropagationContextImpl( 0,
                                                                         PropagationContext.ASSERTION,
@@ -838,7 +838,7 @@ public class LogicalAssertionTest extends DroolsTestCase {
 
         final DefaultFactHandle handle1 = new DefaultFactHandle( 1,
                                                                  "cheese" );
-        final ReteTuple tuple1 = new ReteTuple( handle1 );
+        final LeftTuple tuple1 = new LeftTuple( handle1 );
 
         final PropagationContext context1 = new PropagationContextImpl( 0,
                                                                         PropagationContext.ASSERTION,

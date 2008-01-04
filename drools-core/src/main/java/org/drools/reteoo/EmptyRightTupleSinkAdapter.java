@@ -1,39 +1,38 @@
 package org.drools.reteoo;
 
-import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.spi.PropagationContext;
 
-public class EmptyObjectSinkAdapter
+public class EmptyRightTupleSinkAdapter
     implements
-    ObjectSinkPropagator {
+    RightTupletSinkPropagator {
 
     private static final long serialVersionUID = -631743913176779720L;
 
-    private static final EmptyObjectSinkAdapter instance = new EmptyObjectSinkAdapter();
+    private static final EmptyRightTupleSinkAdapter instance = new EmptyRightTupleSinkAdapter();
     
-    private static final ObjectSink[] SINK_LIST = new ObjectSink[0];
+    private static final RightTupleSink[] SINK_LIST = new RightTupleSink[0];
 
-    public static EmptyObjectSinkAdapter getInstance() {
+    public static EmptyRightTupleSinkAdapter getInstance() {
         return instance;
     }
 
-    private EmptyObjectSinkAdapter() {
+    private EmptyRightTupleSinkAdapter() {
     }
 
-    public void propagateAssertObject(final InternalFactHandle handle,
+    public void propagateAssertRightTuple(final RightTuple rightTuple,
                                       final PropagationContext context,
                                       final InternalWorkingMemory workingMemory) {
 
     }
 
-    public void propagateRetractObject(final InternalFactHandle handle,
+    public void propagateRetractRightTuple(final RightTuple rightTuple,
                                        final PropagationContext context,
                                        final InternalWorkingMemory workingMemory,
                                        final boolean useHash) {
     }
 
-    public ObjectSink[] getSinks() {
+    public RightTupleSink[] getSinks() {
         return SINK_LIST;
     }
     

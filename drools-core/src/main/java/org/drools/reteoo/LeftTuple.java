@@ -10,7 +10,7 @@ import org.drools.spi.Activation;
 import org.drools.spi.Tuple;
 import org.drools.util.Entry;
 
-public class ReteTuple
+public class LeftTuple
     implements
     Tuple,
     Entry {
@@ -20,7 +20,7 @@ public class ReteTuple
 
     private final InternalFactHandle handle;
 
-    private ReteTuple                parent;
+    private LeftTuple                parent;       
 
     private Activation               activation;
 
@@ -28,16 +28,31 @@ public class ReteTuple
 
     private int                      hashCode;
     
-    private InternalFactHandle       match;
+    private RightTuple               match;
 
-    private Entry                    next;
+    
+    // left and right tuples in parent
+    private LeftTuple               leftParent;  
+    private LeftTuple               leftParentLeft;
+    private LeftTuple               leftParentright;
+    
+    private RightTuple              rightParent;    
+    private RightTuple              rightParentLeft;
+    private RightTuple              rightParentright;
+    
+    // node memory
+    private Entry                    next;    
+    private Entry                    previous;
+    
+    // children
+    private LeftTuple                children;    
 
     // ------------------------------------------------------------
     // Constructors
     // ------------------------------------------------------------
-    public ReteTuple(final InternalFactHandle handle) {
-        this.recency = handle.getRecency();
-        this.handle = handle;
+    public LeftTuple(final RightTuple rightTuple) {
+        this.handle = rightTuple.getHandle();
+        this.recency = this.handle.getRecency();
         int h = handle.hashCode();
         h += ~(h << 9);
         h ^= (h >>> 14);
@@ -46,7 +61,7 @@ public class ReteTuple
         this.hashCode = h;
     }
 
-    public ReteTuple(final ReteTuple tuple) {
+    public LeftTuple(final LeftTuple tuple) {
         this.index = tuple.index;
         this.parent = tuple.parent;
         this.recency = tuple.recency;
@@ -54,24 +69,80 @@ public class ReteTuple
         this.hashCode = tuple.hashCode();
     }
 
-    public ReteTuple(final ReteTuple parentTuple,
-                     final InternalFactHandle handle) {
+    public LeftTuple(final LeftTuple parentTuple,
+                     final RightTuple rightTuple) {
+        this.handle = rightTuple.getHandle();
         this.index = parentTuple.index + 1;
         this.parent = parentTuple;
-        this.recency = parentTuple.recency + handle.getRecency();
-        this.handle = handle;
+        this.recency = parentTuple.recency + this.handle.getRecency();
         this.hashCode = parentTuple.hashCode ^ (handle.hashCode() * 31);
-    }
+    }        
 
-    public InternalFactHandle get(final int index) {
-        ReteTuple entry = this;
+    public LeftTuple getLeftParent() {
+		return leftParent;
+	}
+
+	public void setLeftParent(LeftTuple leftParent) {
+		this.leftParent = leftParent;
+	}
+
+	public LeftTuple getLeftParentLeft() {
+		return leftParentLeft;
+	}
+
+	public void setLeftParentLeft(LeftTuple leftParentLeft) {
+		this.leftParentLeft = leftParentLeft;
+	}
+
+	public LeftTuple getLeftParentright() {
+		return leftParentright;
+	}
+
+	public void setLeftParentright(LeftTuple leftParentright) {
+		this.leftParentright = leftParentright;
+	}
+
+	public RightTuple getRightParent() {
+		return rightParent;
+	}
+
+	public void setRightParent(RightTuple rightParent) {
+		this.rightParent = rightParent;
+	}
+
+	public RightTuple getRightParentLeft() {
+		return rightParentLeft;
+	}
+
+	public void setRightParentLeft(RightTuple rightParentLeft) {
+		this.rightParentLeft = rightParentLeft;
+	}
+
+	public RightTuple getRightParentright() {
+		return rightParentright;
+	}
+
+	public void setRightParentright(RightTuple rightParentright) {
+		this.rightParentright = rightParentright;
+	}
+
+	public InternalFactHandle get(final int index) {
+        LeftTuple entry = this;
         while ( entry.index != index ) {
             entry = entry.parent;
         }
         return entry.handle;
-    }
+    }        
 
-    public void setNext(final Entry next) {
+    public Entry getPrevious() {
+		return previous;
+	}
+
+	public void setPrevious(Entry previous) {
+		this.previous = previous;
+	}
+
+	public void setNext(final Entry next) {
         this.next = next;
     }
 
@@ -96,7 +167,7 @@ public class ReteTuple
      */
     public InternalFactHandle[] getFactHandles() {
         final List list = new ArrayList();
-        ReteTuple entry = this;
+        LeftTuple entry = this;
         while ( entry != null ) {
             list.add( entry.handle );
             entry = entry.parent;
@@ -110,11 +181,11 @@ public class ReteTuple
     }
         
 
-    public InternalFactHandle getMatch() {
+    public RightTuple getMatch() {
         return match;
     }
 
-    public void setMatch(InternalFactHandle match) {
+    public void setMatch(RightTuple match) {
         this.match = match;
     }
 
@@ -129,7 +200,7 @@ public class ReteTuple
     public String toString() {
         final StringBuffer buffer = new StringBuffer();
 
-        ReteTuple entry = this;
+        LeftTuple entry = this;
         while ( entry != null ) {
             //buffer.append( entry.handle );
             buffer.append( entry.handle + "\n" );
@@ -143,7 +214,7 @@ public class ReteTuple
      * @param tuple
      * @return
      */
-    public boolean equals(final ReteTuple other) {
+    public boolean equals(final LeftTuple other) {
         // we know the object is never null and always of the  type ReteTuple
         if ( other == this ) {
             return true;
@@ -167,7 +238,7 @@ public class ReteTuple
 
     public boolean equals(final Object object) {
         // we know the object is never null and always of the  type ReteTuple    
-        return equals( (ReteTuple) object );
+        return equals( (LeftTuple) object );
     }
 
     public int size() {
@@ -189,8 +260,8 @@ public class ReteTuple
      * @return a ReteTuple containing the "elements" first elements
      * of this tuple or null if "elements" is greater than size; 
      */
-    public ReteTuple getSubTuple(final int elements) {
-        ReteTuple entry = this;
+    public LeftTuple getSubTuple(final int elements) {
+        LeftTuple entry = this;
         if ( elements < this.size() ) {
             final int lastindex = elements - 1;
 
@@ -203,7 +274,7 @@ public class ReteTuple
     
     public Object[] toObjectArray() {        
         Object[] objects = new Object[ this.index + 1 ];
-        ReteTuple entry = this;       
+        LeftTuple entry = this;       
         while ( entry != null ) {
             Object object = entry.getLastHandle().getObject();
             if ( object instanceof ShadowProxy ) {

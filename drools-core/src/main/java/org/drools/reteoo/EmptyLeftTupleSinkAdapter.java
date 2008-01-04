@@ -1,56 +1,55 @@
 package org.drools.reteoo;
 
-import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.spi.PropagationContext;
 
-public class EmptyTupleSinkAdapter
+public class EmptyLeftTupleSinkAdapter
     implements
-    TupleSinkPropagator {
+    LeftTupleSinkPropagator {
 
-    private static final EmptyTupleSinkAdapter instance = new EmptyTupleSinkAdapter();
+    private static final EmptyLeftTupleSinkAdapter instance = new EmptyLeftTupleSinkAdapter();
 
-    public static final EmptyTupleSinkAdapter getInstance() {
+    public static final EmptyLeftTupleSinkAdapter getInstance() {
         return instance;
     }
 
-    private EmptyTupleSinkAdapter() {
+    private EmptyLeftTupleSinkAdapter() {
     }
 
-    public void propagateAssertTuple(final ReteTuple tuple,
-                                     final InternalFactHandle handle,
+    public void propagateAssertTuple(final LeftTuple leftTuple,
+                                     final RightTuple rightTuple,
                                      final PropagationContext context,
                                      final InternalWorkingMemory workingMemory) {
     }
 
-    public void propagateAssertTuple(final ReteTuple tuple,
+    public void propagateAssertTuple(final LeftTuple tuple,
                                      final PropagationContext context,
                                      final InternalWorkingMemory workingMemory) {
     }
 
-    public void propagateRetractTuple(final ReteTuple tuple,
-                                      final InternalFactHandle handle,
+    public void propagateRetractTuple(final LeftTuple leftTuple,
+                                      final RightTuple rightTuple,
                                       final PropagationContext context,
                                       final InternalWorkingMemory workingMemory) {
     }
 
-    public void propagateRetractTuple(final ReteTuple tuple,
+    public void propagateRetractTuple(final LeftTuple tuple,
                                       final PropagationContext context,
                                       final InternalWorkingMemory workingMemory) {
     }
 
-    public void createAndPropagateAssertTuple(final InternalFactHandle handle,
+    public void createAndPropagateAssertTuple(final RightTuple rightTuple,
                                               final PropagationContext context,
                                               final InternalWorkingMemory workingMemory) {
     }
 
-    public void createAndPropagateRetractTuple(final InternalFactHandle handle,
+    public void createAndPropagateRetractTuple(final RightTuple rightTuple,
                                                final PropagationContext context,
                                                final InternalWorkingMemory workingMemory) {
     }
 
-    public TupleSink[] getSinks() {
-        return new TupleSink[]{};
+    public LeftTupleSink[] getSinks() {
+        return new LeftTupleSink[]{};
     }
 
     public int size() {

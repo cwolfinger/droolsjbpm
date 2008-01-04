@@ -50,10 +50,10 @@ public class MemoryVisitor extends ReflectiveVisitor {
 
         this.indent++;
         try {
-            final Field field = ObjectSource.class.getDeclaredField( "sink" );
+            final Field field = RightTupleSource.class.getDeclaredField( "sink" );
             field.setAccessible( true );
-            final ObjectSinkPropagator sink = (ObjectSinkPropagator) field.get( node );
-            final ObjectSink[] sinks = sink.getSinks();
+            final RightTupletSinkPropagator sink = (RightTupletSinkPropagator) field.get( node );
+            final RightTupleSink[] sinks = sink.getSinks();
             for ( int i = 0, length = sinks.length; i < length; i++ ) {
                 visit( sinks[i] );
             }
@@ -71,10 +71,10 @@ public class MemoryVisitor extends ReflectiveVisitor {
 
         this.indent++;
         try {
-            final Field field = ObjectSource.class.getDeclaredField( "sink" );
+            final Field field = RightTupleSource.class.getDeclaredField( "sink" );
             field.setAccessible( true );
-            final ObjectSinkPropagator sink = (ObjectSinkPropagator) field.get( node );
-            final ObjectSink[] sinks = sink.getSinks();
+            final RightTupletSinkPropagator sink = (RightTupletSinkPropagator) field.get( node );
+            final RightTupleSink[] sinks = sink.getSinks();
             for ( int i = 0, length = sinks.length; i < length; i++ ) {
                 visit( sinks[i] );
             }
@@ -89,10 +89,10 @@ public class MemoryVisitor extends ReflectiveVisitor {
 
         this.indent++;
         try {
-            final Field field = TupleSource.class.getDeclaredField( "sink" );
+            final Field field = LeftTupleSource.class.getDeclaredField( "sink" );
             field.setAccessible( true );
-            final TupleSinkPropagator sink = (TupleSinkPropagator) field.get( node );
-            final TupleSink[] sinks = sink.getSinks();
+            final LeftTupleSinkPropagator sink = (LeftTupleSinkPropagator) field.get( node );
+            final LeftTupleSink[] sinks = sink.getSinks();
             for ( int i = 0, length = sinks.length; i < length; i++ ) {
                 visit( sinks[i] );
             }
@@ -107,18 +107,18 @@ public class MemoryVisitor extends ReflectiveVisitor {
 
         try {
             final BetaMemory memory = (BetaMemory) this.workingMemory.getNodeMemory( node );
-            checkObjectHashTable( memory.getFactHandleMemory() );
-            checkTupleMemory( memory.getTupleMemory() );
+            checkObjectHashTable( memory.getRightTupleMemory() );
+            checkTupleMemory( memory.getLeftTupleMemory() );
         } catch ( final Exception e ) {
             e.printStackTrace();
         }
 
         this.indent++;
         try {
-            final Field field = TupleSource.class.getDeclaredField( "sink" );
+            final Field field = LeftTupleSource.class.getDeclaredField( "sink" );
             field.setAccessible( true );
-            final TupleSinkPropagator sink = (TupleSinkPropagator) field.get( node );
-            final TupleSink[] sinks = sink.getSinks();
+            final LeftTupleSinkPropagator sink = (LeftTupleSinkPropagator) field.get( node );
+            final LeftTupleSink[] sinks = sink.getSinks();
             for ( int i = 0, length = sinks.length; i < length; i++ ) {
                 visit( sinks[i] );
             }
@@ -132,18 +132,18 @@ public class MemoryVisitor extends ReflectiveVisitor {
         System.out.println( indent() + node );
         try {
             final BetaMemory memory = (BetaMemory) this.workingMemory.getNodeMemory( node );
-            checkObjectHashTable( memory.getFactHandleMemory() );
-            checkTupleMemory( memory.getTupleMemory() );
+            checkObjectHashTable( memory.getRightTupleMemory() );
+            checkTupleMemory( memory.getLeftTupleMemory() );
         } catch ( final Exception e ) {
             e.printStackTrace();
         }
 
         this.indent++;
         try {
-            final Field field = TupleSource.class.getDeclaredField( "sink" );
+            final Field field = LeftTupleSource.class.getDeclaredField( "sink" );
             field.setAccessible( true );
-            final TupleSinkPropagator sink = (TupleSinkPropagator) field.get( node );
-            final TupleSink[] sinks = sink.getSinks();
+            final LeftTupleSinkPropagator sink = (LeftTupleSinkPropagator) field.get( node );
+            final LeftTupleSink[] sinks = sink.getSinks();
             for ( int i = 0, length = sinks.length; i < length; i++ ) {
                 visit( sinks[i] );
             }
@@ -174,7 +174,7 @@ public class MemoryVisitor extends ReflectiveVisitor {
     //        }
     //    }
 
-    private void checkObjectHashTable(final FactHandleMemory memory) {
+    private void checkObjectHashTable(final RightTupleMemory memory) {
         if ( memory instanceof FactHashTable ) {
             checkFactHashTable( (FactHashTable) memory );
         } else if ( memory instanceof FactHandleIndexHashTable ) {
@@ -243,7 +243,7 @@ public class MemoryVisitor extends ReflectiveVisitor {
         }
     }
 
-    private void checkTupleMemory(final TupleMemory memory) {
+    private void checkTupleMemory(final LeftTupleMemory memory) {
         final Entry[] entries = memory.getTable();
         int count = 0;
         for ( int i = 0, length = entries.length; i < length; i++ ) {

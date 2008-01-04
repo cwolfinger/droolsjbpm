@@ -20,8 +20,9 @@ import java.io.Serializable;
 
 import org.drools.RuleBaseConfiguration;
 import org.drools.reteoo.BetaMemory;
-import org.drools.reteoo.FactHandleMemory;
-import org.drools.reteoo.ReteTuple;
+import org.drools.reteoo.RightTuple;
+import org.drools.reteoo.RightTupleMemory;
+import org.drools.reteoo.LeftTuple;
 import org.drools.util.FactHashTable;
 import org.drools.util.FactList;
 import org.drools.util.LinkedList;
@@ -50,14 +51,14 @@ public class EmptyBetaConstraints
      * @see org.drools.common.BetaNodeConstraints#updateFromTuple(org.drools.reteoo.ReteTuple)
      */
     public void updateFromTuple(final InternalWorkingMemory workingMemory,
-                                final ReteTuple tuple) {
+                                final LeftTuple tuple) {
     }
 
     /* (non-Javadoc)
      * @see org.drools.common.BetaNodeConstraints#updateFromFactHandle(org.drools.common.InternalFactHandle)
      */
-    public void updateFromFactHandle(final InternalWorkingMemory workingMemory,
-                                     final InternalFactHandle handle) {
+    public void updateFromRightTuple(final InternalWorkingMemory workingMemory,
+                                     final RightTuple rightTuple) {
     }
 
     /* (non-Javadoc)
@@ -70,7 +71,7 @@ public class EmptyBetaConstraints
     /* (non-Javadoc)
      * @see org.drools.common.BetaNodeConstraints#isAllowedCachedRight(org.drools.reteoo.ReteTuple)
      */
-    public boolean isAllowedCachedRight(final ReteTuple tuple) {
+    public boolean isAllowedCachedRight(final LeftTuple tuple) {
         return true;
     }
 
@@ -88,7 +89,7 @@ public class EmptyBetaConstraints
 
     public BetaMemory createBetaMemory(final RuleBaseConfiguration config) {
         final BetaMemory memory = new BetaMemory( config.isSequential() ? null : new TupleHashTable(),
-                                                  config.isSequential() ? (FactHandleMemory) new FactList() : (FactHandleMemory) new FactHashTable() );
+                                                  config.isSequential() ? (RightTupleMemory) new FactList() : (RightTupleMemory) new FactHashTable() );
 
         return memory;
     }

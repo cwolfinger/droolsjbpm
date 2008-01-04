@@ -46,8 +46,8 @@ public class BetaNodeTest extends TestCase {
      * Test method for {@link org.drools.reteoo.BetaNode#equals(java.lang.Object)}.
      */
     public void testEqualsObject() {
-        final TupleSource ts = new MockTupleSource( 1 );
-        final ObjectSource os = new MockObjectSource( 2 );
+        final LeftTupleSource ts = new MockTupleSource( 1 );
+        final RightTupleSource os = new MockObjectSource( 2 );
 
         ReteooRuleBase ruleBase = ( ReteooRuleBase ) RuleBaseFactory.newRuleBase();
         BuildContext buildContext = new BuildContext( ruleBase, ruleBase.getReteooBuilder().getIdGenerator() );        

@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
-import org.drools.reteoo.ReteTuple;
+import org.drools.reteoo.LeftTuple;
 import org.drools.rule.ContextEntry;
 import org.drools.rule.Declaration;
 
@@ -21,7 +21,7 @@ public interface Restriction
     public boolean isAllowedCachedLeft(ContextEntry context,
                                        InternalFactHandle handle);
 
-    public boolean isAllowedCachedRight(ReteTuple tuple,
+    public boolean isAllowedCachedRight(LeftTuple tuple,
                                         ContextEntry context);
 
     public ContextEntry getContextEntry();
