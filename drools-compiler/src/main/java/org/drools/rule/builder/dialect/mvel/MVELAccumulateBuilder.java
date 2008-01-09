@@ -99,6 +99,7 @@ public class MVELAccumulateBuilder
                                                              analysis,
                                                              null,
                                                              source.getOuterDeclarations(),
+                                                             null,
                                                              context );
 
             AccumulateFunction function = context.getConfiguration().getAccumulateFunction( accumDescr.getFunctionIdentifier() );
@@ -117,12 +118,12 @@ public class MVELAccumulateBuilder
                                                                                                      null,
                                                                                                      accumDescr.getActionCode(),
                                                                                                      initCodeAnalysis.getMvelVariables() );
-            actionCodeAnalysis.setMvelVariables( initCodeAnalysis.getMvelVariables() );
+            //actionCodeAnalysis.setMvelVariables( initCodeAnalysis.getMvelVariables() );
             final MVELAnalysisResult resultCodeAnalysis = (MVELAnalysisResult) dialect.analyzeExpression( context,
                                                                                                           accumDescr,
                                                                                                           accumDescr.getResultCode(),
                                                                                                           initCodeAnalysis.getMvelVariables() );
-            resultCodeAnalysis.setMvelVariables( initCodeAnalysis.getMvelVariables() );
+            //resultCodeAnalysis.setMvelVariables( initCodeAnalysis.getMvelVariables() );
 
             final List requiredDeclarations = new ArrayList( initCodeAnalysis.getBoundIdentifiers()[0] );
             requiredDeclarations.addAll( actionCodeAnalysis.getBoundIdentifiers()[0] );
@@ -144,11 +145,13 @@ public class MVELAccumulateBuilder
                                                        initCodeAnalysis,
                                                        null,
                                                        source.getOuterDeclarations(),
+                                                       null,
                                                        context );
             final Serializable action = dialect.compile( (String) accumDescr.getActionCode(),
                                                          actionCodeAnalysis,
                                                          null,
                                                          source.getOuterDeclarations(),
+                                                         initCodeAnalysis.getMvelVariables(),
                                                          context );
 
             Serializable reverse = null;
@@ -157,6 +160,7 @@ public class MVELAccumulateBuilder
                                            resultCodeAnalysis,
                                            null,
                                            source.getOuterDeclarations(),
+                                           initCodeAnalysis.getMvelVariables(),
                                            context );
             }
 
@@ -164,6 +168,7 @@ public class MVELAccumulateBuilder
                                                          resultCodeAnalysis,
                                                          null,
                                                          source.getOuterDeclarations(),
+                                                         initCodeAnalysis.getMvelVariables(),
                                                          context );
 
             accumulator = new MVELAccumulator( factory,

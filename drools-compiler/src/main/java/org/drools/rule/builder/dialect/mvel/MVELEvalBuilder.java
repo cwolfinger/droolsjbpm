@@ -91,6 +91,7 @@ public class MVELEvalBuilder
                                                                               analysis,
                                                                               null,
                                                                               null,
+                                                                              null,
                                                                               context );
 
             eval.setEvalExpression( new MVELEvalExpression( expr,
