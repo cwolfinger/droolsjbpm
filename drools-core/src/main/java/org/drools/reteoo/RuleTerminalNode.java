@@ -171,7 +171,7 @@ public final class RuleTerminalNode extends BaseNode
         }
 
         //we only have to clone the head fact to make sure the graph is not affected during consequence reads after a modify
-        final LeftTuple cloned = new LeftTuple( tuple );
+        final LeftTuple cloned = tuple;///new LeftTuple( tuple, this );
 
         final InternalAgenda agenda = (InternalAgenda) workingMemory.getAgenda();
 
@@ -358,14 +358,9 @@ public final class RuleTerminalNode extends BaseNode
                              final PropagationContext context,
                              final InternalWorkingMemory workingMemory) {
         final TerminalNodeMemory memory = (TerminalNodeMemory) workingMemory.getNodeMemory( this );
-        final LeftTuple tuple = memory.getTupleMemory().remove( leftTuple );
-        if ( tuple == null ) {
-            // tuple should only be null if it was asserted and reached a no-loop causing it to exit early
-            // before being added to the node memory and an activation created and attached
-            return;
-        }
+        memory.getTupleMemory().remove( leftTuple );
 
-        final Activation activation = tuple.getActivation();
+        final Activation activation = leftTuple.getActivation();
         if ( activation.getLogicalDependencies() != null && !activation.getLogicalDependencies().isEmpty() ) {
             context.addRetractedTuple( this.rule,
                                        activation );

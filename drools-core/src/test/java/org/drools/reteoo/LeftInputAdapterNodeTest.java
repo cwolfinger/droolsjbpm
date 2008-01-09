@@ -33,13 +33,14 @@ import org.drools.util.FactHashTable;
 
 public class LeftInputAdapterNodeTest extends DroolsTestCase {
     private ReteooRuleBase ruleBase;
-    private BuildContext buildContext;
-    
+    private BuildContext   buildContext;
+
     protected void setUp() throws Exception {
-        this.ruleBase = ( ReteooRuleBase ) RuleBaseFactory.newRuleBase();
-        this.buildContext = new BuildContext( ruleBase, ((ReteooRuleBase)ruleBase).getReteooBuilder().getIdGenerator() );
+        this.ruleBase = (ReteooRuleBase) RuleBaseFactory.newRuleBase();
+        this.buildContext = new BuildContext( ruleBase,
+                                              ((ReteooRuleBase) ruleBase).getReteooBuilder().getIdGenerator() );
     }
-    
+
     public void testLeftInputAdapterNode() {
         final MockObjectSource source = new MockObjectSource( 15 );
         final LeftInputAdapterNode liaNode = new LeftInputAdapterNode( 23,
@@ -108,9 +109,12 @@ public class LeftInputAdapterNodeTest extends DroolsTestCase {
 
         // assert object
         final DefaultFactHandle f0 = (DefaultFactHandle) workingMemory.insert( string1 );
-        liaNode.assertRightTuple( f0,
-                              context,
-                              workingMemory );
+        RightTuple rightTuplef0 = new RightTuple( f0,
+                                                  liaNode );
+
+        liaNode.assertRightTuple( rightTuplef0,
+                                  context,
+                                  workingMemory );
 
         final List asserted = sink.getAsserted();
         assertLength( 1,
@@ -126,7 +130,7 @@ public class LeftInputAdapterNodeTest extends DroolsTestCase {
      * 
      * @throws Exception
      */
-    public void testAssertObjectWithMemory() throws Exception {        
+    public void testAssertObjectWithMemory() throws Exception {
         final PropagationContext context = new PropagationContextImpl( 0,
                                                                        PropagationContext.ASSERTION,
                                                                        null,
@@ -134,7 +138,7 @@ public class LeftInputAdapterNodeTest extends DroolsTestCase {
 
         ReteooRuleBase ruleBase = (ReteooRuleBase) RuleBaseFactory.newRuleBase();
         IdGenerator idGenerator = ruleBase.getReteooBuilder().getIdGenerator();
-        final InternalWorkingMemory workingMemory = ( InternalWorkingMemory ) ruleBase.newStatefulSession();                
+        final InternalWorkingMemory workingMemory = (InternalWorkingMemory) ruleBase.newStatefulSession();
 
         final LeftInputAdapterNode liaNode = new LeftInputAdapterNode( idGenerator.getNextId(),
                                                                        new MockObjectSource( idGenerator.getNextId() ),
@@ -149,9 +153,12 @@ public class LeftInputAdapterNodeTest extends DroolsTestCase {
 
         // assert object
         final DefaultFactHandle f0 = (DefaultFactHandle) workingMemory.insert( string1 );
-        liaNode.assertRightTuple( f0,
-                              context,
-                              workingMemory );
+        RightTuple rightTuplef0 = new RightTuple( f0,
+                                                  liaNode );
+        
+        liaNode.assertRightTuple( rightTuplef0,
+                                  context,
+                                  workingMemory );
 
         final List asserted = sink.getAsserted();
         assertLength( 1,
@@ -168,9 +175,12 @@ public class LeftInputAdapterNodeTest extends DroolsTestCase {
 
         // check memory works with multiple handles
         final DefaultFactHandle f1 = (DefaultFactHandle) workingMemory.insert( "test1" );
-        liaNode.assertRightTuple( f1,
-                              context,
-                              workingMemory );
+        RightTuple rightTuplef1 = new RightTuple( f1,
+                                                  liaNode );
+        
+        liaNode.assertRightTuple( rightTuplef1,
+                                  context,
+                                  workingMemory );
 
         assertLength( 2,
                       asserted );
@@ -209,17 +219,18 @@ public class LeftInputAdapterNodeTest extends DroolsTestCase {
         liaNode.addTupleSink( sink );
 
         final DefaultFactHandle f0 = (DefaultFactHandle) workingMemory.insert( "f1" );
-
+        RightTuple rightTuplef0 = new RightTuple( f0,
+                                                  liaNode );
         // assert object 
-        liaNode.assertRightTuple( f0,
-                              context,
-                              workingMemory );
+        liaNode.assertRightTuple( rightTuplef0,
+                                  context,
+                                  workingMemory );
 
         final Tuple tuple = (Tuple) ((Object[]) sink.getAsserted().get( 0 ))[0];
 
-        liaNode.retractRightTuple( f0,
-                               context,
-                               workingMemory );
+        liaNode.retractRightTuple( rightTuplef0,
+                                   context,
+                                   workingMemory );
 
         assertEquals( tuple,
                       ((Object[]) sink.getRetracted().get( 0 ))[0] );
@@ -236,7 +247,7 @@ public class LeftInputAdapterNodeTest extends DroolsTestCase {
 
         ReteooRuleBase ruleBase = (ReteooRuleBase) RuleBaseFactory.newRuleBase();
         IdGenerator idGenerator = ruleBase.getReteooBuilder().getIdGenerator();
-        final InternalWorkingMemory workingMemory = ( InternalWorkingMemory ) ruleBase.newStatefulSession();                
+        final InternalWorkingMemory workingMemory = (InternalWorkingMemory) ruleBase.newStatefulSession();
 
         final LeftInputAdapterNode liaNode = new LeftInputAdapterNode( idGenerator.getNextId(),
                                                                        new MockObjectSource( idGenerator.getNextId() ),
@@ -248,20 +259,21 @@ public class LeftInputAdapterNodeTest extends DroolsTestCase {
         liaNode.addTupleSink( sink );
 
         final DefaultFactHandle f0 = (DefaultFactHandle) workingMemory.insert( "f1" );
-
+        RightTuple rightTuplef0 = new RightTuple( f0,
+                                                  liaNode );
         // assert object
-        liaNode.assertRightTuple( f0,
-                              context,
-                              workingMemory );
+        liaNode.assertRightTuple( rightTuplef0,
+                                  context,
+                                  workingMemory );
 
         final Tuple tuple = (Tuple) ((Object[]) sink.getAsserted().get( 0 ))[0];
 
         final FactHashTable map = (FactHashTable) workingMemory.getNodeMemory( liaNode );
         assertTrue( map.contains( f0 ) );
 
-        liaNode.retractRightTuple( f0,
-                               context,
-                               workingMemory );
+        liaNode.retractRightTuple( rightTuplef0,
+                                   context,
+                                   workingMemory );
 
         assertFalse( map.contains( f0 ) );
 

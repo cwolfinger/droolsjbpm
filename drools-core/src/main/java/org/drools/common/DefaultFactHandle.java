@@ -17,6 +17,7 @@ package org.drools.common;
  */
 
 import org.drools.FactHandle;
+import org.drools.reteoo.RightTuple;
 
 /**
  * Implementation of <code>FactHandle</code>.
@@ -41,6 +42,7 @@ public class DefaultFactHandle
     private EqualityKey       key;
     private int               objectHashCode;
     private boolean           shadowFact;
+    private RightTuple        rightTuple;
 
     // ----------------------------------------------------------------------
     // Constructors
@@ -161,6 +163,14 @@ public class DefaultFactHandle
      */
     public void setEqualityKey(final EqualityKey key) {
         this.key = key;
+    }        
+
+    public RightTuple getRightTuple() {
+        return rightTuple;
+    }
+
+    public void setRightTuple(RightTuple rightTuple) {
+        this.rightTuple = rightTuple;
     }
 
     /**

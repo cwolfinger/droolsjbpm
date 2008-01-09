@@ -196,7 +196,7 @@ public class ReteooRuleBase extends AbstractRuleBase {
                              final Object object,
                              final PropagationContext context,
                              final InternalWorkingMemory workingMemory) throws FactException {
-        getRete().assertRightTuple( new RightTuple( (InternalFactHandle) handle ),
+        getRete().assertRightTuple( (InternalFactHandle) handle,
                                     context,
                                     workingMemory );
     }
@@ -215,9 +215,11 @@ public class ReteooRuleBase extends AbstractRuleBase {
     public void retractObject(final FactHandle handle,
                               final PropagationContext context,
                               final ReteooWorkingMemory workingMemory) throws FactException {
-        getRete().retractRightTuple( new RightTuple( (InternalFactHandle) handle ),
+        getRete().retractRightTuple( ((InternalFactHandle)handle).getRightTuple(),
                                      context,
                                      workingMemory );
+        
+        ((InternalFactHandle)handle).setRightTuple( null );
     }
 
     public synchronized StatefulSession newStatefulSession(final boolean keepReference) {

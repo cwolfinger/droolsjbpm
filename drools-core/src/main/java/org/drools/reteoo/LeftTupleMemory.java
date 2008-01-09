@@ -6,12 +6,12 @@ import org.drools.util.Iterator;
 
 public interface LeftTupleMemory {
     public Iterator iterator();
-
-    public Iterator iterator(RightTuple rightTuple);
+    
+    public LeftTuple getFirst(RightTuple rightTuple);
 
     public void add(LeftTuple tuple);
 
-    public LeftTuple remove(LeftTuple tuple);
+    public void remove(LeftTuple tuple);
 
     public boolean contains(LeftTuple tuple);
 
@@ -19,8 +19,8 @@ public interface LeftTupleMemory {
 
     public int size();
 
-    public Entry[] getTable();
-    
-    public Entry[] toArray();
+//    public Entry[] getTable();
+//    
+    public LeftTuple[] toArray();
 
 }

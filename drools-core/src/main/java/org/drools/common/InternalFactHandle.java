@@ -17,6 +17,7 @@ package org.drools.common;
  */
 
 import org.drools.FactHandle;
+import org.drools.reteoo.RightTuple;
 
 public interface InternalFactHandle
     extends
@@ -42,6 +43,10 @@ public interface InternalFactHandle
     public boolean isShadowFact();
 
     public void setShadowFact(boolean shadowFact);
+    
+    public RightTuple getRightTuple();
+
+    public void setRightTuple(RightTuple rightTuple);    
     
     /**
      * Returns true if this FactHandle represents

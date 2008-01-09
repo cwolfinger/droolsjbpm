@@ -17,14 +17,13 @@ public interface LeftTupleSinkPropagator
                                      PropagationContext context,
                                      InternalWorkingMemory workingMemory);
 
-    public void propagateRetractTuple(LeftTuple leftTuple,
-                                      RightTuple rightTuple,
-                                      PropagationContext context,
-                                      InternalWorkingMemory workingMemory);
+    public void propagateRetractLeftTuple(LeftTuple tuple,
+                                          PropagationContext context,
+                                          InternalWorkingMemory workingMemory);
 
-    public void propagateRetractTuple(LeftTuple tuple,
-                                      PropagationContext context,
-                                      InternalWorkingMemory workingMemory);
+    public void propagateRetractRightTuple(RightTuple tuple,
+                                           PropagationContext context,
+                                           InternalWorkingMemory workingMemory);
 
     public void createAndPropagateAssertTuple(RightTuple rightTuple,
                                               PropagationContext context,

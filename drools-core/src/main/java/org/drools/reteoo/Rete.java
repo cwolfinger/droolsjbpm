@@ -25,6 +25,7 @@ import java.util.Map;
 import org.drools.base.ShadowProxy;
 import org.drools.common.BaseNode;
 import org.drools.common.DroolsObjectInputStream;
+import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalRuleBase;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.common.NodeMemory;
@@ -94,6 +95,12 @@ public class Rete extends RightTupleSource
     // Instance methods
     // ------------------------------------------------------------
 
+    
+    public void assertRightTuple(final RightTuple rightTuple,
+                                 final PropagationContext context,
+                                 final InternalWorkingMemory workingMemory) {
+        // do nothing
+    }
     /**
      * This is the entry point into the network for all asserted Facts. Iterates a cache
      * of matching <code>ObjectTypdeNode</code>s asserting the Fact. If the cache does not
@@ -106,10 +113,10 @@ public class Rete extends RightTupleSource
      * @param workingMemory
      *            The working memory session.
      */
-    public void assertRightTuple(final RightTuple rightTuple,
+    public void assertRightTuple(final InternalFactHandle factHandle,
                                  final PropagationContext context,
                                  final InternalWorkingMemory workingMemory) {
-        Object object = rightTuple.getHandle().getObject();
+        Object object = factHandle.getObject();
 
         ObjectTypeConf objectTypeConf = workingMemory.getObjectTypeConf( context.getEntryPoint(),
                                                                          object );
@@ -117,10 +124,10 @@ public class Rete extends RightTupleSource
         // checks if shadow is enabled
         if ( objectTypeConf.isShadowEnabled() ) {
             // need to improve this
-            if ( !(rightTuple.getHandle().getObject() instanceof ShadowProxy) ) {
+            if ( !(factHandle.getObject() instanceof ShadowProxy) ) {
                 // replaces the actual object by its shadow before propagating
-                rightTuple.getHandle().setObject( objectTypeConf.getShadow( object ) );
-                rightTuple.getHandle().setShadowFact( true );
+                factHandle.setObject( objectTypeConf.getShadow( object ) );
+                factHandle.setShadowFact( true );
             } else {
                 ((ShadowProxy) object).updateProxy();
             }
@@ -128,11 +135,22 @@ public class Rete extends RightTupleSource
 
         ObjectTypeNode[] cachedNodes = objectTypeConf.getObjectTypeNodes();
 
+        RightTuple rightTuple = null;
         for ( int i = 0, length = cachedNodes.length; i < length; i++ ) {
+            rightTuple =  new RightTuple( factHandle,
+                                          cachedNodes[i] );
             cachedNodes[i].assertRightTuple( rightTuple,
                                              context,
                                              workingMemory );
+            if ( i < length-1 ) {
+                RightTuple temp = new RightTuple( factHandle );
+                temp.setParentNext( rightTuple );
+                rightTuple.setParentPrevious( temp );
+                                
+                rightTuple = temp;
+            }
         }
+        factHandle.setRightTuple( rightTuple );
     }
 
     /**
@@ -144,24 +162,11 @@ public class Rete extends RightTupleSource
      * @param workingMemory
      *            The working memory session.
      */
-    public void retractRightTuple(final RightTuple rightTuple,
+    public void retractRightTuple(RightTuple rightTuple,
                                   final PropagationContext context,
                                   final InternalWorkingMemory workingMemory) {
-        final Object object = rightTuple.getHandle().getObject();
-
-        ObjectTypeConf objectTypeConf = workingMemory.getObjectTypeConf( context.getEntryPoint(),
-                                                                         object );
-        ObjectTypeNode[] cachedNodes = objectTypeConf.getObjectTypeNodes();
-
-        if ( cachedNodes == null ) {
-            // it is  possible that there are no ObjectTypeNodes for an  object being retracted
-            return;
-        }
-
-        for ( int i = 0; i < cachedNodes.length; i++ ) {
-            cachedNodes[i].retractRightTuple( rightTuple,
-                                              context,
-                                              workingMemory );
+        for ( ; rightTuple != null; rightTuple = ( RightTuple ) rightTuple.getParentNext() ) {
+            rightTuple.getRightTupleSink().retractRightTuple( rightTuple, context, workingMemory );
         }
     }
 
@@ -259,9 +264,8 @@ public class Rete extends RightTupleSource
                 objectTypeConf.resetCache();
                 ObjectTypeNode sourceNode = objectTypeConf.getConcreteObjectTypeNode();
                 FactHashTable table = (FactHashTable) workingMemory.getNodeMemory( sourceNode );
-                Iterator factIter = table.iterator();
-                for ( RightTuple factEntry = (RightTuple) factIter.next(); factEntry != null; factEntry = (RightTuple) factIter.next() ) {
-                    sink.assertRightTuple( factEntry,
+                for ( RightTuple rightTuple = (RightTuple) table.getFirst( null ); rightTuple != null; rightTuple = (RightTuple) rightTuple.getNext() ) {
+                    sink.assertRightTuple( new RightTuple( rightTuple, sink ),
                                            context,
                                            workingMemory );
                 }

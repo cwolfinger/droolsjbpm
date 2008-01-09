@@ -5,16 +5,17 @@ import org.drools.util.Entry;
 import org.drools.util.Iterator;
 
 public interface RightTupleMemory {
-    public Iterator iterator();
+//    public Iterator iterator();
+//
+//    public Iterator iterator(LeftTuple leftTuple);
+    
+    public RightTuple getFirst(LeftTuple leftTuple);
+    
+    public RightTuple getLast(LeftTuple leftTuple);
 
-    public Iterator iterator(LeftTuple leftTuple);
+    public void add(RightTuple rightTuple);
 
-    public boolean add(RightTuple rightTuple,
-                       boolean checkExists);
-
-    public boolean add(RightTuple rightTuple);
-
-    public boolean remove(RightTuple rightTuple);
+    public void remove(RightTuple rightTuple);
 
     public boolean contains(RightTuple rightTuple);
 

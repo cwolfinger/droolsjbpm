@@ -45,13 +45,13 @@ public class LeftInputAdapterNode extends LeftTupleSource
     /**
      * 
      */
-    private static final long  serialVersionUID = 400L;
+    private static final long      serialVersionUID = 400L;
     private final RightTupleSource objectSource;
 
     private RightTupleSinkNode     previousRightTupleSinkNode;
     private RightTupleSinkNode     nextRightTupleSinkNode;
-    
-    private boolean           rightTupleMemoryEnabled;    
+
+    private boolean                rightTupleMemoryEnabled;
 
     /**
      * Constructus a LeftInputAdapterNode with a unique id that receives <code>FactHandle</code> from a 
@@ -108,8 +108,8 @@ public class LeftInputAdapterNode extends LeftTupleSource
      *            the <code>WorkingMemory</code> session.
      */
     public void assertRightTuple(final RightTuple rightTuple,
-                             final PropagationContext context,
-                             final InternalWorkingMemory workingMemory) {
+                                 final PropagationContext context,
+                                 final InternalWorkingMemory workingMemory) {
 
         if ( !workingMemory.isSequential() ) {
             this.sink.createAndPropagateAssertTuple( rightTuple,
@@ -118,8 +118,7 @@ public class LeftInputAdapterNode extends LeftTupleSource
 
             if ( this.rightTupleMemoryEnabled ) {
                 final FactHashTable memory = (FactHashTable) workingMemory.getNodeMemory( this );
-                memory.add( rightTuple,
-                            false );
+                memory.add( rightTuple );
             }
         } else {
             //workingMemory.addLIANodePropagation( new LIANodePropagation(this, rightTuple, context) );
@@ -138,19 +137,16 @@ public class LeftInputAdapterNode extends LeftTupleSource
      *            the <code>WorkingMemory</code> session.
      */
     public void retractRightTuple(final RightTuple rightTuple,
-                              final PropagationContext context,
-                              final InternalWorkingMemory workingMemory) {
-        boolean propagate = true;
+                                  final PropagationContext context,
+                                  final InternalWorkingMemory workingMemory) {
         if ( this.rightTupleMemoryEnabled ) {
             final FactHashTable memory = (FactHashTable) workingMemory.getNodeMemory( this );
-            propagate = memory.remove( rightTuple );
+            memory.remove( rightTuple );
         }
 
-        if ( propagate ) {
-            this.sink.createAndPropagateRetractTuple( rightTuple,
-                                                      context,
-                                                      workingMemory );
-        }
+        this.sink.createAndPropagateRetractTuple( rightTuple,
+                                                  context,
+                                                  workingMemory );
     }
 
     public void updateSink(final LeftTupleSink sink,
@@ -159,9 +155,8 @@ public class LeftInputAdapterNode extends LeftTupleSource
         if ( this.rightTupleMemoryEnabled ) {
             // We have memory so iterate over all entries
             final FactHashTable memory = (FactHashTable) workingMemory.getNodeMemory( this );
-            final Iterator it = memory.iterator();
-            for ( RightTuple rightTuple = (RightTuple) it.next(); rightTuple != null; rightTuple = (RightTuple) it.next() ) {
-                sink.assertTuple( new LeftTuple( rightTuple ),
+            for ( RightTuple rightTuple = (RightTuple) memory.getFirst( null ); rightTuple != null; rightTuple = (RightTuple) rightTuple.getNext() ) {
+                sink.assertTuple( new LeftTuple( rightTuple, sink ),
                                   context,
                                   workingMemory );
             }
@@ -186,15 +181,15 @@ public class LeftInputAdapterNode extends LeftTupleSource
         }
         this.objectSource.remove( this,
                                   workingMemories );
-    }    
-    
+    }
+
     public boolean isRightTupleMemoryEnabled() {
         return this.rightTupleMemoryEnabled;
     }
 
     public void setRightTupleMemoryEnabled(boolean objectMemoryEnabled) {
         this.rightTupleMemoryEnabled = objectMemoryEnabled;
-    }    
+    }
 
     /**
      * Returns the next node
@@ -270,9 +265,9 @@ public class LeftInputAdapterNode extends LeftTupleSource
         }
 
         public void assertRightTuple(final RightTuple rightTuple,
-                                 final PropagationContext context,
-                                 final InternalWorkingMemory workingMemory) {
-            final LeftTuple tuple = new LeftTuple( rightTuple );
+                                     final PropagationContext context,
+                                     final InternalWorkingMemory workingMemory) {
+            final LeftTuple tuple = new LeftTuple( rightTuple, this.sink );
             this.sink.assertTuple( tuple,
                                    context,
                                    workingMemory );
@@ -285,18 +280,18 @@ public class LeftInputAdapterNode extends LeftTupleSource
         }
 
         public void retractRightTuple(final RightTuple rightTuple,
-                                  final PropagationContext context,
-                                  final InternalWorkingMemory workingMemory) {
+                                      final PropagationContext context,
+                                      final InternalWorkingMemory workingMemory) {
             throw new UnsupportedOperationException( "ObjectSinkAdapter onlys supports assertObject method calls" );
         }
-        
+
         public boolean isRightTupleMemoryEnabled() {
-            throw new UnsupportedOperationException("ObjectSinkAdapters have no Object memory");
+            throw new UnsupportedOperationException( "ObjectSinkAdapters have no Object memory" );
         }
 
         public void setRightTupleMemoryEnabled(boolean objectMemoryEnabled) {
-            throw new UnsupportedOperationException("ObjectSinkAdapters have no Object memory");
-        }        
+            throw new UnsupportedOperationException( "ObjectSinkAdapters have no Object memory" );
+        }
     }
 
 }

@@ -18,7 +18,6 @@ public class TupleIndexHashTable extends AbstractHashTable
 
     private int                             startResult;
 
-    private FieldIndexHashTableIterator     tupleValueIterator;
     private FieldIndexHashTableFullIterator tupleValueFullIterator;
 
     private int                             factSize;
@@ -69,14 +68,14 @@ public class TupleIndexHashTable extends AbstractHashTable
         this.tupleValueFullIterator.reset();
         return this.tupleValueFullIterator;
     }
-
-    public Iterator iterator(final RightTuple rightTuple) {
-        if ( this.tupleValueIterator == null ) {
-            this.tupleValueIterator = new FieldIndexHashTableIterator();
+    
+    public LeftTuple getFirst(final RightTuple rightTuple) {
+        TupleHashTable bucket = get( rightTuple );
+        if ( bucket != null ) {
+            return bucket.getFirst( null );
+        } else {
+            return null;
         }
-        final FieldIndexEntry entry = get( rightTuple );
-        this.tupleValueIterator.reset( (entry != null) ? entry.first : null );
-        return this.tupleValueIterator;
     }
 
     public boolean isIndexed() {
@@ -93,36 +92,6 @@ public class TupleIndexHashTable extends AbstractHashTable
                                    this.table.length );
 
         return this.table[index];
-    }
-
-    /**
-     * Fast re-usable iterator
-     *
-     */
-    public static class FieldIndexHashTableIterator
-        implements
-        Iterator {
-        private Entry entry;
-
-        public FieldIndexHashTableIterator() {
-
-        }
-
-        /* (non-Javadoc)
-         * @see org.drools.util.Iterator#next()
-         */
-        public Object next() {
-            final Entry current = this.entry;
-            this.entry = (this.entry != null) ? this.entry.getNext() : null;
-            return current;
-        }
-
-        /* (non-Javadoc)
-         * @see org.drools.util.Iterator#reset()
-         */
-        public void reset(final Entry entry) {
-            this.entry = entry;
-        }
     }
 
     public static class FieldIndexHashTableFullIterator
@@ -149,7 +118,7 @@ public class TupleIndexHashTable extends AbstractHashTable
                     if ( this.row == this.length ) {
                         return null;
                     }
-                    this.entry = (this.table[this.row] != null) ? ((FieldIndexEntry) this.table[this.row]).first : null;
+                    this.entry = (this.table[this.row] != null) ? ((TupleHashTable) this.table[this.row]).first : null;
                 }
             } else {
                 this.entry = this.entry.getNext();
@@ -159,6 +128,9 @@ public class TupleIndexHashTable extends AbstractHashTable
             }
 
             return this.entry;
+        }
+        public void remove() {
+            throw  new UnsupportedOperationException("FieldIndexHashTableFullIterator does not support remove().");
         }
 
         /* (non-Javadoc)
@@ -172,49 +144,53 @@ public class TupleIndexHashTable extends AbstractHashTable
         }
     }
     
-    public Entry[] toArray() {
-        Entry[] result = new Entry[this.factSize];
+    public LeftTuple[] toArray() {
+        LeftTuple[] result = new LeftTuple[this.factSize];
         int index = 0;
         for ( int i = 0; i < this.table.length; i++ ) {
-            FieldIndexEntry fieldIndexEntry = (FieldIndexEntry)this.table[i];
-            while ( fieldIndexEntry != null ) {
-                Entry entry = fieldIndexEntry.getFirst();
+            TupleHashTable bucket = (TupleHashTable)this.table[i];
+            while ( bucket != null ) {
+                LeftTuple entry = ( LeftTuple ) bucket.getFirst( null );
                 while ( entry != null ) {
                     result[index++] = entry;
-                    entry = entry.getNext();
+                    entry = ( LeftTuple ) entry.getNext();
                 }       
-                fieldIndexEntry  = ( FieldIndexEntry ) fieldIndexEntry.getNext();
+                bucket  = ( TupleHashTable ) bucket.getNext();
             }
         }
         return result;
     }       
 
     public void add(final LeftTuple tuple) {
-        final FieldIndexEntry entry = getOrCreate( tuple );
+        final TupleHashTable entry = getOrCreate( tuple );
         entry.add( tuple );
         this.factSize++;
     }
-
-    public boolean add(final LeftTuple tuple,
-                       final boolean checkExists) {
-        throw new UnsupportedOperationException( "FieldIndexHashTable does not support add(ReteTuple tuple, boolean checkExists)" );
-    }
-
-    public LeftTuple remove(final LeftTuple tuple) {
-        final int hashCode = this.index.hashCodeOf( tuple );
+    
+    public void remove(final LeftTuple leftTuple) {
+        LeftTuple previousRightTuple = (LeftTuple) leftTuple.getPrevious();
+        if ( previousRightTuple != null && leftTuple.getNext() != null ) {
+            // Optimisation for tuple self removal if it's not the first in the chain
+            // we can't do this if it's the only remain tuple, as we need to also remove the parent bucket.
+            previousRightTuple.setNext( leftTuple.getNext() );
+            leftTuple.getNext().setPrevious( previousRightTuple );
+            this.size--;
+        }
+        
+        final int hashCode = this.index.hashCodeOf( leftTuple );
 
         final int index = indexOf( hashCode,
                                    this.table.length );
 
         // search the table for  the Entry, we need to track previous  and next, so if the 
         // Entry is empty after  its had the FactEntry removed, we must remove  it from the table
-        FieldIndexEntry previous = (FieldIndexEntry) this.table[index];
-        FieldIndexEntry current = previous;
+        TupleHashTable previous = (TupleHashTable) this.table[index];
+        TupleHashTable current = previous;
         while ( current != null ) {
-            final FieldIndexEntry next = (FieldIndexEntry) current.next;
-            if ( current.matches( tuple,
+            final TupleHashTable next = (TupleHashTable) current.next;
+            if ( current.matches( leftTuple,
                                   hashCode ) ) {
-                final LeftTuple old = current.remove( tuple );
+                current.remove( leftTuple );
                 this.factSize--;
                 // If the FactEntryIndex is empty, then remove it from the hash table
                 if ( current.first == null ) {
@@ -226,12 +202,10 @@ public class TupleIndexHashTable extends AbstractHashTable
                     current.next = null;
                     this.size--;
                 }
-                return old;
             }
             previous = current;
             current = next;
         }
-        return null;
     }
 
     public boolean contains(final LeftTuple tuple) {
@@ -240,31 +214,31 @@ public class TupleIndexHashTable extends AbstractHashTable
         final int index = indexOf( hashCode,
                                    this.table.length );
 
-        FieldIndexEntry current = (FieldIndexEntry) this.table[index];
+        TupleHashTable current = (TupleHashTable) this.table[index];
         while ( current != null ) {
             if ( current.matches( tuple,
                                   hashCode ) ) {
                 return true;
             }
-            current = (FieldIndexEntry) current.next;
+            current = (TupleHashTable) current.next;
         }
         return false;
     }
 
-    public FieldIndexEntry get(final RightTuple rightTuple) {
+    public TupleHashTable get(final RightTuple rightTuple) {
         final Object object = rightTuple.getHandle().getObject();
         final int hashCode = this.index.hashCodeOf( object );
 
         final int index = indexOf( hashCode,
                                    this.table.length );
-        FieldIndexEntry entry = (FieldIndexEntry) this.table[index];
+        TupleHashTable entry = (TupleHashTable) this.table[index];
 
         while ( entry != null ) {
             if ( entry.matches( object,
                                 hashCode ) ) {
                 return entry;
             }
-            entry = (FieldIndexEntry) entry.getNext();
+            entry = (TupleHashTable) entry.getNext();
         }
 
         return entry;
@@ -277,12 +251,12 @@ public class TupleIndexHashTable extends AbstractHashTable
      * @param value
      * @return
      */
-    private FieldIndexEntry getOrCreate(final LeftTuple tuple) {
+    private TupleHashTable getOrCreate(final LeftTuple tuple) {
         final int hashCode = this.index.hashCodeOf( tuple );
 
         final int index = indexOf( hashCode,
                                    this.table.length );
-        FieldIndexEntry entry = (FieldIndexEntry) this.table[index];
+        TupleHashTable entry = (TupleHashTable) this.table[index];
 
         // search to find an existing entry
         while ( entry != null ) {
@@ -290,12 +264,12 @@ public class TupleIndexHashTable extends AbstractHashTable
                                 hashCode ) ) {
                 return entry;
             }
-            entry = (FieldIndexEntry) entry.next;
+            entry = (TupleHashTable) entry.next;
         }
 
         // entry does not exist, so create
         if ( entry == null ) {
-            entry = new FieldIndexEntry( this.index,
+            entry = new TupleHashTable( this.index,
                                          hashCode );
             entry.next = this.table[index];
             this.table[index] = entry;
@@ -311,99 +285,99 @@ public class TupleIndexHashTable extends AbstractHashTable
         return this.factSize;
     }
 
-    public static class FieldIndexEntry
-        implements
-        Entry {
-
-        private static final long serialVersionUID = 400L;
-//      private Entry             previous;
-        private Entry             next;
-        private LeftTuple         first;
-        private final int         hashCode;
-        private Index             index;
-
-        public FieldIndexEntry(final Index index,
-                               final int hashCode) {
-            this.index = index;
-            this.hashCode = hashCode;
-        }
-
-        public Entry getNext() {
-            return this.next;
-        }
-
-        public void setNext(final Entry next) {
-            this.next = next;
-        }
-
-        public LeftTuple getFirst() {
-            return this.first;
-        }
-
-        public void add(final LeftTuple tuple) {
-            tuple.setNext( this.first );
-            this.first = tuple;
-        }
-
-        public LeftTuple get(final LeftTuple tuple) {
-            LeftTuple current = this.first;
-            while ( current != null ) {
-                if ( tuple.equals( current ) ) {
-                    return current;
-                }
-                current = (LeftTuple) current.getNext();
-            }
-            return null;
-        }
-
-        public LeftTuple remove(final LeftTuple tuple) {
-            LeftTuple previous = this.first;
-            LeftTuple current = previous;
-            while ( current != null ) {
-                final LeftTuple next = (LeftTuple) current.getNext();
-                if ( tuple.equals( current ) ) {
-                    if ( this.first == current ) {
-                        this.first = next;
-                    } else {
-                        previous.setNext( next );
-                    }
-                    current.setNext( null );
-                    return current;
-                }
-                previous = current;
-                current = next;
-            }
-            return current;
-        }
-
-        public boolean matches(final Object object,
-                               final int objectHashCode) {
-            return this.hashCode == objectHashCode && this.index.equal( object,
-                                                                        this.first );
-        }
-
-        public boolean matches(final LeftTuple tuple,
-                               final int tupleHashCode) {
-            return this.hashCode == tupleHashCode && this.index.equal( this.first,
-                                                                       tuple );
-        }
-
-        public int hashCode() {
-            return this.hashCode;
-        }
-
-        public boolean equals(final Object object) {
-            final FieldIndexEntry other = (FieldIndexEntry) object;
-            return this.hashCode == other.hashCode && this.index == other.index;
-        }
-
-        public Entry getPrevious() {
-            return null;
-        }
-
-        public void setPrevious(Entry previous) {
-//          this.previous = previous;           
-        }
-    }
+//    public static class TupleHashTable
+//        implements
+//        Entry {
+//
+//        private static final long serialVersionUID = 400L;
+////      private Entry             previous;
+//        private Entry             next;
+//        private LeftTuple         first;
+//        private final int         hashCode;
+//        private Index             index;
+//
+//        public TupleHashTable(final Index index,
+//                               final int hashCode) {
+//            this.index = index;
+//            this.hashCode = hashCode;
+//        }
+//
+//        public Entry getNext() {
+//            return this.next;
+//        }
+//
+//        public void setNext(final Entry next) {
+//            this.next = next;
+//        }
+//
+//        public LeftTuple getFirst() {
+//            return this.first;
+//        }
+//
+//        public void add(final LeftTuple tuple) {
+//            tuple.setNext( this.first );
+//            this.first = tuple;
+//        }
+//
+//        public LeftTuple get(final LeftTuple tuple) {
+//            LeftTuple current = this.first;
+//            while ( current != null ) {
+//                if ( tuple.equals( current ) ) {
+//                    return current;
+//                }
+//                current = (LeftTuple) current.getNext();
+//            }
+//            return null;
+//        }
+//
+//        public void remove(final LeftTuple leftTuple) {
+//            LeftTuple previous = ( LeftTuple ) leftTuple.getPrevious();
+//            LeftTuple next = ( LeftTuple ) leftTuple.getNext();
+//            
+//            if ( previous  != null && next != null ) {
+//                //remove  from middle
+//                previous.setNext( next );
+//                next.setPrevious( previous );
+//            } else if ( next != null ) {
+//                //remove from first
+//                this.first = next;
+//                next.setPrevious( null );
+//            } else if ( previous != null ){
+//                //remove from end
+//                previous.setNext( null );
+//            }  else {
+//                this.first = null;
+//            }
+//        }
+//
+//        public boolean matches(final Object object,
+//                               final int objectHashCode) {
+//            return this.hashCode == objectHashCode && this.index.equal( object,
+//                                                                        this.first );
+//        }
+//
+//        public boolean matches(final LeftTuple tuple,
+//                               final int tupleHashCode) {
+//            return this.hashCode == tupleHashCode && this.index.equal( this.first,
+//                                                                       tuple );
+//        }
+//
+//        public int hashCode() {
+//            return this.hashCode;
+//        }
+//
+//        public boolean equals(final Object object) {
+//            final TupleHashTable other = (TupleHashTable) object;
+//            return this.hashCode == other.hashCode && this.index == other.index;
+//        }
+//
+//        public Entry getPrevious() {
+//            return null;
+//        }
+//
+//        public void setPrevious(Entry previous) {
+////          this.previous = previous;           
+//        }
+//    }
 
 }

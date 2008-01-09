@@ -148,8 +148,7 @@ public class ObjectTypeNode extends RightTupleSource
 
         if ( this.objectMemoryEnabled ) {
             final FactHashTable memory = (FactHashTable) workingMemory.getNodeMemory( this );
-            memory.add( rightTuple,
-                        false );
+            memory.add( rightTuple );
         }
 
         this.sink.propagateAssertRightTuple( rightTuple,
@@ -176,22 +175,27 @@ public class ObjectTypeNode extends RightTupleSource
             return;
         }
 
-        final FactHashTable memory = (FactHashTable) workingMemory.getNodeMemory( this );
-        memory.remove( rightTuple );
+        if ( this.objectMemoryEnabled ) {
+            final FactHashTable memory = (FactHashTable) workingMemory.getNodeMemory( this );
+            memory.remove( rightTuple );
+        }
+         
+        
+        if ( rightTuple.getAlphaChildren() != null ) {
+            this.sink.propagateRetractRightTuple( rightTuple,
+                                                  context,
+                                                  workingMemory,
+                                                  true );
+        }
 
-        this.sink.propagateRetractRightTuple( rightTuple,
-                                              context,
-                                              workingMemory,
-                                              true );
     }
 
     public void updateSink(final RightTupleSink sink,
                            final PropagationContext context,
                            final InternalWorkingMemory workingMemory) {
         final FactHashTable memory = (FactHashTable) workingMemory.getNodeMemory( this );
-        final Iterator it = memory.iterator();
-        for ( RightTuple entry = (RightTuple) it.next(); entry != null; entry = (RightTuple) it.next() ) {
-            sink.assertRightTuple( entry,
+        for ( RightTuple rightTuple = (RightTuple) memory.getFirst( null ); rightTuple != null; rightTuple = (RightTuple) rightTuple.getNext() ) {
+            sink.assertRightTuple( rightTuple,
                                    context,
                                    workingMemory );
         }

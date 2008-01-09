@@ -159,4 +159,9 @@ public class MockTupleSink extends LeftTupleSource
         
     }
 
+    public LeftTupleSinkNode getPreviousLeftTupleSinkNode() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

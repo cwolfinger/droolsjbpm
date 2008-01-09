@@ -27,12 +27,6 @@ public class EmptyLeftTupleSinkAdapter
                                      final InternalWorkingMemory workingMemory) {
     }
 
-    public void propagateRetractTuple(final LeftTuple leftTuple,
-                                      final RightTuple rightTuple,
-                                      final PropagationContext context,
-                                      final InternalWorkingMemory workingMemory) {
-    }
-
     public void propagateRetractTuple(final LeftTuple tuple,
                                       final PropagationContext context,
                                       final InternalWorkingMemory workingMemory) {
@@ -54,5 +48,19 @@ public class EmptyLeftTupleSinkAdapter
 
     public int size() {
         return 0;
+    }
+
+    public void propagateRetractLeftTuple(LeftTuple tuple,
+                                          PropagationContext context,
+                                          InternalWorkingMemory workingMemory) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void propagateRetractRightTuple(RightTuple tuple,
+                                           PropagationContext context,
+                                           InternalWorkingMemory workingMemory) {
+        // TODO Auto-generated method stub
+        
     }
 }

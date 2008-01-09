@@ -65,7 +65,7 @@ public class MockObjectSource extends RightTupleSource {
         this.updated++;
         for ( final Iterator it = this.facts.iterator(); it.hasNext(); ) {
             final InternalFactHandle handle = (InternalFactHandle) it.next();
-            sink.assertRightTuple( handle,
+            sink.assertRightTuple( new RightTuple( handle ),
                                context,
                                workingMemory );
         }

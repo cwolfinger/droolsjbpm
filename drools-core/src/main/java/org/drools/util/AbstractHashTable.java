@@ -246,24 +246,41 @@ public abstract class AbstractHashTable
         /* (non-Javadoc)
          * @see org.drools.util.Iterator#next()
          */
-        public Object next() {
-            if ( this.entry == null ) {
-                // keep skipping rows until we come to the end, or find one that is populated
-                while ( this.entry == null ) {
-                    this.row++;
-                    if ( this.row == this.length ) {
-                        return null;
-                    }
-                    this.entry = this.table[this.row];
-                }
-            } else {
+        public Object next() {            
+            if ( this.entry != null  ) {
                 this.entry = this.entry.getNext();
-                if ( this.entry == null ) {
-                    this.entry = (Entry) next();
-                }
             }
-
+            
+            // if no entry keep skipping rows until we come to the end, or find one that is populated
+            while ( this.entry == null ) {
+                this.row++;
+                if ( this.row == this.length ) {
+                    return null;
+                }
+                this.entry = this.table[this.row];
+            }            
+            
             return this.entry;
+        }  
+        
+        /**
+         * Removes the current node
+         */
+        public void remove() {
+            Entry previous = this.entry.getPrevious();
+            Entry next = this.entry.getNext();
+            
+            if ( previous != null ) {
+                previous.setNext( next );
+            } else {
+                this.table[this.row] = next;
+            }
+                        
+            if ( next != null ) {                    
+                next.setPrevious( previous );
+            }             
+            
+            this.entry = previous;
         }
 
         /* (non-Javadoc)

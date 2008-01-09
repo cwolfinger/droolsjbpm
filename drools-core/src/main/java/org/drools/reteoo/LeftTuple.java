@@ -20,129 +20,249 @@ public class LeftTuple
 
     private final InternalFactHandle handle;
 
-    private LeftTuple                parent;       
+    private LeftTuple                parent;
 
     private Activation               activation;
 
     private long                     recency;
 
     private int                      hashCode;
-    
-    private RightTuple               match;
 
-    
+    private RightTuple               blocker;
+
+    private LeftTuple                blockedPrevious;
+
+    private LeftTuple                blockedNext;
+
     // left and right tuples in parent
-    private LeftTuple               leftParent;  
-    private LeftTuple               leftParentLeft;
-    private LeftTuple               leftParentright;
-    
-    private RightTuple              rightParent;    
-    private RightTuple              rightParentLeft;
-    private RightTuple              rightParentright;
-    
+    private LeftTuple                leftParent;
+    private LeftTuple                leftParentPrevious;
+    private LeftTuple                leftParentNext;
+
+    private RightTuple               rightParent;
+    private LeftTuple                rightParentPrevious;
+    private LeftTuple                rightParentNext;
+
     // node memory
-    private Entry                    next;    
+    private Entry                    next;
     private Entry                    previous;
-    
+
     // children
-    private LeftTuple                children;    
+    private LeftTuple                children;
+
+    private final LeftTupleSink      sink;
 
     // ------------------------------------------------------------
     // Constructors
     // ------------------------------------------------------------
-    public LeftTuple(final RightTuple rightTuple) {
+    public LeftTuple(final RightTuple rightTuple,
+                     LeftTupleSink sink) {
         this.handle = rightTuple.getHandle();
         this.recency = this.handle.getRecency();
+
         int h = handle.hashCode();
         h += ~(h << 9);
         h ^= (h >>> 14);
         h += (h << 4);
         h ^= (h >>> 10);
         this.hashCode = h;
+
+        this.rightParent = rightTuple;
+        this.rightParentNext = this.rightParent.getBetaChildren();
+        if ( this.rightParentNext != null ) {
+            this.rightParentNext.rightParentPrevious = this;
+        }
+        this.rightParent.setBetaChildren( this );
+        this.sink = sink;
     }
 
-    public LeftTuple(final LeftTuple tuple) {
-        this.index = tuple.index;
-        this.parent = tuple.parent;
-        this.recency = tuple.recency;
-        this.handle = tuple.handle;
-        this.hashCode = tuple.hashCode();
+    public LeftTuple(final LeftTuple leftTuple,
+                     LeftTupleSink sink) {
+        this.index = leftTuple.index;
+        this.parent = leftTuple.parent;
+        this.recency = leftTuple.recency;
+        this.handle = leftTuple.handle;
+        this.hashCode = leftTuple.hashCode();
+
+        this.leftParent = leftTuple;
+        this.leftParentNext = leftTuple.children;
+        if ( this.leftParentNext != null ) {
+            this.leftParentNext.leftParentPrevious = this;
+        }
+        this.leftParent.children = this;
+        this.sink = sink;
     }
 
-    public LeftTuple(final LeftTuple parentTuple,
-                     final RightTuple rightTuple) {
+    public LeftTuple(final LeftTuple leftTuple,
+                     final RightTuple rightTuple,
+                     LeftTupleSink sink) {
         this.handle = rightTuple.getHandle();
-        this.index = parentTuple.index + 1;
-        this.parent = parentTuple;
-        this.recency = parentTuple.recency + this.handle.getRecency();
-        this.hashCode = parentTuple.hashCode ^ (handle.hashCode() * 31);
-    }        
+        this.index = leftTuple.index + 1;
+        this.parent = leftTuple;
+        this.recency = leftTuple.recency + this.handle.getRecency();
+        this.hashCode = leftTuple.hashCode ^ (handle.hashCode() * 31);
+
+        this.rightParent = rightTuple;
+        this.rightParentNext = this.rightParent.getBetaChildren();
+        if ( this.rightParentNext != null ) {
+            this.rightParentNext.rightParentPrevious = this;
+        }
+        this.rightParent.setBetaChildren( this );
+
+        this.leftParent = leftTuple;
+        this.leftParentNext = leftTuple.children;
+        if ( this.leftParentNext != null ) {
+            this.leftParentNext.leftParentPrevious = this;
+        }
+        this.leftParent.children = this;
+        this.sink = sink;
+    }
+
+    public void unlinkFromParents() {
+        if ( this.rightParent != null ) {
+            if ( this.rightParentPrevious != null ) {
+                this.rightParentPrevious.rightParentNext = this.rightParentNext;
+            } else {
+                // first one in the chain, so treat differently
+                this.rightParent.setBetaChildren( this.rightParentNext );
+            }
+
+            if ( rightParentNext != null ) {
+                rightParentNext.rightParentPrevious = this.rightParentPrevious;
+            }
+        }
+
+        if ( this.leftParent != null ) {
+            if ( this.leftParentPrevious != null ) {
+                this.leftParentPrevious.leftParentNext = this.leftParentNext;
+            } else {
+                // first one in the chain, so treat differently                
+                this.leftParent.setBetaChildren( this.leftParentNext );
+            }
+
+            if ( leftParentNext != null ) {
+                leftParentNext.leftParentPrevious = this.leftParentPrevious;
+            }
+        }
+    }
+    
+    public void unlinkFromLeftParent() {
+        LeftTuple previous = (LeftTuple) this.leftParentPrevious;
+        LeftTuple next = (LeftTuple) this.leftParentNext;
+
+        if ( previous != null && next != null ) {
+            //remove  from middle
+            this.leftParentPrevious.leftParentNext = this.leftParentNext;
+            this.leftParentNext.leftParentPrevious = this.leftParentPrevious;
+        } else if ( next != null ) {
+            //remove from first
+            this.leftParent.children = this.leftParentNext;
+            this.leftParentNext.leftParentPrevious = null;
+        } else if ( previous != null ) {
+            //remove from end
+            this.leftParentPrevious.leftParentNext = null;
+        } else {
+            this.leftParent.children = null;
+        }        
+    }
+    
+    public void unlinkFromRightParent() {
+        LeftTuple previous = (LeftTuple) this.rightParentPrevious;
+        LeftTuple next = (LeftTuple) this.rightParentNext;
+
+        if ( previous != null && next != null ) {
+            //remove  from middle
+            this.rightParentPrevious.rightParentNext = this.rightParentNext;
+            this.rightParentNext.rightParentPrevious = this.rightParentPrevious;
+        } else if ( next != null ) {
+            //remove from first
+            this.rightParent.setBetaChildren( this.rightParentNext );
+            this.rightParentNext.rightParentPrevious = null;
+        } else if ( previous != null ) {
+            //remove from end
+            this.rightParentPrevious.rightParentNext = null;
+        } else if ( this.rightParent != null ){
+            this.rightParent.setBetaChildren( null );
+        }          
+    }
+
+    public LeftTupleSink getSink() {
+        return sink;
+    }
 
     public LeftTuple getLeftParent() {
-		return leftParent;
-	}
+        return leftParent;
+    }
 
-	public void setLeftParent(LeftTuple leftParent) {
-		this.leftParent = leftParent;
-	}
+    public void setLeftParent(LeftTuple leftParent) {
+        this.leftParent = leftParent;
+    }
 
-	public LeftTuple getLeftParentLeft() {
-		return leftParentLeft;
-	}
+    public LeftTuple getLeftParentPrevious() {
+        return leftParentPrevious;
+    }
 
-	public void setLeftParentLeft(LeftTuple leftParentLeft) {
-		this.leftParentLeft = leftParentLeft;
-	}
+    public void setLeftParentPrevious(LeftTuple leftParentLeft) {
+        this.leftParentPrevious = leftParentLeft;
+    }
 
-	public LeftTuple getLeftParentright() {
-		return leftParentright;
-	}
+    public LeftTuple getLeftParentNext() {
+        return leftParentNext;
+    }
 
-	public void setLeftParentright(LeftTuple leftParentright) {
-		this.leftParentright = leftParentright;
-	}
+    public void setLeftParentNext(LeftTuple leftParentright) {
+        this.leftParentNext = leftParentright;
+    }
 
-	public RightTuple getRightParent() {
-		return rightParent;
-	}
+    public RightTuple getRightParent() {
+        return rightParent;
+    }
 
-	public void setRightParent(RightTuple rightParent) {
-		this.rightParent = rightParent;
-	}
+    public void setRightParent(RightTuple rightParent) {
+        this.rightParent = rightParent;
+    }
 
-	public RightTuple getRightParentLeft() {
-		return rightParentLeft;
-	}
+    public LeftTuple getRightParentPrevious() {
+        return rightParentPrevious;
+    }
 
-	public void setRightParentLeft(RightTuple rightParentLeft) {
-		this.rightParentLeft = rightParentLeft;
-	}
+    public void setRightParentPrevious(LeftTuple rightParentLeft) {
+        this.rightParentPrevious = rightParentLeft;
+    }
 
-	public RightTuple getRightParentright() {
-		return rightParentright;
-	}
+    public LeftTuple getRightParentNext() {
+        return rightParentNext;
+    }
 
-	public void setRightParentright(RightTuple rightParentright) {
-		this.rightParentright = rightParentright;
-	}
+    public void setRightParentNext(LeftTuple rightParentRight) {
+        this.rightParentNext = rightParentRight;
+    }
 
-	public InternalFactHandle get(final int index) {
+    public void setBetaChildren(LeftTuple leftTuple) {
+        this.children = leftTuple;
+    }
+
+    public LeftTuple getBetaChildren() {
+        return this.children;
+    }
+
+    public InternalFactHandle get(final int index) {
         LeftTuple entry = this;
         while ( entry.index != index ) {
             entry = entry.parent;
         }
         return entry.handle;
-    }        
+    }
 
     public Entry getPrevious() {
-		return previous;
-	}
+        return previous;
+    }
 
-	public void setPrevious(Entry previous) {
-		this.previous = previous;
-	}
+    public void setPrevious(Entry previous) {
+        this.previous = previous;
+    }
 
-	public void setNext(final Entry next) {
+    public void setNext(final Entry next) {
         this.next = next;
     }
 
@@ -179,14 +299,29 @@ public class LeftTuple
     public long getRecency() {
         return this.recency;
     }
-        
 
-    public RightTuple getMatch() {
-        return match;
+    public void setBlocker(RightTuple blocker) {
+        this.blocker = blocker;
     }
 
-    public void setMatch(RightTuple match) {
-        this.match = match;
+    public RightTuple getBlocker() {
+        return this.blocker;
+    }
+
+    public LeftTuple getBlockedPrevious() {
+        return this.blockedPrevious;
+    }
+
+    public void setBlockedPrevious(LeftTuple blockerPrevious) {
+        this.blockedPrevious = blockerPrevious;
+    }
+
+    public LeftTuple getBlockedNext() {
+        return this.blockedNext;
+    }
+
+    public void setBlockedNext(LeftTuple blockerNext) {
+        this.blockedNext = blockerNext;
     }
 
     public void setActivation(final Activation activation) {
@@ -271,18 +406,18 @@ public class LeftTuple
         }
         return entry;
     }
-    
-    public Object[] toObjectArray() {        
-        Object[] objects = new Object[ this.index + 1 ];
-        LeftTuple entry = this;       
+
+    public Object[] toObjectArray() {
+        Object[] objects = new Object[this.index + 1];
+        LeftTuple entry = this;
         while ( entry != null ) {
             Object object = entry.getLastHandle().getObject();
             if ( object instanceof ShadowProxy ) {
-                object = ((ShadowProxy)object).getShadowedObject();
+                object = ((ShadowProxy) object).getShadowedObject();
             }
             objects[entry.index] = object;
             entry = entry.parent;
-        }   
+        }
         return objects;
     }
 }

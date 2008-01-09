@@ -298,7 +298,8 @@ public class CompositeRightTupleSinkAdapter
                 final RightTupleSink sink = (RightTupleSink) this.hashedSinkMap.get( this.hashKey );
                 if ( sink != null ) {
                     // The sink exists so propagate
-                    sink.assertRightTuple( new RightTuple( rightTuple ),
+                    sink.assertRightTuple( new RightTuple( rightTuple, 
+                                                           sink ),
                                            context,
                                            workingMemory );
                 }
@@ -308,7 +309,8 @@ public class CompositeRightTupleSinkAdapter
         // propagate unhashed
         if ( this.hashableSinks != null ) {
             for ( RightTupleSinkNode sink = this.hashableSinks.getFirst(); sink != null; sink = sink.getNextRightTupleSinkNode() ) {
-                sink.assertRightTuple( new RightTuple( rightTuple ),
+                sink.assertRightTuple( new RightTuple( rightTuple, 
+                                                       sink ),
                                        context,
                                        workingMemory );
             }
@@ -317,7 +319,8 @@ public class CompositeRightTupleSinkAdapter
         if ( this.otherSinks != null ) {
             // propagate others
             for ( RightTupleSinkNode sink = this.otherSinks.getFirst(); sink != null; sink = sink.getNextRightTupleSinkNode() ) {
-                sink.assertRightTuple( new RightTuple( rightTuple ),
+                sink.assertRightTuple( new RightTuple( rightTuple, 
+                                                       sink ),
                                        context,
                                        workingMemory );
             }
@@ -329,57 +332,10 @@ public class CompositeRightTupleSinkAdapter
                                            final PropagationContext context,
                                            final InternalWorkingMemory workingMemory,
                                            final boolean useHash) {
-        if ( this.hashedFieldIndexes != null ) {
-            if ( useHash && this.hashedSinkMap != null ) {
-                final Object object = rightTuple.getHandle().getObject();
-                // Iterate the FieldIndexes to see if any are hashed        
-                for ( FieldIndex fieldIndex = (FieldIndex) this.hashedFieldIndexes.getFirst(); fieldIndex != null; fieldIndex = (FieldIndex) fieldIndex.getNext() ) {
-                    // this field is hashed so set the existing hashKey and see if there is a sink for it
-                    if ( !fieldIndex.isHashed() ) {
-                        continue;
-                    }
-
-                    final int index = fieldIndex.getIndex();
-                    final FieldExtractor extractor = fieldIndex.getFieldExtactor();
-                    this.hashKey.setValue( index,
-                                           object,
-                                           extractor );
-                    final RightTupleSink sink = (RightTupleSink) this.hashedSinkMap.get( this.hashKey );
-                    if ( sink != null ) {
-                        // The sink exists so propagate
-                        sink.retractRightTuple( new RightTuple( rightTuple ),
-                                                context,
-                                                workingMemory );
-                    }
-                }
-            } else if ( this.hashedSinkMap != null ) {
-                final Iterator it = this.hashedSinkMap.newIterator();
-                for ( ObjectEntry entry = (ObjectEntry) it.next(); entry != null; entry = (ObjectEntry) it.next() ) {
-                    final RightTupleSink sink = (RightTupleSink) entry.getValue();
-                    sink.retractRightTuple( new RightTuple( rightTuple ),
-                                            context,
-                                            workingMemory );
-                }
-            }
+        for( RightTuple childRightTuple = rightTuple.getAlphaChildren(); childRightTuple != null; childRightTuple = childRightTuple.getParentNext() ) {
+            childRightTuple.getRightTupleSink().retractRightTuple( childRightTuple, context, workingMemory );
         }
-
-        if ( this.hashableSinks != null ) {
-            // we can't retrieve hashed sinks, as the field value might have changed, so we have to iterate and propagate to all hashed sinks
-            for ( RightTupleSinkNode sink = this.hashableSinks.getFirst(); sink != null; sink = sink.getNextRightTupleSinkNode() ) {
-                sink.retractRightTuple( new RightTuple( rightTuple ),
-                                        context,
-                                        workingMemory );
-            }
-        }
-
-        if ( this.otherSinks != null ) {
-            // propagate others
-            for ( RightTupleSinkNode sink = this.otherSinks.getFirst(); sink != null; sink = sink.getNextRightTupleSinkNode() ) {
-                sink.retractRightTuple( new RightTuple( rightTuple ),
-                                        context,
-                                        workingMemory );
-            }
-        }
+        rightTuple.setAlphaChildren( null );
     }
 
     public RightTupleSink[] getSinks() {

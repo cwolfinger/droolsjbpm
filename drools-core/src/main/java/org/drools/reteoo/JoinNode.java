@@ -97,14 +97,13 @@ public class JoinNode extends BetaNode {
             memory.getLeftTupleMemory().add( leftTuple );
         }
 
-        final Iterator it = memory.getRightTupleMemory().iterator( leftTuple );
         this.constraints.updateFromTuple( workingMemory,
                                           leftTuple );
         
-        for ( RightTuple entry = (RightTuple) it.next(); entry != null; entry = (RightTuple) it.next() ) {
-            if ( this.constraints.isAllowedCachedLeft( entry.getHandle() ) ) {
+        for ( RightTuple rightTuple = memory.getRightTupleMemory().getFirst( leftTuple ); rightTuple != null; rightTuple = (RightTuple) rightTuple.getNext() ) {
+            if ( this.constraints.isAllowedCachedLeft( rightTuple.getHandle() ) ) {
                 this.sink.propagateAssertTuple( leftTuple,
-                                                entry,
+                                                rightTuple,
                                                 context,
                                                 workingMemory );
             }
@@ -142,10 +141,9 @@ public class JoinNode extends BetaNode {
             return;
         }
 
-        final Iterator it = memory.getLeftTupleMemory().iterator( rightTuple );
         this.constraints.updateFromRightTuple( workingMemory,
                                                rightTuple );
-        for ( LeftTuple leftTuple = (LeftTuple) it.next(); leftTuple != null; leftTuple = (LeftTuple) it.next() ) {
+        for ( LeftTuple leftTuple = memory.getLeftTupleMemory().getFirst( rightTuple ); leftTuple != null; leftTuple = (LeftTuple) leftTuple.getNext() ) {
             if ( this.constraints.isAllowedCachedRight( leftTuple ) ) {
                 this.sink.propagateAssertTuple( leftTuple,
                                                 rightTuple,
@@ -168,22 +166,11 @@ public class JoinNode extends BetaNode {
      */
     public void retractRightTuple(final RightTuple rightTuple,
                               final PropagationContext context,
-                              final InternalWorkingMemory workingMemory) {
+                              final InternalWorkingMemory workingMemory) {        
         final BetaMemory memory = (BetaMemory) workingMemory.getNodeMemory( this );
-        if ( !memory.getRightTupleMemory().remove( rightTuple ) ) {
-            return;
-        }
-
-        final Iterator it = memory.getLeftTupleMemory().iterator( rightTuple );
-        this.constraints.updateFromRightTuple( workingMemory,
-                                               rightTuple );
-        for ( LeftTuple tuple = (LeftTuple) it.next(); tuple != null; tuple = (LeftTuple) it.next() ) {
-            if ( this.constraints.isAllowedCachedRight( tuple ) ) {
-                this.sink.propagateRetractTuple( tuple,
-                                                 rightTuple,
-                                                 context,
-                                                 workingMemory );
-            }
+        memory.getRightTupleMemory().remove( rightTuple );
+        if ( rightTuple.getBetaChildren() != null ) {
+            this.sink.propagateRetractRightTuple( rightTuple, context, workingMemory );
         }
     }
 
@@ -203,22 +190,22 @@ public class JoinNode extends BetaNode {
                              final PropagationContext context,
                              final InternalWorkingMemory workingMemory) {
         final BetaMemory memory = (BetaMemory) workingMemory.getNodeMemory( this );
-        final LeftTuple tuple = memory.getLeftTupleMemory().remove( leftTuple );
-        if ( tuple == null ) {
-            return;
+        memory.getLeftTupleMemory().remove( leftTuple );
+        if ( leftTuple.getBetaChildren() != null ) {
+            this.sink.propagateRetractLeftTuple( leftTuple, context, workingMemory );
         }
-
-        final Iterator it = memory.getRightTupleMemory().iterator( leftTuple );
-        this.constraints.updateFromTuple( workingMemory,
-                                          leftTuple );
-        for ( RightTuple rightTuple = (RightTuple) it.next(); rightTuple != null; rightTuple = (RightTuple) it.next() ) {
-            if ( this.constraints.isAllowedCachedLeft( rightTuple.getHandle() ) ) {
-                this.sink.propagateRetractTuple( leftTuple,
-                                                 rightTuple,
-                                                 context,
-                                                 workingMemory );
-            }
-        }
+        
+//        final Iterator it = memory.getRightTupleMemory().iterator( leftTuple );
+//        this.constraints.updateFromTuple( workingMemory,
+//                                          leftTuple );
+//        for ( RightTuple rightTuple = (RightTuple) it.next(); rightTuple != null; rightTuple = (RightTuple) it.next() ) {
+//            if ( this.constraints.isAllowedCachedLeft( rightTuple.getHandle() ) ) {
+//                this.sink.propagateRetractTuple( leftTuple,
+//                                                 rightTuple,
+//                                                 context,
+//                                                 workingMemory );
+//            }
+//        }
     }
 
     /* (non-Javadoc)
@@ -232,13 +219,13 @@ public class JoinNode extends BetaNode {
 
         final Iterator tupleIter = memory.getLeftTupleMemory().iterator();
         for ( LeftTuple tuple = (LeftTuple) tupleIter.next(); tuple != null; tuple = (LeftTuple) tupleIter.next() ) {
-            final Iterator objectIter = memory.getRightTupleMemory().iterator( tuple );
             this.constraints.updateFromTuple( workingMemory,
                                               tuple );
-            for ( RightTuple rightTuple = (RightTuple) objectIter.next(); rightTuple != null; rightTuple = (RightTuple) objectIter.next() ) {
+            for ( RightTuple rightTuple = memory.getRightTupleMemory().getFirst( tuple ); rightTuple != null; rightTuple = (RightTuple) rightTuple.getNext() ) {
                 if ( this.constraints.isAllowedCachedLeft( rightTuple.getHandle() ) ) {
                     sink.assertTuple( new LeftTuple( tuple,
-                                                     rightTuple ),
+                                                     rightTuple,
+                                                     this ),
                                       context,
                                       workingMemory );
                 }

@@ -101,12 +101,12 @@ public class ExistsNode extends BetaNode {
         for ( FactEntry entry = (FactEntry) it.next(); entry != null; entry = (FactEntry) it.next() ) {            
             final InternalFactHandle handle = entry.getFactHandle();
             if ( this.constraints.isAllowedCachedLeft( handle ) ) {
-                leftTuple.setMatch( handle );
+                leftTuple.setBlocked( handle );
                 break;
             }            
         }
 
-        if ( leftTuple.getMatch() != null ) {
+        if ( leftTuple.getBlocked() != null ) {
             this.sink.propagateAssertTuple( leftTuple,
                                             context,
                                             workingMemory );
@@ -140,8 +140,8 @@ public class ExistsNode extends BetaNode {
         this.constraints.updateFromRightTuple( workingMemory,
                                                rightTuple );
         for ( LeftTuple tuple = (LeftTuple) it.next(); tuple != null; tuple = (LeftTuple) it.next() ) {
-            if ( this.constraints.isAllowedCachedRight( tuple ) && tuple.getMatch() == null) {
-                    tuple.setMatch( rightTuple );
+            if ( this.constraints.isAllowedCachedRight( tuple ) && tuple.getBlocked() == null) {
+                    tuple.setBlocked( rightTuple );
                     this.sink.propagateAssertTuple( tuple,
                                                      context,
                                                      workingMemory );                                 
@@ -174,9 +174,9 @@ public class ExistsNode extends BetaNode {
                                                rightTuple );
         for ( LeftTuple tuple = (LeftTuple) it.next(); tuple != null; tuple = (LeftTuple) it.next() ) {
             if ( this.constraints.isAllowedCachedRight( tuple ) ) {
-                if ( tuple.getMatch() == rightTuple ) {
+                if ( tuple.getBlocked() == rightTuple ) {
                     // reset the match                    
-                    tuple.setMatch( null );
+                    tuple.setBlocked( null );
                     
                     // find next match, remember it and break.
                     final Iterator tupleIt = memory.getRightTupleMemory().iterator( tuple );
@@ -185,13 +185,13 @@ public class ExistsNode extends BetaNode {
                     for ( FactEntry entry = (FactEntry) tupleIt.next(); entry != null; entry = (FactEntry) tupleIt.next() ) {
                         final InternalFactHandle rightHandle = entry.getFactHandle();
                         if ( this.constraints.isAllowedCachedLeft( rightHandle ) ) {
-                            tuple.setMatch( rightHandle );
+                            tuple.setBlocked( rightHandle );
                             break;
                         }
                     }
                     
                     // if there is now no new tuple match then propagate assert.
-                    if ( tuple.getMatch() == null ) {
+                    if ( tuple.getBlocked() == null ) {
                         this.sink.propagateRetractTuple( tuple,
                                                         context,
                                                         workingMemory );
@@ -224,7 +224,7 @@ public class ExistsNode extends BetaNode {
             return;
         }
 
-        if ( tuple.getMatch() !=  null) {
+        if ( tuple.getBlocked() !=  null) {
             this.sink.propagateRetractTuple( tuple,
                                              context,
                                              workingMemory );
@@ -242,7 +242,7 @@ public class ExistsNode extends BetaNode {
 
         final Iterator tupleIter = memory.getLeftTupleMemory().iterator();
         for ( LeftTuple tuple = (LeftTuple) tupleIter.next(); tuple != null; tuple = (LeftTuple) tupleIter.next() ) {
-            if ( tuple.getMatch() != null ) {
+            if ( tuple.getBlocked() != null ) {
                 sink.assertTuple( new LeftTuple( tuple ),
                                   context,
                                   workingMemory );

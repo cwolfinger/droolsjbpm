@@ -73,9 +73,9 @@ public class LinkedList
             this.firstNode = node;
             this.lastNode = node;;
         } else {
-            this.lastNode.setNext( node );
-            node.setPrevious( this.lastNode );
-            this.lastNode = node;
+            this.firstNode.setPrevious( node );
+            node.setNext( this.firstNode );
+            this.firstNode = node;
         }
         this.size++;
     }
@@ -285,6 +285,10 @@ public class LinkedList
             final Entry node = this.current;
             this.current = this.current.getNext();
             return node;
+        }
+        
+        public void remove() {
+            throw  new UnsupportedOperationException("LinkedListIterator does not support remove().");
         }
     }
 

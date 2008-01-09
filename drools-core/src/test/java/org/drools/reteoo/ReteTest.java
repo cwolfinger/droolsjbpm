@@ -195,7 +195,7 @@ public class ReteTest extends DroolsTestCase {
 
         final Object[] results = (Object[]) asserted.get( 0 );
         assertSame( list,
-                    unwrapShadow( ((DefaultFactHandle) results[0]).getObject() ) );
+                    unwrapShadow( ((RightTuple) results[0]).getHandle().getObject() ) );
     }
 
     public void testAssertObjectWithNoMatchingObjectTypeNode() {
@@ -264,7 +264,7 @@ public class ReteTest extends DroolsTestCase {
                       listSink.getAsserted().size() );
         assertEquals( 1,
                       arraySink.getAsserted().size() );
-
+        
         // Add a Collection ObjectTypeNode, so that we can check that the data from ArrayList is sent to it
         final ObjectTypeNode collectionOtn = new ObjectTypeNode( idGenerator.getNextId(),
                                                                  new ClassObjectType( Collection.class ),
@@ -319,7 +319,7 @@ public class ReteTest extends DroolsTestCase {
         // There is a List ObjectTypeNode, make sure it was propagated
         final List list = new ArrayList();
         final DefaultFactHandle h2 = new DefaultFactHandle( 1,
-                                                            list );
+                                                            list );        
 
         // need  to assert first, to force it to build  up the cache
         rete.assertRightTuple( h2,
@@ -329,7 +329,7 @@ public class ReteTest extends DroolsTestCase {
                                                        null ),
                            workingMemory );
 
-        rete.retractRightTuple( h2,
+        rete.retractRightTuple( h2.getRightTuple(),
                             new PropagationContextImpl( 0,
                                                         PropagationContext.ASSERTION,
                                                         null,
@@ -342,7 +342,7 @@ public class ReteTest extends DroolsTestCase {
 
         final Object[] results = (Object[]) retracted.get( 0 );
         assertSame( list,
-                    unwrapShadow( ((DefaultFactHandle) results[0]).getObject() ) );
+                    unwrapShadow( ((RightTuple) results[0]).getHandle().getObject() ) );
     }
 
     public void testIsShadowed() {
@@ -374,7 +374,7 @@ public class ReteTest extends DroolsTestCase {
         assertTrue( h1.isShadowFact() );
 
         final Object[] results = (Object[]) sink1.getAsserted().get( 0 );
-        assertTrue( ((DefaultFactHandle) results[0]).getObject() instanceof ShadowProxy );
+        assertTrue( ((RightTuple) results[0]).getHandle().getObject() instanceof ShadowProxy );
     }
 
     public void testNotShadowed() {
@@ -413,7 +413,7 @@ public class ReteTest extends DroolsTestCase {
 
         assertFalse( h1.isShadowFact() );
         final Object[] results = (Object[]) sink1.getAsserted().get( 0 );
-        assertFalse( ((DefaultFactHandle) results[0]).getObject() instanceof ShadowProxy );
+        assertFalse( ((RightTuple) results[0]).getHandle().getObject() instanceof ShadowProxy );
     }
 
     private Object unwrapShadow(Object object) {

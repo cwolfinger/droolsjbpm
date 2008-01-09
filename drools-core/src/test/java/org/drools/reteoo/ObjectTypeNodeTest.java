@@ -44,17 +44,18 @@ import org.drools.util.ObjectHashMap;
 
 public class ObjectTypeNodeTest extends DroolsTestCase {
     private ReteooRuleBase ruleBase;
-    private BuildContext buildContext;
-    
+    private BuildContext   buildContext;
+
     protected void setUp() throws Exception {
-        this.ruleBase = ( ReteooRuleBase ) RuleBaseFactory.newRuleBase();
-        this.buildContext = new BuildContext( ruleBase, ((ReteooRuleBase)ruleBase).getReteooBuilder().getIdGenerator() );
+        this.ruleBase = (ReteooRuleBase) RuleBaseFactory.newRuleBase();
+        this.buildContext = new BuildContext( ruleBase,
+                                              ((ReteooRuleBase) ruleBase).getReteooBuilder().getIdGenerator() );
     }
-    
+
     public void testAttach() throws Exception {
         IdGenerator idGenerator = ruleBase.getReteooBuilder().getIdGenerator();
 
-        final Rete source = this.ruleBase.getRete();    
+        final Rete source = this.ruleBase.getRete();
 
         final ObjectType objectType = new ClassObjectType( String.class );
 
@@ -89,7 +90,7 @@ public class ObjectTypeNodeTest extends DroolsTestCase {
         ReteooRuleBase ruleBase = (ReteooRuleBase) RuleBaseFactory.newRuleBase();
         IdGenerator idGenerator = ruleBase.getReteooBuilder().getIdGenerator();
 
-        final ReteooWorkingMemory workingMemory = ( ReteooWorkingMemory ) ruleBase.newStatefulSession();
+        final ReteooWorkingMemory workingMemory = (ReteooWorkingMemory) ruleBase.newStatefulSession();
 
         final Rete source = ruleBase.getRete();
 
@@ -105,24 +106,24 @@ public class ObjectTypeNodeTest extends DroolsTestCase {
         final InternalFactHandle handle1 = (InternalFactHandle) workingMemory.insert( string1 );
 
         // should assert as ObjectType matches
-        objectTypeNode.assertRightTuple( handle1,
-                                     context,
-                                     workingMemory );
+        objectTypeNode.assertRightTuple( new RightTuple( handle1 ),
+                                         context,
+                                         workingMemory );
 
         // make sure just string1 was asserted 
         final List asserted = sink.getAsserted();
         assertLength( 1,
                       asserted );
         assertSame( string1,
-                    workingMemory.getObject( (DefaultFactHandle) ((Object[]) asserted.get( 0 ))[0] ) );
+                    workingMemory.getObject( ((RightTuple) ((Object[]) asserted.get( 0 ))[0]).getHandle() ) );
 
         // check asserted object was added to memory
         final FactHashTable memory = (FactHashTable) workingMemory.getNodeMemory( objectTypeNode );
         assertEquals( 1,
                       memory.size() );
-        assertTrue( memory.contains( handle1 ) );
+        assertTrue( memory.contains( new RightTuple( handle1 ) ) );
     }
-    
+
     public void testAssertObjectSequentialMode() {
         final PropagationContext context = new PropagationContextImpl( 0,
                                                                        PropagationContext.ASSERTION,
@@ -132,9 +133,10 @@ public class ObjectTypeNodeTest extends DroolsTestCase {
         RuleBaseConfiguration conf = new RuleBaseConfiguration();
         conf.setSequential( true );
         final ReteooRuleBase ruleBase = (ReteooRuleBase) RuleBaseFactory.newRuleBase( conf );
-        buildContext = new BuildContext( ruleBase, ((ReteooRuleBase)ruleBase).getReteooBuilder().getIdGenerator() );
+        buildContext = new BuildContext( ruleBase,
+                                         ((ReteooRuleBase) ruleBase).getReteooBuilder().getIdGenerator() );
         buildContext.setObjectTypeNodeMemoryEnabled( false );
-        
+
         final ReteooWorkingMemory workingMemory = new ReteooWorkingMemory( 1,
                                                                            ruleBase );
 
@@ -152,28 +154,26 @@ public class ObjectTypeNodeTest extends DroolsTestCase {
         final InternalFactHandle handle1 = (InternalFactHandle) workingMemory.insert( string1 );
 
         // should assert as ObjectType matches
-        objectTypeNode.assertRightTuple( handle1,
-                                     context,
-                                     workingMemory );
+        objectTypeNode.assertRightTuple( new RightTuple( handle1 ),
+                                         context,
+                                         workingMemory );
 
         // make sure just string1 was asserted 
         final List asserted = sink.getAsserted();
         assertLength( 1,
                       asserted );
         assertSame( string1,
-                    workingMemory.getObject( (DefaultFactHandle) ((Object[]) asserted.get( 0 ))[0] ) );
+                    workingMemory.getObject( ((RightTuple) ((Object[]) asserted.get( 0 ))[0]).getHandle() ) );
 
         // it's sequential, so check the asserted object was not added to the node memory
-        final FactHashTable memory = (FactHashTable) workingMemory.getNodeMemory( objectTypeNode );
-        assertEquals( 0,
-                      memory.size() );
+        assertFalse( workingMemory.nodeMemoryExists( objectTypeNode ) );
     }
 
     public void testMemory() {
         ReteooRuleBase ruleBase = (ReteooRuleBase) RuleBaseFactory.newRuleBase();
-        IdGenerator idGenerator = ruleBase.getReteooBuilder().getIdGenerator();   
-        
-        final ReteooWorkingMemory workingMemory = ( ReteooWorkingMemory ) ruleBase.newStatefulSession();
+        IdGenerator idGenerator = ruleBase.getReteooBuilder().getIdGenerator();
+
+        final ReteooWorkingMemory workingMemory = (ReteooWorkingMemory) ruleBase.newStatefulSession();
 
         final ObjectTypeNode objectTypeNode = new ObjectTypeNode( idGenerator.getNextId(),
                                                                   new ClassObjectType( String.class ),
@@ -186,8 +186,8 @@ public class ObjectTypeNodeTest extends DroolsTestCase {
 
     public void testMatches() {
         ReteooRuleBase ruleBase = (ReteooRuleBase) RuleBaseFactory.newRuleBase();
-        IdGenerator idGenerator = ruleBase.getReteooBuilder().getIdGenerator(); 
-        final Rete source = new Rete((InternalRuleBase) ruleBase);
+        IdGenerator idGenerator = ruleBase.getReteooBuilder().getIdGenerator();
+        final Rete source = new Rete( (InternalRuleBase) ruleBase );
 
         ObjectTypeNode objectTypeNode = new ObjectTypeNode( idGenerator.getNextId(),
                                                             new ClassObjectType( String.class ),
@@ -209,15 +209,15 @@ public class ObjectTypeNodeTest extends DroolsTestCase {
 
     public void testRetractObject() throws Exception {
         ReteooRuleBase ruleBase = (ReteooRuleBase) RuleBaseFactory.newRuleBase();
-        IdGenerator idGenerator = ruleBase.getReteooBuilder().getIdGenerator();      
+        IdGenerator idGenerator = ruleBase.getReteooBuilder().getIdGenerator();
         final PropagationContext context = new PropagationContextImpl( 0,
                                                                        PropagationContext.ASSERTION,
                                                                        null,
                                                                        null );
 
-        final ReteooWorkingMemory workingMemory = (ReteooWorkingMemory)ruleBase.newStatefulSession();
+        final ReteooWorkingMemory workingMemory = (ReteooWorkingMemory) ruleBase.newStatefulSession();
 
-        final Rete source = new Rete((InternalRuleBase) ruleBase);
+        final Rete source = new Rete( (InternalRuleBase) ruleBase );
 
         final ObjectTypeNode objectTypeNode = new ObjectTypeNode( idGenerator.getNextId(),
                                                                   new ClassObjectType( String.class ),
@@ -231,29 +231,30 @@ public class ObjectTypeNodeTest extends DroolsTestCase {
         final DefaultFactHandle handle1 = new DefaultFactHandle( 1,
                                                                  string1 );
 
-        /* should assert as ObjectType matches */
-        objectTypeNode.assertRightTuple( handle1,
-                                     context,
-                                     workingMemory );
-        /* check asserted object was added to memory */
+        RightTuple rightTuple = new RightTuple( handle1, objectTypeNode);
+        // should assert as ObjectType matches
+        objectTypeNode.assertRightTuple( rightTuple,
+                                         context,
+                                         workingMemory );
+        // check asserted object was added to memory 
         final FactHashTable memory = (FactHashTable) workingMemory.getNodeMemory( objectTypeNode );
         assertEquals( 1,
                       memory.size() );
 
-        /* should retract as ObjectType matches */
-        objectTypeNode.retractRightTuple( handle1,
-                                      context,
-                                      workingMemory );
-        /* check asserted object was removed from memory */
+        // should retract as ObjectType matches 
+        objectTypeNode.retractRightTuple( rightTuple,
+                                          context,
+                                          workingMemory );
+        // check asserted object was removed from memory 
         assertEquals( 0,
                       memory.size() );
 
-        /* make sure its just the handle1 for string1 that was propagated */
+        // make sure its just the handle1 for string1 that was propagated 
         final List retracted = sink.getRetracted();
         assertLength( 1,
                       retracted );
         assertSame( handle1,
-                    ((Object[]) retracted.get( 0 ))[0] );
+                    ( ((RightTuple) ((Object[]) retracted.get( 0 ))[0]).getHandle() ) );
     }
 
     public void testUpdateSink() throws FactException {
@@ -264,11 +265,11 @@ public class ObjectTypeNodeTest extends DroolsTestCase {
                                                                        PropagationContext.ASSERTION,
                                                                        null,
                                                                        null );
-        final RuleBase ruleBase = RuleBaseFactory.newRuleBase();     
+        final RuleBase ruleBase = RuleBaseFactory.newRuleBase();
         final ReteooWorkingMemory workingMemory = new ReteooWorkingMemory( 1,
                                                                            (ReteooRuleBase) ruleBase );
 
-        final Rete source = new Rete( (InternalRuleBase)ruleBase);
+        final Rete source = new Rete( (InternalRuleBase) ruleBase );
 
         final ObjectTypeNode objectTypeNode = new ObjectTypeNode( 1,
                                                                   new ClassObjectType( String.class ),
@@ -285,14 +286,17 @@ public class ObjectTypeNodeTest extends DroolsTestCase {
                                                                  string1 );
         final DefaultFactHandle handle2 = new DefaultFactHandle( 2,
                                                                  string2 );
+        
+        RightTuple rightTuple1 = new RightTuple( handle1, objectTypeNode);
+        RightTuple rightTuple2 = new RightTuple( handle2, objectTypeNode);
 
-        objectTypeNode.assertRightTuple( handle1,
-                                     context,
-                                     workingMemory );
+        objectTypeNode.assertRightTuple( rightTuple1,
+                                         context,
+                                         workingMemory );
 
-        objectTypeNode.assertRightTuple( handle2,
-                                     context,
-                                     workingMemory );
+        objectTypeNode.assertRightTuple( rightTuple2,
+                                         context,
+                                         workingMemory );
 
         assertEquals( 2,
                       sink1.getAsserted().size() );
@@ -314,10 +318,12 @@ public class ObjectTypeNodeTest extends DroolsTestCase {
 
         final DefaultFactHandle handle3 = new DefaultFactHandle( 3,
                                                                  string3 );
+        
+        RightTuple rightTuple3 = new RightTuple( handle3, objectTypeNode);
 
-        objectTypeNode.assertRightTuple( handle3,
-                                     context,
-                                     workingMemory );
+        objectTypeNode.assertRightTuple( rightTuple3,
+                                         context,
+                                         workingMemory );
 
         assertEquals( 3,
                       sink1.getAsserted().size() );
@@ -336,7 +342,7 @@ public class ObjectTypeNodeTest extends DroolsTestCase {
         final Rete source = ruleBase.getRete();
 
         final ObjectTypeNode objectTypeNode = new ObjectTypeNode( 1,
-                                                                  new ClassObjectType( Cheese.class  ),
+                                                                  new ClassObjectType( Cheese.class ),
                                                                   buildContext );
 
         final MockObjectSink sink = new MockObjectSink();
@@ -352,9 +358,9 @@ public class ObjectTypeNodeTest extends DroolsTestCase {
         final List asserted = sink.getAsserted();
         assertLength( 1,
                       asserted );
-        assertTrue( ((InternalFactHandle) ((Object[]) asserted.get( 0 ))[0]).getObject() instanceof ShadowProxy );
+        assertTrue( ((RightTuple) ((Object[]) asserted.get( 0 ))[0]).getHandle().getObject() instanceof ShadowProxy );
         assertEquals( cheese,
-                      ((InternalFactHandle) ((Object[]) asserted.get( 0 ))[0]).getObject() );
+                      ((RightTuple) ((Object[]) asserted.get( 0 ))[0]).getHandle().getObject() );
 
         // check asserted object was added to memory
         final FactHashTable memory = (FactHashTable) workingMemory.getNodeMemory( objectTypeNode );
@@ -371,7 +377,7 @@ public class ObjectTypeNodeTest extends DroolsTestCase {
 
         ReteooRuleBase ruleBase = (ReteooRuleBase) RuleBaseFactory.newRuleBase();
         IdGenerator idGenerator = ruleBase.getReteooBuilder().getIdGenerator();
-        final ReteooWorkingMemory workingMemory = ( ReteooWorkingMemory ) ruleBase.newStatefulSession();
+        final ReteooWorkingMemory workingMemory = (ReteooWorkingMemory) ruleBase.newStatefulSession();
 
         final Rete source = ruleBase.getRete();
 
@@ -387,18 +393,19 @@ public class ObjectTypeNodeTest extends DroolsTestCase {
                                           25 );
 
         final InternalFactHandle handle1 = (InternalFactHandle) workingMemory.insert( person );
+        RightTuple rightTuple1 = new RightTuple( handle1, objectTypeNode);
 
         // should assert as ObjectType matches
-        objectTypeNode.assertRightTuple( handle1,
-                                     context,
-                                     workingMemory );
+        objectTypeNode.assertRightTuple( rightTuple1,
+                                         context,
+                                         workingMemory );
 
         // make sure just string1 was asserted 
         final List asserted = sink.getAsserted();
         assertLength( 1,
                       asserted );
-        assertTrue( ((InternalFactHandle) ((Object[]) asserted.get( 0 ))[0]).getObject() instanceof ShadowProxy );
-        assertEquals( ((InternalFactHandle) ((Object[]) asserted.get( 0 ))[0]).getObject(),
+        assertTrue( ((RightTuple) ((Object[]) asserted.get( 0 ))[0]).getHandle().getObject() instanceof ShadowProxy );
+        assertEquals( ((RightTuple) ((Object[]) asserted.get( 0 ))[0]).getHandle().getObject(),
                       person );
 
         // check asserted object was added to memory

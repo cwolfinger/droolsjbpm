@@ -28,10 +28,11 @@ public class SingleRightTupletSinkAdapter
                                            final PropagationContext context,
                                            final InternalWorkingMemory workingMemory,
                                            final boolean useHash) {
-        this.sink.retractRightTuple( new RightTuple( rightTuple ),
+        //rightTuple.unlinkFromRightParent();
+        this.sink.retractRightTuple( rightTuple.getAlphaChildren(),
                                      context,
-                                     workingMemory );
-
+                                     workingMemory );              
+        rightTuple.setAlphaChildren( null );        
     }
 
     public RightTupleSink[] getSinks() {

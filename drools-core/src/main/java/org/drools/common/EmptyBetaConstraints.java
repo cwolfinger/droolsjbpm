@@ -24,7 +24,6 @@ import org.drools.reteoo.RightTuple;
 import org.drools.reteoo.RightTupleMemory;
 import org.drools.reteoo.LeftTuple;
 import org.drools.util.FactHashTable;
-import org.drools.util.FactList;
 import org.drools.util.LinkedList;
 import org.drools.util.TupleHashTable;
 
@@ -89,7 +88,7 @@ public class EmptyBetaConstraints
 
     public BetaMemory createBetaMemory(final RuleBaseConfiguration config) {
         final BetaMemory memory = new BetaMemory( config.isSequential() ? null : new TupleHashTable(),
-                                                  config.isSequential() ? (RightTupleMemory) new FactList() : (RightTupleMemory) new FactHashTable() );
+                                                  new FactHashTable() );
 
         return memory;
     }

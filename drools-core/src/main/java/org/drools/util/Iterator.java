@@ -6,4 +6,5 @@ public interface Iterator
     extends
     Serializable {
     public Object next();
+    public void remove();
 }

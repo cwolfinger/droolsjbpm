@@ -1488,6 +1488,10 @@ public abstract class AbstractWorkingMemory
 
         return memory;
     }
+    
+    public boolean nodeMemoryExists(final NodeMemory node) {
+        return this.nodeMemories.get( node.getId() ) != null;
+    }
 
     public void clearNodeMemory(final NodeMemory node) {
         this.nodeMemories.remove( node.getId() );

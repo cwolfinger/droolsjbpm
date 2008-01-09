@@ -7,46 +7,83 @@ import org.drools.common.InternalFactHandle;
 import org.drools.reteoo.LeftTuple;
 import org.drools.reteoo.LeftTupleMemory;
 import org.drools.reteoo.RightTuple;
+import org.drools.util.AbstractHashTable.Index;
 
-public class TupleHashTable extends AbstractHashTable
+public class TupleHashTable
     implements
-    LeftTupleMemory {
+    LeftTupleMemory,
+    Entry {
+
+    public static final long       serialVersionUID = 400L;
+    //      private Entry             previous;
+    public Entry                   next;
+
+    public LeftTuple               first;
+
+    private final int              hashCode;
+    private final Index            index;
+
+    private TupleHashTableIterator iterator;
+
+    private int                    size;
+
     public TupleHashTable() {
-        this( 16,
-              0.75f );
+        // this is not an index bucket        
+        this.hashCode = 0;
+        this.index = null;
     }
 
-    public TupleHashTable(final int capacity,
-                          final float loadFactor) {
-        super( capacity,
-               loadFactor );
+    public TupleHashTable(final Index index,
+                          final int hashCode) {
+        this.index = index;
+        this.hashCode = hashCode;
     }
 
-    public Iterator iterator(final RightTuple rightTuple) {
-        return iterator();
+    public LeftTuple getFirst(RightTuple rightTuple) {
+        return this.first;
     }
 
-    public void add(final LeftTuple tuple) {
-        final int hashCode = tuple.hashCode();
-        final int index = indexOf( hashCode,
-                                   this.table.length );
-
-        tuple.setNext( this.table[index] );
-        this.table[index] = tuple;
-
-        if ( this.size++ >= this.threshold ) {
-            resize( 2 * this.table.length );
+    public void add(final LeftTuple leftTuple) {
+        if ( this.first != null ) {
+            leftTuple.setNext( this.first );
+            this.first.setPrevious( leftTuple );
         }
+
+        this.first = leftTuple;
+
+        this.size++;
     }
 
-    public LeftTuple get(final LeftTuple tuple) {
-        final int hashCode = tuple.hashCode();
-        final int index = indexOf( hashCode,
-                                   this.table.length );
+    public void remove(final LeftTuple leftTuple) {
+        LeftTuple previous = (LeftTuple) leftTuple.getPrevious();
+        LeftTuple next = (LeftTuple) leftTuple.getNext();
 
-        LeftTuple current = (LeftTuple) this.table[index];
+        if ( previous != null && next != null ) {
+            //remove  from middle
+            previous.setNext( next );
+            next.setPrevious( previous );
+        } else if ( next != null ) {
+            //remove from first
+            this.first = next;
+            next.setPrevious( null );
+        } else if ( previous != null ) {
+            //remove from end
+            previous.setNext( null );
+        } else {
+            this.first = null;
+        }
+
+        this.size--;
+    }
+
+    public boolean contains(final LeftTuple leftTuple) {
+        return get( leftTuple ) != null;
+    }
+
+    public Object get(final LeftTuple leftTtuple) {
+        LeftTuple current = this.first;
         while ( current != null ) {
-            if ( hashCode == current.hashCode() && tuple.equals( current ) ) {
+            if ( leftTtuple.equals( current ) ) {
                 return current;
             }
             current = (LeftTuple) current.getNext();
@@ -54,44 +91,96 @@ public class TupleHashTable extends AbstractHashTable
         return null;
     }
 
-    public LeftTuple remove(final LeftTuple tuple) {
-        final int hashCode = tuple.hashCode();
-        final int index = indexOf( hashCode,
-                                   this.table.length );
+    public int size() {
+        return this.size;
+    }
 
-        LeftTuple previous = (LeftTuple) this.table[index];
-        LeftTuple current = previous;
-        while ( current != null ) {
-            final LeftTuple next = (LeftTuple) current.getNext();
-            if ( hashCode == current.hashCode() && tuple.equals( current ) ) {
-                if ( previous == current ) {
-                    this.table[index] = next;
-                } else {
-                    previous.setNext( next );
-                }
-                current.setNext( null );
-                this.size--;
-                return current;
-            }
-            previous = current;
-            current = next;
+    public LeftTuple[] toArray() {
+        LeftTuple[] tuples = new LeftTuple[this.size];
+
+        LeftTuple current = first;
+        for ( int i = 0; i < this.size; i++ ) {
+            tuples[i] = current;
+            current = (LeftTuple) current.getNext();
         }
-        return current;
+
+        return tuples;
     }
 
     public Entry getBucket(final Object object) {
-        final int hashCode = object.hashCode();
-        final int index = indexOf( hashCode,
-                                   this.table.length );
-
-        return this.table[index];
+        return this.first;
     }
 
-    public boolean contains(final LeftTuple tuple) {
-        return (get( tuple ) != null);
+    public Iterator iterator() {
+        if ( this.iterator == null ) {
+            this.iterator = new TupleHashTableIterator();
+        }
+        this.iterator.reset( this.first );
+        return this.iterator;
+    }
+
+    public static class TupleHashTableIterator
+        implements
+        Iterator {
+        private LeftTuple current;
+
+        public void reset(LeftTuple first) {
+            this.current = first;
+        }
+
+        public Object next() {
+            if ( this.current != null ) {
+                LeftTuple returnValue = this.current;
+                this.current = (LeftTuple) current.getNext();
+                return returnValue;
+            } else { 
+                return null;
+            }
+        }
+
+        public void remove() {
+            // do nothing
+        }
     }
 
     public boolean isIndexed() {
         return false;
+    }
+
+    public boolean matches(final Object object,
+                           final int objectHashCode) {
+        return this.hashCode == objectHashCode && this.index.equal( object,
+                                                                    this.first );
+    }
+
+    public boolean matches(final LeftTuple tuple,
+                           final int tupleHashCode) {
+        return this.hashCode == tupleHashCode && this.index.equal( this.first,
+                                                                   tuple );
+    }
+
+    public int hashCode() {
+        return this.hashCode;
+    }
+
+    public boolean equals(final Object object) {
+        final TupleHashTable other = (TupleHashTable) object;
+        return this.hashCode == other.hashCode && this.index == other.index;
+    }
+
+    public Entry getNext() {
+        return this.next;
+    }
+
+    public void setNext(final Entry next) {
+        this.next = next;
+    }
+
+    public Entry getPrevious() {
+        return null;
+    }
+
+    public void setPrevious(Entry previous) {
+        //      this.previous = previous;           
     }
 }
