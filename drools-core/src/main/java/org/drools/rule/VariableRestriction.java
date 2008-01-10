@@ -207,6 +207,14 @@ public class VariableRestriction
         public boolean isRightNull() {
             return this.rightNull;
         }
+        
+        public void resetTuple() {
+            this.reteTuple = null;
+        }
+        
+        public void resetFactHandle() {
+            this.object = null;
+        }        
     }
 
     public static class ObjectVariableContextEntry extends VariableContextEntry {
@@ -240,6 +248,16 @@ public class VariableRestriction
             this.right = this.extractor.getValue( workingMemory,
                                                   handle.getObject() );
         }
+        
+        public void resetTuple() {
+            this.left = null;
+            this.reteTuple = null;
+        }
+        
+        public void resetFactHandle() {
+            this.right = null;
+            this.object = null;
+        }        
     }
 
     public static class LongVariableContextEntry extends VariableContextEntry {

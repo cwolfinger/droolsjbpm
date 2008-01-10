@@ -93,6 +93,9 @@ public class FromNode extends TupleSource
                                                 workingMemory );
             }
         }
+        
+        this.betaConstraints.resetTuple();
+        
         if ( !list.isEmpty() ) {
             memory.getCreatedHandles().put( leftTuple,
                                             list );
