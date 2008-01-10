@@ -73,6 +73,11 @@ public abstract class WorkingMemoryLogger
         workingMemory.addEventListener( (AgendaEventListener) this );
     }
 
+    public void dispose() {
+        workingMemory.removeEventListener( (WorkingMemoryEventListener) this );
+        workingMemory.removeEventListener( (AgendaEventListener) this );
+    }
+
     /**
      * This method is invoked every time a new log event is created.
      * Subclasses should implement this method and store the event,

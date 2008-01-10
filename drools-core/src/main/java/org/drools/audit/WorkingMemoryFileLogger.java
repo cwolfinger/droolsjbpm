@@ -121,7 +121,4 @@ public class WorkingMemoryFileLogger extends WorkingMemoryLogger {
         }
     }
 
-    public void finalize() {
-        writeToDisk();
-    }
 }
