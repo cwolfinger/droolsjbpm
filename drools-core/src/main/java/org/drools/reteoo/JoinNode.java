@@ -108,6 +108,8 @@ public class JoinNode extends BetaNode {
                                                 workingMemory );
             }
         }
+        
+        this.constraints.resetTuple();
     }
 
     /**
@@ -151,6 +153,7 @@ public class JoinNode extends BetaNode {
                                                 workingMemory );
             }
         }
+        this.constraints.resetFactHandle();
     }
 
     /**
@@ -231,6 +234,8 @@ public class JoinNode extends BetaNode {
                 }
             }
         }
+        this.constraints.updateFromTuple( workingMemory,
+                                          null );        
     }
 
     public String toString() {

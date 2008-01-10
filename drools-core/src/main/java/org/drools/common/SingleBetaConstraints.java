@@ -110,6 +110,14 @@ public class SingleBetaConstraints
         this.context.updateFromFactHandle( workingMemory,
                                            rightTuple.getHandle() );
     }
+    
+    public void resetTuple() {
+        this.context.resetTuple();
+    }
+    
+    public void resetFactHandle() {
+        this.context.resetFactHandle();
+    }     
 
     /* (non-Javadoc)
      * @see org.drools.common.BetaNodeConstraints#isAllowedCachedLeft(java.lang.Object)

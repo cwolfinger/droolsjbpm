@@ -18,8 +18,6 @@ public class FactHandleIndexHashTable extends AbstractHashTable
 
     private int                         startResult;
 
-    private FieldIndexHashTableIterator tupleValueIterator;
-
     private int                         factSize;
 
     private Index                       index;
@@ -276,6 +274,21 @@ public class FactHandleIndexHashTable extends AbstractHashTable
 
     public int size() {
         return this.factSize;
+    }
+    
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        for ( Entry entry : this.table) {
+            while ( entry != null ) { 
+                FactHashTable bucket = ( FactHashTable ) entry;
+                for ( RightTuple  rightTuple = bucket.getFirst( null ); rightTuple != null; rightTuple = ( RightTuple ) rightTuple.getNext()  ) {
+                    builder.append( rightTuple );
+                }
+                entry = entry.getNext();
+            }
+        }
+        
+        return builder.toString();
     }
 
 //    public static class FactHashTable

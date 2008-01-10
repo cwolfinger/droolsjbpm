@@ -23,8 +23,10 @@ import java.util.List;
 import org.drools.RuleBase;
 import org.drools.RuleBaseFactory;
 import org.drools.WorkingMemory;
+import org.drools.common.InternalWorkingMemory;
 import org.drools.event.AfterActivationFiredEvent;
 import org.drools.event.DefaultAgendaEventListener;
+import org.drools.reteoo.MemoryVisitor;
 
 public class ReteooMannersTest extends BaseMannersTest {
 
@@ -65,7 +67,7 @@ public class ReteooMannersTest extends BaseMannersTest {
         };
 
         //workingMemory.addEventListener(listener );
-        final InputStream is = getClass().getResourceAsStream( "/manners32.dat" );
+        final InputStream is = getClass().getResourceAsStream( "/manners64.dat" );
         final List list = getInputObjects( is );
         for ( final Iterator it = list.iterator(); it.hasNext(); ) {
             final Object object = it.next();
@@ -77,6 +79,9 @@ public class ReteooMannersTest extends BaseMannersTest {
         final long start = System.currentTimeMillis();
         workingMemory.fireAllRules();
         System.err.println( System.currentTimeMillis() - start );
+        
+        MemoryVisitor visitor = new MemoryVisitor( (InternalWorkingMemory) workingMemory);
+        visitor.visit( ruleBase );
 
         //System.out.println( listener );
 

@@ -118,34 +118,51 @@ public class LeftTuple
         this.sink = sink;
     }
 
-    public void unlinkFromParents() {
-        if ( this.rightParent != null ) {
-            if ( this.rightParentPrevious != null ) {
-                this.rightParentPrevious.rightParentNext = this.rightParentNext;
-            } else {
-                // first one in the chain, so treat differently
-                this.rightParent.setBetaChildren( this.rightParentNext );
-            }
-
-            if ( rightParentNext != null ) {
-                rightParentNext.rightParentPrevious = this.rightParentPrevious;
-            }
-        }
-
-        if ( this.leftParent != null ) {
-            if ( this.leftParentPrevious != null ) {
-                this.leftParentPrevious.leftParentNext = this.leftParentNext;
-            } else {
-                // first one in the chain, so treat differently                
-                this.leftParent.setBetaChildren( this.leftParentNext );
-            }
-
-            if ( leftParentNext != null ) {
-                leftParentNext.leftParentPrevious = this.leftParentPrevious;
-            }
-        }
-    }
-    
+//    public void unlinkFromParents() {
+//        LeftTuple previous = (LeftTuple) this.rightParentPrevious;
+//        LeftTuple next = (LeftTuple) this.rightParentNext;
+//
+//        if ( previous != null && next != null ) {
+//            //remove  from middle
+//            this.rightParentPrevious.rightParentNext = this.rightParentNext;
+//            this.rightParentNext.rightParentPrevious = this.rightParentPrevious;
+//        } else if ( next != null ) {
+//            //remove from first
+//            this.rightParent.setBetaChildren( this.rightParentNext );
+//            this.rightParentNext.rightParentPrevious = null;
+//        } else if ( previous != null ) {
+//            //remove from end
+//            this.rightParentPrevious.rightParentNext = null;
+//        } else if ( this.rightParent != null ){
+//            this.rightParent.setBetaChildren( null );
+//        }    
+//
+//        if ( previous != null && next != null ) {
+//            //remove  from middle
+//            this.leftParentPrevious.leftParentNext = this.leftParentNext;
+//            this.leftParentNext.leftParentPrevious = this.leftParentPrevious;
+//        } else if ( next != null ) {
+//            //remove from first
+//            this.leftParent.children = this.leftParentNext;
+//            this.leftParentNext.leftParentPrevious = null;
+//        } else if ( previous != null ) {
+//            //remove from end
+//            this.leftParentPrevious.leftParentNext = null;
+//        } else {
+//            this.leftParent.children = null;
+//        }   
+//        
+//        this.parent  = null;
+//        
+//        this.leftParent  = null;
+//        this.leftParentPrevious = null;        
+//        this.leftParentNext =  null;
+//        
+//        this.rightParent  = null;
+//        this.rightParentPrevious = null;
+//        this.rightParentPrevious = null;
+//    }
+//    
     public void unlinkFromLeftParent() {
         LeftTuple previous = (LeftTuple) this.leftParentPrevious;
         LeftTuple next = (LeftTuple) this.leftParentNext;
@@ -163,10 +180,22 @@ public class LeftTuple
             this.leftParentPrevious.leftParentNext = null;
         } else {
             this.leftParent.children = null;
-        }        
-    }
+        }
+        
+        //this.parent  = null;
+        
+        this.leftParent  = null;
+        this.leftParentPrevious = null;        
+        this.leftParentNext =  null;
+        
+        this.blocker = null;
+        
+        this.rightParent  = null;
+        this.rightParentPrevious = null;
+        this.rightParentNext = null;        
+    }           
     
-    public void unlinkFromRightParent() {
+    public void unlinkFromRightParent() {               
         LeftTuple previous = (LeftTuple) this.rightParentPrevious;
         LeftTuple next = (LeftTuple) this.rightParentNext;
 
@@ -183,8 +212,21 @@ public class LeftTuple
             this.rightParentPrevious.rightParentNext = null;
         } else if ( this.rightParent != null ){
             this.rightParent.setBetaChildren( null );
-        }          
+        }
+        
+        //this.parent  = null;
+        
+        this.leftParent  = null;
+        this.leftParentPrevious = null;        
+        this.leftParentNext =  null;
+        
+        this.blocker = null;        
+        
+        this.rightParent  = null;
+        this.rightParentPrevious = null;
+        this.rightParentNext = null;        
     }
+    
 
     public LeftTupleSink getSink() {
         return sink;

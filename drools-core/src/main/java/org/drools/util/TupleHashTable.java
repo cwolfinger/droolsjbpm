@@ -72,6 +72,9 @@ public class TupleHashTable
         } else {
             this.first = null;
         }
+        
+        leftTuple.setPrevious(  null );
+        leftTuple.setNext( null );
 
         this.size--;
     }
@@ -182,5 +185,15 @@ public class TupleHashTable
 
     public void setPrevious(Entry previous) {
         //      this.previous = previous;           
+    }
+    
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        Iterator it = iterator();
+        for ( LeftTuple leftTuple = ( LeftTuple ) it.next(); leftTuple  != null; leftTuple = ( LeftTuple ) it.next() ) {
+            builder.append( leftTuple + "\n" );
+        }
+                
+        return builder.toString();
     }
 }

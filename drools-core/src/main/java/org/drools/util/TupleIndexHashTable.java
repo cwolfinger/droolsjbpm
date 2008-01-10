@@ -168,13 +168,17 @@ public class TupleIndexHashTable extends AbstractHashTable
     }
     
     public void remove(final LeftTuple leftTuple) {
-        LeftTuple previousRightTuple = (LeftTuple) leftTuple.getPrevious();
-        if ( previousRightTuple != null && leftTuple.getNext() != null ) {
+        LeftTuple previousLeftTuple = (LeftTuple) leftTuple.getPrevious();
+        LeftTuple nextLeftTuple = (LeftTuple) leftTuple.getNext();
+        if ( previousLeftTuple != null && nextLeftTuple != null ) {
             // Optimisation for tuple self removal if it's not the first in the chain
             // we can't do this if it's the only remain tuple, as we need to also remove the parent bucket.
-            previousRightTuple.setNext( leftTuple.getNext() );
-            leftTuple.getNext().setPrevious( previousRightTuple );
+            previousLeftTuple.setNext( nextLeftTuple );
+            nextLeftTuple.setPrevious( previousLeftTuple );
             this.size--;
+            leftTuple.setPrevious( null );
+            leftTuple.setNext( null );
+            return;
         }
         
         final int hashCode = this.index.hashCodeOf( leftTuple );
@@ -206,6 +210,9 @@ public class TupleIndexHashTable extends AbstractHashTable
             previous = current;
             current = next;
         }
+        
+        leftTuple.setPrevious( null );
+        leftTuple.setNext( null );
     }
 
     public boolean contains(final LeftTuple tuple) {
@@ -284,6 +291,16 @@ public class TupleIndexHashTable extends AbstractHashTable
     public int size() {
         return this.factSize;
     }
+    
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        Iterator it = iterator();
+        for ( LeftTuple leftTuple = ( LeftTuple ) it.next(); leftTuple  != null; leftTuple = ( LeftTuple ) it.next() ) {
+            builder.append( leftTuple + "\n" );
+        }
+                
+        return builder.toString();
+    }    
 
 //    public static class TupleHashTable
 //        implements

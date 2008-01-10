@@ -143,10 +143,6 @@ public class FactHashTable //extends AbstractHashTable
         return this.hashCode == other.hashCode && this.index == other.index;
     }
 
-    public String toString() {
-        return "FieldIndexEntry( hashCode=" + this.hashCode + " first=" + this.first + " )";
-    }
-
     public Entry getPrevious() {
         return null;
         //          return this.previous;            
@@ -167,4 +163,13 @@ public class FactHashTable //extends AbstractHashTable
     public boolean isIndexed() {
         return ( this.index != null );
     }
+    
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        for ( RightTuple rightTuple = ( RightTuple ) this.first; rightTuple  != null; rightTuple = ( RightTuple ) rightTuple.getNext() ) {
+            builder.append( rightTuple );
+        }
+                
+        return builder.toString();
+    }    
 }

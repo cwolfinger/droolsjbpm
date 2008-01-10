@@ -50,14 +50,14 @@ public class CompositeLeftTupleSinkAdapter
                                           final InternalWorkingMemory workingMemory) {
         LeftTuple child = leftTuple.getBetaChildren();
         while ( child != null ) {
-            //LeftTuple temp = leftTuple.getRightParentNext();
+            LeftTuple temp = child.getLeftParentNext();
             //child.unlinkFromParents();
-            child.unlinkFromRightParent();
             child.getSink().retractTuple( child,
                                           context,
                                           workingMemory );
-            child = child.getRightParentNext();
-            //child = temp;
+            child.unlinkFromRightParent();            
+            //child = child.getLeftParentNext();
+            child = temp;
         }
         leftTuple.setBetaChildren( null );
     }
@@ -67,14 +67,14 @@ public class CompositeLeftTupleSinkAdapter
                                            final InternalWorkingMemory workingMemory) {
         LeftTuple child = rightTuple.getBetaChildren();
         while ( child != null ) {
-            //LeftTuple temp = child.getRightParentNext();
+            LeftTuple temp = child.getRightParentNext();
             //child.unlinkFromParents();
-            child.unlinkFromLeftParent();
             child.getSink().retractTuple( child,
                                           context,
                                           workingMemory );
-            child = child.getRightParentNext();
-            //child = temp;
+            child.unlinkFromLeftParent();            
+            //child = child.getRightParentNext();
+            child = temp;
         }
         rightTuple.setBetaChildren( null );
     }

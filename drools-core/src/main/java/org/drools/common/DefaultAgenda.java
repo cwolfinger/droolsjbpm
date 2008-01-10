@@ -548,6 +548,7 @@ public class DefaultAgenda
             this.knowledgeHelper.setActivation( activation );
             activation.getRule().getConsequence().evaluate( this.knowledgeHelper,
                                                             this.workingMemory );
+            this.knowledgeHelper.reset();
         } catch ( final Exception e ) {
             this.consequenceExceptionHandler.handleException( activation, this.workingMemory, e );
         }

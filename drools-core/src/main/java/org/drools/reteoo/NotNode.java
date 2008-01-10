@@ -106,6 +106,8 @@ public class NotNode extends BetaNode {
                 break;
             }
         }
+        
+        this.constraints.resetTuple();     
 
         if ( leftTuple.getBlocker() == null ) {
             // only add it to node memory if still need Objects to attempt to match
@@ -149,7 +151,6 @@ public class NotNode extends BetaNode {
             // we know that only unblocked LeftTuples are  still in the memory
             if ( this.constraints.isAllowedCachedRight( leftTuple ) ) {
                 leftTuple.setBlocker( rightTuple );
-                leftTuple.setBlocker( rightTuple );
 
                 LeftTuple blockedPrevious = rightTuple.getBlocked();
                 if ( blockedPrevious != null ) {
@@ -169,6 +170,8 @@ public class NotNode extends BetaNode {
                 }
             }
         }
+        
+        this.constraints.resetFactHandle();       
     }
 
     /**
@@ -263,17 +266,17 @@ public class NotNode extends BetaNode {
             LeftTuple next = (LeftTuple) leftTuple.getBlockedNext();
             if ( previous != null && next != null ) {
                 //remove  from middle
-                previous.setNext( next );
-                next.setPrevious( previous );
+                previous.setBlockedNext( next );
+                next.setBlockedPrevious( previous );
             } else if ( next != null ) {
                 //remove from first
-                leftTuple.getBlocker().setBlocked( next );
-                next.setPrevious( null );
+                blocker.setBlocked( next );
+                next.setBlockedPrevious( null );
             } else if ( previous != null ) {
                 //remove from end
-                previous.setNext( null );
+                previous.setBlockedNext( null );
             } else {
-                leftTuple.getBlocker().setBlocked( null );
+                blocker.setBlocked( null );
             }
         }
     }

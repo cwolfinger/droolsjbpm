@@ -11,7 +11,8 @@ import org.drools.util.Entry;
 import org.drools.util.FactHandleIndexHashTable;
 import org.drools.util.FactHashTable;
 import org.drools.util.ReflectiveVisitor;
-import org.drools.util.FactHandleIndexHashTable.FieldIndexEntry;
+import org.drools.util.TupleHashTable;
+import org.drools.util.TupleIndexHashTable;
 
 public class MemoryVisitor extends ReflectiveVisitor {
     private InternalWorkingMemory workingMemory;
@@ -153,7 +154,7 @@ public class MemoryVisitor extends ReflectiveVisitor {
         this.indent--;
     }
 
-    public void visitTerminalNode(final RuleTerminalNode node) {
+    public void visitRuleTerminalNode(final RuleTerminalNode node) {
         System.out.println( indent() + node );
         final TerminalNodeMemory memory = (TerminalNodeMemory) this.workingMemory.getNodeMemory( node );
         checkTupleMemory( memory.getTupleMemory() );
@@ -176,25 +177,27 @@ public class MemoryVisitor extends ReflectiveVisitor {
 
     private void checkObjectHashTable(final RightTupleMemory memory) {
         if ( memory instanceof FactHashTable ) {
-            checkFactHashTable( (FactHashTable) memory );
+            checkRightTupleList( (FactHashTable) memory );
         } else if ( memory instanceof FactHandleIndexHashTable ) {
-            checkFieldIndexHashTable( (FactHandleIndexHashTable) memory );
+            checkRightTupleIndexHashTable( (FactHandleIndexHashTable) memory );
         } else {
             throw new RuntimeException( memory.getClass() + " should not be here" );
         }
     }
 
-    private void checkFactHashTable(final FactHashTable memory) {
-        final Entry[] entries = memory.getTable();
+    private void checkRightTupleList(final FactHashTable memory) {
+        RightTuple rightTuple = memory.getFirst( null );
         int count = 0;
-        for ( int i = 0, length = entries.length; i < length; i++ ) {
-            if ( entries[i] != null ) {
-                Entry entry = entries[i];
-                while ( entry != null ) {
-                    count++;
-                    entry = entry.getNext();
-                }
+        while ( rightTuple != null ) {
+            count++;
+            if  ( rightTuple.getBetaChildren() !=  null ) {
+                System.out.println( indent() + "error : RightTuple has beta children " + rightTuple );
             }
+            
+            if ( rightTuple.getBlocked() != null) {
+                System.out.println( indent() + "error : RightTuple is blocking a tuple " + rightTuple );
+            }
+            rightTuple = ( RightTuple ) rightTuple.getNext();            
         }
 
         System.out.println( indent() + "FactHashTable: " + memory.size() + ":" + count );
@@ -203,24 +206,31 @@ public class MemoryVisitor extends ReflectiveVisitor {
         }
     }
 
-    private void checkFieldIndexHashTable(final FactHandleIndexHashTable memory) {
+    private void checkRightTupleIndexHashTable(final FactHandleIndexHashTable memory) {
         final Entry[] entries = memory.getTable();
         int factCount = 0;
         int bucketCount = 0;
         for ( int i = 0, length = entries.length; i < length; i++ ) {
             if ( entries[i] != null ) {
-                FieldIndexEntry fieldIndexEntry = (FieldIndexEntry) entries[i];
-                while ( fieldIndexEntry != null ) {
-                    if ( fieldIndexEntry.getFirst() != null ) {
-                        Entry entry = fieldIndexEntry.getFirst();
-                        while ( entry != null ) {
-                            entry = entry.getNext();
+                FactHashTable alphaList = (FactHashTable) entries[i];
+                while ( alphaList != null ) {
+                    if ( alphaList.getFirst(null) != null ) {
+                        RightTuple rightTuple = alphaList.getFirst(null);
+                        while ( rightTuple != null ) {
+                            if  ( rightTuple.getBetaChildren() !=  null ) {
+                                System.out.println( indent() + "error : RightTuple has beta children " + rightTuple );
+                            }
+                            
+                            if ( rightTuple.getBlocked() != null) {
+                                System.out.println( indent() + "error : RightTuple is blocking a tuple " + rightTuple );
+                            }                         
+                            rightTuple = (RightTuple) rightTuple.getNext();                            
                             factCount++;
                         }
                     } else {
-                        System.out.println( "error : fieldIndexHashTable cannot have empty FieldIndexEntry objects" );
+                        System.out.println( "error : RightTupleIndexHashTable cannot have empty RightTupleList objects" );
                     }
-                    fieldIndexEntry = (FieldIndexEntry) fieldIndexEntry.getNext();
+                    alphaList = (FactHashTable) alphaList.getNext();
                     bucketCount++;
                 }
             }
@@ -229,7 +239,7 @@ public class MemoryVisitor extends ReflectiveVisitor {
         try {
             final Field field = AbstractHashTable.class.getDeclaredField( "size" );
             field.setAccessible( true );
-            System.out.println( indent() + "FieldIndexBuckets: " + ((Integer) field.get( memory )).intValue() + ":" + bucketCount );
+            System.out.println( indent() + "RightTupleBuckets: " + ((Integer) field.get( memory )).intValue() + ":" + bucketCount );
             if ( ((Integer) field.get( memory )).intValue() != bucketCount ) {
                 System.out.println( indent() + "error" );
             }
@@ -237,29 +247,74 @@ public class MemoryVisitor extends ReflectiveVisitor {
             e.printStackTrace();
         }
 
-        System.out.println( indent() + "FieldIndexFacts: " + memory.size() + ":" + factCount );
+        System.out.println( indent() + "RightTupleFacts: " + memory.size() + ":" + factCount );
         if ( memory.size() != factCount ) {
             System.out.println( indent() + "error" );
         }
     }
 
     private void checkTupleMemory(final LeftTupleMemory memory) {
-        final Entry[] entries = memory.getTable();
+        if ( memory instanceof TupleHashTable ) {
+            checkLeftTupleList( (TupleHashTable) memory );
+        } else if ( memory instanceof TupleIndexHashTable ) {
+            checkLeftTupleIndexedHashTable( (TupleIndexHashTable) memory );
+        } else {
+            throw new RuntimeException( memory.getClass() + " should not be here" );
+        }
+    }
+    
+    private void  checkLeftTupleList(final TupleHashTable memory){
+        Entry entry = memory.getFirst( null );
         int count = 0;
+        while ( entry != null ) {
+            count++;
+            entry = entry.getNext();
+        }
+
+        System.out.println( indent() + "TupleHashTable: " + memory.size() + ":" + count );
+        if ( memory.size() != count ) {
+            System.out.println( indent() + "error" );
+        }
+    }
+    
+    private void checkLeftTupleIndexedHashTable(final TupleIndexHashTable memory) {
+        final Entry[] entries = memory.getTable();
+        int factCount = 0;
+        int bucketCount = 0;
         for ( int i = 0, length = entries.length; i < length; i++ ) {
             if ( entries[i] != null ) {
-                Entry entry = entries[i];
-                while ( entry != null ) {
-                    count++;
-                    entry = entry.getNext();
+                TupleHashTable leftList = (TupleHashTable) entries[i];
+                while ( leftList != null ) {
+                    if ( leftList.getFirst(null) != null ) {
+                        Entry entry = leftList.getFirst(null);
+                        while ( entry != null ) {
+                            entry = entry.getNext();
+                            factCount++;
+                        }
+                    } else {
+                        System.out.println( "error : LeftIndexHashTable cannot have empty TupleHashTable objects" );
+                    }
+                    leftList = (TupleHashTable) leftList.getNext();
+                    bucketCount++;
                 }
             }
         }
 
-        System.out.println( indent() + "TupleMemory: " + memory.size() + ":" + count );
-        if ( memory.size() != count ) {
-            System.out.println( indent() + "error" );
+        try {
+            final Field field = AbstractHashTable.class.getDeclaredField( "size" );
+            field.setAccessible( true );
+            System.out.println( indent() + "LeftIndexBuckets: " + ((Integer) field.get( memory )).intValue() + ":" + bucketCount );
+            if ( ((Integer) field.get( memory )).intValue() != bucketCount ) {
+                System.out.println( indent() + "error" );
+            }
+        } catch ( final Exception e ) {
+            e.printStackTrace();
         }
+
+        System.out.println( indent() + "LeftIndexFacts: " + memory.size() + ":" + factCount );
+        if ( memory.size() != factCount ) {
+            System.out.println( indent() + "error" );
+        }        
     }
 
     private String indent() {

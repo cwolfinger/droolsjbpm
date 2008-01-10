@@ -8,7 +8,7 @@ public class RightTuple
     Entry {
     private final InternalFactHandle handle;
 
-    private final RightTuple         parent;
+    private RightTuple               parent;
     private RightTuple               parentPrevious;
     private RightTuple               parentNext;
 
@@ -29,14 +29,14 @@ public class RightTuple
         this.hashCode = this.handle.hashCode();
         this.parent = null;
     }
-    
+
     public RightTuple(InternalFactHandle handle,
                       RightTupleSink sink) {
         this.handle = handle;
         this.hashCode = this.handle.hashCode();
         this.parent = null;
         this.sink = sink;
-    }    
+    }
 
     public RightTuple(RightTuple parent) {
         this.handle = parent.getHandle();
@@ -44,7 +44,7 @@ public class RightTuple
         this.parent = parent;
 
         this.parentNext = parent.getAlphaChildren();
-        if  (parentNext != null ) {
+        if ( parentNext != null ) {
             this.parentNext.parentPrevious = this;
         }
         parent.setAlphaChildren( this );
@@ -57,13 +57,12 @@ public class RightTuple
         this.parent = parent;
 
         this.parentNext = parent.getAlphaChildren();
-        if  (parentNext != null ) {
+        if ( parentNext != null ) {
             this.parentNext.parentPrevious = this;
         }
         parent.setAlphaChildren( this );
-        
-        this.sink = sink;
 
+        this.sink = sink;
 
     }
 
@@ -72,18 +71,23 @@ public class RightTuple
     }
 
     public void unlinkFromRightParent() {
-        if ( this.parent != null ) {            
+        if ( this.parent != null ) {
             if ( this.parentPrevious != null ) {
-                this.parentPrevious.parentNext = this.parentNext;                
+                this.parentPrevious.parentNext = this.parentNext;
             } else {
                 // first one in the chain, so treat differently                
-                this.parent.setAlphaChildren( this.parentNext );                
+                this.parent.setAlphaChildren( this.parentNext );
             }
-            
-            if (  this.parentNext != null ) {
+
+            if ( this.parentNext != null ) {
                 this.parentNext.parentPrevious = this.parentPrevious;
             }
         }
+
+        this.parent = null;
+        this.parentPrevious = null;
+        this.parentNext = null;
+        this.blocked = null;
     }
 
     public InternalFactHandle getHandle() {
@@ -100,15 +104,15 @@ public class RightTuple
 
     public void setParentPrevious(RightTuple parentPrevious) {
         this.parentPrevious = parentPrevious;
-    }       
+    }
 
     public RightTuple getParentNext() {
         return parentNext;
     }
-    
+
     public void setParentNext(RightTuple parentNext) {
         this.parentNext = parentNext;
-    }    
+    }
 
     public LeftTuple getBlocked() {
         return blocked;
@@ -161,10 +165,10 @@ public class RightTuple
     public int hashCode() {
         return this.hashCode;
     }
-    
+
     public String toString() {
         return this.handle.toString() + "\n";
-    }    
+    }
 
     public boolean equals(RightTuple other) {
         // we know the object is never null and always of the  type ReteTuple
