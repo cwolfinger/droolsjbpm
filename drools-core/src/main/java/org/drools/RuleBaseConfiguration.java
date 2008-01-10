@@ -148,10 +148,10 @@ public class RuleBaseConfiguration
      * of this rule base classloaders, and the properties to be used
      * as base configuration options
      * 
-     * @param classLoder
+     * @param classLoader
      * @param properties
      */
-    public RuleBaseConfiguration(ClassLoader classLoder,
+    public RuleBaseConfiguration(ClassLoader classLoader,
                                  Properties properties) {
         init( classLoader,
               properties );
