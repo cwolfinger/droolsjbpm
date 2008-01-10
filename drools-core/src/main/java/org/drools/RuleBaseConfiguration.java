@@ -26,7 +26,6 @@ import java.util.Properties;
 import org.drools.common.AgendaGroupFactory;
 import org.drools.common.ArrayAgendaGroupFactory;
 import org.drools.common.PriorityQueueAgendaGroupFactory;
-import org.drools.concurrent.ExecutorService;
 import org.drools.spi.ConflictResolver;
 import org.drools.spi.ConsequenceExceptionHandler;
 import org.drools.util.ChainedProperties;
@@ -151,7 +150,7 @@ public class RuleBaseConfiguration
      * @param classLoder
      * @param properties
      */
-    public RuleBaseConfiguration(ClassLoader classLoder,
+    public RuleBaseConfiguration(ClassLoader classLoader,
                                  Properties properties) {
         init( classLoader,
               properties );
@@ -217,9 +216,9 @@ public class RuleBaseConfiguration
 
         setConsequenceExceptionHandler( RuleBaseConfiguration.determineConsequenceExceptionHandler( this.chainedProperties.getProperty( "drools.consequenceExceptionHandler",
                                                                                                                                         "org.drools.base.DefaultConsequenceExceptionHandler" ) ) );
-        
+
         setRuleBaseUpdateHandler( this.chainedProperties.getProperty( "drools.ruleBaseUpdateHandler",
-                                                                      "org.drools.base.FireAllRulesRuleBaseUpdateListener" ) );        
+                                                                      "org.drools.base.FireAllRulesRuleBaseUpdateListener" ) );
 
         setConflictResolver( RuleBaseConfiguration.determineConflictResolver( this.chainedProperties.getProperty( "drools.conflictResolver",
                                                                                                                   "org.drools.conflict.DepthConflictResolver" ) ) );
@@ -385,7 +384,7 @@ public class RuleBaseConfiguration
         checkCanChange(); // throws an exception if a change isn't possible;        
         this.consequenceExceptionHandler = consequenceExceptionHandler;
     }
-    
+
     public String getRuleBaseUpdateHandler() {
         return ruleBaseUpdateHandler;
     }
@@ -393,7 +392,7 @@ public class RuleBaseConfiguration
     public void setRuleBaseUpdateHandler(String ruleBaseUpdateHandler) {
         checkCanChange(); // throws an exception if a change isn't possible;        
         this.ruleBaseUpdateHandler = ruleBaseUpdateHandler;
-    }    
+    }
 
     public AgendaGroupFactory getAgendaGroupFactory() {
         if ( isSequential() ) {
@@ -421,7 +420,7 @@ public class RuleBaseConfiguration
             // sequential never needs shadowing, so always override
             return false;
         }
-        
+
         if ( userValue != null ) {
             return Boolean.valueOf( userValue ).booleanValue();
         } else {
@@ -545,7 +544,7 @@ public class RuleBaseConfiguration
     private static ConsequenceExceptionHandler determineConsequenceExceptionHandler(String className) {
         return (ConsequenceExceptionHandler) instantiateClass( "ConsequenceExceptionHandler",
                                                                className );
-    }   
+    }
 
     private static Object instantiateClass(String type,
                                            String className) {
