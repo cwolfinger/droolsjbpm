@@ -90,7 +90,6 @@ public abstract class WorkingMemoryLogger
     RuleBaseEventListener {
 
     private final List    filters = new ArrayList();
-    private WorkingMemoryEventManager workingMemoryEventManager;
 
     /**
      * Creates a new working memory logger for the given working memory.
@@ -98,11 +97,10 @@ public abstract class WorkingMemoryLogger
      * @param workingMemory
      */
     public WorkingMemoryLogger(final WorkingMemoryEventManager workingMemoryEventManager) {
-        this.workingMemoryEventManager = workingMemoryEventManager;
-        this.workingMemoryEventManager.addEventListener( (WorkingMemoryEventListener) this );
-        this.workingMemoryEventManager.addEventListener( (AgendaEventListener) this );
-        this.workingMemoryEventManager.addEventListener( (RuleFlowEventListener) this );
-        this.workingMemoryEventManager.addEventListener( (RuleBaseEventListener) this );
+        workingMemoryEventManager.addEventListener( (WorkingMemoryEventListener) this );
+        workingMemoryEventManager.addEventListener( (AgendaEventListener) this );
+        workingMemoryEventManager.addEventListener( (RuleFlowEventListener) this );
+        workingMemoryEventManager.addEventListener( (RuleBaseEventListener) this );
     }
 
     /**
