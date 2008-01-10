@@ -41,6 +41,13 @@ public class ActionTypeTest extends TestCase {
         ActionType.addNewActionType( actionTypeMap, "RULEFLOW-GROUP", 0, 1 );
         type = (ActionType) actionTypeMap.get( new Integer(0) );
         assertEquals(ActionType.RULEFLOWGROUP, type.type);
+
+        actionTypeMap = new HashMap();
+        ActionType.addNewActionType( actionTypeMap, "AGENDA-GROUP", 0, 1 );
+        type = (ActionType) actionTypeMap.get( new Integer(0) );
+        assertEquals(ActionType.AGENDAGROUP, type.type);
+
+
     }
     
 }
