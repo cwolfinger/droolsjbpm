@@ -116,4 +116,8 @@ public class RuleFlowEventSupport
         }
     }
 
+    public void reset() {
+        this.listeners.clear();
+    }
+
 }
