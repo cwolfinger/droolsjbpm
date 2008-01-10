@@ -81,6 +81,7 @@ public class MVELConsequenceBuilder
                                                        analysis,
                                                        dialect.getInterceptors(),
                                                        null,
+                                                       null,
                                                        context );
 
             final DroolsMVELFactory factory = new DroolsMVELFactory( context.getDeclarationResolver().getDeclarations(),
@@ -94,7 +95,7 @@ public class MVELConsequenceBuilder
             context.getErrors().add( new RuleError( context.getRule(),
                                                     context.getRuleDescr(),
                                                     null,
-                                                    "Unable to build expression for 'consequence' '" + context.getRuleDescr().getConsequence() + "'" ) );
+                                                    "Unable to build expression for 'consequence': "+e.getMessage()+" '" + context.getRuleDescr().getConsequence() + "'" ) );
         }
     }
 

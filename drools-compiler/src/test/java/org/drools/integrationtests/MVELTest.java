@@ -16,6 +16,7 @@ import junit.framework.Assert;
 import junit.framework.TestCase;
 
 import org.drools.Cheese;
+import org.drools.Person;
 import org.drools.RuleBase;
 import org.drools.RuleBaseFactory;
 import org.drools.WorkingMemory;
@@ -77,6 +78,53 @@ public class MVELTest extends TestCase {
         Serializable compiled = MVEL.compileExpression(ex);
         return MVEL.executeExpression(compiled, new Object(), new HashMap());
     }
+
+    public void testLocalVariableMVELConsequence() throws Exception {
+        final PackageBuilder builder = new PackageBuilder();
+        builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_LocalVariableMVELConsequence.drl" ) ) );
+        final Package pkg = builder.getPackage();
+ 
+        final RuleBase ruleBase = getRuleBase();
+        ruleBase.addPackage( pkg );
+        final WorkingMemory workingMemory = ruleBase.newStatefulSession();
+ 
+        final List list = new ArrayList();
+        workingMemory.setGlobal( "results",
+                                 list );
+ 
+        workingMemory.insert( new Person( "bob", "stilton" ) );
+        workingMemory.insert( new Person( "mark", "brie" ) );
+ 
+        try {
+            workingMemory.fireAllRules();
+ 
+            assertEquals( "should have fired twice", 
+                          2,
+                          list.size() );
+ 
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail( "Should not raise any exception");
+        }
+ 
+    }    
+
+    public void testDuplicateLocalVariableMVELConsequence() throws Exception {
+        final PackageBuilder builder = new PackageBuilder();
+        builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_DuplicateLocalVariableMVELConsequence.drl" ) ) );
+        
+        try {
+            final Package pkg = builder.getPackage();
+            
+            final RuleBase ruleBase = getRuleBase();
+            ruleBase.addPackage( pkg );
+            
+            fail( "Should have raised exception because of the duplicate variable definition");
+        } catch (Exception e) {
+            // success
+        }
+ 
+    }    
 
     private RuleBase loadRuleBase(final Reader reader) throws IOException,
                                                       DroolsParserException,

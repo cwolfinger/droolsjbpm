@@ -23,19 +23,23 @@ public class Cheese
     implements
     Serializable {
 
-    public static final String STILTON = "stilton";
+    public static final String STILTON          = "stilton";
 
     /**
      *
      */
-    private static final long serialVersionUID = 400L;
-    private String            type;
-    private int               price;
-    private int               oldPrice;
-    private Date              usedBy;
+    private static final long  serialVersionUID = 400L;
+    private String             type;
+    private int                price;
+    private int                oldPrice;
+    private Date               usedBy;
 
     public Cheese() {
 
+    }
+
+    public Cheese(final String type) {
+        this.type = type;
     }
 
     public Cheese(final String type,
@@ -47,7 +51,7 @@ public class Cheese
 
     public Cheese(final String type,
                   final int price,
-                  final int oldPrice ) {
+                  final int oldPrice) {
         super();
         this.type = type;
         this.price = price;
@@ -109,7 +113,5 @@ public class Cheese
     public void setUsedBy(Date usedBy) {
         this.usedBy = usedBy;
     }
-
-
 
 }

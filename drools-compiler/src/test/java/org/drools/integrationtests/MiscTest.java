@@ -4410,6 +4410,4 @@ public class MiscTest extends TestCase {
         assertEquals( fact.getData(), list.get( 0 ) );
 
     }
-
-    
 }
