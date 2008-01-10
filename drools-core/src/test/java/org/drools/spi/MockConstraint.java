@@ -74,6 +74,16 @@ public class MockConstraint
             public void updateFromTuple(final InternalWorkingMemory workingMemory,
                                         final ReteTuple tuple) {
             }
+
+            public void resetFactHandle() {
+                // TODO Auto-generated method stub
+                
+            }
+
+            public void resetTuple() {
+                // TODO Auto-generated method stub
+                
+            }
         };
     }
 

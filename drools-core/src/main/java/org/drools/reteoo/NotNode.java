@@ -103,6 +103,8 @@ public class NotNode extends BetaNode {
                 matches++;
             }
         }
+        
+        this.constraints.resetTuple();
 
         leftTuple.setMatches( matches );
 
@@ -150,6 +152,8 @@ public class NotNode extends BetaNode {
                 }
             }
         }
+        
+        this.constraints.resetFactHandle();
     }
 
     /**
@@ -186,6 +190,8 @@ public class NotNode extends BetaNode {
                 }
             }
         }
+        
+        this.constraints.resetFactHandle();
     }
 
     /**

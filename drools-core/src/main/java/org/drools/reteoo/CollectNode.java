@@ -134,6 +134,8 @@ public class CollectNode extends BetaNode
                 result.add( handle.getObject() );
             }
         }
+        
+        this.constraints.resetTuple();
 
         // First alpha node filters
         boolean isAllowed = true;
@@ -218,6 +220,8 @@ public class CollectNode extends BetaNode
                                   workingMemory );
             }
         }
+
+        this.constraints.resetFactHandle();
     }
 
     /**
@@ -251,6 +255,8 @@ public class CollectNode extends BetaNode
                                   workingMemory );
             }
         }
+        
+        this.constraints.resetFactHandle();
     }
 
     /**
@@ -319,6 +325,8 @@ public class CollectNode extends BetaNode
                                                 context,
                                                 workingMemory );
             }
+            
+            this.resultsBinder.resetTuple();
         }
     }
 

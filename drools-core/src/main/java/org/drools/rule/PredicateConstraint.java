@@ -299,6 +299,14 @@ public class PredicateConstraint
             this.workingMemory = workingMemory;
             this.leftTuple = tuple;
         }
+        
+        public void resetTuple() {
+            this.leftTuple = null;
+        }
+        
+        public void resetFactHandle() {
+            this.rightObject = null;
+        }        
     }
 
 }

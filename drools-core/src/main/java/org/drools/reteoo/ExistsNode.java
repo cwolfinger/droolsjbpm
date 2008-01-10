@@ -106,6 +106,8 @@ public class ExistsNode extends BetaNode {
                 matches++;
             }
         }
+        
+        this.constraints.resetTuple();
 
         leftTuple.setMatches( matches );
 
@@ -155,6 +157,8 @@ public class ExistsNode extends BetaNode {
                 }
             }
         }
+        
+        this.constraints.resetFactHandle();
     }
 
     /**
@@ -190,6 +194,8 @@ public class ExistsNode extends BetaNode {
                 }
             }
         }
+
+        this.constraints.resetFactHandle();
     }
 
     /**
