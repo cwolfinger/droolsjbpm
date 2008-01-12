@@ -9,6 +9,8 @@ import org.drools.rule.Declaration;
 import org.drools.spi.Activation;
 import org.drools.spi.Tuple;
 import org.drools.util.Entry;
+import org.drools.util.FactHashTable;
+import org.drools.util.TupleHashTable;
 
 public class LeftTuple
     implements
@@ -44,6 +46,7 @@ public class LeftTuple
     private LeftTuple                rightParentNext;
 
     // node memory
+    private TupleHashTable           memory;
     private Entry                    next;
     private Entry                    previous;
 
@@ -55,10 +58,10 @@ public class LeftTuple
     // ------------------------------------------------------------
     // Constructors
     // ------------------------------------------------------------
-    public LeftTuple(final RightTuple rightTuple,
+    public LeftTuple(final InternalFactHandle factHandle,
                      LeftTupleSink sink) {
-        this.handle = rightTuple.getHandle();
-        this.recency = this.handle.getRecency();
+        this.handle = factHandle;
+        this.recency = factHandle.getRecency();
 
         int h = handle.hashCode();
         h += ~(h << 9);
@@ -67,13 +70,15 @@ public class LeftTuple
         h ^= (h >>> 10);
         this.hashCode = h;
 
-        this.rightParent = rightTuple;
-        this.rightParentNext = this.rightParent.getBetaChildren();
-        if ( this.rightParentNext != null ) {
-            this.rightParentNext.rightParentPrevious = this;
-        }
-        this.rightParent.setBetaChildren( this );
         this.sink = sink;
+        
+        LeftTuple currentFirst = handle.getLeftTuple();
+        if ( currentFirst != null ) {
+            currentFirst.leftParentPrevious =  this;
+            this.leftParentNext = currentFirst;
+        }
+        
+        handle.setLeftTuple( this );         
     }
 
     public LeftTuple(final LeftTuple leftTuple,
@@ -117,52 +122,7 @@ public class LeftTuple
         this.leftParent.children = this;
         this.sink = sink;
     }
-
-//    public void unlinkFromParents() {
-//        LeftTuple previous = (LeftTuple) this.rightParentPrevious;
-//        LeftTuple next = (LeftTuple) this.rightParentNext;
-//
-//        if ( previous != null && next != null ) {
-//            //remove  from middle
-//            this.rightParentPrevious.rightParentNext = this.rightParentNext;
-//            this.rightParentNext.rightParentPrevious = this.rightParentPrevious;
-//        } else if ( next != null ) {
-//            //remove from first
-//            this.rightParent.setBetaChildren( this.rightParentNext );
-//            this.rightParentNext.rightParentPrevious = null;
-//        } else if ( previous != null ) {
-//            //remove from end
-//            this.rightParentPrevious.rightParentNext = null;
-//        } else if ( this.rightParent != null ){
-//            this.rightParent.setBetaChildren( null );
-//        }    
-//
-//        if ( previous != null && next != null ) {
-//            //remove  from middle
-//            this.leftParentPrevious.leftParentNext = this.leftParentNext;
-//            this.leftParentNext.leftParentPrevious = this.leftParentPrevious;
-//        } else if ( next != null ) {
-//            //remove from first
-//            this.leftParent.children = this.leftParentNext;
-//            this.leftParentNext.leftParentPrevious = null;
-//        } else if ( previous != null ) {
-//            //remove from end
-//            this.leftParentPrevious.leftParentNext = null;
-//        } else {
-//            this.leftParent.children = null;
-//        }   
-//        
-//        this.parent  = null;
-//        
-//        this.leftParent  = null;
-//        this.leftParentPrevious = null;        
-//        this.leftParentNext =  null;
-//        
-//        this.rightParent  = null;
-//        this.rightParentPrevious = null;
-//        this.rightParentPrevious = null;
-//    }
-//    
+    
     public void unlinkFromLeftParent() {
         LeftTuple previous = (LeftTuple) this.leftParentPrevious;
         LeftTuple next = (LeftTuple) this.leftParentNext;
@@ -181,21 +141,21 @@ public class LeftTuple
         } else {
             this.leftParent.children = null;
         }
-        
+
         //this.parent  = null;
-        
-        this.leftParent  = null;
-        this.leftParentPrevious = null;        
-        this.leftParentNext =  null;
-        
+
+        this.leftParent = null;
+        this.leftParentPrevious = null;
+        this.leftParentNext = null;
+//
         this.blocker = null;
-        
-        this.rightParent  = null;
+//
+        this.rightParent = null;
         this.rightParentPrevious = null;
-        this.rightParentNext = null;        
-    }           
-    
-    public void unlinkFromRightParent() {               
+        this.rightParentNext = null;
+    }
+
+    public void unlinkFromRightParent() {
         LeftTuple previous = (LeftTuple) this.rightParentPrevious;
         LeftTuple next = (LeftTuple) this.rightParentNext;
 
@@ -210,23 +170,22 @@ public class LeftTuple
         } else if ( previous != null ) {
             //remove from end
             this.rightParentPrevious.rightParentNext = null;
-        } else if ( this.rightParent != null ){
+        } else if ( this.rightParent != null ) {
             this.rightParent.setBetaChildren( null );
         }
-        
+
         //this.parent  = null;
-        
-        this.leftParent  = null;
-        this.leftParentPrevious = null;        
-        this.leftParentNext =  null;
-        
-        this.blocker = null;        
-        
-        this.rightParent  = null;
+
+        this.leftParent = null;
+        this.leftParentPrevious = null;
+        this.leftParentNext = null;
+
+        this.blocker = null;
+
+        this.rightParent = null;
         this.rightParentPrevious = null;
-        this.rightParentNext = null;        
+        this.rightParentNext = null;
     }
-    
 
     public LeftTupleSink getSink() {
         return sink;
@@ -295,6 +254,14 @@ public class LeftTuple
         }
         return entry.handle;
     }
+    
+    public TupleHashTable getMemory() {
+        return this.memory;
+    }
+
+    public void setMemory(TupleHashTable memory) {
+        this.memory = memory;
+    }    
 
     public Entry getPrevious() {
         return previous;

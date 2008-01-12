@@ -2,6 +2,7 @@ package org.drools.reteoo;
 
 import java.io.Serializable;
 
+import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.spi.PropagationContext;
 
@@ -25,13 +26,9 @@ public interface LeftTupleSinkPropagator
                                            PropagationContext context,
                                            InternalWorkingMemory workingMemory);
 
-    public void createAndPropagateAssertTuple(RightTuple rightTuple,
+    public void createAndPropagateAssertTuple(InternalFactHandle factHandle,
                                               PropagationContext context,
                                               InternalWorkingMemory workingMemory);
-
-    public void createAndPropagateRetractTuple(RightTuple rightTuple,
-                                               PropagationContext context,
-                                               InternalWorkingMemory workingMemory);
 
     public LeftTupleSink[] getSinks();
 

@@ -2,20 +2,21 @@ package org.drools.reteoo;
 
 import org.drools.common.InternalFactHandle;
 import org.drools.util.Entry;
+import org.drools.util.FactHashTable;
 
 public class RightTuple
     implements
     Entry {
     private final InternalFactHandle handle;
+    
+    private RightTuple               handlePrevious;
+    private RightTuple               handleNext;
 
-    private RightTuple               parent;
-    private RightTuple               parentPrevious;
-    private RightTuple               parentNext;
-
+    private FactHashTable            memory;
+    
     private Entry                    previous;
     private Entry                    next;
 
-    private RightTuple               alphaChildren;
     private LeftTuple                betaChildren;
 
     private LeftTuple                blocked;
@@ -27,40 +28,32 @@ public class RightTuple
     public RightTuple(InternalFactHandle handle) {
         this.handle = handle;
         this.hashCode = this.handle.hashCode();
-        this.parent = null;
     }
 
     public RightTuple(InternalFactHandle handle,
                       RightTupleSink sink) {
         this.handle = handle;
         this.hashCode = this.handle.hashCode();
-        this.parent = null;
         this.sink = sink;
+        
+        RightTuple currentFirst = handle.getRightTuple();
+        if ( currentFirst != null ) {
+            currentFirst.handlePrevious =  this;
+            this.handleNext = currentFirst;
+        }
+        
+        handle.setRightTuple( this );                
     }
 
     public RightTuple(RightTuple parent) {
         this.handle = parent.getHandle();
         this.hashCode = this.handle.hashCode();
-        this.parent = parent;
-
-        this.parentNext = parent.getAlphaChildren();
-        if ( parentNext != null ) {
-            this.parentNext.parentPrevious = this;
-        }
-        parent.setAlphaChildren( this );
     }
 
     public RightTuple(RightTuple parent,
                       RightTupleSink sink) {
         this.handle = parent.getHandle();
         this.hashCode = this.handle.hashCode();
-        this.parent = parent;
-
-        this.parentNext = parent.getAlphaChildren();
-        if ( parentNext != null ) {
-            this.parentNext.parentPrevious = this;
-        }
-        parent.setAlphaChildren( this );
 
         this.sink = sink;
 
@@ -70,48 +63,28 @@ public class RightTuple
         return this.sink;
     }
 
-    public void unlinkFromRightParent() {
-        if ( this.parent != null ) {
-            if ( this.parentPrevious != null ) {
-                this.parentPrevious.parentNext = this.parentNext;
-            } else {
-                // first one in the chain, so treat differently                
-                this.parent.setAlphaChildren( this.parentNext );
-            }
-
-            if ( this.parentNext != null ) {
-                this.parentNext.parentPrevious = this.parentPrevious;
-            }
-        }
-
-        this.parent = null;
-        this.parentPrevious = null;
-        this.parentNext = null;
-        this.blocked = null;
-    }
+//    public void unlinkFromRightParent() {
+//        if ( this.parent != null ) {
+//            if ( this.parentPrevious != null ) {
+//                this.parentPrevious.parentNext = this.parentNext;
+//            } else {
+//                // first one in the chain, so treat differently                
+//                this.parent.setAlphaChildren( this.parentNext );
+//            }
+//
+//            if ( this.parentNext != null ) {
+//                this.parentNext.parentPrevious = this.parentPrevious;
+//            }
+//        }
+//
+//        this.parent = null;
+//        this.parentPrevious = null;
+//        this.parentNext = null;
+//        this.blocked = null;
+//    }
 
     public InternalFactHandle getHandle() {
         return this.handle;
-    }
-
-    public RightTuple getParent() {
-        return parent;
-    }
-
-    public RightTuple getParentPrevious() {
-        return parentPrevious;
-    }
-
-    public void setParentPrevious(RightTuple parentPrevious) {
-        this.parentPrevious = parentPrevious;
-    }
-
-    public RightTuple getParentNext() {
-        return parentNext;
-    }
-
-    public void setParentNext(RightTuple parentNext) {
-        this.parentNext = parentNext;
     }
 
     public LeftTuple getBlocked() {
@@ -120,6 +93,14 @@ public class RightTuple
 
     public void setBlocked(LeftTuple blocked) {
         this.blocked = blocked;
+    }        
+
+    public FactHashTable getMemory() {
+        return memory;
+    }
+
+    public void setMemory(FactHashTable memory) {
+        this.memory = memory;
     }
 
     public Entry getPrevious() {
@@ -128,6 +109,22 @@ public class RightTuple
 
     public void setPrevious(Entry previous) {
         this.previous = previous;
+    }        
+
+    public RightTuple getHandlePrevious() {
+        return handlePrevious;
+    }
+
+    public void setHandlePrevious(RightTuple handlePrevious) {
+        this.handlePrevious = handlePrevious;
+    }
+
+    public RightTuple getHandleNext() {
+        return handleNext;
+    }
+
+    public void setHandleNext(RightTuple handleNext) {
+        this.handleNext = handleNext;
     }
 
     public Entry getNext() {
@@ -136,14 +133,6 @@ public class RightTuple
 
     public void setNext(Entry next) {
         this.next = next;
-    }
-
-    public RightTuple getAlphaChildren() {
-        return alphaChildren;
-    }
-
-    public void setAlphaChildren(RightTuple alphaChildren) {
-        this.alphaChildren = alphaChildren;
     }
 
     public LeftTuple getBetaChildren() {

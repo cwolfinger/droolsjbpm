@@ -55,10 +55,6 @@ public class AlphaNode extends RightTupleSource
     private RightTupleSinkNode             previousRightTupleSinkNode;
     private RightTupleSinkNode             nextRightTupleNode;
 
-    private boolean                        rightTupleMemoryEnabled;
-
-    private boolean                        rightTupleMemoryAllowed;
-
     /**
      * Construct an <code>AlphaNode</code> with a unique id using the provided
      * <code>FieldConstraint</code> and the given <code>ObjectSource</code>.
@@ -79,12 +75,6 @@ public class AlphaNode extends RightTupleSource
                objectSource,
                context.getRuleBase().getConfiguration().getAlphaNodeHashingThreshold() );
         this.constraint = constraint;
-        this.rightTupleMemoryAllowed = context.isAlphaMemoryAllowed();
-        if ( this.rightTupleMemoryAllowed ) {
-            this.rightTupleMemoryEnabled = context.getRuleBase().getConfiguration().isAlphaMemory();
-        } else {
-            this.rightTupleMemoryEnabled = false;
-        }
     }
 
     /**
@@ -108,11 +98,6 @@ public class AlphaNode extends RightTupleSource
     public void attach(final InternalWorkingMemory[] workingMemories) {
         attach();
 
-        // we are attaching this node with existing working memories
-        // indicating that we are in a dynamic environment, that might benefit from alpha node memory, if allowed
-        if ( this.rightTupleMemoryAllowed ) {
-            setRightTupleMemoryEnabled( true );
-        }
         for ( int i = 0, length = workingMemories.length; i < length; i++ ) {
             final InternalWorkingMemory workingMemory = workingMemories[i];
             final PropagationContext propagationContext = new PropagationContextImpl( workingMemory.getNextPropagationIdCounter(),
@@ -125,60 +110,26 @@ public class AlphaNode extends RightTupleSource
         }
     }
 
-    public void assertRightTuple(final RightTuple rightTuple,
+    public void assertRightTuple(final InternalFactHandle handle,
                                  final PropagationContext context,
                                  final InternalWorkingMemory workingMemory) throws FactException {
-        if ( this.constraint.isAllowed( rightTuple.getHandle(),
+        if ( this.constraint.isAllowed( handle,
                                         workingMemory ) ) {
-            if ( isRightTupleMemoryEnabled() ) {
-                final FactHashTable memory = (FactHashTable) workingMemory.getNodeMemory( this );
-                memory.add( rightTuple );
-            }
-
-            this.sink.propagateAssertRightTuple( rightTuple,
+            this.sink.propagateAssertRightTuple( handle,
                                                  context,
                                                  workingMemory );
-        }
-    }
-
-    public void retractRightTuple(final RightTuple rightTuple,
-                                  final PropagationContext context,
-                                  final InternalWorkingMemory workingMemory) {        
-        if ( isRightTupleMemoryEnabled() ) {
-            final FactHashTable memory = (FactHashTable) workingMemory.getNodeMemory( this );
-            memory.remove( rightTuple );
-        }
-                
-        
-        if ( rightTuple.getAlphaChildren() != null ) {
-            this.sink.propagateRetractRightTuple( rightTuple,
-                                                  context,
-                                                  workingMemory,
-                                                  true );
         }
     }
 
     public void updateSink(final RightTupleSink sink,
                            final PropagationContext context,
                            final InternalWorkingMemory workingMemory) {
-        FactHashTable memory = null;
-
-        if ( !isRightTupleMemoryEnabled() ) {
-            // get the objects from the parent
-            RightTupleSinkUpdateAdapter adapter = new RightTupleSinkUpdateAdapter( sink,
-                                                                                   this.constraint );
-            this.objectSource.updateSink( adapter,
-                                          context,
-                                          workingMemory );
-        } else {
-            // if already has memory, just iterate and propagate
-            memory = (FactHashTable) workingMemory.getNodeMemory( this );
-            for ( RightTuple rightTuple = (RightTuple)  memory.getFirst( null ); rightTuple != null; rightTuple = (RightTuple) rightTuple.getNext() ) {
-                sink.assertRightTuple( rightTuple,
-                                       context,
-                                       workingMemory );
-            }
-        }
+        // get the objects from the parent
+        RightTupleSinkUpdateAdapter adapter = new RightTupleSinkUpdateAdapter( sink,
+                                                                               this.constraint );
+        this.objectSource.updateSink( adapter,
+                                      context,
+                                      workingMemory );
     }
 
     public void remove(final BaseNode node,
@@ -195,18 +146,6 @@ public class AlphaNode extends RightTupleSource
         }
         this.objectSource.remove( this,
                                   workingMemories );
-    }
-
-    public void setRightTupleMemoryAllowed(boolean objectMemoryAllowed) {
-        this.rightTupleMemoryAllowed = objectMemoryAllowed;
-    }
-
-    public boolean isRightTupleMemoryEnabled() {
-        return this.rightTupleMemoryEnabled;
-    }
-
-    public void setRightTupleMemoryEnabled(boolean objectMemoryEnabled) {
-        this.rightTupleMemoryEnabled = objectMemoryEnabled;
     }
 
     /**
@@ -286,6 +225,12 @@ public class AlphaNode extends RightTupleSource
         this.previousRightTupleSinkNode = previous;
     }
 
+    public void retractRightTuple(RightTuple rightTuple,
+                                  PropagationContext context,
+                                  InternalWorkingMemory workingMemory) {
+        throw new UnsupportedOperationException( "AlphaNode.retractRightTuple is not supported." );
+    }
+
     /**
      * Used with the updateSink method, so that the parent ObjectSource
      * can  update the  TupleSink
@@ -304,35 +249,27 @@ public class AlphaNode extends RightTupleSource
             this.constraint = constraint;
         }
 
-        public void assertRightTuple(final RightTuple rightTuple,
+        public void assertRightTuple(final InternalFactHandle handle,
                                      final PropagationContext context,
                                      final InternalWorkingMemory workingMemory) {
-            if ( this.constraint.isAllowed( rightTuple.getHandle(),
+            if ( this.constraint.isAllowed( handle,
                                             workingMemory ) ) {
-                this.sink.assertRightTuple( rightTuple,
+                this.sink.assertRightTuple( handle,
                                             context,
                                             workingMemory );
             }
         }
 
-        public void modifyObject(final InternalFactHandle handle,
-                                 final PropagationContext context,
-                                 final InternalWorkingMemory workingMemory) {
-            throw new UnsupportedOperationException( "ObjectSinkUpdateAdapter onlys supports assertObject method calls" );
-        }
+        //        public void modifyObject(final InternalFactHandle handle,
+        //                                 final PropagationContext context,
+        //                                 final InternalWorkingMemory workingMemory) {
+        //            throw new UnsupportedOperationException( "ObjectSinkUpdateAdapter onlys supports assertObject method calls" );
+        //        }
 
         public void retractRightTuple(final RightTuple rightTuple,
                                       final PropagationContext context,
                                       final InternalWorkingMemory workingMemory) {
-            throw new UnsupportedOperationException( "ObjectSinkUpdateAdapter onlys supports assertObject method calls" );
-        }
-
-        public boolean isRightTupleMemoryEnabled() {
-            throw new UnsupportedOperationException( "ObjectSinkUpdateAdapter have no Object memory" );
-        }
-
-        public void setRightTupleMemoryEnabled(boolean objectMemoryEnabled) {
-            throw new UnsupportedOperationException( "ObjectSinkUpdateAdapter have no Object memory" );
+            throw new UnsupportedOperationException( "RightTupleSinkUpdateAdapter.retractRightTuple is not supported." );
         }
     }
 }

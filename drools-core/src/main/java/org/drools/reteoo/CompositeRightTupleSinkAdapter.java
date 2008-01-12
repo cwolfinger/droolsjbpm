@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.drools.base.ValueType;
 import org.drools.base.evaluators.Operator;
+import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.rule.LiteralConstraint;
 import org.drools.spi.AlphaNodeFieldConstraint;
@@ -275,10 +276,10 @@ public class CompositeRightTupleSinkAdapter
         return null;
     }
 
-    public void propagateAssertRightTuple(final RightTuple rightTuple,
+    public void propagateAssertRightTuple(final InternalFactHandle factHandle,
                                           final PropagationContext context,
                                           final InternalWorkingMemory workingMemory) {
-        final Object object = rightTuple.getHandle().getObject();
+        final Object object = factHandle.getObject();
 
         // Iterates t he FieldIndex collection, which tells you if particularly field is hashed or not
         // if the field is hashed then it builds the hashkey to return the correct sink for the current objects slot's
@@ -298,8 +299,7 @@ public class CompositeRightTupleSinkAdapter
                 final RightTupleSink sink = (RightTupleSink) this.hashedSinkMap.get( this.hashKey );
                 if ( sink != null ) {
                     // The sink exists so propagate
-                    sink.assertRightTuple( new RightTuple( rightTuple, 
-                                                           sink ),
+                    sink.assertRightTuple( factHandle,
                                            context,
                                            workingMemory );
                 }
@@ -309,8 +309,7 @@ public class CompositeRightTupleSinkAdapter
         // propagate unhashed
         if ( this.hashableSinks != null ) {
             for ( RightTupleSinkNode sink = this.hashableSinks.getFirst(); sink != null; sink = sink.getNextRightTupleSinkNode() ) {
-                sink.assertRightTuple( new RightTuple( rightTuple, 
-                                                       sink ),
+                sink.assertRightTuple( factHandle,
                                        context,
                                        workingMemory );
             }
@@ -319,23 +318,12 @@ public class CompositeRightTupleSinkAdapter
         if ( this.otherSinks != null ) {
             // propagate others
             for ( RightTupleSinkNode sink = this.otherSinks.getFirst(); sink != null; sink = sink.getNextRightTupleSinkNode() ) {
-                sink.assertRightTuple( new RightTuple( rightTuple, 
-                                                       sink ),
+                sink.assertRightTuple( factHandle,
                                        context,
                                        workingMemory );
             }
         }
 
-    }
-
-    public void propagateRetractRightTuple(final RightTuple rightTuple,
-                                           final PropagationContext context,
-                                           final InternalWorkingMemory workingMemory,
-                                           final boolean useHash) {
-        for( RightTuple childRightTuple = rightTuple.getAlphaChildren(); childRightTuple != null; childRightTuple = childRightTuple.getParentNext() ) {
-            childRightTuple.getRightTupleSink().retractRightTuple( childRightTuple, context, workingMemory );
-        }
-        rightTuple.setAlphaChildren( null );
     }
 
     public RightTupleSink[] getSinks() {

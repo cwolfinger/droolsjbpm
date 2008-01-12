@@ -22,6 +22,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.drools.FactHandle;
 import org.drools.base.ShadowProxy;
 import org.drools.common.BaseNode;
 import org.drools.common.DroolsObjectInputStream;
@@ -95,12 +96,6 @@ public class Rete extends RightTupleSource
     // Instance methods
     // ------------------------------------------------------------
 
-    
-    public void assertRightTuple(final RightTuple rightTuple,
-                                 final PropagationContext context,
-                                 final InternalWorkingMemory workingMemory) {
-        // do nothing
-    }
     /**
      * This is the entry point into the network for all asserted Facts. Iterates a cache
      * of matching <code>ObjectTypdeNode</code>s asserting the Fact. If the cache does not
@@ -135,22 +130,11 @@ public class Rete extends RightTupleSource
 
         ObjectTypeNode[] cachedNodes = objectTypeConf.getObjectTypeNodes();
 
-        RightTuple rightTuple = null;
         for ( int i = 0, length = cachedNodes.length; i < length; i++ ) {
-            rightTuple =  new RightTuple( factHandle,
-                                          cachedNodes[i] );
-            cachedNodes[i].assertRightTuple( rightTuple,
+            cachedNodes[i].assertRightTuple( factHandle,
                                              context,
                                              workingMemory );
-            if ( i < length-1 ) {
-                RightTuple temp = new RightTuple( factHandle );
-                temp.setParentNext( rightTuple );
-                rightTuple.setParentPrevious( temp );
-                                
-                rightTuple = temp;
-            }
         }
-        factHandle.setRightTuple( rightTuple );
     }
 
     /**
@@ -162,13 +146,28 @@ public class Rete extends RightTupleSource
      * @param workingMemory
      *            The working memory session.
      */
-    public void retractRightTuple(RightTuple rightTuple,
+    public void retractRightTuple(final InternalFactHandle factHandle,
                                   final PropagationContext context,
                                   final InternalWorkingMemory workingMemory) {
-        for ( ; rightTuple != null; rightTuple = ( RightTuple ) rightTuple.getParentNext() ) {
-            rightTuple.getRightTupleSink().retractRightTuple( rightTuple, context, workingMemory );
-        }
+        Object object = factHandle.getObject();
+        
+        ObjectTypeConf objectTypeConf = workingMemory.getObjectTypeConf( context.getEntryPoint(),
+                                                                         object );
+        
+        ObjectTypeNode[] cachedNodes = objectTypeConf.getObjectTypeNodes();
+
+        for ( int i = 0, length = cachedNodes.length; i < length; i++ ) {
+            cachedNodes[i].retractRightTuple( factHandle,
+                                              context,
+                                              workingMemory );
+        }        
     }
+    
+    public void retractRightTuple(final RightTuple rightTuple,
+                                  final PropagationContext context,
+                                  final InternalWorkingMemory workingMemory) {
+        throw new UnsupportedOperationException( "Rete.retractRightTuple is not supported." );
+    }    
 
     /**
      * Adds the <code>ObjectSink</code> so that it may receive
@@ -264,11 +263,12 @@ public class Rete extends RightTupleSource
                 objectTypeConf.resetCache();
                 ObjectTypeNode sourceNode = objectTypeConf.getConcreteObjectTypeNode();
                 FactHashTable table = (FactHashTable) workingMemory.getNodeMemory( sourceNode );
-                for ( RightTuple rightTuple = (RightTuple) table.getFirst( null ); rightTuple != null; rightTuple = (RightTuple) rightTuple.getNext() ) {
-                    sink.assertRightTuple( new RightTuple( rightTuple, sink ),
-                                           context,
-                                           workingMemory );
-                }
+                // @TODO
+//                for ( RightTuple rightTuple = (RightTuple) table.getFirst( null ); rightTuple != null; rightTuple = (RightTuple) rightTuple.getNext() ) {
+//                    sink.assertRightTuple( new RightTuple( rightTuple, sink ),
+//                                           context,
+//                                           workingMemory );
+//                }
             }
         }
     }

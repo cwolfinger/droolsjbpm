@@ -23,7 +23,7 @@ public class FactHandleIndexHashTable extends AbstractHashTable
     private Index                       index;
 
     public FactHandleIndexHashTable(final FieldIndex[] index) {
-        this( 16,
+        this( 128,
               0.75f,
               index );
     }
@@ -146,6 +146,7 @@ public class FactHandleIndexHashTable extends AbstractHashTable
 
     public void add(final RightTuple rightTuple) {
         final FactHashTable entry = getOrCreate( rightTuple.getHandle().getObject() );
+        rightTuple.setMemory( entry );
         entry.add( rightTuple );
         this.factSize++;
     }
@@ -154,46 +155,59 @@ public class FactHandleIndexHashTable extends AbstractHashTable
      * We assume that this rightTuple is contained in this hash table
      */
     public void remove(final RightTuple rightTuple) {
-        RightTuple previousRightTuple = (RightTuple) rightTuple.getPrevious();
-        if ( previousRightTuple != null && rightTuple.getNext() != null ) {
-            // Optimisation for tuple self removal if it's not the first in the chain
-            // we can't do this if it's the only remain tuple, as we need to also remove the parent bucket.
-            previousRightTuple.setNext( rightTuple.getNext() );
-            rightTuple.getNext().setPrevious( previousRightTuple );
-            this.size--;
+        if ( rightTuple.getMemory() != null ) {
+            FactHashTable  memory =rightTuple.getMemory();
+            memory.remove( rightTuple );
+            if ( memory.first == null ) {
+                final int index = indexOf( memory.hashCode(),
+                                           this.table.length );                
+                FactHashTable previous = null;
+                FactHashTable current = (FactHashTable) this.table[index];
+                while ( current != memory ) {
+                    previous = current;
+                    current = (FactHashTable) current.getNext();
+                }
+                
+                if ( previous  != null ) {
+                    previous.next = current.next;
+                } else {
+                    this.table[index] = current.next;
+                }
+                this.size--;                
+            }
+            return;
         }
-
+        
         final Object object = rightTuple.getHandle().getObject();
-        //this.index.setCachedValue( object );
         final int hashCode = this.index.hashCodeOf( object );
-
         final int index = indexOf( hashCode,
                                    this.table.length );
 
-        // search the table for  the Entry, we need to track previous  and next, so if the 
-        // Entry is empty after  its had the FactEntry removed, we must remove  it from the table
-        FactHashTable previous = (FactHashTable) this.table[index];
-        FactHashTable current = previous;
-        while ( current != null ) {
-            final FactHashTable next = (FactHashTable) current.next;
+        // search the table for  the Entry, we need to track previous, so if the Entry
+        // is empty we can remove it.
+        FactHashTable previous = null;
+        FactHashTable current = (FactHashTable) this.table[index];
+        while ( current != null  ) {
             if ( current.matches( object,
                                   hashCode ) ) {
                 current.remove( rightTuple );
                 this.factSize--;
-                // If the FactEntryIndex is empty, then remove it from the hash table
+                
                 if ( current.first == null ) {
-                    if ( previous == current ) {
-                        this.table[index] = next;
+                    if ( previous  != null ) {
+                        previous.next = current.next;
                     } else {
-                        previous.next = next;
+                        this.table[index] = current.next;
                     }
-                    current.next = null;
                     this.size--;
                 }
+                break;
             }
             previous = current;
-            current = next;
+            current = (FactHashTable) current.next;
         }
+        rightTuple.setNext(null);
+        rightTuple.setPrevious(null);
     }
 
     public boolean contains(final RightTuple rightTuple) {

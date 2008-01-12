@@ -10,6 +10,7 @@ import org.drools.util.AbstractHashTable;
 import org.drools.util.Entry;
 import org.drools.util.FactHandleIndexHashTable;
 import org.drools.util.FactHashTable;
+import org.drools.util.ObjectHashSet;
 import org.drools.util.ReflectiveVisitor;
 import org.drools.util.TupleHashTable;
 import org.drools.util.TupleIndexHashTable;
@@ -46,8 +47,8 @@ public class MemoryVisitor extends ReflectiveVisitor {
     public void visitObjectTypeNode(final ObjectTypeNode node) {
         System.out.println( indent() + node );
 
-        final FactHashTable memory = (FactHashTable) this.workingMemory.getNodeMemory( node );
-        checkObjectHashTable( memory );
+        final ObjectHashSet memory = (ObjectHashSet) this.workingMemory.getNodeMemory( node );
+        //checkObjectHashTable( memory );
 
         this.indent++;
         try {

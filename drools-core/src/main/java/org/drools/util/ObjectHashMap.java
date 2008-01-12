@@ -10,7 +10,7 @@ public class ObjectHashMap extends AbstractHashTable {
     private static final long serialVersionUID = 400L;
 
     public ObjectHashMap() {
-        this( 16,
+        this( 128,
               0.75f );
     }
 

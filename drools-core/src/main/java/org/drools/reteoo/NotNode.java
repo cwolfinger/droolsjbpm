@@ -16,8 +16,10 @@ package org.drools.reteoo;
  * limitations under the License.
  */
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.drools.common.BetaConstraints;
-import org.drools.common.EmptyBetaConstraints;
 import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.reteoo.builder.BuildContext;
@@ -107,6 +109,22 @@ public class NotNode extends BetaNode {
             }
         }
         
+//        for ( RightTuple rightTuple = memory.getRightTupleMemory().getFirst( leftTuple ); rightTuple != null; rightTuple = (RightTuple) rightTuple.getNext() ) {
+//            if ( this.constraints.isAllowedCachedLeft( rightTuple.getHandle() ) ) {
+//
+//                leftTuple.setBlocker( rightTuple );
+//
+//                LeftTuple blockedPrevious = rightTuple.getBlocked();
+//                if ( blockedPrevious != null ) {
+//                    leftTuple.setBlockedNext( blockedPrevious );
+//                    blockedPrevious.setBlockedPrevious( leftTuple );
+//                }
+//                rightTuple.setBlocked( leftTuple );
+//
+//                break;
+//            }
+//        }        
+        
         this.constraints.resetTuple();     
 
         if ( leftTuple.getBlocker() == null ) {
@@ -133,11 +151,13 @@ public class NotNode extends BetaNode {
      * @param workingMemory
      *            The working memory seesion.
      */
-    public void assertRightTuple(final RightTuple rightTuple,
+    public void assertRightTuple(final InternalFactHandle factHandle,
                                  final PropagationContext context,
                                  final InternalWorkingMemory workingMemory) {
+        final RightTuple rightTuple = new RightTuple( factHandle, this);
+        
         final BetaMemory memory = (BetaMemory) workingMemory.getNodeMemory( this );
-        memory.getRightTupleMemory().add( rightTuple );
+        memory.getRightTupleMemory().add( rightTuple );        
 
         if ( !this.tupleMemoryEnabled ) {
             // do nothing here, as we know there are no left tuples at this stage in sequential mode.
@@ -147,7 +167,10 @@ public class NotNode extends BetaNode {
         this.constraints.updateFromRightTuple( workingMemory,
                                                rightTuple );
 
-        for ( LeftTuple leftTuple = memory.getLeftTupleMemory().getFirst( rightTuple ); leftTuple != null; leftTuple = (LeftTuple) leftTuple.getNext() ) {
+        for ( LeftTuple leftTuple = memory.getLeftTupleMemory().getFirst( rightTuple ); leftTuple != null; ) {
+            // preserve next now, in case we remove this leftTuple 
+            LeftTuple temp = (LeftTuple) leftTuple.getNext();
+            
             // we know that only unblocked LeftTuples are  still in the memory
             if ( this.constraints.isAllowedCachedRight( leftTuple ) ) {
                 leftTuple.setBlocker( rightTuple );
@@ -159,16 +182,18 @@ public class NotNode extends BetaNode {
                 }
                 rightTuple.setBlocked( leftTuple );
 
-                LeftTuple temp = (LeftTuple) leftTuple.getPrevious();
+                
                 // this is now blocked so remove from memory
-                memory.getLeftTupleMemory().remove( leftTuple );
+                memory.getLeftTupleMemory().remove( leftTuple );                
 
                 if ( leftTuple.getBetaChildren() != null ) {
                     this.sink.propagateRetractLeftTuple( leftTuple,
                                                          context,
                                                          workingMemory );
-                }
+                }                
             }
+            
+            leftTuple = temp;
         }
         
         this.constraints.resetFactHandle();       
@@ -190,43 +215,65 @@ public class NotNode extends BetaNode {
     public void retractRightTuple(final RightTuple rightTuple,
                                   final PropagationContext context,
                                   final InternalWorkingMemory workingMemory) {
-        final BetaMemory memory = (BetaMemory) workingMemory.getNodeMemory( this );
-
-               
-        if ( rightTuple.getBlocked() == null ) {
-            memory.getRightTupleMemory().remove( rightTuple );
-            return;
-        }
-        
         // assign now, so we can remove from memory before doing any possible propagations
-        final RightTuple rootBlocker = (RightTuple) rightTuple.getPrevious();        
+        final RightTuple rootBlocker = (RightTuple) rightTuple.getPrevious();     
+        
+        final BetaMemory memory = (BetaMemory) workingMemory.getNodeMemory( this );        
+        memory.getRightTupleMemory().remove( rightTuple );
+        
+        if ( rightTuple.getBlocked() == null ) {
+            //System.out.println( "NotNode.retractObjject" + rightTuple.getHandle() + " : 0 : []");
+            return;
+        }           
 
-        for ( LeftTuple leftTuple = (LeftTuple) rightTuple.getBlocked(); leftTuple != null; leftTuple = (LeftTuple) leftTuple.getBlockedNext() ) {
+        //int blockedCount = 0;
+        //List list  = new  ArrayList();
+        
+        for ( LeftTuple leftTuple = (LeftTuple) rightTuple.getBlocked(); leftTuple != null; ) {
+            //blockedCount++;
+            LeftTuple temp = leftTuple.getBlockedNext();            
+            
             leftTuple.setBlocker( null );
-            LeftTuple previousBlocked = leftTuple.getBlockedPrevious();
-            if ( previousBlocked != null ) {
-                previousBlocked.setBlockedNext( null );
-            }
-            leftTuple.setBlockedPrevious ( null );
+            leftTuple.setBlockedPrevious( null );
+            leftTuple.setBlockedNext( null );
             
             this.constraints.updateFromTuple( workingMemory,
                                               leftTuple );
+            
+            int blockSearch = 0;
+          // we know that older tuples have been checked so continue previously
+          for ( RightTuple newBlocker = memory.getRightTupleMemory().getFirst( leftTuple ); newBlocker != null; newBlocker = (RightTuple) newBlocker.getNext() ) {
+              //blockSearch++;
+              if ( this.constraints.isAllowedCachedLeft( newBlocker.getHandle() ) ) {
+                  leftTuple.setBlocker( newBlocker );
 
-            // we know that older tuples have been checked so continue previously
-            for ( RightTuple newBlocker = rootBlocker; newBlocker != null; newBlocker = (RightTuple) newBlocker.getPrevious() ) {
-                if ( this.constraints.isAllowedCachedLeft( newBlocker.getHandle() ) ) {
-                    leftTuple.setBlocker( newBlocker );
+                  LeftTuple blockedPrevious = newBlocker.getBlocked();
+                  if ( blockedPrevious != null ) {
+                      leftTuple.setBlockedNext( blockedPrevious );
+                      blockedPrevious.setBlockedPrevious( leftTuple );
+                  }
+                  newBlocker.setBlocked( leftTuple );
 
-                    LeftTuple blockedPrevious = newBlocker.getBlocked();
-                    if ( blockedPrevious != null ) {
-                        leftTuple.setBlockedNext( blockedPrevious );
-                        blockedPrevious.setBlockedPrevious( leftTuple );
-                    }
-                    newBlocker.setBlocked( leftTuple );
+                  break;
+              }
+          }  
+          //list.add( blockSearch );
 
-                    break;
-                }
-            }
+//            // we know that older tuples have been checked so continue previously
+//            for ( RightTuple newBlocker = rootBlocker; newBlocker != null; newBlocker = (RightTuple) newBlocker.getPrevious() ) {
+//                if ( this.constraints.isAllowedCachedLeft( newBlocker.getHandle() ) ) {
+//                    leftTuple.setBlocker( newBlocker );
+//
+//                    LeftTuple blockedPrevious = newBlocker.getBlocked();
+//                    if ( blockedPrevious != null ) {
+//                        leftTuple.setBlockedNext( blockedPrevious );
+//                        blockedPrevious.setBlockedPrevious( leftTuple );
+//                    }
+//                    newBlocker.setBlocked( leftTuple );
+//
+//                    break;
+//                }
+//            }
             
             if ( leftTuple.getBlocker() == null ) {
                 // was previous blocked and not in memory, so add
@@ -236,7 +283,10 @@ public class NotNode extends BetaNode {
                                                 context,
                                                 workingMemory );
             }            
+            
+            leftTuple = temp;
         }
+        //System.out.println( "NotNode.retractObjject" + rightTuple.getHandle() + " : " + blockedCount + " : " + list);
     }
 
     /**

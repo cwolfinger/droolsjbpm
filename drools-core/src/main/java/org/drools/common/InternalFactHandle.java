@@ -17,6 +17,7 @@ package org.drools.common;
  */
 
 import org.drools.FactHandle;
+import org.drools.reteoo.LeftTuple;
 import org.drools.reteoo.RightTuple;
 
 public interface InternalFactHandle
@@ -47,6 +48,10 @@ public interface InternalFactHandle
     public RightTuple getRightTuple();
 
     public void setRightTuple(RightTuple rightTuple);    
+    
+    public void setLeftTuple(LeftTuple leftTuple);
+    
+    public LeftTuple getLeftTuple();
     
     /**
      * Returns true if this FactHandle represents

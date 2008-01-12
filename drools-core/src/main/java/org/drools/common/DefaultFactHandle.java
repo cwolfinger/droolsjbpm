@@ -17,6 +17,7 @@ package org.drools.common;
  */
 
 import org.drools.FactHandle;
+import org.drools.reteoo.LeftTuple;
 import org.drools.reteoo.RightTuple;
 
 /**
@@ -43,6 +44,7 @@ public class DefaultFactHandle
     private int               objectHashCode;
     private boolean           shadowFact;
     private RightTuple        rightTuple;
+    private LeftTuple         leftTuple;
 
     // ----------------------------------------------------------------------
     // Constructors
@@ -171,6 +173,14 @@ public class DefaultFactHandle
 
     public void setRightTuple(RightTuple rightTuple) {
         this.rightTuple = rightTuple;
+    }
+    
+    public void setLeftTuple(LeftTuple leftTuple) {
+        this.leftTuple = leftTuple;
+    }
+    
+    public LeftTuple getLeftTuple(){
+        return this.leftTuple;
     }
 
     /**

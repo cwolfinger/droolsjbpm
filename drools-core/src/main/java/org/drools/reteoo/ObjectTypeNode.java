@@ -20,6 +20,7 @@ import java.io.Serializable;
 
 import org.drools.RuleBaseConfiguration;
 import org.drools.common.BaseNode;
+import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.common.NodeMemory;
 import org.drools.common.PropagationContextImpl;
@@ -31,6 +32,10 @@ import org.drools.spi.ObjectType;
 import org.drools.spi.PropagationContext;
 import org.drools.util.FactHashTable;
 import org.drools.util.Iterator;
+import org.drools.util.ObjectHashSet;
+import org.drools.util.ObjectHashSet.ObjectEntry;
+
+;
 
 /**
  * <code>ObjectTypeNodes<code> are responsible for filtering and propagating the matching
@@ -138,7 +143,7 @@ public class ObjectTypeNode extends RightTupleSource
      * @param workingMemory
      *            The working memory session.
      */
-    public void assertRightTuple(final RightTuple rightTuple,
+    public void assertRightTuple(final InternalFactHandle factHandle,
                                  final PropagationContext context,
                                  final InternalWorkingMemory workingMemory) {
         if ( context.getType() == PropagationContext.MODIFICATION && this.skipOnModify && context.getDormantActivations() == 0 ) {
@@ -147,13 +152,20 @@ public class ObjectTypeNode extends RightTupleSource
         }
 
         if ( this.objectMemoryEnabled ) {
-            final FactHashTable memory = (FactHashTable) workingMemory.getNodeMemory( this );
-            memory.add( rightTuple );
+            final ObjectHashSet memory = (ObjectHashSet) workingMemory.getNodeMemory( this );
+            memory.add( factHandle );
         }
 
-        this.sink.propagateAssertRightTuple( rightTuple,
+        this.sink.propagateAssertRightTuple( factHandle,
                                              context,
                                              workingMemory );
+    }
+
+    public void retractRightTuple(final RightTuple rightTuple,
+                                  final PropagationContext context,
+                                  final InternalWorkingMemory workingMemory) {
+        throw new UnsupportedOperationException( "ObjectTypeNode.retractRightTuple is not supported." );
+
     }
 
     /**
@@ -167,7 +179,7 @@ public class ObjectTypeNode extends RightTupleSource
      * @param workingMemory
      *            The working memory session.
      */
-    public void retractRightTuple(final RightTuple rightTuple,
+    public void retractRightTuple(final InternalFactHandle factHandle,
                                   final PropagationContext context,
                                   final InternalWorkingMemory workingMemory) {
 
@@ -176,18 +188,23 @@ public class ObjectTypeNode extends RightTupleSource
         }
 
         if ( this.objectMemoryEnabled ) {
-            final FactHashTable memory = (FactHashTable) workingMemory.getNodeMemory( this );
-            memory.remove( rightTuple );
-        }
-         
-        
-        if ( rightTuple.getAlphaChildren() != null ) {
-            this.sink.propagateRetractRightTuple( rightTuple,
-                                                  context,
-                                                  workingMemory,
-                                                  true );
+            final ObjectHashSet memory = (ObjectHashSet) workingMemory.getNodeMemory( this );
+            memory.remove( factHandle );
         }
 
+        for ( RightTuple rightTuple = factHandle.getRightTuple(); rightTuple != null; rightTuple = (RightTuple) rightTuple.getHandleNext() ) {
+            rightTuple.getRightTupleSink().retractRightTuple( rightTuple,
+                                                              context,
+                                                              workingMemory );
+        }
+        factHandle.setRightTuple( null );
+
+        for ( LeftTuple leftTuple = factHandle.getLeftTuple(); leftTuple != null; leftTuple = (LeftTuple) leftTuple.getLeftParentNext() ) {
+            leftTuple.getSink().retractTuple( leftTuple,
+                                              context,
+                                              workingMemory );
+        }
+        factHandle.setLeftTuple( null );
     }
 
     public void updateSink(final RightTupleSink sink,
@@ -195,9 +212,10 @@ public class ObjectTypeNode extends RightTupleSource
                            final InternalWorkingMemory workingMemory) {
         final FactHashTable memory = (FactHashTable) workingMemory.getNodeMemory( this );
         for ( RightTuple rightTuple = (RightTuple) memory.getFirst( null ); rightTuple != null; rightTuple = (RightTuple) rightTuple.getNext() ) {
-            sink.assertRightTuple( rightTuple,
-                                   context,
-                                   workingMemory );
+            //@ TODO
+            //            sink.assertRightTuple( rightTuple,
+            //                                   context,
+            //                                   workingMemory );
         }
     }
 
@@ -255,7 +273,7 @@ public class ObjectTypeNode extends RightTupleSource
      * to switch back to a standard HashMap.
      */
     public Object createMemory(final RuleBaseConfiguration config) {
-        return new FactHashTable();
+        return new ObjectHashSet();
     }
 
     public boolean isRightTupleMemoryEnabled() {

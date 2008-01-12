@@ -25,7 +25,7 @@ public class TupleIndexHashTable extends AbstractHashTable
     private Index                           index;
 
     public TupleIndexHashTable(final FieldIndex[] index) {
-        this( 16,
+        this( 128,
               0.75f,
               index );
     }
@@ -163,56 +163,64 @@ public class TupleIndexHashTable extends AbstractHashTable
 
     public void add(final LeftTuple tuple) {
         final TupleHashTable entry = getOrCreate( tuple );
+        tuple.setMemory( entry );
         entry.add( tuple );
         this.factSize++;
     }
     
     public void remove(final LeftTuple leftTuple) {
-        LeftTuple previousLeftTuple = (LeftTuple) leftTuple.getPrevious();
-        LeftTuple nextLeftTuple = (LeftTuple) leftTuple.getNext();
-        if ( previousLeftTuple != null && nextLeftTuple != null ) {
-            // Optimisation for tuple self removal if it's not the first in the chain
-            // we can't do this if it's the only remain tuple, as we need to also remove the parent bucket.
-            previousLeftTuple.setNext( nextLeftTuple );
-            nextLeftTuple.setPrevious( previousLeftTuple );
-            this.size--;
-            leftTuple.setPrevious( null );
-            leftTuple.setNext( null );
+        if ( leftTuple.getMemory() != null ) {
+            TupleHashTable  memory =leftTuple.getMemory();
+            memory.remove( leftTuple );
+            if ( memory.first == null ) {
+                final int index = indexOf( memory.hashCode(),
+                                           this.table.length );                
+                TupleHashTable previous = null;
+                TupleHashTable current = (TupleHashTable) this.table[index];
+                while ( current != memory ) {
+                    previous = current;
+                    current = (TupleHashTable) current.getNext();
+                }
+                
+                if ( previous  != null ) {
+                    previous.next = current.next;
+                } else {
+                    this.table[index] = current.next;
+                }
+                this.size--;                
+            }
             return;
         }
         
         final int hashCode = this.index.hashCodeOf( leftTuple );
-
         final int index = indexOf( hashCode,
                                    this.table.length );
 
-        // search the table for  the Entry, we need to track previous  and next, so if the 
-        // Entry is empty after  its had the FactEntry removed, we must remove  it from the table
-        TupleHashTable previous = (TupleHashTable) this.table[index];
-        TupleHashTable current = previous;
-        while ( current != null ) {
-            final TupleHashTable next = (TupleHashTable) current.next;
+        // search the table for  the Entry, we need to track previous, so if the Entry
+        // is empty we can remove it.
+        TupleHashTable previous = null;
+        TupleHashTable current = (TupleHashTable) this.table[index];
+        while ( current != null  ) {
             if ( current.matches( leftTuple,
                                   hashCode ) ) {
                 current.remove( leftTuple );
                 this.factSize--;
-                // If the FactEntryIndex is empty, then remove it from the hash table
+                
                 if ( current.first == null ) {
-                    if ( previous == current ) {
-                        this.table[index] = next;
+                    if ( previous  != null ) {
+                        previous.next = current.next;
                     } else {
-                        previous.next = next;
+                        this.table[index] = current.next;
                     }
-                    current.next = null;
                     this.size--;
                 }
+                break;
             }
             previous = current;
-            current = next;
+            current = (TupleHashTable) current.next;
         }
-        
-        leftTuple.setPrevious( null );
-        leftTuple.setNext( null );
+        leftTuple.setNext(null);
+        leftTuple.setPrevious(null);
     }
 
     public boolean contains(final LeftTuple tuple) {

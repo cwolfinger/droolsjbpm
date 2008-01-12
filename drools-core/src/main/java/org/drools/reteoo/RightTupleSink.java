@@ -16,6 +16,7 @@ package org.drools.reteoo;
  * limitations under the License.
  */
 
+import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.spi.PropagationContext;
 
@@ -43,9 +44,9 @@ public interface RightTupleSink
      * @param workingMemory
      *            the <code>WorkingMemory</code> session.
      */
-    void assertRightTuple(RightTuple rightTuple,
-                      PropagationContext context,
-                      InternalWorkingMemory workingMemory);
+    void assertRightTuple(InternalFactHandle handle,
+                          PropagationContext context,
+                          InternalWorkingMemory workingMemory);
 
     /**
      * Retract an existing <code>FactHandleImpl</code>.
@@ -58,10 +59,7 @@ public interface RightTupleSink
      *            the <code>WorkingMemory</code> session.
      */
     void retractRightTuple(RightTuple rightTuple,
-                       PropagationContext context,
-                       InternalWorkingMemory workingMemory);
+                           PropagationContext context,
+                           InternalWorkingMemory workingMemory);
 
-    public boolean isRightTupleMemoryEnabled();
-
-    public void setRightTupleMemoryEnabled(boolean objectMemoryOn);
 }

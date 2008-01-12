@@ -215,11 +215,9 @@ public class ReteooRuleBase extends AbstractRuleBase {
     public void retractObject(final FactHandle handle,
                               final PropagationContext context,
                               final ReteooWorkingMemory workingMemory) throws FactException {
-        getRete().retractRightTuple( ((InternalFactHandle)handle).getRightTuple(),
+        getRete().retractRightTuple( (InternalFactHandle) handle,
                                      context,
-                                     workingMemory );
-        
-        ((InternalFactHandle)handle).setRightTuple( null );
+                                     workingMemory );        
     }
 
     public synchronized StatefulSession newStatefulSession(final boolean keepReference) {

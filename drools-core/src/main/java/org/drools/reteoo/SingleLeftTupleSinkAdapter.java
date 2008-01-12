@@ -1,5 +1,6 @@
 package org.drools.reteoo;
 
+import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.spi.PropagationContext;
 
@@ -83,27 +84,13 @@ public class SingleLeftTupleSinkAdapter
         rightTuple.setBetaChildren( null );
     }    
 
-    public void createAndPropagateAssertTuple(final RightTuple rightTuple,
+    public void createAndPropagateAssertTuple(final InternalFactHandle factHandle,
                                               final PropagationContext context,
                                               final InternalWorkingMemory workingMemory) {
-        this.sink.assertTuple( new LeftTuple( rightTuple,
+        this.sink.assertTuple( new LeftTuple( factHandle,
                                               this.sink ),
                                context,
                                workingMemory );
-    }
-
-    public void createAndPropagateRetractTuple(final RightTuple rightTuple,
-                                               final PropagationContext context,
-                                               final InternalWorkingMemory workingMemory) {
-        LeftTuple child = rightTuple.getBetaChildren();
-        while ( child != null ) {
-            //LeftTuple temp = child.getRightParentNext();
-            //child.unlinkFromParents();
-            child.getSink().retractTuple( child, context, workingMemory );
-            child = child.getRightParentNext();
-            //child = temp;
-        }
-        rightTuple.setBetaChildren( null );
     }
 
     public LeftTupleSink[] getSinks() {
