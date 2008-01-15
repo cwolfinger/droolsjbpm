@@ -35,7 +35,11 @@ public class AccumulateHandler extends BaseAbstractHandler
     implements
     Handler {
 
+
     AccumulateHandler(final XmlPackageReader xmlPackageReader) {
+
+
+
         this.xmlPackageReader = xmlPackageReader;
 
         if ( (this.validParents == null) && (this.validPeers == null) ) {
