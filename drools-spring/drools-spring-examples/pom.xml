@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+      <groupId>org.drools.spring</groupId>
+      <artifactId>drools-spring</artifactId>
+      <version>4.1.0.SNAPSHOT</version>
+    </parent>
+
+    <artifactId>drools-spring-examples</artifactId>
+    <packaging>jar</packaging>
+    <name>Drools :: Spring examples</name>
+    <description>
+        Drools spring examples ... TODO
+    </description>
+
+    <repositories>
+        <repository>
+            <id>basedir</id>
+            <url>file://${basedir}/../../m2_repo</url>
+        </repository>
+    </repositories>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>exec-maven-plugin</artifactId>
+                    <configuration>
+                        <executable>${JAVA_HOME}/bin/java</executable>
+                        <arguments>
+                            <argument>-Xmx128M</argument>
+                            <!--<argument>-Xbatch</argument>-->
+                            <argument>-server</argument>
+                            <argument>-classpath</argument>
+                            <classpath/>
+                            <argument>${exec.mainClass}</argument>
+                            <argument>${exec.programArgs}</argument><!-- Empty string by default -->
+                        </arguments>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+    <dependencies>
+        <!-- Internal dependencies -->
+        <dependency>
+            <groupId>org.drools.spring</groupId>
+            <artifactId>drools-spring-core</artifactId>
+        </dependency>
+
+        <!-- External dependencies -->
+        
+    </dependencies>
+
+</project>

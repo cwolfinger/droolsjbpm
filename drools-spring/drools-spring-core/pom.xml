@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?><project>
+  <parent>
+    <artifactId>drools-spring</artifactId>
+    <groupId>org.drools.spring</groupId>
+    <version>4.1.0.SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>drools-spring-core</artifactId>
+  <name>Drools :: Spring core</name>
+  <description>Drools spring core ... TODO</description>
+  <repositories>
+    <repository>
+      <id>basedir</id>
+      <url>file://${basedir}/../../m2_repo</url>
+    </repository>
+  </repositories>
+  <dependencies>
+    <!-- Internal dependencies -->
+    <dependency>
+      <groupId>org.drools</groupId>
+      <artifactId>drools-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.drools</groupId>
+      <artifactId>drools-compiler</artifactId>
+    </dependency>
+
+    <!-- External dependencies -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-beans</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-tx</artifactId>
+    </dependency>
+  </dependencies>
+</project>

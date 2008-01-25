@@ -618,6 +618,7 @@
     <module>drools-ant</module>
     <module>drools-repository</module>
     <module>drools-jbrms</module>
+    <module>drools-spring</module>    
     <!--module>drools-examples</module-->
     <!--module>drools-solver</module--><!-- Use the profile solver to add it -->
   </modules>
