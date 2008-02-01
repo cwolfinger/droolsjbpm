@@ -1677,12 +1677,6 @@ identifier
         |       ACTION	        
         |       REVERSE	        
         |       RESULT	        
-        |       CONTAINS 	
-        |       EXCLUDES 	
-        |       MEMBEROF
-        |       MATCHES 
-        |       SOUNDSLIKE        
-//        |       NULL	        
         |       WHEN            
         |       THEN	        
         |       END     

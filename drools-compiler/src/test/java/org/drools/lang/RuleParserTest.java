@@ -101,8 +101,9 @@ public class RuleParserTest extends TestCase {
         final DrlParser parser = new DrlParser();
         final PackageDescr pkg = parser.parse( new StringReader( source ) );
         assertFalse( parser.hasErrors() );
-        assertEquals( "foo.bar.baz", pkg.getName() );        
-    }    
+        assertEquals( "foo.bar.baz",
+                      pkg.getName() );
+    }
 
     public void testCompilationUnit() throws Exception {
         final String source = "package foo; import com.foo.Bar; import com.foo.Baz;";
@@ -3146,6 +3147,40 @@ public class RuleParserTest extends TestCase {
 
     }
 
+    public void testConstraintConnectivesMatches() throws Exception {
+        final String text = "Person( name matches \"mark\" || matches \"bob\" )";
+        final CharStream charStream = new ANTLRStringStream( text );
+        final DRLLexer lexer = new DRLLexer( charStream );
+        final TokenStream tokenStream = new CommonTokenStream( lexer );
+        final DRLParser parser = new DRLParser( tokenStream );
+
+        PatternDescr pattern = (PatternDescr) parser.fact( null );
+        assertFalse( parser.getErrorMessages().toString(),
+                     parser.hasErrors() );
+
+        assertEquals( 1,
+                      pattern.getDescrs().size() );
+        FieldConstraintDescr fcd = (FieldConstraintDescr) pattern.getDescrs().get( 0 );
+        assertEquals( "name",
+                      fcd.getFieldName() );
+
+        RestrictionConnectiveDescr or = (RestrictionConnectiveDescr) fcd.getRestrictions().get( 0 );
+
+        assertEquals( 2,
+                      or.getRestrictions().size() );
+
+        assertEquals( "matches",
+                      ((LiteralRestrictionDescr) or.getRestrictions().get( 0 )).getEvaluator() );
+        assertEquals( "mark",
+                      ((LiteralRestrictionDescr) or.getRestrictions().get( 0 )).getText() );
+
+        assertEquals( "matches",
+                      ((LiteralRestrictionDescr) or.getRestrictions().get( 1 )).getEvaluator() );
+        assertEquals( "bob",
+                      ((LiteralRestrictionDescr) or.getRestrictions().get( 1 )).getText() );
+
+    }
+
     public void testNotContains() throws Exception {
         final String text = "City( $city : city )\nCountry( cities not contains $city )\n";
         final AndDescr descrs = new AndDescr();
@@ -3443,7 +3478,7 @@ public class RuleParserTest extends TestCase {
         parser.normal_lhs_block( descrs );
         assertTrue( parser.hasErrors() );
     }
-    
+
     public void testRuleSingleLine() throws Exception {
         final String text = "rule \"another test\" salience 10 when eval( true ) then System.out.println(1); end";
         final CharStream charStream = new ANTLRStringStream( text );
@@ -3452,12 +3487,14 @@ public class RuleParserTest extends TestCase {
         final DRLParser parser = new DRLParser( tokenStream );
         parser.setLineOffset( 10 );
         RuleDescr rule = parser.rule();
-        
+
         assertFalse( parser.hasErrors() );
-        assertEquals( "another test", rule.getName() );
-        assertEquals( "System.out.println(1); ", rule.getConsequence());
+        assertEquals( "another test",
+                      rule.getName() );
+        assertEquals( "System.out.println(1); ",
+                      rule.getConsequence() );
     }
-    
+
     public void testRuleTwoLines() throws Exception {
         final String text = "rule \"another test\" salience 10 when eval( true ) then System.out.println(1);\n end";
         final CharStream charStream = new ANTLRStringStream( text );
@@ -3466,10 +3503,12 @@ public class RuleParserTest extends TestCase {
         final DRLParser parser = new DRLParser( tokenStream );
         parser.setLineOffset( 10 );
         RuleDescr rule = parser.rule();
-        
+
         assertFalse( parser.hasErrors() );
-        assertEquals( "another test", rule.getName() );
-        assertEquals( "System.out.println(1);\n ", rule.getConsequence());
+        assertEquals( "another test",
+                      rule.getName() );
+        assertEquals( "System.out.println(1);\n ",
+                      rule.getConsequence() );
     }
 
     public void testRuleParseLhs3() throws Exception {
@@ -3497,6 +3536,39 @@ public class RuleParserTest extends TestCase {
         PatternDescr person = (PatternDescr) not.getDescrs().get( 0 );
         assertEquals( "Person",
                       person.getObjectType() );
+        assertEquals( 3,
+                      and.getDescrs().size() );
+        PatternDescr cheese = (PatternDescr) and.getDescrs().get( 0 );
+        assertEquals( "Cheese",
+                      cheese.getObjectType() );
+        PatternDescr meat = (PatternDescr) and.getDescrs().get( 1 );
+        assertEquals( "Meat",
+                      meat.getObjectType() );
+        PatternDescr wine = (PatternDescr) and.getDescrs().get( 2 );
+        assertEquals( "Wine",
+                      wine.getObjectType() );
+
+    }
+
+    public void testRuleParseLhs4() throws Exception {
+        final String text = "not((and Cheese() Meat() Wine()))";
+        final AndDescr descrs = new AndDescr();
+        final CharStream charStream = new ANTLRStringStream( text );
+        final DRLLexer lexer = new DRLLexer( charStream );
+        final TokenStream tokenStream = new CommonTokenStream( lexer );
+        final DRLParser parser = new DRLParser( tokenStream );
+        parser.setLineOffset( descrs.getLine() );
+        parser.normal_lhs_block( descrs );
+        if ( parser.hasErrors() ) {
+            System.err.println( parser.getErrorMessages() );
+        }
+        assertFalse( parser.hasErrors() );
+        assertEquals( 1,
+                      descrs.getDescrs().size() );
+        NotDescr not = (NotDescr) descrs.getDescrs().get( 0 );
+        assertEquals( 1,
+                      not.getDescrs().size() );
+        AndDescr and = (AndDescr) not.getDescrs().get( 0 );
         assertEquals( 3,
                       and.getDescrs().size() );
         PatternDescr cheese = (PatternDescr) and.getDescrs().get( 0 );
@@ -3569,13 +3641,14 @@ public class RuleParserTest extends TestCase {
 
         assertTrue( "Parser should have raised errors",
                     parser.hasErrors() );
-        
+
         List errors = parser.getErrors();
-        assertEquals( 2, errors.size() );
-        
+        assertEquals( 2,
+                      errors.size() );
+
         assertTrue( errors.get( 0 ) instanceof MismatchedTokenException ); // "action" is a reserved word
         assertTrue( errors.get( 1 ) instanceof NoViableAltException ); // no title in the rule
-        
+
     }
 
     public void testCommaMisuse() throws Exception {
@@ -3585,10 +3658,11 @@ public class RuleParserTest extends TestCase {
 
             assertTrue( "Parser should have raised errors",
                         parser.hasErrors() );
-            assertEquals( 3, parser.getErrors().size() );
-            
-        } catch( NullPointerException npe ) {
-            fail("Should not raise NPE");
+            assertEquals( 3,
+                          parser.getErrors().size() );
+
+        } catch ( NullPointerException npe ) {
+            fail( "Should not raise NPE" );
         }
     }
 
