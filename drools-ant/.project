@@ -1,7 +1,12 @@
 <projectDescription>
   <name>drools-ant</name>
   <comment>A rule production system</comment>
-  <projects/>
+  <projects>
+    <project>drools-analytics</project>
+    <project>drools-core</project>
+    <project>drools-compiler</project>
+    <project>drools-decisiontables</project>
+  </projects>
   <buildSpec>
     <buildCommand>
       <name>org.eclipse.jdt.core.javabuilder</name>
