@@ -93,6 +93,7 @@ public class BuildUtils {
             otn = (ObjectTypeNode) context.getRuleBase().getRete().getObjectTypeNodes().get( otn.getObjectType() );
             if ( otn != null ) {
                 node = otn;
+                node.addShare();
             }
         } else if( isSharingEnabledForNode( context, candidate ) ) {
             if ( (context.getTupleSource() != null) && ( candidate instanceof TupleSink ) ) {
