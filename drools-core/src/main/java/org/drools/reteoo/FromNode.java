@@ -32,8 +32,8 @@ public class FromNode extends TupleSource
 
     private TupleSinkNode              previousTupleSinkNode;
     private TupleSinkNode              nextTupleSinkNode;
-    
-    protected boolean                 tupleMemoryEnabled;      
+
+    protected boolean                  tupleMemoryEnabled;
 
     public FromNode(final int id,
                     final DataProvider dataProvider,
@@ -93,9 +93,9 @@ public class FromNode extends TupleSource
                                                 workingMemory );
             }
         }
-        
+
         this.betaConstraints.resetTuple();
-        
+
         if ( !list.isEmpty() ) {
             memory.getCreatedHandles().put( leftTuple,
                                             list );
@@ -143,21 +143,25 @@ public class FromNode extends TupleSource
         }
     }
 
-    public void remove(final BaseNode node,
+    public void remove(final RuleRemovalContext context,
+                       final BaseNode node,
                        final InternalWorkingMemory[] workingMemories) {
+
+        context.visitTupleSource( this );
 
         if ( !node.isInUse() ) {
             removeTupleSink( (TupleSink) node );
         }
-        removeShare();
-
         if ( !this.isInUse() ) {
             for ( int i = 0, length = workingMemories.length; i < length; i++ ) {
                 workingMemories[i].clearNodeMemory( this );
             }
         }
-        this.tupleSource.remove( this,
-                                 workingMemories );
+        if ( !context.alreadyVisited( this.tupleSource ) ) {
+            this.tupleSource.remove( context,
+                                     this,
+                                     workingMemories );
+        }
     }
 
     public void updateSink(final TupleSink sink,
@@ -174,11 +178,10 @@ public class FromNode extends TupleSource
             }
             for ( LinkedListEntry entry = (LinkedListEntry) list.getFirst(); entry != null; entry = (LinkedListEntry) entry.getNext() ) {
                 final InternalFactHandle handle = (InternalFactHandle) entry.getObject();
-                this.sink.propagateRetractTuple( tuple,
-                                                 handle,
-                                                 context,
-                                                 workingMemory );
-                workingMemory.getFactHandleFactory().destroyFactHandle( handle );
+                this.sink.propagateAssertTuple( tuple,
+                                                handle,
+                                                context,
+                                                workingMemory );
             }
         }
     }
@@ -187,14 +190,14 @@ public class FromNode extends TupleSource
         return new BetaMemory( new TupleHashTable(),
                                null );
     }
-    
+
     public boolean isTupleMemoryEnabled() {
         return tupleMemoryEnabled;
     }
 
     public void setTupleMemoryEnabled(boolean tupleMemoryEnabled) {
         this.tupleMemoryEnabled = tupleMemoryEnabled;
-    }    
+    }
 
     /**
      * Returns the next node

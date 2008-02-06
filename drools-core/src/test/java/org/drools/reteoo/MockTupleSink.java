@@ -96,7 +96,8 @@ public class MockTupleSink extends TupleSource
 
     }
 
-    public void remove(final BaseNode node,
+    public void remove(final RuleRemovalContext context,
+                       final BaseNode node,
                        final InternalWorkingMemory[] workingMemories) {
         // TODO Auto-generated method stub
 

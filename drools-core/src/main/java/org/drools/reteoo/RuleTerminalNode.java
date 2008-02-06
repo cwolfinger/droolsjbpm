@@ -432,7 +432,8 @@ public final class RuleTerminalNode extends BaseNode
         }
     }
 
-    public void remove(final BaseNode node,
+    public void remove(final RuleRemovalContext context,
+                       final BaseNode node,
                        final InternalWorkingMemory[] workingMemories) {
         for ( int i = 0, length = workingMemories.length; i < length; i++ ) {
             final InternalWorkingMemory workingMemory = workingMemories[i];
@@ -461,10 +462,15 @@ public final class RuleTerminalNode extends BaseNode
             workingMemory.clearNodeMemory( this );
         }
 
-        removeShare();
-        
-        this.tupleSource.remove( this,
-                                 workingMemories );
+        if( !context.alreadyVisited( this.tupleSource ) ) {
+            this.tupleSource.remove( context, 
+                                     this,
+                                     workingMemories );
+        }
+    }
+
+    public boolean isInUse() {
+        return false;
     }
 
     public Object createMemory(final RuleBaseConfiguration config) {

@@ -60,7 +60,8 @@ public class BaseNodeTest extends TestCase {
 
         }
 
-        public void remove(final BaseNode node,
+        public void remove(final RuleRemovalContext context,
+                           final BaseNode node,
                            final InternalWorkingMemory[] workingMemories) {
             // TODO Auto-generated method stub
 
@@ -69,6 +70,10 @@ public class BaseNodeTest extends TestCase {
         public void attach(final InternalWorkingMemory[] workingMemories) {
             // TODO Auto-generated method stub
 
+        }
+
+        public boolean isInUse() {
+            return true;
         }
 
     }

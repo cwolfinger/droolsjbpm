@@ -22,7 +22,6 @@ import java.util.List;
 import org.drools.RuleBaseConfiguration;
 import org.drools.common.BaseNode;
 import org.drools.common.BetaConstraints;
-import org.drools.common.EmptyBetaConstraints;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.common.NodeMemory;
 import org.drools.common.PropagationContextImpl;
@@ -156,22 +155,27 @@ abstract class BetaNode extends TupleSource
 
     }
 
-    public void remove(final BaseNode node,
+    public void remove(final RuleRemovalContext context,
+                       final BaseNode node,
                        final InternalWorkingMemory[] workingMemories) {
+        context.visitTupleSource( this );
         if ( !node.isInUse() ) {
             removeTupleSink( (TupleSink) node );
         }
-        removeShare();
-
         if ( !this.isInUse() ) {
             for ( int i = 0, length = workingMemories.length; i < length; i++ ) {
                 workingMemories[i].clearNodeMemory( this );
             }
         }
-        this.rightInput.remove( this,
+        this.rightInput.remove( context,
+                                this,
                                 workingMemories );
-        this.leftInput.remove( this,
-                               workingMemories );
+        
+        if( !context.alreadyVisited( this.leftInput )) {
+            this.leftInput.remove( context,
+                                   this,
+                                   workingMemories );
+        }
 
     }
 

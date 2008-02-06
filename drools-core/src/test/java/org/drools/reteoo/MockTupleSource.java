@@ -53,7 +53,8 @@ public class MockTupleSource extends TupleSource {
         this.updated++;
     }
 
-    public void remove(final BaseNode node,
+    public void remove(final RuleRemovalContext context,
+                       final BaseNode node,
                        final InternalWorkingMemory[] workingMemories) {
         // TODO Auto-generated method stub
 

@@ -20,7 +20,6 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.drools.common.BetaConstraints;
-import org.drools.common.EmptyBetaConstraints;
 import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.reteoo.builder.BuildContext;

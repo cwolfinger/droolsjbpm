@@ -93,7 +93,6 @@ public class BuildUtils {
             otn = (ObjectTypeNode) context.getRuleBase().getRete().getObjectTypeNodes().get( otn.getObjectType() );
             if ( otn != null ) {
                 node = otn;
-                node.addShare();
             }
         } else if( isSharingEnabledForNode( context, candidate ) ) {
             if ( (context.getTupleSource() != null) && ( candidate instanceof TupleSink ) ) {
@@ -119,7 +118,6 @@ public class BuildUtils {
                 // shared node found
                 // undo previous id assignment
                 context.releaseLastId();
-                node.addShare();
             }
         }
         
