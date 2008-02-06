@@ -544,8 +544,8 @@ public class ObjectFactory
 
         // trying to implement runtime type coercion
         public boolean equals( Object arg0, Object arg1 ) {
-            if ( arg0 == null ) {
-                return arg1 == null;
+            if ( arg0 == null || arg1 == null ) {
+                return arg0 == arg1;
             }
             if( arg1 != null && arg1 instanceof ShadowProxy ) {
                 return arg1.equals( arg0 );
@@ -558,7 +558,7 @@ public class ObjectFactory
                 } else if( arg1 instanceof String ) {
                     val1 = Double.parseDouble( ( String ) arg1 );
                 } else {
-                    throw new ClassCastException( "Not possible to convert "+arg1.getClass()+" into a double value to compare it to "+arg0.getClass() );
+                    throw new ClassCastException( "Not possible to compare "+arg1.getClass()+" to "+arg0.getClass() );
                 }
                 return val0 == val1; // in the future we may need to handle rounding errors 
             } 
@@ -586,6 +586,13 @@ public class ObjectFactory
 
         public int compare(Object arg0,
                            Object arg1) {
+            if( arg0 == null || arg1 == null ) {
+                if( arg0 == arg1 ) {
+                    return 0;
+                } else {
+                    throw new NullPointerException( "Can't compare "+arg0+" to "+arg1 );
+                }
+            }
             if( arg0 instanceof Double || arg0 instanceof Float ) {
                 double val0 = ((Number) arg0).doubleValue();
                 double val1 = 0;
