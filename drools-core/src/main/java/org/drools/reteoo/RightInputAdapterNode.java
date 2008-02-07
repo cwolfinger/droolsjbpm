@@ -165,14 +165,17 @@ public class RightInputAdapterNode extends ObjectSource
         }
     }
 
-    public void remove(final BaseNode node,
+    public void remove(final RuleRemovalContext context,
+                       final BaseNode node,
                        final InternalWorkingMemory[] workingMemories) {
         if ( !node.isInUse() ) {
             removeObjectSink( (ObjectSink) node );
         }
-        removeShare();
-        this.tupleSource.remove( this,
-                                 workingMemories );
+        if( ! context.alreadyVisited( this.tupleSource ) ) {
+            this.tupleSource.remove( context,
+                                     this,
+                                     workingMemories );
+        }
     }
     
     public boolean isTupleMemoryEnabled() {

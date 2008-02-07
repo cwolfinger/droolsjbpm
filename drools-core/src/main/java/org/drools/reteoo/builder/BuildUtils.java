@@ -118,7 +118,6 @@ public class BuildUtils {
                 // shared node found
                 // undo previous id assignment
                 context.releaseLastId();
-                node.addShare();
             }
         }
         

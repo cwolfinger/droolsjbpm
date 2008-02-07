@@ -243,7 +243,8 @@ public class Rete extends ObjectSource
         throw new UnsupportedOperationException( "cannot call attach() from the root Rete node" );
     }
 
-    public void remove(final BaseNode node,
+    public void remove(final RuleRemovalContext context,
+                       final BaseNode node,
                        final InternalWorkingMemory[] workingMemories) {
         final ObjectTypeNode objectTypeNode = (ObjectTypeNode) node;
         removeObjectSink( objectTypeNode );
@@ -436,6 +437,8 @@ public class Rete extends ObjectSource
 
             ObjectType objectType = new ClassObjectType( clazz );
             this.concreteObjectTypeNode = (ObjectTypeNode) ruleBase.getRete().getObjectTypeNodes().get( objectType );
+            
+            // JBRULES-1315: do not add OTN dynamically anymore
             if ( this.concreteObjectTypeNode == null ) {
                 BuildContext context = new BuildContext( ruleBase,
                                                          ((ReteooRuleBase) ruleBase.getRete().getRuleBase()).getReteooBuilder().getIdGenerator() );
@@ -467,6 +470,10 @@ public class Rete extends ObjectSource
 
         public ObjectTypeNode getConcreteObjectTypeNode() {
             return this.concreteObjectTypeNode;
+        }
+        
+        public void setConcreteObjectTypeNode( ObjectTypeNode node ) {
+            this.concreteObjectTypeNode = node;
         }
 
         private void defineShadowProxyData(Class clazz) {

@@ -219,19 +219,23 @@ public class EvalConditionNode extends TupleSource
         }
     }
 
-    public void remove(final BaseNode node,
+    public void remove(final RuleRemovalContext context,
+                       final BaseNode node,
                        final InternalWorkingMemory[] workingMemories) {
+        context.visitTupleSource( this );
         if ( !node.isInUse() ) {
             removeTupleSink( (TupleSink) node );
         }
-        removeShare();
         if ( !this.isInUse() ) {
             for ( int i = 0, length = workingMemories.length; i < length; i++ ) {
                 workingMemories[i].clearNodeMemory( this );
             }
         }
-        this.tupleSource.remove( this,
-                                 workingMemories );
+        if( ! context.alreadyVisited( this.tupleSource ) ) {
+            this.tupleSource.remove( context,
+                                     this,
+                                     workingMemories );
+        }
 
     }
     

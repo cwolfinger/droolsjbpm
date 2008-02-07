@@ -220,26 +220,19 @@ public class ObjectTypeNode extends ObjectSource
         }
     }
 
-    public void remove(final BaseNode node,
+    public void remove(final RuleRemovalContext context,
+                       final BaseNode node,
                        final InternalWorkingMemory[] workingMemories) {
         if ( !node.isInUse() ) {
             removeObjectSink( (ObjectSink) node );
         }
-        removeShare();
-        if ( !this.isInUse() ) {
-            for ( int i = 0, length = workingMemories.length; i < length; i++ ) {
-                workingMemories[i].clearNodeMemory( this );
-            }
-            this.rete.removeObjectSink( this );
-        }
-    }
-
-    /**
-     * Rete needs to know that this ObjectTypeNode has had new nodes attached to
-     * it one one of its ancestors
-     */
-    public void addShare() {
-        super.addShare();
+        // JBRULES-1315: never remove OTNs
+//        if ( !this.isInUse() ) {
+//            for ( int i = 0, length = workingMemories.length; i < length; i++ ) {
+//                workingMemories[i].clearNodeMemory( this );
+//            }
+//            this.rete.removeObjectSink( this );
+//        }
     }
 
     /**
