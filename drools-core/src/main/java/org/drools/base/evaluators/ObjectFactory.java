@@ -110,8 +110,9 @@ public class ObjectFactory
 
         public boolean evaluateCachedRight(InternalWorkingMemory workingMemory,
                                            final VariableContextEntry context, final Object left) {
-            final Object value1 = context.declaration.getExtractor().getValue( workingMemory, left );
-            final Object value2 = ((ObjectVariableContextEntry) context).right;
+            final Object value2 = context.declaration.getExtractor().getValue( workingMemory, left );
+            final Object value1 = ((ObjectVariableContextEntry) context).right;
+            // the constrained field must be checked as the first parameter
             return comparator.equals( value1, value2 );
         }
 
@@ -160,8 +161,8 @@ public class ObjectFactory
 
         public boolean evaluateCachedRight(InternalWorkingMemory workingMemory,
                                            final VariableContextEntry context, final Object left) {
-            final Object value1 = context.declaration.getExtractor().getValue( workingMemory, left );
-            final Object value2 = ((ObjectVariableContextEntry) context).right;
+            final Object value2 = context.declaration.getExtractor().getValue( workingMemory, left );
+            final Object value1 = ((ObjectVariableContextEntry) context).right;
             return !comparator.equals( value1, value2 );
         }
 
