@@ -47,6 +47,7 @@ public abstract class BaseNode
     public int getId() {
         return this.id;
     }
+        
 
     /**
      * Attaches the node into the network. Usually to the parent <code>ObjectSource</code> or <code>TupleSource</code>
