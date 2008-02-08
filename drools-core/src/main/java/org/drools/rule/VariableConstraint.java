@@ -67,10 +67,12 @@ public class VariableConstraint
     }
 
     public boolean isAllowed(final Object object,
-                             final InternalWorkingMemory workingMemory) {
+                             final InternalWorkingMemory workingMemory,
+                             final ContextEntry context) {
         return this.restriction.isAllowed( this.fieldExtractor,
                                            object,
-                                           workingMemory );
+                                           workingMemory,
+                                           context );
     }
 
     public boolean isAllowedCachedLeft(final ContextEntry context,
@@ -89,8 +91,8 @@ public class VariableConstraint
         return "[VariableConstraint fieldExtractor=" + this.fieldExtractor + " declaration=" + getRequiredDeclarations() + "]";
     }
 
-    public ContextEntry getContextEntry() {
-        return this.restriction.getContextEntry();
+    public ContextEntry createContextEntry() {
+        return this.restriction.createContextEntry();
     }
 
     public int hashCode() {

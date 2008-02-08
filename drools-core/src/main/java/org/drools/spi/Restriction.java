@@ -15,7 +15,8 @@ public interface Restriction
 
     public boolean isAllowed(Extractor extractor,
                              Object object,
-                             InternalWorkingMemory workingMemory);
+                             InternalWorkingMemory workingMemory,
+                             ContextEntry context );
 
     public boolean isAllowedCachedLeft(ContextEntry context,
                                        Object object);
@@ -23,7 +24,7 @@ public interface Restriction
     public boolean isAllowedCachedRight(ReteTuple tuple,
                                         ContextEntry context);
 
-    public ContextEntry getContextEntry();
+    public ContextEntry createContextEntry();
 
     /**
      * A restriction may be required to replace an old

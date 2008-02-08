@@ -249,7 +249,6 @@ public class ReteooBuilder
         public void releaseLastId() {
             this.nextId--;
         }
-
     }
 
 }

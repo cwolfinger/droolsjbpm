@@ -99,11 +99,14 @@ public class JoinNode extends BetaNode {
         }
 
         final Iterator it = memory.getFactHandleMemory().iterator( leftTuple );
-        this.constraints.updateFromTuple( workingMemory,
+        this.constraints.updateFromTuple( memory.getContext(),
+                                          workingMemory,
                                           leftTuple );
         for ( FactEntry entry = (FactEntry) it.next(); entry != null; entry = (FactEntry) it.next() ) {
             final InternalFactHandle handle = entry.getFactHandle();
-            if ( this.constraints.isAllowedCachedLeft( handle.getObject() ) ) {
+            
+            if ( this.constraints.isAllowedCachedLeft(memory.getContext(), handle.getObject() ) ) { 
+            
                 this.sink.propagateAssertTuple( leftTuple,
                                                 handle,
                                                 context,
@@ -111,7 +114,7 @@ public class JoinNode extends BetaNode {
             }
         }
         
-        this.constraints.resetTuple();
+        this.constraints.resetTuple( memory.getContext() );
     }
 
     /**
@@ -144,17 +147,19 @@ public class JoinNode extends BetaNode {
         }
 
         final Iterator it = memory.getTupleMemory().iterator( handle );
-        this.constraints.updateFromFactHandle( workingMemory,
+        this.constraints.updateFromFactHandle( memory.getContext(),
+                                               workingMemory,
                                                handle );
         for ( ReteTuple tuple = (ReteTuple) it.next(); tuple != null; tuple = (ReteTuple) it.next() ) {
-            if ( this.constraints.isAllowedCachedRight( tuple ) ) {
+            if ( this.constraints.isAllowedCachedRight( memory.getContext(),
+                                                        tuple ) ) {
                 this.sink.propagateAssertTuple( tuple,
                                                 handle,
                                                 context,
                                                 workingMemory );
             }
         }
-        this.constraints.resetFactHandle();
+        this.constraints.resetFactHandle( memory.getContext() );
     }
 
     /**
@@ -177,10 +182,12 @@ public class JoinNode extends BetaNode {
         }
 
         final Iterator it = memory.getTupleMemory().iterator( handle );
-        this.constraints.updateFromFactHandle( workingMemory,
+        this.constraints.updateFromFactHandle( memory.getContext(),
+                                               workingMemory,
                                                handle );
         for ( ReteTuple tuple = (ReteTuple) it.next(); tuple != null; tuple = (ReteTuple) it.next() ) {
-            if ( this.constraints.isAllowedCachedRight( tuple ) ) {
+            if ( this.constraints.isAllowedCachedRight( memory.getContext(),
+                                                        tuple ) ) {
                 this.sink.propagateRetractTuple( tuple,
                                                  handle,
                                                  context,
@@ -188,7 +195,7 @@ public class JoinNode extends BetaNode {
             }
         }
         
-        this.constraints.resetFactHandle();
+        this.constraints.resetFactHandle( memory.getContext() );
     }
 
     /**
@@ -213,19 +220,22 @@ public class JoinNode extends BetaNode {
         }
 
         final Iterator it = memory.getFactHandleMemory().iterator( leftTuple );
-        this.constraints.updateFromTuple( workingMemory,
+        this.constraints.updateFromTuple( memory.getContext(),
+                                          workingMemory,
                                           leftTuple );
         for ( FactEntry entry = (FactEntry) it.next(); entry != null; entry = (FactEntry) it.next() ) {
             final InternalFactHandle handle = entry.getFactHandle();
-            if ( this.constraints.isAllowedCachedLeft( handle.getObject() ) ) {
-                this.sink.propagateRetractTuple( leftTuple,
+            if ( this.constraints.isAllowedCachedLeft( memory.getContext(), 
+            										   handle.getObject() ) ) {
+
+            	this.sink.propagateRetractTuple( leftTuple,
                                                  handle,
                                                  context,
                                                  workingMemory );
             }
         }
         
-        this.constraints.resetTuple();
+        this.constraints.resetTuple( memory.getContext() );
     }
 
     /* (non-Javadoc)
@@ -240,11 +250,14 @@ public class JoinNode extends BetaNode {
         final Iterator tupleIter = memory.getTupleMemory().iterator();
         for ( ReteTuple tuple = (ReteTuple) tupleIter.next(); tuple != null; tuple = (ReteTuple) tupleIter.next() ) {
             final Iterator objectIter = memory.getFactHandleMemory().iterator( tuple );
-            this.constraints.updateFromTuple( workingMemory,
+            this.constraints.updateFromTuple( memory.getContext(),
+                                              workingMemory,
                                               tuple );
             for ( FactEntry entry = (FactEntry) objectIter.next(); entry != null; entry = (FactEntry) objectIter.next() ) {
                 final InternalFactHandle handle = entry.getFactHandle();
-                if ( this.constraints.isAllowedCachedLeft( handle.getObject() ) ) {
+                if ( this.constraints.isAllowedCachedLeft( memory.getContext(), 
+                                                           handle.getObject() ) ) {
+
                     sink.assertTuple( new ReteTuple( tuple,
                                                      handle ),
                                       context,
@@ -252,7 +265,7 @@ public class JoinNode extends BetaNode {
                 }
             }
             
-            this.constraints.resetTuple();
+            this.constraints.resetTuple( memory.getContext() );
         }
     }
 

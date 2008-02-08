@@ -23,6 +23,7 @@ import org.drools.common.DefaultFactHandle;
 import org.drools.common.InternalFactHandle;
 import org.drools.common.PropagationContextImpl;
 import org.drools.common.SingleBetaConstraints;
+import org.drools.reteoo.FromNode.FromMemory;
 import org.drools.rule.Declaration;
 import org.drools.rule.LiteralConstraint;
 import org.drools.rule.Pattern;
@@ -173,7 +174,7 @@ public class FromNodeTest extends TestCase {
         final FromNode from = new FromNode( 3,
                                             dataProvider,
                                             null,
-                                            null,
+                                            new AlphaNodeFieldConstraint[0],
                                             betaConstraints );
         final MockTupleSink sink = new MockTupleSink( 5 );
         from.addTupleSink( sink );
@@ -281,15 +282,15 @@ public class FromNodeTest extends TestCase {
         assertEquals( 2,
                       asserted.size() );
 
-        final BetaMemory memory = (BetaMemory) workingMemory.getNodeMemory( from );
+        final FromMemory memory = (FromMemory) workingMemory.getNodeMemory( from );
         assertEquals( 1,
-                      memory.getTupleMemory().size() );
-        assertNull( memory.getFactHandleMemory() );
+                      memory.betaMemory.getTupleMemory().size() );
+        assertNull( memory.betaMemory.getFactHandleMemory() );
         assertEquals( 2,
-                      ((LinkedList) memory.getCreatedHandles().get( tuple )).size() );
+                      ((LinkedList) memory.betaMemory.getCreatedHandles().get( tuple )).size() );
 
-        final InternalFactHandle handle1 = (InternalFactHandle) ((LinkedListEntry) ((LinkedList) memory.getCreatedHandles().get( tuple )).getFirst()).getObject();
-        final InternalFactHandle handle2 = (InternalFactHandle) ((LinkedListEntry) ((LinkedList) memory.getCreatedHandles().get( tuple )).getLast()).getObject();
+        final InternalFactHandle handle1 = (InternalFactHandle) ((LinkedListEntry) ((LinkedList) memory.betaMemory.getCreatedHandles().get( tuple )).getFirst()).getObject();
+        final InternalFactHandle handle2 = (InternalFactHandle) ((LinkedListEntry) ((LinkedList) memory.betaMemory.getCreatedHandles().get( tuple )).getLast()).getObject();
         assertEquals( handle1.getObject(),
                       cheese1 );
         assertEquals( handle2.getObject(),
@@ -299,8 +300,8 @@ public class FromNodeTest extends TestCase {
                            context,
                            workingMemory );
         assertEquals( 0,
-                      memory.getTupleMemory().size() );
-        assertNull( memory.getFactHandleMemory() );
+                      memory.betaMemory.getTupleMemory().size() );
+        assertNull( memory.betaMemory.getFactHandleMemory() );
     }
 
     public static class MockDataProvider
@@ -319,8 +320,13 @@ public class FromNodeTest extends TestCase {
 
         public Iterator getResults(final Tuple tuple,
                                    final WorkingMemory wm,
-                                   final PropagationContext ctx) {
+                                   final PropagationContext ctx,
+                                   final Object providerContext ) {
             return this.collection.iterator();
+        }
+
+        public Object createContext() {
+            return null;
         }
     }
 

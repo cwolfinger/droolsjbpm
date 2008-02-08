@@ -22,6 +22,7 @@ import org.drools.compiler.PackageBuilderConfiguration;
 import org.drools.lang.descr.ReturnValueRestrictionDescr;
 import org.drools.lang.descr.RuleDescr;
 import org.drools.reteoo.ReteTuple;
+import org.drools.rule.ContextEntry;
 import org.drools.rule.Declaration;
 import org.drools.rule.Package;
 import org.drools.rule.Pattern;
@@ -93,13 +94,14 @@ public class MVELReturnValueBuilderTest extends TestCase {
                                                                                localDeclarations,
                                                                                requiredGlobals,
                                                                                ValueType.PINTEGER_TYPE.getEvaluator( Operator.EQUAL ) );
-
         builder.build( context,
                        usedIdentifiers,
                        previousDeclarations,
                        localDeclarations,
                        returnValue,
                        returnValueDescr );
+
+        ContextEntry retValContext = returnValue.createContextEntry();
 
         final RuleBase ruleBase = RuleBaseFactory.newRuleBase();
         final InternalWorkingMemory wm = (InternalWorkingMemory) ruleBase.newStatefulSession();
@@ -118,15 +120,20 @@ public class MVELReturnValueBuilderTest extends TestCase {
 
         final Cheese brie = new Cheese( "brie",
                                         20 );
+        
+        ContextEntry ctx = returnValue.createContextEntry();
+        
         assertTrue( returnValue.isAllowed( extractor,
                                            brie,
                                            tuple,
-                                           wm ) );
+                                           wm,
+                                           ctx) );
 
         brie.setPrice( 18 );
         assertFalse( returnValue.isAllowed( extractor,
                                             brie,
                                             tuple,
-                                            wm ) );
+                                            wm,
+                                            retValContext ) );
     }
 }

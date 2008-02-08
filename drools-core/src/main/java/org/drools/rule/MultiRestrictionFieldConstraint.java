@@ -66,14 +66,16 @@ public class MultiRestrictionFieldConstraint
     }
 
     public boolean isAllowed(final Object object,
-                             final InternalWorkingMemory workingMemory) {
+                             final InternalWorkingMemory workingMemory,
+                             final ContextEntry context ) {
         return this.restrictions.isAllowed( this.extractor,
                                             object,
-                                            workingMemory );
+                                            workingMemory,
+                                            context );
     }
 
-    public ContextEntry getContextEntry() {
-        return this.restrictions.getContextEntry();
+    public ContextEntry createContextEntry() {
+        return this.restrictions.createContextEntry();
     }
 
     public boolean isAllowedCachedLeft(final ContextEntry context,

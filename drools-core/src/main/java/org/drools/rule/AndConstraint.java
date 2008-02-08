@@ -41,11 +41,13 @@ public class AndConstraint extends AbstractCompositeConstraint {
      * {@inheritDoc}
      */
     public boolean isAllowed(Object object,
-                             InternalWorkingMemory workingMemory) {
+                             InternalWorkingMemory workingMemory,
+                             final ContextEntry ctx ) {
         if ( this.alphaConstraints.length > 0 ) {
             for ( int i = 0; i < this.alphaConstraints.length; i++ ) {
                 if ( !this.alphaConstraints[i].isAllowed( object,
-                                                          workingMemory ) ) {
+                                                          workingMemory,
+                                                          ctx ) ) {
                     return false;
                 }
             }

@@ -1,5 +1,7 @@
 package org.drools.reteoo;
 
+import java.io.Serializable;
+
 import org.drools.RuleBaseConfiguration;
 import org.drools.common.BaseNode;
 import org.drools.common.BetaConstraints;
@@ -8,6 +10,7 @@ import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.common.NodeMemory;
 import org.drools.common.PropagationContextImpl;
+import org.drools.rule.ContextEntry;
 import org.drools.spi.AlphaNodeFieldConstraint;
 import org.drools.spi.DataProvider;
 import org.drools.spi.PropagationContext;
@@ -54,24 +57,28 @@ public class FromNode extends TupleSource
     public void assertTuple(final ReteTuple leftTuple,
                             final PropagationContext context,
                             final InternalWorkingMemory workingMemory) {
-        final BetaMemory memory = (BetaMemory) workingMemory.getNodeMemory( this );
+        final FromMemory memory = (FromMemory) workingMemory.getNodeMemory( this );
 
-        memory.getTupleMemory().add( leftTuple );
+        memory.betaMemory.getTupleMemory().add( leftTuple );
         final LinkedList list = new LinkedList();
-        this.betaConstraints.updateFromTuple( workingMemory,
+        this.betaConstraints.updateFromTuple( memory.betaMemory.getContext(),
+                                              workingMemory,
                                               leftTuple );
 
         for ( final java.util.Iterator it = this.dataProvider.getResults( leftTuple,
                                                                           workingMemory,
-                                                                          context ); it.hasNext(); ) {
+                                                                          context,
+                                                                          memory.providerContext ); it.hasNext(); ) {
             final Object object = it.next();
+
 
             if ( this.alphaConstraints != null ) {
                 // First alpha node filters
                 boolean isAllowed = true;
                 for ( int i = 0, length = this.alphaConstraints.length; i < length; i++ ) {
                     if ( !this.alphaConstraints[i].isAllowed( object,
-                                                              workingMemory ) ) {
+                                                              workingMemory,
+                                                              memory.alphaContexts[i] ) ) {
                         // next iteration
                         isAllowed = false;
                         break;
@@ -82,7 +89,8 @@ public class FromNode extends TupleSource
                 }
             }
 
-            if ( this.betaConstraints.isAllowedCachedLeft( object ) ) {
+            if ( this.betaConstraints.isAllowedCachedLeft( memory.betaMemory.getContext(),
+                                                           object ) ) {
                 final InternalFactHandle handle = workingMemory.getFactHandleFactory().newFactHandle( object );
 
                 list.add( new LinkedListEntry( handle ) );
@@ -94,11 +102,11 @@ public class FromNode extends TupleSource
             }
         }
 
-        this.betaConstraints.resetTuple();
+        this.betaConstraints.resetTuple( memory.betaMemory.getContext() );
 
         if ( !list.isEmpty() ) {
-            memory.getCreatedHandles().put( leftTuple,
-                                            list );
+            memory.betaMemory.getCreatedHandles().put( leftTuple,
+                                                       list );
         }
 
     }
@@ -107,10 +115,10 @@ public class FromNode extends TupleSource
                              final PropagationContext context,
                              final InternalWorkingMemory workingMemory) {
 
-        final BetaMemory memory = (BetaMemory) workingMemory.getNodeMemory( this );
-        final ReteTuple tuple = memory.getTupleMemory().remove( leftTuple );
+        final FromMemory memory = (FromMemory) workingMemory.getNodeMemory( this );
+        final ReteTuple tuple = memory.betaMemory.getTupleMemory().remove( leftTuple );
 
-        final LinkedList list = (LinkedList) memory.getCreatedHandles().remove( tuple );
+        final LinkedList list = (LinkedList) memory.betaMemory.getCreatedHandles().remove( tuple );
         // if tuple was propagated
         if ( list != null ) {
             for ( LinkedListEntry entry = (LinkedListEntry) list.getFirst(); entry != null; entry = (LinkedListEntry) entry.getNext() ) {
@@ -152,6 +160,7 @@ public class FromNode extends TupleSource
         if ( !node.isInUse() ) {
             removeTupleSink( (TupleSink) node );
         }
+
         if ( !this.isInUse() ) {
             for ( int i = 0, length = workingMemories.length; i < length; i++ ) {
                 workingMemories[i].clearNodeMemory( this );
@@ -168,11 +177,11 @@ public class FromNode extends TupleSource
                            final PropagationContext context,
                            final InternalWorkingMemory workingMemory) {
 
-        final BetaMemory memory = (BetaMemory) workingMemory.getNodeMemory( this );
+        final FromMemory memory = (FromMemory) workingMemory.getNodeMemory( this );
 
-        final Iterator tupleIter = memory.getTupleMemory().iterator();
+        final Iterator tupleIter = memory.betaMemory.getTupleMemory().iterator();
         for ( ReteTuple tuple = (ReteTuple) tupleIter.next(); tuple != null; tuple = (ReteTuple) tupleIter.next() ) {
-            final LinkedList list = (LinkedList) memory.getCreatedHandles().remove( tuple );
+            final LinkedList list = (LinkedList) memory.betaMemory.getCreatedHandles().remove( tuple );
             if ( list == null ) {
                 continue;
             }
@@ -187,8 +196,12 @@ public class FromNode extends TupleSource
     }
 
     public Object createMemory(final RuleBaseConfiguration config) {
-        return new BetaMemory( new TupleHashTable(),
-                               null );
+        BetaMemory beta = new BetaMemory( new TupleHashTable(),
+                                          null,
+                                          this.betaConstraints.createContext() );
+        return new FromMemory( beta,
+                               this.dataProvider.createContext(),
+                               this.alphaConstraints );
     }
 
     public boolean isTupleMemoryEnabled() {
@@ -235,4 +248,24 @@ public class FromNode extends TupleSource
         this.previousTupleSinkNode = previous;
     }
 
+    public static class FromMemory
+        implements
+        Serializable {
+        private static final long serialVersionUID = -5802345705144095216L;
+
+        public BetaMemory         betaMemory;
+        public Object             providerContext;
+        public ContextEntry[]     alphaContexts;
+
+        public FromMemory(BetaMemory betaMemory,
+                          Object providerContext,
+                          AlphaNodeFieldConstraint[] constraints) {
+            this.betaMemory = betaMemory;
+            this.providerContext = providerContext;
+            this.alphaContexts = new ContextEntry[constraints.length];
+            for( int i = 0; i < constraints.length; i++ ) {
+                this.alphaContexts[i] = constraints[i].createContextEntry();
+            }
+        }
+    }
 }
