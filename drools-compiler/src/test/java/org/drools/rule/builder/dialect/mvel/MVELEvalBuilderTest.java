@@ -12,7 +12,6 @@ import org.drools.WorkingMemory;
 import org.drools.base.ClassFieldExtractorCache;
 import org.drools.base.ClassObjectType;
 import org.drools.common.InternalFactHandle;
-import org.drools.compiler.DialectConfiguration;
 import org.drools.compiler.PackageBuilder;
 import org.drools.compiler.PackageBuilderConfiguration;
 import org.drools.lang.descr.EvalDescr;
@@ -23,6 +22,9 @@ import org.drools.rule.EvalCondition;
 import org.drools.rule.Package;
 import org.drools.rule.Pattern;
 import org.drools.spi.FieldExtractor;
+
+
+
 
 public class MVELEvalBuilderTest extends TestCase {
 
@@ -77,15 +79,19 @@ public class MVELEvalBuilderTest extends TestCase {
                                            10 );
         final InternalFactHandle f0 = (InternalFactHandle) wm.insert( cheddar );
         final ReteTuple tuple = new ReteTuple( f0 );
+        
+        Object evalContext = eval.createContext();
 
         assertTrue( eval.isAllowed( tuple,
-                                    wm ) );
+                                    wm,
+                                    evalContext ) );
 
         cheddar.setPrice( 9 );
         wm.update( f0,
                    cheddar );
         assertFalse( eval.isAllowed( tuple,
-                                     wm ) );
+                                     wm,
+                                     evalContext ) );
     }
 
 }

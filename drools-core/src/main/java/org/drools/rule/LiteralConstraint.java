@@ -78,10 +78,12 @@ public class LiteralConstraint
     }
 
     public boolean isAllowed(final Object object,
-                             final InternalWorkingMemory workingMemory) {
+                             final InternalWorkingMemory workingMemory,
+                             final ContextEntry ctx ) {
         return this.restriction.isAllowed( this.extractor,
                                            object,
-                                           workingMemory );
+                                           workingMemory,
+                                           ctx );
     }
 
     public String toString() {
@@ -112,5 +114,10 @@ public class LiteralConstraint
         return new LiteralConstraint( this.extractor,
                                       this.getEvaluator(),
                                       this.getField() );
+    }
+
+    public ContextEntry createContextEntry() {
+        // no need for context info
+        return null;
     }
 }

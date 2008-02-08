@@ -211,7 +211,7 @@ public class BuildContext {
     /**
      * Method used to undo previous id assignment
      */
-    public void releaseLastId() {
+    public void releaseId( ) {
         this.idGenerator.releaseLastId();
     }
 

@@ -15,11 +15,13 @@ public class OrCompositeRestriction extends AbstractCompositeRestriction {
 
     public boolean isAllowed(final Extractor extractor,
                              final Object object,
-                             final InternalWorkingMemory workingMemory) {
+                             final InternalWorkingMemory workingMemory,
+                             final ContextEntry context ) {
         for ( int i = 0, ilength = this.restrictions.length; i < ilength; i++ ) {
             if ( this.restrictions[i].isAllowed( extractor,
                                                  object,
-                                                 workingMemory ) ) {
+                                                 workingMemory,
+                                                 context ) ) {
                 return true;
             }
         }
@@ -28,8 +30,9 @@ public class OrCompositeRestriction extends AbstractCompositeRestriction {
 
     public boolean isAllowedCachedLeft(final ContextEntry context,
                                        final Object object) {
+        CompositeContextEntry contextEntry = (CompositeContextEntry) context;
         for ( int i = 0, ilength = this.restrictions.length; i < ilength; i++ ) {
-            if ( this.restrictions[i].isAllowedCachedLeft( this.contextEntry.contextEntries[i],
+            if ( this.restrictions[i].isAllowedCachedLeft( contextEntry.contextEntries[i],
                                                            object ) ) {
                 return true;
             }
@@ -39,9 +42,10 @@ public class OrCompositeRestriction extends AbstractCompositeRestriction {
 
     public boolean isAllowedCachedRight(final ReteTuple tuple,
                                         final ContextEntry context) {
+        CompositeContextEntry contextEntry = (CompositeContextEntry) context;
         for ( int i = 0, ilength = this.restrictions.length; i < ilength; i++ ) {
             if ( this.restrictions[i].isAllowedCachedRight( tuple,
-                                                            this.contextEntry.contextEntries[i] ) ) {
+                                                            contextEntry.contextEntries[i] ) ) {
                 return true;
             }
         }

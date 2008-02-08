@@ -97,17 +97,19 @@ public class ExistsNode extends BetaNode {
         }
 
         final Iterator it = memory.getFactHandleMemory().iterator( leftTuple );
-        this.constraints.updateFromTuple( workingMemory,
+        this.constraints.updateFromTuple( memory.getContext(),
+                                          workingMemory,
                                           leftTuple );
         int matches = 0;
         for ( FactEntry entry = (FactEntry) it.next(); entry != null; entry = (FactEntry) it.next() ) {
             final InternalFactHandle handle = entry.getFactHandle();
-            if ( this.constraints.isAllowedCachedLeft( handle.getObject() ) ) {
+            if ( this.constraints.isAllowedCachedLeft( memory.getContext(),
+                                                       handle.getObject() ) ) {
                 matches++;
             }
         }
         
-        this.constraints.resetTuple();
+        this.constraints.resetTuple( memory.getContext() );
 
         leftTuple.setMatches( matches );
 
@@ -142,10 +144,12 @@ public class ExistsNode extends BetaNode {
         }          
 
         final Iterator it = memory.getTupleMemory().iterator( handle );
-        this.constraints.updateFromFactHandle( workingMemory,
+        this.constraints.updateFromFactHandle( memory.getContext(),
+                                               workingMemory,
                                                handle );
         for ( ReteTuple tuple = (ReteTuple) it.next(); tuple != null; tuple = (ReteTuple) it.next() ) {
-            if ( this.constraints.isAllowedCachedRight( tuple ) ) {
+            if ( this.constraints.isAllowedCachedRight( memory.getContext(),
+            											tuple ) ) {
                 final int matches = tuple.getMatches();
                 tuple.setMatches( matches + 1 );
 
@@ -158,7 +162,7 @@ public class ExistsNode extends BetaNode {
             }
         }
         
-        this.constraints.resetFactHandle();
+        this.constraints.resetFactHandle( memory.getContext() );
     }
 
     /**
@@ -182,10 +186,12 @@ public class ExistsNode extends BetaNode {
         }
 
         final Iterator it = memory.getTupleMemory().iterator( handle );
-        this.constraints.updateFromFactHandle( workingMemory,
+        this.constraints.updateFromFactHandle( memory.getContext(),
+                                               workingMemory,
                                                handle );
         for ( ReteTuple tuple = (ReteTuple) it.next(); tuple != null; tuple = (ReteTuple) it.next() ) {
-            if ( this.constraints.isAllowedCachedRight( tuple ) ) {
+            if ( this.constraints.isAllowedCachedRight( memory.getContext(),
+                                                        tuple ) ) {
                 tuple.setMatches( tuple.getMatches() - 1 );
                 if ( tuple.getMatches() == 0 ) {
                     this.sink.propagateRetractTuple( tuple,
@@ -195,7 +201,7 @@ public class ExistsNode extends BetaNode {
             }
         }
 
-        this.constraints.resetFactHandle();
+        this.constraints.resetFactHandle( memory.getContext() );
     }
 
     /**
