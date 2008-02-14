@@ -50,10 +50,13 @@ public class DateFactory
     private static final String     DATE_FORMAT_MASK    = getDateFormatMask();
 
     private static EvaluatorFactory INSTANCE            = new DateFactory();
-    private static SimpleDateFormat df;
-
+    private static ThreadLocal df = new ThreadLocal() {
+        protected Object initialValue() {
+            return new SimpleDateFormat( DateFactory.DATE_FORMAT_MASK ); 
+        };
+    };
+    
     private DateFactory() {
-        df = new SimpleDateFormat( DateFactory.DATE_FORMAT_MASK );
     }
 
     public static EvaluatorFactory getInstance() {
@@ -503,7 +506,7 @@ public class DateFactory
     /** Use the simple date formatter to read the date from a string */
     public static Date parseDate(final String input) {
         try {
-            return df.parse( input );
+            return ((SimpleDateFormat)df.get()).parse( input );
         } catch ( final ParseException e ) {
             throw new IllegalArgumentException( "Invalid date input format: [" + input + "] it should follow: [" + DateFactory.DATE_FORMAT_MASK + "]" );
         }
