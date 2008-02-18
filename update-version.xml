@@ -15,26 +15,51 @@
       <replaceregexp match="Bundle-Version: ${current}"
                      replace="Bundle-Version: ${new}"
                      byline="true">
-          <fileset dir="drools-eclipse*" includes="drools-eclipse-plugin/META-INF/MANIFEST.MF, drools-eclipse-test/META-INF/MANIFEST.MF"/>        
+          <fileset dir="drools-eclipse3.2" includes="drools-eclipse-plugin/META-INF/MANIFEST.MF, drools-eclipse-test/META-INF/MANIFEST.MF"/>        
+      </replaceregexp>  
+
+      <replaceregexp match="Bundle-Version: ${current}"
+                     replace="Bundle-Version: ${new}"
+                     byline="true">
+          <fileset dir="drools-eclipse3.3" includes="drools-eclipse-plugin/META-INF/MANIFEST.MF, drools-eclipse-test/META-INF/MANIFEST.MF"/>        
+      </replaceregexp>  
+
+      <replaceregexp match="Fragment-Host: org.drools.eclipse;bundle-version=&#34;${current}&#34;"
+                     replace="Fragment-Host: org.drools.eclipse;bundle-version=&#34;${new}&#34;"
+                     byline="true">
+          <fileset dir="drools-eclipse3.2" includes="drools-eclipse-plugin/META-INF/MANIFEST.MF, drools-eclipse-test/META-INF/MANIFEST.MF"/>        
       </replaceregexp>       
 
       <replaceregexp match="Fragment-Host: org.drools.eclipse;bundle-version=&#34;${current}&#34;"
                      replace="Fragment-Host: org.drools.eclipse;bundle-version=&#34;${new}&#34;"
                      byline="true">
-          <fileset dir="drools-eclipse*" includes="drools-eclipse-plugin/META-INF/MANIFEST.MF, drools-eclipse-test/META-INF/MANIFEST.MF"/>        
+          <fileset dir="drools-eclipse3.3" includes="drools-eclipse-plugin/META-INF/MANIFEST.MF, drools-eclipse-test/META-INF/MANIFEST.MF"/>        
       </replaceregexp>       
       
       <replaceregexp match="version=&#34;${current}&#34;"
                      replace="version=&#34;${new}&#34;"
                      byline="true">
-          <fileset dir="drools-eclipse*" includes="drools-eclipse-feature/feature.xml, drools-eclipse-test-feature/feature.xml"/>        
+          <fileset dir="drools-eclipse3.2" includes="drools-eclipse-feature/feature.xml, drools-eclipse-test-feature/feature.xml"/>        
       </replaceregexp>                     
+
+      <replaceregexp match="version=&#34;${current}&#34;"
+                     replace="version=&#34;${new}&#34;"
+                     byline="true">
+          <fileset dir="drools-eclipse3.3" includes="drools-eclipse-feature/feature.xml, drools-eclipse-test-feature/feature.xml"/>        
+      </replaceregexp>                     
+
                      
     
-      <replaceregexp file="drools-eclipse*/build.properties"
+      <replaceregexp file="drools-eclipse3.2/build.properties"
                      match="droolsVersion=${current}"
                      replace="droolsVersion=${new}"
                      byline="true" />    
+
+      <replaceregexp file="drools-eclipse3.3/build.properties"
+                     match="droolsVersion=${current}"
+                     replace="droolsVersion=${new}"
+                     byline="true" />    
+
     
       <replaceregexp file="documentation/manual/en/master.xml"
                      match="&lt;releaseinfo&gt;${current}&lt;/releaseinfo&gt;"
@@ -61,3 +86,4 @@
   </target>
   
 </project>
+
