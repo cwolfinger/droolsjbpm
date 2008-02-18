@@ -27,6 +27,7 @@ import org.drools.spi.Constraint;
 import org.drools.spi.Extractor;
 import org.drools.spi.ObjectType;
 import org.drools.spi.PatternExtractor;
+import org.drools.spi.Constraint.ConstraintType;
 
 public class Pattern
     implements
@@ -152,6 +153,9 @@ public class Pattern
         if ( this.constraints == Collections.EMPTY_LIST ) {
             this.constraints = new ArrayList( 1 );
         }
+        if( constraint.getType().equals( Constraint.ConstraintType.UNKNOWN ) ) {
+            this.setConstraintType( (MutableTypeConstraint) constraint );
+        }
         this.constraints.add( constraint );
     }
 
@@ -266,6 +270,23 @@ public class Pattern
 
     public List getNestedElements() {
         return this.source != null ? Collections.singletonList( this.source ) : Collections.EMPTY_LIST;
+    }
+    
+    /**
+     * @param constraint
+     */
+    private void setConstraintType(final MutableTypeConstraint constraint) {
+        final Declaration[] declarations = constraint.getRequiredDeclarations();
+
+        boolean isAlphaConstraint = true;
+        for ( int i = 0; isAlphaConstraint && i < declarations.length; i++ ) {
+            if ( !declarations[i].isGlobal() && declarations[i].getPattern() != this ) {
+                isAlphaConstraint = false;
+            }
+        }
+
+        ConstraintType type = isAlphaConstraint ? ConstraintType.ALPHA : ConstraintType.BETA; 
+        constraint.setType( type );
     }
 
 }

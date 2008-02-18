@@ -18,6 +18,7 @@ package org.drools.rule;
 
 import org.drools.common.InternalWorkingMemory;
 import org.drools.spi.AlphaNodeFieldConstraint;
+import org.drools.spi.Constraint;
 import org.drools.spi.Evaluator;
 import org.drools.spi.FieldExtractor;
 import org.drools.spi.FieldValue;
@@ -26,9 +27,6 @@ public class LiteralConstraint
     implements
     AlphaNodeFieldConstraint {
 
-    /**
-     * 
-     */
     private static final long        serialVersionUID = 400L;
 
     private final FieldExtractor     extractor;
@@ -119,5 +117,9 @@ public class LiteralConstraint
     public ContextEntry createContextEntry() {
         // no need for context info
         return null;
+    }
+
+    public ConstraintType getType() {
+        return Constraint.ConstraintType.ALPHA;
     }
 }
