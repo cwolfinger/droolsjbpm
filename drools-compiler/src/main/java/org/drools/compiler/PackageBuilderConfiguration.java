@@ -16,6 +16,7 @@ package org.drools.compiler;
  * limitations under the License.
  */
 
+import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -38,6 +39,7 @@ import org.drools.util.ChainedProperties;
  * 
  * drools.dialect.default = <String>
  * drools.accumulate.function.<function name> = <qualified class>
+ * drools.dump.dir = <String>
  * 
  * default dialect is java.
  * Available preconfigured Accumulate functions are:
@@ -50,7 +52,7 @@ import org.drools.util.ChainedProperties;
 public class PackageBuilderConfiguration {
 
     private static final String ACCUMULATE_FUNCTION_PREFIX = "drools.accumulate.function.";
-    
+
     private Map                 dialectConfigurations;
 
     private String              defaultDialect;
@@ -61,11 +63,13 @@ public class PackageBuilderConfiguration {
 
     private Map                 accumulateFunctions;
 
+    private File                dumpDirectory;
+
     /**
      * Constructor that sets the parent class loader for the package being built/compiled
      * @param classLoader
      */
-    public PackageBuilderConfiguration(ClassLoader classLoader ) {
+    public PackageBuilderConfiguration(ClassLoader classLoader) {
         init( classLoader,
               null );
     }
@@ -111,12 +115,14 @@ public class PackageBuilderConfiguration {
         if ( properties != null ) {
             this.chainedProperties.addProperties( properties );
         }
-        
+
         this.dialectConfigurations = new HashMap();
-        
+
         buildDialectConfigurationMap();
 
         buildAccumulateFunctionsMap();
+
+        buildDumpDirectory();
     }
 
     public ChainedProperties getChainedProperties() {
@@ -130,42 +136,46 @@ public class PackageBuilderConfiguration {
                                               "drools.dialect",
                                               false );
         setDefaultDialect( (String) dialectProperties.remove( "drools.dialect.default" ) );
-        
+
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         for ( Iterator it = dialectProperties.entrySet().iterator(); it.hasNext(); ) {
             Entry entry = (Entry) it.next();
             String str = (String) entry.getKey();
             String dialectName = str.substring( str.lastIndexOf( "." ) + 1 );
             String dialectClass = (String) entry.getValue();
-            addDialect( dialectName, dialectClass);
+            addDialect( dialectName,
+                        dialectClass );
         }
     }
-    
-    public void addDialect(String dialectName, String dialectClass) {
+
+    public void addDialect(String dialectName,
+                           String dialectClass) {
         try {
             Class cls = classLoader.loadClass( dialectClass );
             DialectConfiguration dialectConf = (DialectConfiguration) cls.newInstance();
             dialectConf.init( this );
-            addDialect( dialectName, 
-            		    dialectConf);
+            addDialect( dialectName,
+                        dialectConf );
         } catch ( Exception e ) {
             throw new RuntimeDroolsException( "Unable to load dialect '" + dialectClass + ":" + dialectName + "'",
                                               e );
-        }    	
+        }
     }
 
-    public void addDialect(String dialectName, DialectConfiguration dialectConf) {
+    public void addDialect(String dialectName,
+                           DialectConfiguration dialectConf) {
         dialectConfigurations.put( dialectName,
-                				   dialectConf );    	
+                                   dialectConf );
     }
-    
+
     public DialectRegistry buildDialectRegistry() {
-    	DialectRegistry registry = new DialectRegistry();
-    	for ( Iterator it = this.dialectConfigurations.values().iterator(); it.hasNext(); ) {
-    		DialectConfiguration conf = ( DialectConfiguration ) it.next();
-    		Dialect dialect = conf.getDialect();
-    		registry.addDialect( conf.getDialect().getId(), dialect );
-    	}
+        DialectRegistry registry = new DialectRegistry();
+        for ( Iterator it = this.dialectConfigurations.values().iterator(); it.hasNext(); ) {
+            DialectConfiguration conf = (DialectConfiguration) it.next();
+            Dialect dialect = conf.getDialect();
+            registry.addDialect( conf.getDialect().getId(),
+                                 dialect );
+        }
         return registry;
     }
 
@@ -246,6 +256,29 @@ public class PackageBuilderConfiguration {
             throw new RuntimeDroolsException( "Error loading accumulator function for identifier " + identifier + ". Class " + className + " not found",
                                               e );
         }
+    }
+
+    private void buildDumpDirectory() {
+        String dumpStr = this.chainedProperties.getProperty( "drools.dump.dir",
+                                                             null );
+        if ( dumpStr != null ) {
+            this.dumpDirectory = new File( dumpStr );
+            if ( !dumpDirectory.isDirectory() || !dumpDirectory.canWrite() || !dumpDirectory.canRead() ) {
+                this.dumpDirectory = null;
+                throw new RuntimeDroolsException( "Drools dump directory is not accessible: " + dumpStr );
+            }
+        }
+    }
+
+    public File getDumpDir() {
+        return this.dumpDirectory;
+    }
+
+    public void setDumpDir(File dumpDir) {
+        if ( !dumpDir.isDirectory() || !dumpDir.canWrite() || !dumpDir.canRead() ) {
+            throw new RuntimeDroolsException( "Drools dump directory is not accessible: " + dumpDir.toString() );
+        }
+        this.dumpDirectory = dumpDir;
     }
 
 }
