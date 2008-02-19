@@ -548,7 +548,7 @@ public class ObjectFactory
             if ( arg0 == null || arg1 == null ) {
                 return arg0 == arg1;
             }
-            if( arg1 != null && arg1 instanceof ShadowProxy ) {
+            if( arg1 instanceof ShadowProxy ) {
                 return arg1.equals( arg0 );
             }
             if( arg0 instanceof Number ){
