@@ -81,6 +81,7 @@ import org.drools.Cheesery.Maturity;
 import org.drools.audit.WorkingMemoryFileLogger;
 import org.drools.base.ClassObjectFilter;
 import org.drools.common.AbstractWorkingMemory;
+import org.drools.common.InternalFactHandle;
 import org.drools.compiler.DrlParser;
 import org.drools.compiler.DroolsError;
 import org.drools.compiler.DroolsParserException;
@@ -115,7 +116,6 @@ import org.drools.spi.Activation;
 import org.drools.spi.ConsequenceExceptionHandler;
 import org.drools.spi.GlobalResolver;
 import org.drools.xml.XmlDumper;
-
 
 /** Run all the tests with the ReteOO engine implementation */
 public class MiscTest extends TestCase {
@@ -234,13 +234,14 @@ public class MiscTest extends TestCase {
         } );
 
         workingMemory.fireAllRules();
-        
-        assertEquals(1, list.size() );
+
+        assertEquals( 1,
+                      list.size() );
 
         assertEquals( new Integer( 5 ),
                       list.get( 0 ) );
     }
-    
+
     public void testCustomGlobalResolverWithWorkingMemoryObject() throws Exception {
         final PackageBuilder builder = new PackageBuilder();
         builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_globalCustomResolver.drl" ) ) );
@@ -258,7 +259,7 @@ public class MiscTest extends TestCase {
                  list );
         map.put( "string",
                  string );
-        
+
         workingMemory.setGlobalResolver( new GlobalResolver() {
             public Object resolveGlobal(String identifier) {
                 return map.get( identifier );
@@ -270,24 +271,24 @@ public class MiscTest extends TestCase {
                          value );
             }
 
-        } );                
-        
-        Cheese bree = new Cheese ();
+        } );
+
+        Cheese bree = new Cheese();
         bree.setPrice( 100 );
-        
+
         workingMemory.insert( bree );
 
         workingMemory.fireAllRules();
 
-        assertEquals(2, list.size() );        
-        
+        assertEquals( 2,
+                      list.size() );
+
         assertEquals( new Integer( 5 ),
                       list.get( 0 ) );
-        
+
         assertEquals( new Integer( 6 ),
-                      list.get( 1 ) );        
+                      list.get( 1 ) );
     }
-    
 
     public void testFieldBiningsAndEvalSharing() throws Exception {
         final String drl = "test_FieldBindingsAndEvalSharing.drl";
@@ -404,7 +405,7 @@ public class MiscTest extends TestCase {
                       list.size() );
 
     }
-    
+
     public void NullFieldOnCompositeSink() throws Exception {
         final PackageBuilder builder = new PackageBuilder();
         builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_NullFieldOnCompositeSink.drl" ) ) );
@@ -413,18 +414,21 @@ public class MiscTest extends TestCase {
         // add the package to a rulebase
         final RuleBase ruleBase = getRuleBase();
         ruleBase.addPackage( pkg );
-        
+
         WorkingMemory workingMemory = ruleBase.newStatefulSession();
         List list = new ArrayList();
-        workingMemory.setGlobal("list", list);
-        
-        workingMemory.insert(new Attribute());
-        workingMemory.insert(new Message());
+        workingMemory.setGlobal( "list",
+                                 list );
+
+        workingMemory.insert( new Attribute() );
+        workingMemory.insert( new Message() );
         workingMemory.fireAllRules();
-        
-        assertEquals(1, list.size());
-        assertEquals("X", list.get(0));
-    	
+
+        assertEquals( 1,
+                      list.size() );
+        assertEquals( "X",
+                      list.get( 0 ) );
+
     }
 
     public void testEmptyPattern() throws Exception {
@@ -1814,7 +1818,7 @@ public class MiscTest extends TestCase {
         assertTrue( IteratorToList.convert( workingMemory.iterateObjects() ).contains( bob ) );
         assertTrue( IteratorToList.convert( workingMemory.iterateObjects() ).contains( new Person( "help" ) ) );
     }
-    
+
     public void testSerializeWorkingMemoryAndRuleBase() throws Exception {
         final Reader reader = new InputStreamReader( getClass().getResourceAsStream( "test_Serializable.drl" ) );
 
@@ -1827,34 +1831,29 @@ public class MiscTest extends TestCase {
 
         RuleBase ruleBase = getRuleBase();// RuleBaseFactory.newRuleBase();
 
-        
         Map map = new HashMap();
-        map.put( "x", ruleBase );
+        map.put( "x",
+                 ruleBase );
         final byte[] ast = serializeOut( map );
         map = (Map) serializeIn( ast );
         ruleBase = (RuleBase) map.get( "x" );
 
         WorkingMemory workingMemory = ruleBase.newStatefulSession();
 
-        
         final byte[] wm = serializeOut( workingMemory );
 
         workingMemory = ruleBase.newStatefulSession( new ByteArrayInputStream( wm ) );
 
         ruleBase.addPackage( pkg );
 
-        workingMemory.setGlobal( "list", 
-                new ArrayList() );
-        
+        workingMemory.setGlobal( "list",
+                                 new ArrayList() );
 
         final Person bob = new Person( "bob" );
         workingMemory.insert( bob );
 
-
-        
         final Rule[] rules = ruleBase.getPackages()[0].getRules();
 
-                
         assertEquals( 4,
                       rules.length );
 
@@ -1866,8 +1865,6 @@ public class MiscTest extends TestCase {
                       rules[2].getName() );
         assertEquals( "match Integer",
                       rules[3].getName() );
-
-        
 
         assertEquals( 1,
                       IteratorToList.convert( workingMemory.iterateObjects() ).size() );
@@ -1892,7 +1889,7 @@ public class MiscTest extends TestCase {
         assertTrue( IteratorToList.convert( workingMemory.iterateObjects() ).contains( bob ) );
         assertTrue( IteratorToList.convert( workingMemory.iterateObjects() ).contains( new Person( "help" ) ) );
 
-    }    
+    }
 
     public void testEmptyRule() throws Exception {
         final PackageBuilder builder = new PackageBuilder();
@@ -3148,7 +3145,7 @@ public class MiscTest extends TestCase {
         final Cheese stilton2 = new Cheese( "stilton2",
                                             12 );
         final Cheese agedStilton = new Cheese( "aged stilton",
-                                            12 );
+                                               12 );
         final Cheese brie = new Cheese( "brie",
                                         10 );
         final Cheese brie2 = new Cheese( "brie2",
@@ -4471,10 +4468,10 @@ public class MiscTest extends TestCase {
     public void testConsequenceBuilderException() throws Exception {
         final PackageBuilder builder = new PackageBuilder();
         builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_ConsequenceBuilderException.drl" ) ) );
-        
+
         assertTrue( builder.hasErrors() );
     }
-    
+
     public void testRuntimeTypeCoercion() throws Exception {
         final PackageBuilder builder = new PackageBuilder();
         builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_RuntimeTypeCoercion.drl" ) ) );
@@ -4487,30 +4484,36 @@ public class MiscTest extends TestCase {
         final List list = new ArrayList();
         workingMemory.setGlobal( "results",
                                  list );
-        
+
         final PolymorphicFact fact = new PolymorphicFact( new Integer( 10 ) );
         final FactHandle handle = workingMemory.insert( fact );
-        
+
         workingMemory.fireAllRules();
-        
-        assertEquals( 1, list.size() );
-        assertEquals( fact.getData(), list.get( 0 ) );
-        
+
+        assertEquals( 1,
+                      list.size() );
+        assertEquals( fact.getData(),
+                      list.get( 0 ) );
+
         fact.setData( "10" );
-        workingMemory.update( handle, fact );
+        workingMemory.update( handle,
+                              fact );
         workingMemory.fireAllRules();
-        
-        assertEquals( 2, list.size() );
-        assertEquals( fact.getData(), list.get( 1 ) );
-        
+
+        assertEquals( 2,
+                      list.size() );
+        assertEquals( fact.getData(),
+                      list.get( 1 ) );
+
         try {
-            fact.setData( new Boolean(true) );
-            workingMemory.update( handle, fact );
-            fail("Should not allow to compare < with a Boolean object");
-        } catch( ClassCastException cce ) {
+            fact.setData( new Boolean( true ) );
+            workingMemory.update( handle,
+                                  fact );
+            fail( "Should not allow to compare < with a Boolean object" );
+        } catch ( ClassCastException cce ) {
             // success, as can't use "<" to compare to a boolean
         }
-        
+
     }
 
     public void testRuntimeTypeCoercion2() throws Exception {
@@ -4525,38 +4528,50 @@ public class MiscTest extends TestCase {
         final List list = new ArrayList();
         workingMemory.setGlobal( "results",
                                  list );
-        
-        final Primitives fact = new Primitives( );
+
+        final Primitives fact = new Primitives();
         fact.setBooleanPrimitive( true );
-        fact.setBooleanWrapper( new Boolean(true) );
-        fact.setObject( new Boolean(true) );
+        fact.setBooleanWrapper( new Boolean( true ) );
+        fact.setObject( new Boolean( true ) );
         fact.setCharPrimitive( 'X' );
         final FactHandle handle = workingMemory.insert( fact );
-        
+
         workingMemory.fireAllRules();
-        
+
         int index = 0;
-        assertEquals( list.toString(), 4, list.size() );
-        assertEquals( "boolean", list.get( index++ ));
-        assertEquals( "boolean wrapper", list.get( index++ ));
-        assertEquals( "boolean object", list.get( index++ ));
-        assertEquals( "char", list.get( index++ ));
-        
+        assertEquals( list.toString(),
+                      4,
+                      list.size() );
+        assertEquals( "boolean",
+                      list.get( index++ ) );
+        assertEquals( "boolean wrapper",
+                      list.get( index++ ) );
+        assertEquals( "boolean object",
+                      list.get( index++ ) );
+        assertEquals( "char",
+                      list.get( index++ ) );
+
         fact.setBooleanPrimitive( false );
         fact.setBooleanWrapper( null );
         fact.setCharPrimitive( '\0' );
-        fact.setObject( new Character('X') );
-        workingMemory.update( handle, fact );
+        fact.setObject( new Character( 'X' ) );
+        workingMemory.update( handle,
+                              fact );
         workingMemory.fireAllRules();
-        assertEquals( 5, list.size() );
-        assertEquals( "char object", list.get( index++ ) );
-        
+        assertEquals( 5,
+                      list.size() );
+        assertEquals( "char object",
+                      list.get( index++ ) );
+
         fact.setObject( null );
-        workingMemory.update( handle, fact );
+        workingMemory.update( handle,
+                              fact );
         workingMemory.fireAllRules();
-        assertEquals( 6, list.size() );
-        assertEquals( "null object", list.get( index++ ) );
-        
+        assertEquals( 6,
+                      list.size() );
+        assertEquals( "null object",
+                      list.get( index++ ) );
+
     }
 
     public void testAlphaEvalWithOrCE() throws Exception {
@@ -4571,7 +4586,7 @@ public class MiscTest extends TestCase {
         final List list = new ArrayList();
         workingMemory.setGlobal( "results",
                                  list );
-        
+
         FactA a = new FactA();
         a.setField1( "a value" );
 
@@ -4581,13 +4596,13 @@ public class MiscTest extends TestCase {
 
         workingMemory.fireAllRules();
 
-        assertEquals( "should not have fired", 
+        assertEquals( "should not have fired",
                       0,
                       list.size() );
     }
 
     // this test requires mvel 1.2.19. Leaving it commented until mvel is released.
-    public void FIXME_testJavaModifyBlock() throws Exception {
+    public void testJavaModifyBlock() throws Exception {
         final PackageBuilder builder = new PackageBuilder();
         builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_JavaModifyBlock.drl" ) ) );
         final Package pkg = builder.getPackage();
@@ -4600,7 +4615,8 @@ public class MiscTest extends TestCase {
         workingMemory.setGlobal( "results",
                                  list );
 
-        Person bob = new Person( "Bob", 30 );
+        Person bob = new Person( "Bob",
+                                 30 );
         bob.setStatus( "hungry" );
         workingMemory.insert( bob );
         workingMemory.insert( new Cheese() );
@@ -4608,13 +4624,15 @@ public class MiscTest extends TestCase {
 
         workingMemory.fireAllRules( 2 );
 
-        assertEquals( "should have fired only once", 
+        assertEquals( "should have fired only once",
                       1,
                       list.size() );
-        assertEquals( "full", bob.getStatus() );
-        assertEquals( 31, bob.getAge() );
+        assertEquals( "full",
+                      bob.getStatus() );
+        assertEquals( 31,
+                      bob.getAge() );
     }
-    
+
     public void testOrCE() throws Exception {
         final PackageBuilder builder = new PackageBuilder();
         builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_OrCE.drl" ) ) );
@@ -4627,17 +4645,18 @@ public class MiscTest extends TestCase {
         final List list = new ArrayList();
         workingMemory.setGlobal( "results",
                                  list );
-        
-        workingMemory.insert( new Cheese( "brie", 10 ) );
+
+        workingMemory.insert( new Cheese( "brie",
+                                          10 ) );
         workingMemory.insert( new Person( "bob" ) );
 
         workingMemory.fireAllRules();
 
-        assertEquals( "should have fired once", 
+        assertEquals( "should have fired once",
                       1,
                       list.size() );
     }
-    
+
     public void testGetFactHandleEqualityBehavior() throws Exception {
         final RuleBaseConfiguration conf = new RuleBaseConfiguration();
         conf.setAssertBehaviour( RuleBaseConfiguration.AssertBehaviour.EQUALITY );
@@ -4645,11 +4664,13 @@ public class MiscTest extends TestCase {
 
         final StatefulSession session = ruleBase.newStatefulSession();
 
-        CheeseEqual cheese = new CheeseEqual("stilton", 10);
-        session.insert(cheese);
-        FactHandle fh = session.getFactHandle(new CheeseEqual("stilton", 10));
-        assertNotNull(fh);
-    }    
+        CheeseEqual cheese = new CheeseEqual( "stilton",
+                                              10 );
+        session.insert( cheese );
+        FactHandle fh = session.getFactHandle( new CheeseEqual( "stilton",
+                                                                10 ) );
+        assertNotNull( fh );
+    }
 
     public void testGetFactHandleIdentityBehavior() throws Exception {
         final RuleBaseConfiguration conf = new RuleBaseConfiguration();
@@ -4658,12 +4679,38 @@ public class MiscTest extends TestCase {
 
         final StatefulSession session = ruleBase.newStatefulSession();
 
-        CheeseEqual cheese = new CheeseEqual("stilton", 10);
-        session.insert(cheese);
-        FactHandle fh1 = session.getFactHandle(new Cheese("stilton", 10));
-        assertNull(fh1);
+        CheeseEqual cheese = new CheeseEqual( "stilton",
+                                              10 );
+        session.insert( cheese );
+        FactHandle fh1 = session.getFactHandle( new Cheese( "stilton",
+                                                            10 ) );
+        assertNull( fh1 );
         FactHandle fh2 = session.getFactHandle( cheese );
-        assertNotNull(fh2);
-    }    
+        assertNotNull( fh2 );
+    }
+
+    public void testOrCEFollowedByEval() throws Exception {
+        final PackageBuilder builder = new PackageBuilder();
+        builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_OrCEFollowedByEval.drl" ) ) );
+        final Package pkg = builder.getPackage();
+
+        final RuleBase ruleBase = getRuleBase();
+        ruleBase.addPackage( pkg );
+        final WorkingMemory workingMemory = ruleBase.newStatefulSession();
+
+        final List list = new ArrayList();
+        workingMemory.setGlobal( "results",
+                                 list );
+
+        workingMemory.insert( new FactA( "X" ) );
+        InternalFactHandle b = (InternalFactHandle) workingMemory.insert( new FactB( "X" ) );
+
+        workingMemory.fireAllRules();
+
+        assertEquals( "should have fired",
+                      2,
+                      list.size() );
+        assertTrue( list.contains( b.getObject() ) );
+    }
 
 }

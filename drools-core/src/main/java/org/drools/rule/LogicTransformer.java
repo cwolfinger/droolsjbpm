@@ -163,6 +163,15 @@ class LogicTransformer {
                     }
                 }
             }
+        } else if ( element instanceof EvalCondition ) {
+            Declaration[] decl = ((EvalCondition) element).getRequiredDeclarations();
+            for ( int i = 0; i < decl.length; i++ ) {
+                Declaration resolved = resolver.getDeclaration( decl[i].getIdentifier() );
+                if ( resolved != null && resolved != decl[i] ) {
+                    ((EvalCondition) element).replaceDeclaration( decl[i],
+                                                                  resolved );
+                }
+            }
         } else {
             contextStack.push( element );
             for ( Iterator it = element.getNestedElements().iterator(); it.hasNext(); ) {
@@ -194,20 +203,20 @@ class LogicTransformer {
         // first we elimininate any redundancy
         ce.pack();
 
-        Object[] children = (Object[]) ce.getChildren().toArray(); 
+        Object[] children = (Object[]) ce.getChildren().toArray();
         for ( int i = 0; i < children.length; i++ ) {
             if ( children[i] instanceof GroupElement ) {
                 final GroupElement child = (GroupElement) children[i];
 
                 processTree( child );
-                if( ( child.isOr() || child.isAnd() ) && child.getType() == ce.getType() ) {
+                if ( (child.isOr() || child.isAnd()) && child.getType() == ce.getType() ) {
                     child.pack( ce );
                 } else if ( child.isOr() ) {
                     hasChildOr = true;
                 }
             }
         }
-        
+
         if ( hasChildOr ) {
             applyOrTransformation( ce );
         }
