@@ -81,7 +81,7 @@ public class AndConstraint extends AbstractCompositeConstraint {
     public boolean isAllowedCachedRight(ReteTuple tuple,
                                         ContextEntry context) {
         for ( int i = 0; i < this.alphaConstraints.length; i++ ) {
-            if ( ! this.alphaConstraints[i].isAllowed( ((MultiFieldConstraintContextEntry) context).handle,
+            if ( ! this.alphaConstraints[i].isAllowed( ((MultiFieldConstraintContextEntry) context).handle.getObject(),
                                                      ((MultiFieldConstraintContextEntry) context).workingMemory,
                                                      ((MultiFieldConstraintContextEntry) context).alphas[i] ) ) {
                 return false;
