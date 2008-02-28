@@ -741,6 +741,7 @@ abstract public class AbstractRuleBase
             ExecutorService executor = ExecutorServiceFactory.createExecutorService(  this.config.getExecutorService() );;
 
             executor.setCommandExecutor( new CommandExecutor( session ) );
+            ((InternalWorkingMemory) session).setExecutorService( executor );
 
             if ( keepReference ) {
                 addStatefulSession( session );

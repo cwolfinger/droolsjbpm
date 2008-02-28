@@ -45,6 +45,7 @@ import org.drools.RuleBaseConfiguration.AssertBehaviour;
 import org.drools.RuleBaseConfiguration.LogicalOverride;
 import org.drools.base.MapGlobalResolver;
 import org.drools.base.ShadowProxy;
+import org.drools.concurrent.ExecutorService;
 import org.drools.event.AgendaEventListener;
 import org.drools.event.AgendaEventSupport;
 import org.drools.event.RuleBaseEventListener;
@@ -86,6 +87,9 @@ public abstract class AbstractWorkingMemory
     InternalWorkingMemoryActions,
     EventSupport,
     PropertyChangeListener {
+    
+    private static final long serialVersionUID = 405L;
+    
     // ------------------------------------------------------------
     // Constants
     // ------------------------------------------------------------
@@ -1479,4 +1483,11 @@ public abstract class AbstractWorkingMemory
         return result;
     }
 
+    public ExecutorService getExecutorService() {
+        return null; // no executor service
+    }
+
+    public void setExecutorService(ExecutorService executor) {
+        // no executor service, so nothing to set
+    }
 }

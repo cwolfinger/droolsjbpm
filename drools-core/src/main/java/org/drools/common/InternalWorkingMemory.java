@@ -3,6 +3,7 @@ package org.drools.common;
 import org.drools.FactException;
 import org.drools.FactHandle;
 import org.drools.WorkingMemory;
+import org.drools.concurrent.ExecutorService;
 import org.drools.event.AgendaEventSupport;
 import org.drools.event.RuleFlowEventSupport;
 import org.drools.event.WorkingMemoryEventSupport;
@@ -73,4 +74,7 @@ public interface InternalWorkingMemory
     
     public void addLIANodePropagation(LIANodePropagation liaNodePropagation);
     
+    public ExecutorService getExecutorService();
+
+    public void setExecutorService(ExecutorService executor);
 }
