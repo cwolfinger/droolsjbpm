@@ -33,6 +33,11 @@ public class MapBackedClassLoader extends ClassLoader
         this.store = new HashMap();
     }
     
+    public MapBackedClassLoader(final ClassLoader parentClassLoader, final Map store) {
+        super( parentClassLoader );
+        this.store = store;
+    }
+    
     public void addResource(String className,
                             byte[] bytes) {
         addClass(className, 
@@ -113,6 +118,10 @@ public class MapBackedClassLoader extends ClassLoader
             }
             return input;
         }
+    }
+    
+    public Map getStore() {
+        return this.store;
     }
 
 }

@@ -88,7 +88,7 @@ abstract public class AbstractRuleBase
 
     protected transient CompositePackageClassLoader packageClassLoader;
 
-    protected transient MapBackedClassLoader        classLoader;
+    protected MapBackedClassLoader                  classLoader;
 
 	private transient Objenesis                     objenesis;
 
@@ -175,6 +175,7 @@ abstract public class AbstractRuleBase
     public void doWriteExternal(final ObjectOutput stream,
                                 final Object[] objects) throws IOException {        
         stream.writeObject( this.pkgs );
+        stream.writeObject( this.classLoader.getStore() );
 
         // Rules must be restored by an ObjectInputStream that can resolve using a given ClassLoader to handle seaprately by storing as
         // a byte[]
@@ -208,15 +209,16 @@ abstract public class AbstractRuleBase
                                                       ClassNotFoundException {
         // PackageCompilationData must be restored before Rules as it has the ClassLoader needed to resolve the generated code references in Rules        
         this.pkgs = (Map) stream.readObject();
-
+        Map store = (Map) stream.readObject();
+        
         if ( stream instanceof DroolsObjectInputStream ) {
             final DroolsObjectInputStream parentStream = (DroolsObjectInputStream) stream;
             parentStream.setRuleBase( this );
             this.packageClassLoader = new CompositePackageClassLoader( parentStream.getClassLoader() );
-            this.classLoader = new MapBackedClassLoader( parentStream.getClassLoader() );
+            this.classLoader = new MapBackedClassLoader( parentStream.getClassLoader(), store );
         } else {
             this.packageClassLoader = new CompositePackageClassLoader( Thread.currentThread().getContextClassLoader() );
-            this.classLoader = new MapBackedClassLoader( Thread.currentThread().getContextClassLoader() );
+            this.classLoader = new MapBackedClassLoader( Thread.currentThread().getContextClassLoader(), store );
         }
 
         this.packageClassLoader.addClassLoader( this.classLoader );
