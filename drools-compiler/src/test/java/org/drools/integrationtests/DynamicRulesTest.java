@@ -787,9 +787,7 @@ public class DynamicRulesTest extends TestCase {
     public void testSerializeAdd() throws Exception {
 
         //Create a rulebase, a session, and test it
-        RuleBaseConfiguration conf = new RuleBaseConfiguration();
-        //conf.setShadowProxy( false );
-        RuleBase ruleBase = RuleBaseFactory.newRuleBase( conf );
+        RuleBase ruleBase = RuleBaseFactory.newRuleBase( );
         PackageBuilder builder = new PackageBuilder();
         builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_Dynamic1.drl" ) ) );
         Package pkg = serialisePackage( builder.getPackage() );
@@ -812,9 +810,7 @@ public class DynamicRulesTest extends TestCase {
         byte[] serializedRulebase = serializeOut( ruleBase );
         
         // now recreate the rulebase, deserialize the session and test it
-        DroolsObjectInputStream stream = new DroolsObjectInputStream( new ByteArrayInputStream( serializedRulebase ) );
-        ruleBase = (RuleBase) stream.readObject();
-        stream.close();
+        ruleBase = (RuleBase) serializeIn( serializedRulebase );
         
         session = ruleBase.newStatefulSession( new ByteArrayInputStream( serializedSession ) );
         list = (List) session.getGlobal( "list" );
@@ -836,6 +832,8 @@ public class DynamicRulesTest extends TestCase {
         assertEquals( list.size(), 3 );
         assertEquals( bob.getObject(), list.get( 1 ));
         assertEquals( "stilton", list.get( 2 ));
+        
+        session.dispose();
         
     }
 
