@@ -407,7 +407,10 @@ public abstract class AbstractHashTable
         }
     }
 
-    public static class FieldIndex {
+    public static class FieldIndex implements Serializable {
+
+        private static final long serialVersionUID = 1020010166351582645L;
+        
         FieldExtractor   extractor;
         Declaration      declaration;
         public Evaluator evaluator;
@@ -434,7 +437,7 @@ public abstract class AbstractHashTable
         }
     }
 
-    public static interface Index {        
+    public static interface Index extends Serializable {        
         public FieldIndex getFieldIndex(int index);
         
         public int hashCodeOf(ReteTuple tuple);
@@ -455,6 +458,8 @@ public abstract class AbstractHashTable
         implements
         Index {
 
+        private static final long serialVersionUID = -1022777958435032326L;
+        
         private FieldExtractor extractor;
         private Declaration    declaration;
         private Evaluator      evaluator;
@@ -532,6 +537,9 @@ public abstract class AbstractHashTable
     public static class DoubleCompositeIndex
         implements
         Index {
+
+        private static final long serialVersionUID = 5453765340969897686L;
+        
         private FieldIndex index0;
         private FieldIndex index1;
 
@@ -628,6 +636,9 @@ public abstract class AbstractHashTable
     public static class TripleCompositeIndex
         implements
         Index {
+        
+        private static final long serialVersionUID = 7743486670399440233L;
+        
         private FieldIndex index0;
         private FieldIndex index1;
         private FieldIndex index2;

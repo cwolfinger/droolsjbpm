@@ -4748,5 +4748,69 @@ public class MiscTest extends TestCase {
                       list.size() );
         assertTrue( list.contains( b.getObject() ) );
     }
+    
+    public void testSerializationOfIndexedWM() throws Exception {
+        final Reader reader = new InputStreamReader( getClass().getResourceAsStream( "test_Serializable2.drl" ) );
+
+        final PackageBuilder builder = new PackageBuilder();
+        builder.addPackageFromDrl( reader );
+        final Package pkg = builder.getPackage();
+
+        assertEquals( builder.getErrors().toString(),
+                      0,
+                      builder.getErrors().getErrors().length );
+
+        RuleBase ruleBase = getRuleBase();// RuleBaseFactory.newRuleBase();
+
+        ruleBase.addPackage( pkg );
+
+        Map map = new HashMap();
+        map.put( "x",
+                 ruleBase );
+        final byte[] ast = serializeOut( map );
+        map = (Map) serializeIn( ast );
+        ruleBase = (RuleBase) map.get( "x" );
+        final Rule[] rules = ruleBase.getPackages()[0].getRules();
+        assertEquals( 3,
+                      rules.length );
+
+        WorkingMemory workingMemory = ruleBase.newStatefulSession();
+
+        workingMemory.setGlobal( "list",
+                                 new ArrayList() );
+
+        final Primitives p = new Primitives( );
+        p.setBytePrimitive( (byte) 1 );
+        p.setShortPrimitive( (short) 2 );
+        p.setIntPrimitive( (int) 3 );
+        workingMemory.insert( p );
+
+        final byte[] wm = serializeOut( workingMemory );
+
+        workingMemory = ruleBase.newStatefulSession( new ByteArrayInputStream( wm ) );
+
+        assertEquals( 1,
+                      IteratorToList.convert( workingMemory.iterateObjects() ).size() );
+        assertEquals( p,
+                      IteratorToList.convert( workingMemory.iterateObjects() ).get( 0 ) );
+
+        assertEquals( 3,
+                      workingMemory.getAgenda().agendaSize() );
+
+        workingMemory.fireAllRules();
+
+        final List list = (List) workingMemory.getGlobal( "list" );
+
+        assertEquals( 3,
+                      list.size() );
+        // because of agenda-groups
+        assertEquals( "1",
+                      list.get( 0 ) );
+        assertEquals( "2",
+                      list.get( 1 ) );
+        assertEquals( "3",
+                      list.get( 2 ) );
+
+    }
 
 }
