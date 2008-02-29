@@ -165,19 +165,20 @@ public class FactHandleIndexHashTable extends AbstractHashTable
             final FieldIndexEntry next = (FieldIndexEntry) current.next;
             if ( current.matches( object,
                                   hashCode ) ) {
-                current.remove( handle );
-                this.factSize--;
-                // If the FactEntryIndex is empty, then remove it from the hash table
-                if ( current.first == null ) {
-                    if ( previous == current ) {
-                        this.table[index] = next;
-                    } else {
-                        previous.next = next;
+                if( current.remove( handle ) != null) {
+                    this.factSize--;
+                    // If the FactEntryIndex is empty, then remove it from the hash table
+                    if ( current.first == null ) {
+                        if ( previous == current ) {
+                            this.table[index] = next;
+                        } else {
+                            previous.next = next;
+                        }
+                        current.next = null;
+                        this.size--;
                     }
-                    current.next = null;
-                    this.size--;
+                    return true;
                 }
-                return true;
             }
             previous = current;
             current = next;
