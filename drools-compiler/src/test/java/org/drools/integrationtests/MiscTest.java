@@ -4610,6 +4610,35 @@ public class MiscTest extends TestCase {
                       list.size() );
     }
 
+
+	public void testModifyBlock() throws Exception {
+	        final PackageBuilder builder = new PackageBuilder();
+	        builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_ModifyBlock.drl" ) ) );
+	        final Package pkg = builder.getPackage();
+
+	        final RuleBase ruleBase = getRuleBase();
+	        ruleBase.addPackage( pkg );
+	        final WorkingMemory workingMemory = ruleBase.newStatefulSession();
+
+	        final List list = new ArrayList();
+	        workingMemory.setGlobal( "results",
+	                                 list );
+
+	        Person bob = new Person( "Bob" );
+	        bob.setStatus( "hungry" );
+
+	        Cheese c = new Cheese();
+
+	        workingMemory.insert( bob );
+	        workingMemory.insert( c );
+
+	        workingMemory.fireAllRules();
+
+	        assertEquals( 10, c.getPrice() );
+	        assertEquals( "fine", bob.getStatus() );
+	    }
+	
+
     // this test requires mvel 1.2.19. Leaving it commented until mvel is released.
     public void testJavaModifyBlock() throws Exception {
         final PackageBuilder builder = new PackageBuilder();
