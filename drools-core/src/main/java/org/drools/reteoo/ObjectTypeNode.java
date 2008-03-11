@@ -310,9 +310,9 @@ public class ObjectTypeNode extends ObjectSource
                 hasConstraints = this.usesDeclaration( ((BetaNode) sinks[i]).getConstraints() );
             }
             if ( !hasConstraints && sinks[i] instanceof ObjectSource ) {
-                hasConstraints = this.canSkipOnModify( ((ObjectSource) sinks[i]).getSinkPropagator().getSinks() );
+                hasConstraints = !this.canSkipOnModify( ((ObjectSource) sinks[i]).getSinkPropagator().getSinks() );
             } else if ( sinks[i] instanceof TupleSource ) {
-                hasConstraints = this.canSkipOnModify( ((TupleSource) sinks[i]).getSinkPropagator().getSinks() );
+                hasConstraints = !this.canSkipOnModify( ((TupleSource) sinks[i]).getSinkPropagator().getSinks() );
             }
         }
 
