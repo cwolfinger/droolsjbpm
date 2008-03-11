@@ -31,7 +31,7 @@ import org.drools.rule.Package;
 import org.drools.rule.Rule;
 
 public class MarshallingTest extends TestCase {
-    public void xxxtestSerializable() throws Exception {
+    public void testSerializable() throws Exception {
 
         final Reader reader = new InputStreamReader( getClass().getResourceAsStream( "test_Serializable.drl" ) );
 
@@ -101,7 +101,7 @@ public class MarshallingTest extends TestCase {
         assertTrue( IteratorToList.convert( workingMemory.iterateObjects() ).contains( new Person( "help" ) ) );
     }
 
-    public void xxxtestSerializeWorkingMemoryAndRuleBase1() throws Exception {
+    public void testSerializeWorkingMemoryAndRuleBase1() throws Exception {
         // has the first newStatefulSession before the ruleBase is serialised
         final Reader reader = new InputStreamReader( getClass().getResourceAsStream( "test_Serializable.drl" ) );
 
@@ -174,7 +174,7 @@ public class MarshallingTest extends TestCase {
 
     }
 
-    public void xxxtestSerializeWorkingMemoryAndRuleBase2() throws Exception {
+    public void testSerializeWorkingMemoryAndRuleBase2() throws Exception {
         // has the first newStatefulSession after the ruleBase is serialised
         final Reader reader = new InputStreamReader( getClass().getResourceAsStream( "test_Serializable.drl" ) );
 
@@ -319,7 +319,7 @@ public class MarshallingTest extends TestCase {
         assertTrue( IteratorToList.convert( workingMemory.iterateObjects() ).contains( new Person( "help" ) ) );
     }
 
-    public void xxxtestSerializeAdd() throws Exception {
+    public void testSerializeAdd() throws Exception {
 
         //Create a rulebase, a session, and test it
         RuleBase ruleBase = RuleBaseFactory.newRuleBase();
@@ -385,7 +385,7 @@ public class MarshallingTest extends TestCase {
 
     }
 
-    public void xxxtestSerializationOfIndexedWM() throws Exception {
+    public void testSerializationOfIndexedWM() throws Exception {
         final Reader reader = new InputStreamReader( getClass().getResourceAsStream( "test_Serializable2.drl" ) );
 
         final PackageBuilder builder = new PackageBuilder();
@@ -455,7 +455,7 @@ public class MarshallingTest extends TestCase {
      *  
      *  Result: Pkg/Rule addition is failing with ClassCastException
      */
-    public void xxxtestSerializeAdd2() throws Exception {
+    public void testSerializeAdd2() throws Exception {
 
         //Create a rulebase, a session, and test it
         RuleBase ruleBase = RuleBaseFactory.newRuleBase();
