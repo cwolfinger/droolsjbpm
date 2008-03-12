@@ -2812,6 +2812,29 @@ public class MiscTest extends TestCase {
 		assertEquals(provolone, list.get(3));
 	}
 
+    public void testMatchesMVEL() throws Exception {
+        final PackageBuilder builder = new PackageBuilder();
+        builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_MatchesMVEL.drl" ) ) );
+        final Package pkg = builder.getPackage();
+
+        final RuleBase ruleBase = getRuleBase();
+        ruleBase.addPackage( pkg );
+        final StatefulSession session = ruleBase.newStatefulSession();
+
+        final List results = new ArrayList();
+        session.setGlobal( "results",
+                                 results );
+        
+        Map map = new HashMap();
+        map.put( "content", "hello ;=" );
+        session.insert( map );
+
+        session.fireAllRules();
+
+        assertEquals( 1,
+                      results.size() );
+    }
+
 	public void testAutomaticBindings() throws Exception {
 		final PackageBuilder builder = new PackageBuilder();
 		builder.addPackageFromDrl(new InputStreamReader(getClass()
