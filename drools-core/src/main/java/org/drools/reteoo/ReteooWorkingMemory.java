@@ -81,9 +81,11 @@ public class ReteooWorkingMemory extends AbstractWorkingMemory {
                                      this );
     }
 
+    /** Returns the results for a query, this is not thread safe. */
     public QueryResults getQueryResults(final String query) {
         return getQueryResults( query, null );
     }
+    
     public QueryResults getQueryResults(final String query, final Object[] arguments) {
 
         Object object = new DroolsQuery( query, arguments );
