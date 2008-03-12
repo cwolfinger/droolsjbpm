@@ -1,6 +1,7 @@
 package org.drools.agent;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
@@ -226,6 +227,12 @@ public class RuleAgentTest extends TestCase {
 
     public void testDirectory() throws Exception {
         File dir = RuleBaseAssemblerTest.getTempDirectory();
+
+        File junk = new File(dir, "xxx.poo");
+        FileOutputStream ojunk = new FileOutputStream(junk);
+        ojunk.write("ignore me".getBytes());
+        ojunk.flush();
+        ojunk.close();
 
         Package p1 = new Package("p1");
         File p1f = new File(dir, "p43_.pkg");
