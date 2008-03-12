@@ -2,13 +2,13 @@ package org.drools.base.evaluators;
 
 /*
  * Copyright 2005 JBoss Inc
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,14 +31,14 @@ import org.drools.spi.FieldValue;
 
 /**
  * This will generate evaluators that handle dates.
- * This will also parse strings into dates, according to 
+ * This will also parse strings into dates, according to
  * DEFAULT_FORMAT_MASK, unless it is overridden by the drools.dateformat system property.
- * 
+ *
  * When parsing dates from a string, no time is included.
- * 
- * So you can do expressions like 
+ *
+ * So you can do expressions like
  * <code>Person(birthday <= "10-Jul-1974")</code> etc.
- * 
+ *
  * @author Michael Neale
  */
 public class DateFactory
@@ -52,10 +52,10 @@ public class DateFactory
     private static EvaluatorFactory INSTANCE            = new DateFactory();
     private static ThreadLocal df = new ThreadLocal() {
         protected Object initialValue() {
-            return new SimpleDateFormat( DateFactory.DATE_FORMAT_MASK ); 
+            return new SimpleDateFormat( DateFactory.DATE_FORMAT_MASK );
         };
     };
-    
+
     private DateFactory() {
     }
 
@@ -90,7 +90,7 @@ public class DateFactory
 
     static class DateEqualEvaluator extends BaseEvaluator {
         /**
-         * 
+         *
          */
         private static final long     serialVersionUID = 400L;
         public final static Evaluator INSTANCE         = new DateEqualEvaluator();
@@ -163,7 +163,7 @@ public class DateFactory
 
     static class DateNotEqualEvaluator extends BaseEvaluator {
         /**
-         * 
+         *
          */
         private static final long     serialVersionUID = 400L;
         public final static Evaluator INSTANCE         = new DateNotEqualEvaluator();
@@ -235,7 +235,7 @@ public class DateFactory
 
     static class DateLessEvaluator extends BaseEvaluator {
         /**
-         * 
+         *
          */
         private static final long     serialVersionUID = 400L;
         public final static Evaluator INSTANCE         = new DateLessEvaluator();
@@ -285,6 +285,7 @@ public class DateFactory
             }
             final Date value1 = (Date) extractor1.getValue( workingMemory, object1 );
             final Date value2 = (Date) extractor2.getValue( workingMemory, object2 );
+            if (null == value2) throw new NullPointerException(extractor2.toString());
             return value1.compareTo( value2 ) < 0;
         }
 
@@ -295,7 +296,7 @@ public class DateFactory
 
     static class DateLessOrEqualEvaluator extends BaseEvaluator {
         /**
-         * 
+         *
          */
         private static final long     serialVersionUID = 400L;
         public final static Evaluator INSTANCE         = new DateLessOrEqualEvaluator();
@@ -345,6 +346,7 @@ public class DateFactory
             }
             final Date value1 = (Date) extractor1.getValue( workingMemory, object1 );
             final Date value2 = (Date) extractor2.getValue( workingMemory, object2 );
+            if (null == value2) throw new NullPointerException(extractor2.toString());
             return value1.compareTo( value2 ) <= 0;
         }
 
@@ -355,7 +357,7 @@ public class DateFactory
 
     static class DateGreaterEvaluator extends BaseEvaluator {
         /**
-         * 
+         *
          */
         private static final long     serialVersionUID = 400L;
         public final static Evaluator INSTANCE         = new DateGreaterEvaluator();
@@ -405,6 +407,7 @@ public class DateFactory
             }
             final Date value1 = (Date) extractor1.getValue( workingMemory, object1 );
             final Date value2 = (Date) extractor2.getValue( workingMemory, object2 );
+            if (null == value2) throw new NullPointerException(extractor2.toString());
             return value1.compareTo( value2 ) > 0;
         }
 
@@ -415,7 +418,7 @@ public class DateFactory
 
     static class DateGreaterOrEqualEvaluator extends BaseEvaluator {
         /**
-         * 
+         *
          */
         private static final long      serialVersionUID = 400L;
         private final static Evaluator INSTANCE         = new DateGreaterOrEqualEvaluator();
@@ -465,6 +468,7 @@ public class DateFactory
             }
             final Date value1 = (Date) extractor1.getValue( workingMemory, object1 );
             final Date value2 = (Date) extractor2.getValue( workingMemory, object2 );
+            if (null == value2) throw new NullPointerException(extractor2.toString());
             return value1.compareTo( value2 ) >= 0;
         }
 
@@ -502,7 +506,7 @@ public class DateFactory
             return "Date not memberOf";
         }
     }
-    
+
     /** Use the simple date formatter to read the date from a string */
     public static Date parseDate(final String input) {
         try {
