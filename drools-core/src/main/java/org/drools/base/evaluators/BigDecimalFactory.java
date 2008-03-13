@@ -2,13 +2,13 @@ package org.drools.base.evaluators;
 
 /*
  * Copyright 2005 JBoss Inc
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -69,7 +69,7 @@ public class BigDecimalFactory
 
     static class BigDecimalEqualEvaluator extends BaseEvaluator {
         /**
-         * 
+         *
          */
         private static final long     serialVersionUID = 400L;
         public final static Evaluator INSTANCE         = new BigDecimalEqualEvaluator();
@@ -83,7 +83,7 @@ public class BigDecimalFactory
                                 final Extractor extractor,
                                 final Object object1, final FieldValue object2) {
             final Object value1 = extractor.getValue( workingMemory, object1 );
-            final Object value2 = object2.getValue();
+            final Object value2 = object2.getBigDecimalValue();
             if ( value1 == null ) {
                 return value2 == null;
             }
@@ -128,7 +128,7 @@ public class BigDecimalFactory
 
     static class BigDecimalNotEqualEvaluator extends BaseEvaluator {
         /**
-         * 
+         *
          */
         private static final long     serialVersionUID = 400L;
         public final static Evaluator INSTANCE         = new BigDecimalNotEqualEvaluator();
@@ -142,7 +142,7 @@ public class BigDecimalFactory
                                 final Extractor extractor,
                                 final Object object1, final FieldValue object2) {
             final Object value1 = extractor.getValue( workingMemory, object1 );
-            final Object value2 = object2.getValue();
+            final Object value2 = object2.getBigDecimalValue();
             if ( value1 == null ) {
                 return value2 != null;
             }
@@ -186,7 +186,7 @@ public class BigDecimalFactory
 
     static class BigDecimalLessEvaluator extends BaseEvaluator {
         /**
-         * 
+         *
          */
         private static final long     serialVersionUID = 400L;
         public final static Evaluator INSTANCE         = new BigDecimalLessEvaluator();
@@ -203,7 +203,7 @@ public class BigDecimalFactory
                 return false;
             }
             final BigDecimal comp = (BigDecimal) extractor.getValue( workingMemory, object1 );
-            return comp.compareTo( (BigDecimal) object2.getValue() ) < 0;
+            return comp.compareTo( (BigDecimal) object2.getBigDecimalValue() ) < 0;
         }
 
         public boolean evaluateCachedRight(InternalWorkingMemory workingMemory,
@@ -242,7 +242,7 @@ public class BigDecimalFactory
 
     static class BigDecimalLessOrEqualEvaluator extends BaseEvaluator {
         /**
-         * 
+         *
          */
         private static final long     serialVersionUID = 400L;
         public final static Evaluator INSTANCE         = new BigDecimalLessOrEqualEvaluator();
@@ -259,7 +259,7 @@ public class BigDecimalFactory
                 return false;
             }
             final BigDecimal comp = (BigDecimal) extractor.getValue( workingMemory, object1 );
-            return comp.compareTo( (BigDecimal) object2.getValue() ) <= 0;
+            return comp.compareTo( (BigDecimal) object2.getBigDecimalValue() ) <= 0;
         }
 
         public boolean evaluateCachedRight(InternalWorkingMemory workingMemory,
@@ -298,7 +298,7 @@ public class BigDecimalFactory
 
     static class BigDecimalGreaterEvaluator extends BaseEvaluator {
         /**
-         * 
+         *
          */
         private static final long     serialVersionUID = 400L;
         public final static Evaluator INSTANCE         = new BigDecimalGreaterEvaluator();
@@ -315,7 +315,7 @@ public class BigDecimalFactory
                 return false;
             }
             final BigDecimal comp = (BigDecimal) extractor.getValue( workingMemory, object1 );
-            return comp.compareTo( (BigDecimal) object2.getValue() ) > 0;
+            return comp.compareTo( (BigDecimal) object2.getBigDecimalValue() ) > 0;
         }
 
         public boolean evaluateCachedRight(InternalWorkingMemory workingMemory,
@@ -354,7 +354,7 @@ public class BigDecimalFactory
 
     static class BigDecimalGreaterOrEqualEvaluator extends BaseEvaluator {
         /**
-         * 
+         *
          */
         private static final long      serialVersionUID = 400L;
         private final static Evaluator INSTANCE         = new BigDecimalGreaterOrEqualEvaluator();
@@ -371,7 +371,7 @@ public class BigDecimalFactory
                 return false;
             }
             final BigDecimal comp = (BigDecimal) extractor.getValue( workingMemory, object1 );
-            return comp.compareTo( (BigDecimal) object2.getValue() ) >= 0;
+            return comp.compareTo( (BigDecimal) object2.getBigDecimalValue() ) >= 0;
         }
 
         public boolean evaluateCachedRight(InternalWorkingMemory workingMemory,
@@ -425,7 +425,7 @@ public class BigDecimalFactory
 
     static class BigDecimalNotMemberOfEvaluator extends BaseNotMemberOfEvaluator {
         /**
-         * 
+         *
          */
         private static final long     serialVersionUID = 400L;
         public final static Evaluator INSTANCE         = new BigDecimalNotMemberOfEvaluator();

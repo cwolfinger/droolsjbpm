@@ -27,6 +27,7 @@ import java.io.ObjectOutputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -631,7 +632,7 @@ public class MiscTest extends TestCase {
 
 		assertEquals(1, list.size());
 	}
-	
+
 	// @FIXME
 	public void FIXME_testBigDecimalWithFromAndEval() throws Exception {
 	    String rule = "package org.test;\n";
@@ -642,7 +643,7 @@ public class MiscTest extends TestCase {
 	    rule += "then\n";
 	    rule += "    System.out.println(\"OK!\");\n";
 	    rule += "end";
-	    
+
         final PackageBuilder builder = new PackageBuilder();
         builder.addPackageFromDrl( new StringReader( rule ));
         final Package pkg = builder.getPackage();
@@ -651,9 +652,9 @@ public class MiscTest extends TestCase {
         ruleBase.addPackage(pkg);
         final StatefulSession session = ruleBase.newStatefulSession();
         session.fireAllRules();
-        
+
 	}
-	
+
     public void testMVELConsequenceWithMapsAndArrays() throws Exception {
         String rule = "package org.test;\n";
         rule += "import java.util.ArrayList\n";
@@ -670,7 +671,7 @@ public class MiscTest extends TestCase {
         rule += "    System.out.println(m[\"content\"][0]);\n";
         rule += "    list.add(m[\"content\"][0]);\n";
         rule += "end";
-        
+
         final PackageBuilder builder = new PackageBuilder();
         builder.addPackageFromDrl( new StringReader( rule ));
         final Package pkg = builder.getPackage();
@@ -681,10 +682,34 @@ public class MiscTest extends TestCase {
         List list = new ArrayList();
         session.setGlobal( "list", list );
         session.fireAllRules();
-        
+
         assertEquals( 1, list.size() );
-        assertEquals( "first", list.get( 0 ) );                        
-    }	
+        assertEquals( "first", list.get( 0 ) );
+    }
+
+	public void testBigDecimalIntegerLiteral() throws Exception {
+
+		final PackageBuilder builder = new PackageBuilder();
+		builder.addPackageFromDrl(new InputStreamReader(getClass()
+				.getResourceAsStream("big_decimal_and_literal.drl")));
+		final Package pkg = builder.getPackage();
+
+		final RuleBase ruleBase = getRuleBase();
+		ruleBase.addPackage(pkg);
+		final WorkingMemory workingMemory = ruleBase.newStatefulSession();
+
+		final List list = new ArrayList();
+		workingMemory.setGlobal("list", list);
+
+		final PersonInterface bill = new Person("bill", null, 12);
+		bill.setBigDecimal(new BigDecimal("42"));
+		bill.setBigInteger(new BigInteger("42"));
+
+		workingMemory.insert(bill);
+		workingMemory.fireAllRules();
+
+		assertEquals(6, list.size());
+	}
 
 	public void testCell() throws Exception {
 		final Cell cell1 = new Cell(9);
@@ -2824,7 +2849,7 @@ public class MiscTest extends TestCase {
         final List results = new ArrayList();
         session.setGlobal( "results",
                                  results );
-        
+
         Map map = new HashMap();
         map.put( "content", "hello ;=" );
         session.insert( map );
@@ -3954,7 +3979,7 @@ public class MiscTest extends TestCase {
 		// builder2.addPackageFromDrl( new InputStreamReader(
 		// getClass().getResourceAsStream( "test_FinalClass2.drl" ) ) );
 		// ruleBase.addPackage( builder2.getPackage() );
-		//        
+		//
 		// // it will automatically fire the rule
 		// assertEquals( 2,
 		// list.size() );
