@@ -1319,7 +1319,7 @@ public abstract class AbstractWorkingMemory
             evaluatingActionQueue = true;
             WorkingMemoryAction action = null;           
             
-            while ( actionQueue != null || ( action = (WorkingMemoryAction) actionQueue.removeFirst() ) != null ) {
+            while ( actionQueue.size() != 0 && ( action = (WorkingMemoryAction) actionQueue.removeFirst() ) != null ) {
                 action.execute( this );
             }
             evaluatingActionQueue = false;
