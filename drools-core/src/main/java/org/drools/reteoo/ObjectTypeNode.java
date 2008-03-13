@@ -144,7 +144,7 @@ public class ObjectTypeNode extends ObjectSource
             return;
         }
 
-        if ( this.objectMemoryEnabled) {
+        if ( this.objectMemoryEnabled ) {
             final FactHashTable memory = (FactHashTable) workingMemory.getNodeMemory( this );
             memory.add( handle,
                         false );
@@ -228,12 +228,12 @@ public class ObjectTypeNode extends ObjectSource
             removeObjectSink( (ObjectSink) node );
         }
         // JBRULES-1315: never remove OTNs
-//        if ( !this.isInUse() ) {
-//            for ( int i = 0, length = workingMemories.length; i < length; i++ ) {
-//                workingMemories[i].clearNodeMemory( this );
-//            }
-//            this.rete.removeObjectSink( this );
-//        }
+        //        if ( !this.isInUse() ) {
+        //            for ( int i = 0, length = workingMemories.length; i < length; i++ ) {
+        //                workingMemories[i].clearNodeMemory( this );
+        //            }
+        //            this.rete.removeObjectSink( this );
+        //        }
     }
 
     /**
@@ -303,7 +303,7 @@ public class ObjectTypeNode extends ObjectSource
         // If we have no alpha or beta node with constraints on this ObjectType, we can just skip modifies
         boolean hasConstraints = false;
         for ( int i = 0; i < sinks.length && !hasConstraints; i++ ) {
-            if ( sinks[i] instanceof AlphaNode || sinks[i] instanceof AccumulateNode || sinks[i] instanceof CollectNode || sinks[i] instanceof FromNode ) {
+            if ( sinks[i] instanceof AlphaNode || sinks[i] instanceof AccumulateNode || sinks[i] instanceof CollectNode || sinks[i] instanceof FromNode || sinks[i] instanceof EvalConditionNode ) {
                 hasConstraints = true;
             } else if ( sinks[i] instanceof BetaNode && ((BetaNode) sinks[i]).getConstraints().length > 0 ) {
                 hasConstraints = this.usesDeclaration( ((BetaNode) sinks[i]).getConstraints() );
@@ -331,7 +331,7 @@ public class ObjectTypeNode extends ObjectSource
         boolean usesDecl = false;
         final Declaration[] declarations = constraint.getRequiredDeclarations();
         for ( int j = 0; !usesDecl && j < declarations.length; j++ ) {
-            usesDecl = (declarations[j].getPattern().getObjectType().equals( this.objectType ) );
+            usesDecl = (declarations[j].getPattern().getObjectType().equals( this.objectType ));
         }
         return usesDecl;
     }
