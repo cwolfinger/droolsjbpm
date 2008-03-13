@@ -28,7 +28,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.Map.Entry;
 
 import org.drools.Agenda;
@@ -138,7 +137,7 @@ public abstract class AbstractWorkingMemory
     /** Rule-firing agenda. */
     protected DefaultAgenda                agenda;
 
-    protected final Queue                  actionQueue                                   = new LinkedList();
+    protected final LinkedList                  actionQueue                                   = new LinkedList();
 
     protected boolean                      evaluatingActionQueue;
 
@@ -1318,9 +1317,9 @@ public abstract class AbstractWorkingMemory
     public void executeQueuedActions() {
         if( ! evaluatingActionQueue ) {
             evaluatingActionQueue = true;
-            WorkingMemoryAction action = null;
+            WorkingMemoryAction action = null;           
             
-            while ( ( action = (WorkingMemoryAction) actionQueue.poll() ) != null ) {
+            while ( actionQueue != null || ( action = (WorkingMemoryAction) actionQueue.removeFirst() ) != null ) {
                 action.execute( this );
             }
             evaluatingActionQueue = false;
