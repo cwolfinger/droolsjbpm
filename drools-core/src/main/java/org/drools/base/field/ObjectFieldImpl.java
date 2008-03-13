@@ -192,6 +192,6 @@ public class ObjectFieldImpl
 			return new BigInteger((String) value);
 		}
 		if (this.value == null) return null;
-        throw new RuntimeDroolsException( "Conversion to BigDecimal not supported for type: " + this.value.getClass() );
+        throw new RuntimeDroolsException( "Conversion to BigInteger not supported for type: " + this.value.getClass() );
 	}
 }
