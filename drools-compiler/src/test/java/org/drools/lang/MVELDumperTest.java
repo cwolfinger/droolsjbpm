@@ -71,6 +71,18 @@ public class MVELDumperTest extends TestCase {
         assertEquals( expected, result );
     }
 
+    public void testDumpWithDateAttr() throws Exception {
+        String input = "Person( son.birthDate == \"01-jan-2000\" )";
+        String expected = "son.birthDate == org.drools.base.evaluators.DateFactory.parseDate( \"01-jan-2000\" )" ;
+        DRLParser parser = parse( input );
+        PatternDescr pattern = (PatternDescr) parser.fact( null );
+        
+        FieldConstraintDescr fieldDescr = (FieldConstraintDescr) pattern.getConstraint().getDescrs().get( 0 );
+        String result = dumper.dump( fieldDescr, true );
+        
+        assertEquals( expected, result );
+    }
+
     private DRLParser parse(final String text) throws Exception {
         return newParser( newTokenStream( newLexer( newCharStream( text ) ) ) );
     }

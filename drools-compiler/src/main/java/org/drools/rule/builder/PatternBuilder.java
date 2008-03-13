@@ -17,6 +17,7 @@
 package org.drools.rule.builder;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -64,6 +65,7 @@ import org.drools.rule.RuleConditionElement;
 import org.drools.rule.VariableConstraint;
 import org.drools.rule.VariableRestriction;
 import org.drools.rule.builder.dialect.mvel.MVELDialect;
+import org.drools.rule.builder.dialect.mvel.MVELExprAnalyzer;
 import org.drools.spi.Constraint;
 import org.drools.spi.Evaluator;
 import org.drools.spi.FieldExtractor;
@@ -71,6 +73,8 @@ import org.drools.spi.FieldValue;
 import org.drools.spi.ObjectType;
 import org.drools.spi.Restriction;
 import org.drools.spi.Constraint.ConstraintType;
+import org.mvel.ExpressionCompiler;
+import org.mvel.ParserContext;
 
 /**
  * A builder for patterns
@@ -371,12 +375,15 @@ public class PatternBuilder
         MVELDialect mvelDialect = (MVELDialect) context.getDialect( "mvel" );
         boolean strictMode = mvelDialect.isStrictMode();
         mvelDialect.setStrictMode( false );
-
         context.setDialect( mvelDialect );
 
+        // analyze field type:
+        Class resultType = getFieldReturnType( pattern,
+                                               fieldConstraintDescr );
+        
         PredicateDescr predicateDescr = new PredicateDescr();
         MVELDumper dumper = new MVELDumper();
-        predicateDescr.setContent( dumper.dump( fieldConstraintDescr ) );
+        predicateDescr.setContent( dumper.dump( fieldConstraintDescr, Date.class.isAssignableFrom( resultType ) ) );
 
         build( context,
                pattern,
@@ -386,6 +393,23 @@ public class PatternBuilder
         mvelDialect.setStrictMode( strictMode );
         // fall back to original dialect
         context.setDialect( dialect );
+    }
+
+    /**
+     * @param pattern
+     * @param fieldConstraintDescr
+     * @return
+     */
+    private Class getFieldReturnType(final Pattern pattern,
+                                     final FieldConstraintDescr fieldConstraintDescr) {
+        String dummyField = "__DUMMY__";
+        String dummyExpr = dummyField+"."+fieldConstraintDescr.getFieldName();
+        ExpressionCompiler compiler = new ExpressionCompiler( dummyExpr );
+        ParserContext mvelcontext = new ParserContext();
+        mvelcontext.addInput( dummyField, ((ClassObjectType) pattern.getObjectType()).getClassType() );
+        compiler.compile( mvelcontext );
+        Class resultType = compiler.getReturnType();
+        return resultType;
     }
 
     private Restriction createRestriction(final RuleBuildContext context,
