@@ -427,10 +427,9 @@ If the template is [Foo(bar &lt; $1, baz == $2)] and the cell is [42,42] then th
             </row>
 
             <row>
-              <entry>UNLOOP</entry>
-
-              <entry>Indicates that if there cell values in this column, the
-              no-loop attribute should be set</entry>
+              <entry>NO-LOOP</entry>
+			  <entry>if there is a column with the this keyword, the
+              no-loop attribute will be set for the rule. Setting no-loop column means the attempt to create the Activation for the current set of data will be ignored.</entry>
 
               <entry>optional</entry>
             </row>
