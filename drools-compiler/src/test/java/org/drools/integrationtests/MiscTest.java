@@ -1122,6 +1122,9 @@ public class MiscTest extends TestCase {
 		pkg.checkValidity();
 	}
 	
+    /**
+     * @see JBRULES-1415 Certain uses of from causes NullPointerException in WorkingMemoryLogger
+     */	
 	public void testFromDeclarationWithWorkingMemoryLogger() throws Exception {
 	        String rule = "package org.test;\n";
 	        rule += "import org.drools.Cheesery\n";
