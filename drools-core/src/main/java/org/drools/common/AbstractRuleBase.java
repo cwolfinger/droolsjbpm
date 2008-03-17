@@ -44,9 +44,7 @@ import org.drools.concurrent.CommandExecutor;
 import org.drools.concurrent.ExecutorService;
 import org.drools.event.RuleBaseEventListener;
 import org.drools.event.RuleBaseEventSupport;
-import org.drools.reteoo.ReteooStatefulSession;
 import org.drools.objenesis.Objenesis;
-import org.drools.objenesis.ObjenesisStd;
 import org.drools.rule.CompositePackageClassLoader;
 import org.drools.rule.InvalidPatternException;
 import org.drools.rule.MapBackedClassLoader;
@@ -57,6 +55,7 @@ import org.drools.ruleflow.common.core.Process;
 import org.drools.spi.ExecutorServiceFactory;
 import org.drools.spi.FactHandleFactory;
 import org.drools.util.ObjectHashSet;
+import org.drools.util.ObjenesisFactory;
 import org.drools.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -91,7 +90,7 @@ abstract public class AbstractRuleBase
     protected MapBackedClassLoader                  classLoader;
 
 	private transient Objenesis                     objenesis;
-
+	
 	/** The fact handle factory. */
     protected FactHandleFactory                     factHandleFactory;
 
@@ -185,11 +184,11 @@ abstract public class AbstractRuleBase
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         final ObjectOutput out = new ObjectOutputStream( bos );
         out.writeObject( this.id );
+        out.writeObject( this.config );
         out.writeObject( this.processes );
         out.writeObject( this.agendaGroupRuleTotals );
         out.writeObject( this.factHandleFactory );
         out.writeObject( this.globals );
-        out.writeObject( this.config );
         
         this.eventSupport.removeEventListener( RuleBaseEventListener.class );
         out.writeObject( this.eventSupport );
@@ -225,7 +224,6 @@ abstract public class AbstractRuleBase
         }
 
         this.packageClassLoader.addClassLoader( this.classLoader );
-		this.objenesis = createObjenesis();
 
 		for ( final Iterator it = this.pkgs.values().iterator(); it.hasNext(); ) {
             this.packageClassLoader.addClassLoader( ((Package) it.next()).getPackageCompilationData().getClassLoader() );
@@ -240,13 +238,16 @@ abstract public class AbstractRuleBase
         childStream.setRuleBase( this );
 
         this.id = (String) childStream.readObject();
+
+        this.config = (RuleBaseConfiguration) childStream.readObject();
+        this.config.setClassLoader( childStream.getClassLoader() );
+        this.objenesis = createObjenesis();
+
         this.processes = (Map) childStream.readObject();
         this.agendaGroupRuleTotals = (Map) childStream.readObject();
         this.factHandleFactory = (FactHandleFactory) childStream.readObject();
         this.globals = (Map) childStream.readObject();
 
-        this.config = (RuleBaseConfiguration) childStream.readObject();
-        this.config.setClassLoader( childStream.getClassLoader() );
         this.eventSupport = (RuleBaseEventSupport) childStream.readObject();
         this.eventSupport.setRuleBase( this );
 
@@ -262,7 +263,11 @@ abstract public class AbstractRuleBase
 	 * @return a standart Objenesis instanse with caching turned on.
 	 */
 	protected Objenesis createObjenesis() {
-		return new ObjenesisStd(true);
+	    if( this.config.isUseStaticObjenesis() ) {
+	        return ObjenesisFactory.getStaticObjenesis();
+	    } else {
+	        return ObjenesisFactory.getDefaultObjenesis();
+	    }
 	}
 
 	/**

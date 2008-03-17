@@ -65,6 +65,7 @@ import org.drools.util.ChainedProperties;
  * drools.conflictResolver = <qualified class name>
  * drools.consequenceExceptionHandler = <qualified class name>
  * drools.ruleBaseUpdateHandler = <qualified class name>
+ * drools.useStaticObjenesis = <false|true>
  * 
  */
 public class RuleBaseConfiguration
@@ -98,6 +99,8 @@ public class RuleBaseConfiguration
 
     private boolean                     shadowProxy;
     private Map                         shadowProxyExcludes;
+    private boolean                     useStaticObjenesis;
+
     private static final String         STAR             = "*";
 
     private transient ClassLoader       classLoader;
@@ -229,6 +232,10 @@ public class RuleBaseConfiguration
 
         setShadowProxyExcludes( this.chainedProperties.getProperty( "drools.shadowProxyExcludes",
                                                                     "" ) );
+
+        setUseStaticObjenesis( Boolean.valueOf( this.chainedProperties.getProperty( "drools.useStaticObjenesis",
+                                                                                    "false" ) ).booleanValue() );
+
     }
 
     /**
@@ -471,6 +478,15 @@ public class RuleBaseConfiguration
 
     public boolean isShadowProxy() {
         return this.shadowProxy;
+    }
+
+    public boolean isUseStaticObjenesis() {
+        return useStaticObjenesis;
+    }
+
+    public void setUseStaticObjenesis(boolean useStaticObjenesis) {
+        checkCanChange(); // throws an exception if a change isn't possible;
+        this.useStaticObjenesis = useStaticObjenesis;
     }
 
     public ClassLoader getClassLoader() {
