@@ -172,6 +172,10 @@
         <url>http://snapshots.jboss.org/maven2</url>
     </repository>
 
+    <repository>
+        <id>codehaus</id>
+        <url>http://repository.codehaus.org/</url>
+    </repository>
 
 
     <!-- this is needed for Seam which is not in the jboss repo or the maven one in a useful form -->
@@ -733,8 +737,8 @@
       </dependency>
 	    <dependency>
         <groupId>org.mvel</groupId>
-        <artifactId>mvel14</artifactId>
-        <version>1.2.21</version>
+        <artifactId>mvel</artifactId>
+        <version>1.2.24-java1.4</version>
       </dependency>
 
       <!-- drools-compiler -->
