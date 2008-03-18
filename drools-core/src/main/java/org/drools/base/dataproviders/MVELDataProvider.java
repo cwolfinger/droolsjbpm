@@ -54,17 +54,17 @@ public class MVELDataProvider
         //this.expression.
         final Object result = MVEL.executeExpression( this.expression,
                                                       factory );                
-        
-        if ( result instanceof Collection ) {
+
+        if ( result == null ) {
+            return Collections.EMPTY_LIST.iterator();           
+        } else if ( result instanceof Collection ) {
             return ((Collection) result).iterator();
         } else if ( result instanceof Iterator ) {
             return (Iterator) result;
         } else if ( result.getClass().isArray() ) { 
         	return new ArrayIterator( result );
-        } else if( result != null ){
-            return Collections.singletonList( result ).iterator();
         } else {
-        	return Collections.EMPTY_LIST.iterator();        	
+            return Collections.singletonList( result ).iterator();
         }
     }
 }
