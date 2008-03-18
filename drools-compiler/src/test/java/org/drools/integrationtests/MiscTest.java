@@ -688,6 +688,40 @@ public class MiscTest extends TestCase {
         assertEquals( 1, list.size() );
         assertEquals( "first", list.get( 0 ) );
     }
+    
+    /* @see JBRULES-1484 */ 
+    public void testMVELDynamicImports() throws Exception {
+        String rule = "package org.xxx;\n";        
+        
+        rule += "import org.drools.*\n";
+        
+        rule += "global java.util.List list\n";
+        rule += "rule \"Test Rule\"\n";
+        rule += "    dialect \"mvel\"";
+        rule += "when\n";
+        rule += "then\n";
+        rule += "    p = new Person( \"diablo\", new Cheese (\"cheddar\") );";
+        rule += "    c = new Cheese( \"y\" );";
+        rule += "    list.add( p );\n";
+        rule += "end";
+        
+        final PackageBuilder builder = new PackageBuilder();
+        builder.addPackageFromDrl( new StringReader( rule ));
+        final Package pkg = builder.getPackage();
+
+        final RuleBase ruleBase = getRuleBase();
+        ruleBase.addPackage(pkg);
+        final StatefulSession session = ruleBase.newStatefulSession();
+        List list = new ArrayList();
+        session.setGlobal( "list", list );
+        session.fireAllRules();
+        
+        assertEquals( 1, list.size() );
+        
+        Person p  = new Person( "diablo", new Cheese( "cheddar" ) );
+        
+        assertEquals( p, list.get( 0 ) );                        
+    }       
 
 	public void testBigDecimalIntegerLiteral() throws Exception {
 
@@ -1683,9 +1717,9 @@ public class MiscTest extends TestCase {
 		final WorkingMemory workingMemory = ruleBase.newStatefulSession();
 
 		// Adding person with null name and likes attributes
-		final PersonInterface bob = new Person(null, null);
+		final PersonInterface bob = new Person((String)null, (String)null);
 		bob.setStatus("P1");
-		final PersonInterface pete = new Person(null, null);
+		final PersonInterface pete = new Person((String)null, (String)null);
 		bob.setStatus("P2");
 		workingMemory.insert(bob);
 		workingMemory.insert(pete);
