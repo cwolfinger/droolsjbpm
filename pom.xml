@@ -172,12 +172,6 @@
         <url>http://snapshots.jboss.org/maven2</url>
     </repository>
 
-    <repository>
-        <id>codehaus</id>
-        <url>http://repository.codehaus.org/</url>
-    </repository>
-
-
     <!-- this is needed for Seam which is not in the jboss repo or the maven one in a useful form -->
     <repository>
         <id>softeu-repo</id>
