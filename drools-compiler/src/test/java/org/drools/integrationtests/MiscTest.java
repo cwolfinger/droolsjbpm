@@ -82,7 +82,6 @@ import org.drools.WorkingMemory;
 import org.drools.Cheesery.Maturity;
 import org.drools.audit.WorkingMemoryFileLogger;
 import org.drools.audit.WorkingMemoryInMemoryLogger;
-import org.drools.audit.WorkingMemoryLogger;
 import org.drools.base.ClassObjectFilter;
 import org.drools.common.AbstractWorkingMemory;
 import org.drools.common.InternalFactHandle;
@@ -114,7 +113,6 @@ import org.drools.lang.descr.PackageDescr;
 import org.drools.lang.descr.RuleDescr;
 import org.drools.rule.InvalidRulePackage;
 import org.drools.rule.Package;
-import org.drools.rule.Rule;
 import org.drools.rule.builder.dialect.java.JavaDialectConfiguration;
 import org.drools.spi.Activation;
 import org.drools.spi.ConsequenceExceptionHandler;
@@ -4716,11 +4714,32 @@ public class MiscTest extends TestCase {
                       list.size() );
     }
 
-    public void testModifyBlock() throws Exception {
+    public void testAlphaCompositeConstraints() throws Exception {
         final PackageBuilder builder = new PackageBuilder();
-        builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_ModifyBlock.drl" ) ) );
+        builder.addPackageFromDrl(new InputStreamReader(getClass()
+                .getResourceAsStream("test_AlphaCompositeConstraints.drl")));
         final Package pkg = builder.getPackage();
 
+        final RuleBase ruleBase = getRuleBase();
+        ruleBase.addPackage(pkg);
+        final WorkingMemory workingMemory = ruleBase.newStatefulSession();
+
+        final List list = new ArrayList();
+        workingMemory.setGlobal("results", list);
+
+        Person bob = new Person( "bob", 30 );
+
+        workingMemory.insert(bob);
+        workingMemory.fireAllRules();
+
+        assertEquals( 1, list.size());
+    }
+
+	public void testModifyBlock() throws Exception {
+		final PackageBuilder builder = new PackageBuilder();
+		builder.addPackageFromDrl(new InputStreamReader(getClass()
+				.getResourceAsStream("test_ModifyBlock.drl")));
+		final Package pkg = builder.getPackage();
         final RuleBase ruleBase = getRuleBase();
         ruleBase.addPackage( pkg );
         final WorkingMemory workingMemory = ruleBase.newStatefulSession();

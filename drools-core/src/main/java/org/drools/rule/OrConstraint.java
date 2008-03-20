@@ -49,7 +49,7 @@ public class OrConstraint extends AbstractCompositeConstraint {
             for ( int i = 0; i < this.alphaConstraints.length; i++ ) {
                 if ( this.alphaConstraints[i].isAllowed( object,
                                                          workingMemory,
-                                                         ctx ) ) {
+                                                         ((MultiFieldConstraintContextEntry) ctx).alphas[i] ) ) {
                     return true;
                 }
             }
