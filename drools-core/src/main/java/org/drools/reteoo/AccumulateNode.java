@@ -16,6 +16,7 @@
 
 package org.drools.reteoo;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 import org.drools.RuleBaseConfiguration;
@@ -480,7 +481,7 @@ public class AccumulateNode extends BetaNode {
         return memory;
     }
 
-    public static class AccumulateMemory {
+    public static class AccumulateMemory implements Serializable {
         private static final long serialVersionUID = 400L;
         
         public Object workingMemoryContext;
@@ -489,7 +490,9 @@ public class AccumulateNode extends BetaNode {
         public ContextEntry[] alphaContexts;
     }
 
-    private static class AccumulateResult {
+    private static class AccumulateResult implements Serializable {
+
+        private static final long serialVersionUID = -7715967986163072228L;
         // keeping attributes public just for performance
         public InternalFactHandle handle;
         public Object             context;

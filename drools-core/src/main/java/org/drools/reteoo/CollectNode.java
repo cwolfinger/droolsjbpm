@@ -16,6 +16,7 @@
 
 package org.drools.reteoo;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -408,14 +409,16 @@ public class CollectNode extends BetaNode
         return memory;
     }
 
-    public static class CollectMemory {
+    public static class CollectMemory implements Serializable {
         private static final long serialVersionUID = 400L;
         public BetaMemory         betaMemory;
         public ContextEntry[]     resultsContext;
         public ContextEntry[]     alphaContexts;
     }
 
-    private static class CollectResult {
+    private static class CollectResult implements Serializable {
+
+        private static final long serialVersionUID = -3553891852449175844L;
         // keeping attributes public just for performance
         public InternalFactHandle handle;
         public boolean            propagated;

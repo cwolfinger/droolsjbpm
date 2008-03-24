@@ -17,6 +17,8 @@
  */
 package org.drools.base.accumulators;
 
+import java.io.Serializable;
+
 
 /**
  * An implementation of an accumulator capable of calculating sum of values
@@ -26,7 +28,10 @@ package org.drools.base.accumulators;
  */
 public class SumAccumulateFunction implements AccumulateFunction {
 
-    protected static class SumData {
+    private static final long serialVersionUID = 6022115234191211516L;
+
+    protected static class SumData implements Serializable {
+        private static final long serialVersionUID = 7364124958409617473L;
         public double total = 0;
     }
 

@@ -101,6 +101,75 @@ public class MarshallingTest extends TestCase {
         assertTrue( IteratorToList.convert( workingMemory.iterateObjects() ).contains( new Person( "help" ) ) );
     }
 
+    public void testSerializableCollectAccumulate() throws Exception {
+
+        final Reader reader = new InputStreamReader( getClass().getResourceAsStream( "test_SerializableCollectAccumulate.drl" ) );
+
+        final PackageBuilder builder = new PackageBuilder();
+        builder.addPackageFromDrl( reader );
+        final Package pkg = serialisePackage( builder.getPackage() );
+
+        assertEquals( builder.getErrors().toString(),
+                      0,
+                      builder.getErrors().getErrors().length );
+
+        RuleBase ruleBase = getRuleBase();// RuleBaseFactory.newRuleBase();
+
+        ruleBase.addPackage( pkg );
+
+        Map map = new HashMap();
+        map.put( "x",
+                 ruleBase );
+        final byte[] ast = serializeOut( map );
+        map = (Map) serializeIn( ast );
+        ruleBase = (RuleBase) map.get( "x" );
+        final Rule[] rules = ruleBase.getPackages()[0].getRules();
+        assertEquals( 2,
+                      rules.length );
+
+        assertEquals( "collect",
+                      rules[0].getName() );
+        assertEquals( "accumulate",
+                      rules[1].getName() );
+
+        WorkingMemory workingMemory = ruleBase.newStatefulSession();
+
+        workingMemory.setGlobal( "list",
+                                 new ArrayList() );
+
+        final Person bob = new Person( "bob", "stilton" );
+        final Cheese c1 = new Cheese( "stilton", 10 );
+        final Cheese c2 = new Cheese( "brie", 8 );
+        final Cheese c3 = new Cheese( "stilton", 5 );
+        workingMemory.insert( bob );
+        workingMemory.insert( c1 );
+        workingMemory.insert( c2 );
+        workingMemory.insert( c3 );
+
+        final byte[] wm = serializeOut( workingMemory );
+
+        workingMemory = ruleBase.newStatefulSession( new ByteArrayInputStream( wm ) );
+
+        assertEquals( 4,
+                      IteratorToList.convert( workingMemory.iterateObjects() ).size() );
+
+        assertEquals( 2,
+                      workingMemory.getAgenda().agendaSize() );
+
+        workingMemory.fireAllRules();
+
+        final List list = (List) workingMemory.getGlobal( "list" );
+
+        assertEquals( 2,
+                      list.size() );
+        // because of agenda-groups
+        assertEquals( 2,
+                      ((List) list.get( 0 )).size() );
+        assertEquals( 15,
+                      ((Number) list.get( 1 )).intValue() );
+
+    }
+
     public void testSerializeWorkingMemoryAndRuleBase1() throws Exception {
         // has the first newStatefulSession before the ruleBase is serialised
         final Reader reader = new InputStreamReader( getClass().getResourceAsStream( "test_Serializable.drl" ) );
@@ -869,6 +938,31 @@ public class MarshallingTest extends TestCase {
         serializedRulebase = serializeOut( ruleBase );
         
         session.dispose();
+        
+        ruleBase = (RuleBase) serializeIn( serializedRulebase );
+        session = ruleBase.newStatefulSession( new ByteArrayInputStream( serializedSession ) );    //  throws java.lang.ClassNotFoundException Exception
+        results = (List) session.getGlobal( "results" );
+             
+        InternalFactHandle stilton5 = (InternalFactHandle) session.insert( new Cheese( "stilton", 30 ) );
+        InternalFactHandle brie5 = (InternalFactHandle) session.insert( new Cheese( "brie", 30 ) );
+        InternalFactHandle bob7 = (InternalFactHandle) session.insert( new Person( "bob", 30 ) );
+        InternalFactHandle bob8 = (InternalFactHandle) session.insert( new Person( "bob", 40 ) );
+        session.fireAllRules();
+ 
+        assertEquals( 8,
+                      results.size() );
+        assertEquals( bob7.getObject(),
+                      results.get( 6 ) );
+        assertEquals( bob8.getObject(),
+                      results.get( 7 ) );
+       
+        serializedSession = null;
+        serializedRulebase = null;
+       
+        serializedSession = serializeOut( session );
+        serializedRulebase = serializeOut( ruleBase );
+       
+        session.dispose();        
        
     }
     
