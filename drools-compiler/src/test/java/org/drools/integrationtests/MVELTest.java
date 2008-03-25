@@ -27,7 +27,9 @@ import org.drools.compiler.DroolsParserException;
 import org.drools.compiler.PackageBuilder;
 import org.drools.lang.descr.PackageDescr;
 import org.drools.rule.Package;
+import org.mvel.ExpressionCompiler;
 import org.mvel.MVEL;
+import org.mvel.ParserContext;
 
 public class MVELTest extends TestCase {
     public void testHelloWorld() throws Exception {
@@ -125,7 +127,7 @@ public class MVELTest extends TestCase {
         }
  
     }    
-
+    
     private RuleBase loadRuleBase(final Reader reader) throws IOException,
                                                       DroolsParserException,
                                                       Exception {

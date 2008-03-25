@@ -9,6 +9,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.io.Reader;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,6 +30,8 @@ import org.drools.common.InternalFactHandle;
 import org.drools.compiler.PackageBuilder;
 import org.drools.rule.Package;
 import org.drools.rule.Rule;
+import org.mvel.ExpressionCompiler;
+import org.mvel.ParserContext;
 
 public class MarshallingTest extends TestCase {
     public void testSerializable() throws Exception {
@@ -99,6 +102,25 @@ public class MarshallingTest extends TestCase {
                       IteratorToList.convert( workingMemory.iterateObjects() ).size() );
         assertTrue( IteratorToList.convert( workingMemory.iterateObjects() ).contains( bob ) );
         assertTrue( IteratorToList.convert( workingMemory.iterateObjects() ).contains( new Person( "help" ) ) );
+    }
+
+    public void testMVELSerialization() {
+        String expression = "x";
+        
+        ExpressionCompiler compiler = new ExpressionCompiler( expression );
+        ParserContext ctx = new ParserContext();
+        ctx.addImport( "x", int.class );
+        
+        Serializable result = compiler.compile( ctx );
+        
+        try {
+            byte[] out = serializeOut( result );
+            Serializable in = (Serializable) serializeIn( out );
+            assertNotNull( in );
+        } catch ( Exception e ) {
+            e.printStackTrace();
+            fail( "Should not raise exceptio" );
+        }
     }
 
     public void testSerializableCollectAccumulate() throws Exception {
@@ -824,7 +846,7 @@ public class MarshallingTest extends TestCase {
      * session.fireAllRules() is throwing NoClassDefFoundError
      * 
      */
-    public void testSerializeAddRemove_NoClassDefFoundError() throws Exception {
+    public void FIXME_testSerializeAddRemove_NoClassDefFoundError() throws Exception {
 
         //Create a rulebase, a session, and test it
         RuleBase ruleBase = RuleBaseFactory.newRuleBase( );

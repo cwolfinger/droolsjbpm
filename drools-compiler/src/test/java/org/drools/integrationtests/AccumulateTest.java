@@ -634,7 +634,7 @@ public class AccumulateTest extends TestCase {
         execTestAccumulateSum( "test_AccumulateSum.drl" );
     }
 
-    public void FIXME_testAccumulateSumMVEL() throws Exception {
+    public void testAccumulateSumMVEL() throws Exception {
         execTestAccumulateSum( "test_AccumulateSumMVEL.drl" );
     }
 
@@ -642,7 +642,7 @@ public class AccumulateTest extends TestCase {
         execTestAccumulateSum( "test_AccumulateMultiPatternFunctionJava.drl" );
     }
 
-    public void FIXME_testAccumulateMultiPatternWithFunctionMVEL() throws Exception {
+    public void testAccumulateMultiPatternWithFunctionMVEL() throws Exception {
         execTestAccumulateSum( "test_AccumulateMultiPatternFunctionMVEL.drl" );
     }
 
@@ -650,7 +650,7 @@ public class AccumulateTest extends TestCase {
         execTestAccumulateCount( "test_AccumulateCount.drl" );
     }
 
-    public void FIXME_testAccumulateCountMVEL() throws Exception {
+    public void testAccumulateCountMVEL() throws Exception {
         execTestAccumulateCount( "test_AccumulateCountMVEL.drl" );
     }
 
@@ -658,7 +658,7 @@ public class AccumulateTest extends TestCase {
         execTestAccumulateAverage( "test_AccumulateAverage.drl" );
     }
 
-    public void FIXME_testAccumulateAverageMVEL() throws Exception {
+    public void testAccumulateAverageMVEL() throws Exception {
         execTestAccumulateAverage( "test_AccumulateAverageMVEL.drl" );
     }
 
@@ -666,7 +666,7 @@ public class AccumulateTest extends TestCase {
         execTestAccumulateMin( "test_AccumulateMin.drl" );
     }
 
-    public void FIXME_testAccumulateMinMVEL() throws Exception {
+    public void testAccumulateMinMVEL() throws Exception {
         execTestAccumulateMin( "test_AccumulateMinMVEL.drl" );
     }
 
@@ -674,7 +674,7 @@ public class AccumulateTest extends TestCase {
         execTestAccumulateMax( "test_AccumulateMax.drl" );
     }
 
-    public void FIXME_testAccumulateMaxMVEL() throws Exception {
+    public void testAccumulateMaxMVEL() throws Exception {
         execTestAccumulateMax( "test_AccumulateMaxMVEL.drl" );
     }
 

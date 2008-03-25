@@ -18,7 +18,6 @@
 package org.drools.base.accumulators;
 
 import java.io.Serializable;
-import java.util.Map;
 
 import org.drools.WorkingMemory;
 import org.drools.base.mvel.DroolsMVELFactory;
@@ -39,7 +38,10 @@ public class MVELAccumulatorFunctionExecutor
 
     private static final long        serialVersionUID = 400L;
 
-    private final Object             dummy            = new Object();
+    private final Serializable       dummy            = new Serializable() {
+        private static final long serialVersionUID = 8250088684994959861L;
+    };
+    
     private final DroolsMVELFactory  model;
     private final Serializable       expression;
     private final AccumulateFunction function;
