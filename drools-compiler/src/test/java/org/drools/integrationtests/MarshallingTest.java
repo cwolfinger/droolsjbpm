@@ -846,7 +846,7 @@ public class MarshallingTest extends TestCase {
      * session.fireAllRules() is throwing NoClassDefFoundError
      * 
      */
-    public void FIXME_testSerializeAddRemove_NoClassDefFoundError() throws Exception {
+    public void testSerializeAddRemove_NoClassDefFoundError() throws Exception {
 
         //Create a rulebase, a session, and test it
         RuleBase ruleBase = RuleBaseFactory.newRuleBase( );
@@ -956,11 +956,13 @@ public class MarshallingTest extends TestCase {
         serializedSession = null;
         serializedRulebase = null;
         
-        serializedSession = serializeOut( session );
+        // Now serialize rulebase and session again
         serializedRulebase = serializeOut( ruleBase );
+        serializedSession = serializeOut( session );
         
         session.dispose();
-        
+
+        // Deserialize the rulebase and the session 
         ruleBase = (RuleBase) serializeIn( serializedRulebase );
         session = ruleBase.newStatefulSession( new ByteArrayInputStream( serializedSession ) );    //  throws java.lang.ClassNotFoundException Exception
         results = (List) session.getGlobal( "results" );
@@ -973,9 +975,9 @@ public class MarshallingTest extends TestCase {
  
         assertEquals( 8,
                       results.size() );
-        assertEquals( bob7.getObject(),
-                      results.get( 6 ) );
         assertEquals( bob8.getObject(),
+                      results.get( 6 ) );
+        assertEquals( bob7.getObject(),
                       results.get( 7 ) );
        
         serializedSession = null;

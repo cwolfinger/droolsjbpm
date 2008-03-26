@@ -16,10 +16,13 @@ package org.drools.reteoo;
  * limitations under the License.
  */
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 
 import org.drools.RuleBaseConfiguration;
 import org.drools.common.BaseNode;
+import org.drools.common.DroolsObjectInputStream;
 import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.common.NodeMemory;
@@ -72,7 +75,7 @@ public class ObjectTypeNode extends ObjectSource
     private final ObjectType  objectType;
 
     /** The parent Rete node */
-    private final Rete        rete;
+    private transient Rete    rete;
 
     private boolean           skipOnModify     = false;
 
@@ -96,6 +99,12 @@ public class ObjectTypeNode extends ObjectSource
         this.rete = (Rete) this.objectSource;
         this.objectType = objectType;
         setObjectMemoryEnabled( context.isObjectTypeNodeMemoryEnabled() );
+    }
+
+    private void readObject(ObjectInputStream stream) throws IOException,
+                                                     ClassNotFoundException {
+        stream.defaultReadObject();
+        this.rete = ((DroolsObjectInputStream) stream).getRuleBase().getRete();
     }
 
     /**

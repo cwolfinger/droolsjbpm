@@ -428,14 +428,15 @@ public class Rete extends ObjectSource
         protected Class                        shadowClass;
         protected transient ObjectInstantiator instantiator;
 
-        private ObjectTypeNode                 concreteObjectTypeNode;
+        private transient ObjectTypeNode       concreteObjectTypeNode;
+        private ObjectType                     objectType;
 
         public ClassObjectTypeConf(Class clazz,
                                    InternalRuleBase ruleBase) {
             this.cls = clazz;
             this.ruleBase = ruleBase;
 
-            ObjectType objectType = new ClassObjectType( clazz );
+            objectType = new ClassObjectType( clazz );
             this.concreteObjectTypeNode = (ObjectTypeNode) ruleBase.getRete().getObjectTypeNodes().get( objectType );
 
             // JBRULES-1315: do not add OTN dynamically anymore
@@ -599,6 +600,7 @@ public class Rete extends ObjectSource
                                                          ClassNotFoundException {
             stream.defaultReadObject();
             this.ruleBase = ((DroolsObjectInputStream) stream).getRuleBase();
+            this.concreteObjectTypeNode = (ObjectTypeNode) ruleBase.getRete().getObjectTypeNodes().get( objectType );
         }
 
         /**
