@@ -3,14 +3,19 @@
  */
 package org.drools.util;
 
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+
 import org.drools.common.InternalFactHandle;
 import org.drools.reteoo.FactHandleMemory;
 import org.drools.reteoo.ReteTuple;
-import org.drools.util.TupleIndexHashTable.FieldIndexEntry;
 
 public class FactHandleIndexHashTable extends AbstractHashTable
     implements
-    FactHandleMemory {
+    FactHandleMemory,
+    Externalizable {
 
     private static final long           serialVersionUID = 400L;
 
@@ -23,6 +28,10 @@ public class FactHandleIndexHashTable extends AbstractHashTable
     private int                         factSize;
 
     private Index                       index;
+
+    // used only by serialization
+    public FactHandleIndexHashTable() {
+    }
 
     public FactHandleIndexHashTable(final FieldIndex[] index) {
         this( 16,
@@ -61,6 +70,31 @@ public class FactHandleIndexHashTable extends AbstractHashTable
         }
     }
 
+    public void readExternal(ObjectInput in) throws IOException,
+                                            ClassNotFoundException {
+        super.readExternal( in );
+        startResult = in.readInt();
+        factSize = in.readInt();
+        tupleValueIterator = (FieldIndexHashTableIterator) in.readObject();
+        index = (Index) in.readObject();
+
+        resize( table.length,
+                true );
+    }
+
+    public void writeExternal(ObjectOutput out) throws IOException {
+        super.writeExternal( out );
+        out.writeInt( startResult );
+        out.writeInt( factSize );
+        out.writeObject( tupleValueIterator );
+        out.writeObject( index );
+    }
+
+    protected void updateHashCode(Entry entry) {
+        // in theory, all handles inside an entry have the same hashcode
+        ((FieldIndexEntry) entry).setHashCode( this.index.hashCodeOf( ((FieldIndexEntry) entry).getFirst().getFactHandle().getObject() ) );
+    }
+
     public Iterator iterator() {
         throw new UnsupportedOperationException( "FieldIndexHashTable does not support  iterator()" );
     }
@@ -77,7 +111,7 @@ public class FactHandleIndexHashTable extends AbstractHashTable
     public boolean isIndexed() {
         return true;
     }
-    
+
     public Index getIndex() {
         return this.index;
     }
@@ -119,23 +153,23 @@ public class FactHandleIndexHashTable extends AbstractHashTable
             this.entry = entry;
         }
     }
-    
+
     public Entry[] toArray() {
         Entry[] result = new Entry[this.factSize];
         int index = 0;
         for ( int i = 0; i < this.table.length; i++ ) {
-            FieldIndexEntry fieldIndexEntry = (FieldIndexEntry)this.table[i];
+            FieldIndexEntry fieldIndexEntry = (FieldIndexEntry) this.table[i];
             while ( fieldIndexEntry != null ) {
                 Entry entry = fieldIndexEntry.getFirst();
                 while ( entry != null ) {
                     result[index++] = entry;
                     entry = entry.getNext();
-                }       
-                fieldIndexEntry  = ( FieldIndexEntry ) fieldIndexEntry.getNext();
+                }
+                fieldIndexEntry = (FieldIndexEntry) fieldIndexEntry.getNext();
             }
         }
         return result;
-    }  
+    }
 
     public boolean add(final InternalFactHandle handle) {
         final FieldIndexEntry entry = getOrCreate( handle.getObject() );
@@ -165,7 +199,7 @@ public class FactHandleIndexHashTable extends AbstractHashTable
             final FieldIndexEntry next = (FieldIndexEntry) current.next;
             if ( current.matches( object,
                                   hashCode ) ) {
-                if( current.remove( handle ) != null) {
+                if ( current.remove( handle ) != null ) {
                     this.factSize--;
                     // If the FactEntryIndex is empty, then remove it from the hash table
                     if ( current.first == null ) {
@@ -257,7 +291,8 @@ public class FactHandleIndexHashTable extends AbstractHashTable
             this.table[index] = entry;
 
             if ( this.size++ >= this.threshold ) {
-                resize( 2 * this.table.length );
+                resize( 2 * this.table.length,
+                        false );
             }
         }
         return entry;
@@ -273,8 +308,8 @@ public class FactHandleIndexHashTable extends AbstractHashTable
 
         private static final long serialVersionUID = 400L;
         private Entry             next;
-        private FactEntryImpl         first;
-        private final int         hashCode;
+        private FactEntryImpl     first;
+        private int               hashCode;
         private Index             index;
 
         public FieldIndexEntry(final Index index,
@@ -363,5 +398,10 @@ public class FactHandleIndexHashTable extends AbstractHashTable
         public String toString() {
             return "FieldIndexEntry( hashCode=" + this.hashCode + " first=" + this.first + " )";
         }
+
+        public void setHashCode(int hashCode) {
+            this.hashCode = hashCode;
+        }
     }
+
 }

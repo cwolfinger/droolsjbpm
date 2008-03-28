@@ -3,6 +3,10 @@
  */
 package org.drools.util;
 
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.io.Serializable;
 
 import org.drools.common.InternalFactHandle;
@@ -13,7 +17,7 @@ import org.drools.spi.FieldExtractor;
 
 public abstract class AbstractHashTable
     implements
-    Serializable {
+    Externalizable {
     static final int           MAX_CAPACITY = 1 << 30;
 
     protected int              size;
@@ -30,7 +34,7 @@ public abstract class AbstractHashTable
         this( 16,
               0.75f );
     }
-    
+
     public AbstractHashTable(final int capacity,
                              final float loadFactor) {
         this.loadFactor = loadFactor;
@@ -38,18 +42,38 @@ public abstract class AbstractHashTable
         this.table = new Entry[capacity];
         this.comparator = EqualityEquals.getInstance();
     }
-    
+
     public AbstractHashTable(final Entry[] table) {
-        this( 0.75f, table);
-    }      
-    
+        this( 0.75f,
+              table );
+    }
+
     public AbstractHashTable(final float loadFactor,
                              final Entry[] table) {
         this.loadFactor = loadFactor;
         this.threshold = (int) (table.length * loadFactor);
         this.table = table;
         this.comparator = EqualityEquals.getInstance();
-    }    
+    }
+
+    public void readExternal(ObjectInput in) throws IOException,
+                                            ClassNotFoundException {
+        size = in.readInt();
+        threshold = in.readInt();
+        loadFactor = in.readFloat();
+        comparator = (ObjectComparator) in.readObject();
+        iterator = (HashTableIterator) in.readObject();
+        table = (Entry[]) in.readObject();
+    }
+
+    public void writeExternal(ObjectOutput out) throws IOException {
+        out.writeInt( size );
+        out.writeInt( threshold );
+        out.writeFloat( loadFactor );
+        out.writeObject( comparator );
+        out.writeObject( iterator );
+        out.writeObject( table );
+    }
 
     public Iterator iterator() {
         if ( this.iterator == null ) {
@@ -59,19 +83,19 @@ public abstract class AbstractHashTable
         this.iterator.reset();
         return this.iterator;
     }
-    
+
     public Iterator newIterator() {
         HashTableIterator iterator = new HashTableIterator( this );
         iterator.reset();
         return iterator;
-        
+
     }
 
     public void setComparator(final ObjectComparator comparator) {
         this.comparator = comparator;
     }
 
-    protected void resize(final int newCapacity) {
+    protected void resize(final int newCapacity, final boolean recalculateHashCode ) {
         final Entry[] oldTable = this.table;
         final int oldCapacity = oldTable.length;
         if ( oldCapacity == AbstractHashTable.MAX_CAPACITY ) {
@@ -90,7 +114,10 @@ public abstract class AbstractHashTable
             Entry next = null;
             while ( entry != null ) {
                 next = entry.getNext();
-
+                
+                if( recalculateHashCode ) {
+                    updateHashCode( entry );
+                }
                 final int index = indexOf( entry.hashCode(),
                                            newTable.length );
                 entry.setNext( newTable[index] );
@@ -102,8 +129,10 @@ public abstract class AbstractHashTable
 
         this.table = newTable;
         this.threshold = (int) (newCapacity * this.loadFactor);
-    }     
-    
+    }
+
+    protected abstract void updateHashCode(Entry entry);
+
     public Entry[] toArray() {
         Entry[] result = new Entry[this.size];
         int index = 0;
@@ -368,7 +397,7 @@ public abstract class AbstractHashTable
         }
 
         public FactEntryImpl(final InternalFactHandle handle,
-                         final int hashCode) {
+                             final int hashCode) {
             this.handle = handle;
             this.hashCode = hashCode;
             //            this.list = new LinkedList();
@@ -405,15 +434,21 @@ public abstract class AbstractHashTable
         public String toString() {
             return "FactEntry( handle=" + this.handle + " hashcode=" + this.hashCode + " next=" + this.next + " )";
         }
+
+        public void setHashCode(int hashCode) {
+            this.hashCode = hashCode;
+        }
     }
 
-    public static class FieldIndex implements Serializable {
+    public static class FieldIndex
+        implements
+        Serializable {
 
         private static final long serialVersionUID = 1020010166351582645L;
-        
-        FieldExtractor   extractor;
-        Declaration      declaration;
-        public Evaluator evaluator;
+
+        FieldExtractor            extractor;
+        Declaration               declaration;
+        public Evaluator          evaluator;
 
         public FieldIndex(final FieldExtractor extractor,
                           final Declaration declaration,
@@ -437,9 +472,11 @@ public abstract class AbstractHashTable
         }
     }
 
-    public static interface Index extends Serializable {        
+    public static interface Index
+        extends
+        Serializable {
         public FieldIndex getFieldIndex(int index);
-        
+
         public int hashCodeOf(ReteTuple tuple);
 
         public int hashCodeOf(Object object);
@@ -459,12 +496,12 @@ public abstract class AbstractHashTable
         Index {
 
         private static final long serialVersionUID = -1022777958435032326L;
-        
-        private FieldExtractor extractor;
-        private Declaration    declaration;
-        private Evaluator      evaluator;
 
-        private int            startResult;
+        private FieldExtractor    extractor;
+        private Declaration       declaration;
+        private Evaluator         evaluator;
+
+        private int               startResult;
 
         public SingleIndex(final FieldIndex[] indexes,
                            final int startResult) {
@@ -477,21 +514,24 @@ public abstract class AbstractHashTable
 
         public FieldIndex getFieldIndex(int index) {
             if ( index > 0 ) {
-                throw new IllegalArgumentException("Index position " + index + " does not exist" );
+                throw new IllegalArgumentException( "Index position " + index + " does not exist" );
             }
-            return new FieldIndex(extractor, declaration, evaluator);
+            return new FieldIndex( extractor,
+                                   declaration,
+                                   evaluator );
         }
-        
-        
+
         public int hashCodeOf(final Object object) {
             int hashCode = this.startResult;
-            hashCode = TupleIndexHashTable.PRIME * hashCode + this.extractor.getHashCode( null, object );
+            hashCode = TupleIndexHashTable.PRIME * hashCode + this.extractor.getHashCode( null,
+                                                                                          object );
             return rehash( hashCode );
         }
 
         public int hashCodeOf(final ReteTuple tuple) {
             int hashCode = this.startResult;
-            hashCode = TupleIndexHashTable.PRIME * hashCode + this.declaration.getHashCode( null, tuple.get( this.declaration ).getObject() );
+            hashCode = TupleIndexHashTable.PRIME * hashCode + this.declaration.getHashCode( null,
+                                                                                            tuple.get( this.declaration ).getObject() );
             return rehash( hashCode );
         }
 
@@ -502,7 +542,8 @@ public abstract class AbstractHashTable
             return this.evaluator.evaluate( null,
                                             this.declaration.getExtractor(),
                                             left,
-                                            this.extractor, right );
+                                            this.extractor,
+                                            right );
         }
 
         public boolean equal(final Object object1,
@@ -511,7 +552,8 @@ public abstract class AbstractHashTable
             return this.evaluator.evaluate( null,
                                             this.extractor,
                                             object1,
-                                            this.extractor, object2 );
+                                            this.extractor,
+                                            object2 );
         }
 
         public boolean equal(final ReteTuple tuple1,
@@ -521,7 +563,8 @@ public abstract class AbstractHashTable
             return this.evaluator.evaluate( null,
                                             this.declaration.getExtractor(),
                                             object1,
-                                            this.declaration.getExtractor(), object2 );
+                                            this.declaration.getExtractor(),
+                                            object2 );
         }
 
         public int rehash(int h) {
@@ -539,11 +582,11 @@ public abstract class AbstractHashTable
         Index {
 
         private static final long serialVersionUID = 5453765340969897686L;
-        
-        private FieldIndex index0;
-        private FieldIndex index1;
 
-        private int        startResult;
+        private FieldIndex        index0;
+        private FieldIndex        index1;
+
+        private int               startResult;
 
         public DoubleCompositeIndex(final FieldIndex[] indexes,
                                     final int startResult) {
@@ -552,23 +595,25 @@ public abstract class AbstractHashTable
             this.index0 = indexes[0];
             this.index1 = indexes[1];
         }
-        
+
         public FieldIndex getFieldIndex(int index) {
             switch ( index ) {
-                case 0:
+                case 0 :
                     return index0;
-                case 1:
+                case 1 :
                     return index1;
-                default:
-                    throw new IllegalArgumentException("Index position " + index + " does not exist" );
+                default :
+                    throw new IllegalArgumentException( "Index position " + index + " does not exist" );
             }
         }
 
         public int hashCodeOf(final Object object) {
             int hashCode = this.startResult;
 
-            hashCode = TupleIndexHashTable.PRIME * hashCode + this.index0.extractor.getHashCode( null, object );
-            hashCode = TupleIndexHashTable.PRIME * hashCode + this.index1.extractor.getHashCode( null, object );
+            hashCode = TupleIndexHashTable.PRIME * hashCode + this.index0.extractor.getHashCode( null,
+                                                                                                 object );
+            hashCode = TupleIndexHashTable.PRIME * hashCode + this.index1.extractor.getHashCode( null,
+                                                                                                 object );
 
             return rehash( hashCode );
         }
@@ -576,8 +621,10 @@ public abstract class AbstractHashTable
         public int hashCodeOf(final ReteTuple tuple) {
             int hashCode = this.startResult;
 
-            hashCode = TupleIndexHashTable.PRIME * hashCode + this.index0.declaration.getHashCode( null, tuple.get( this.index0.declaration ).getObject() );
-            hashCode = TupleIndexHashTable.PRIME * hashCode + this.index1.declaration.getHashCode( null, tuple.get( this.index1.declaration ).getObject() );
+            hashCode = TupleIndexHashTable.PRIME * hashCode + this.index0.declaration.getHashCode( null,
+                                                                                                   tuple.get( this.index0.declaration ).getObject() );
+            hashCode = TupleIndexHashTable.PRIME * hashCode + this.index1.declaration.getHashCode( null,
+                                                                                                   tuple.get( this.index1.declaration ).getObject() );
 
             return rehash( hashCode );
         }
@@ -590,10 +637,12 @@ public abstract class AbstractHashTable
             return this.index0.evaluator.evaluate( null,
                                                    this.index0.declaration.getExtractor(),
                                                    left1,
-                                                   this.index0.extractor, right ) && this.index1.evaluator.evaluate( null,
+                                                   this.index0.extractor,
+                                                   right ) && this.index1.evaluator.evaluate( null,
                                                                                               this.index1.declaration.getExtractor(),
                                                                                               left2,
-                                                                                              this.index1.extractor, right );
+                                                                                              this.index1.extractor,
+                                                                                              right );
         }
 
         public boolean equal(final ReteTuple tuple1,
@@ -607,10 +656,12 @@ public abstract class AbstractHashTable
             return this.index0.evaluator.evaluate( null,
                                                    this.index0.declaration.getExtractor(),
                                                    object11,
-                                                   this.index0.declaration.getExtractor(), object12 ) && this.index1.evaluator.evaluate( null,
+                                                   this.index0.declaration.getExtractor(),
+                                                   object12 ) && this.index1.evaluator.evaluate( null,
                                                                                                  this.index1.declaration.getExtractor(),
                                                                                                  object21,
-                                                                                                 this.index1.declaration.getExtractor(), object22 );
+                                                                                                 this.index1.declaration.getExtractor(),
+                                                                                                 object22 );
         }
 
         public boolean equal(final Object object1,
@@ -618,10 +669,12 @@ public abstract class AbstractHashTable
             return this.index0.evaluator.evaluate( null,
                                                    this.index0.extractor,
                                                    object1,
-                                                   this.index0.extractor, object2 ) && this.index1.evaluator.evaluate( null,
+                                                   this.index0.extractor,
+                                                   object2 ) && this.index1.evaluator.evaluate( null,
                                                                                                 this.index1.extractor,
                                                                                                 object1,
-                                                                                                this.index1.extractor, object2 );
+                                                                                                this.index1.extractor,
+                                                                                                object2 );
         }
 
         public int rehash(int h) {
@@ -636,14 +689,14 @@ public abstract class AbstractHashTable
     public static class TripleCompositeIndex
         implements
         Index {
-        
-        private static final long serialVersionUID = 7743486670399440233L;
-        
-        private FieldIndex index0;
-        private FieldIndex index1;
-        private FieldIndex index2;
 
-        private int        startResult;
+        private static final long serialVersionUID = 7743486670399440233L;
+
+        private FieldIndex        index0;
+        private FieldIndex        index1;
+        private FieldIndex        index2;
+
+        private int               startResult;
 
         public TripleCompositeIndex(final FieldIndex[] indexes,
                                     final int startResult) {
@@ -653,26 +706,29 @@ public abstract class AbstractHashTable
             this.index1 = indexes[1];
             this.index2 = indexes[2];
         }
-        
+
         public FieldIndex getFieldIndex(int index) {
             switch ( index ) {
-                case 0:
+                case 0 :
                     return index0;
-                case 1:
+                case 1 :
                     return index1;
-                case 2:
-                    return index2;                    
-                default:
-                    throw new IllegalArgumentException("Index position " + index + " does not exist" );
+                case 2 :
+                    return index2;
+                default :
+                    throw new IllegalArgumentException( "Index position " + index + " does not exist" );
             }
-        }        
+        }
 
         public int hashCodeOf(final Object object) {
             int hashCode = this.startResult;
 
-            hashCode = TupleIndexHashTable.PRIME * hashCode + this.index0.extractor.getHashCode( null, object );;
-            hashCode = TupleIndexHashTable.PRIME * hashCode + this.index1.extractor.getHashCode( null, object );;
-            hashCode = TupleIndexHashTable.PRIME * hashCode + this.index2.extractor.getHashCode( null, object );;
+            hashCode = TupleIndexHashTable.PRIME * hashCode + this.index0.extractor.getHashCode( null,
+                                                                                                 object );;
+            hashCode = TupleIndexHashTable.PRIME * hashCode + this.index1.extractor.getHashCode( null,
+                                                                                                 object );;
+            hashCode = TupleIndexHashTable.PRIME * hashCode + this.index2.extractor.getHashCode( null,
+                                                                                                 object );;
 
             return rehash( hashCode );
         }
@@ -680,9 +736,12 @@ public abstract class AbstractHashTable
         public int hashCodeOf(final ReteTuple tuple) {
             int hashCode = this.startResult;
 
-            hashCode = TupleIndexHashTable.PRIME * hashCode + this.index0.declaration.getHashCode( null, tuple.get( this.index0.declaration ).getObject() );
-            hashCode = TupleIndexHashTable.PRIME * hashCode + this.index1.declaration.getHashCode( null, tuple.get( this.index1.declaration ).getObject() );
-            hashCode = TupleIndexHashTable.PRIME * hashCode + this.index2.declaration.getHashCode( null, tuple.get( this.index2.declaration ).getObject() );
+            hashCode = TupleIndexHashTable.PRIME * hashCode + this.index0.declaration.getHashCode( null,
+                                                                                                   tuple.get( this.index0.declaration ).getObject() );
+            hashCode = TupleIndexHashTable.PRIME * hashCode + this.index1.declaration.getHashCode( null,
+                                                                                                   tuple.get( this.index1.declaration ).getObject() );
+            hashCode = TupleIndexHashTable.PRIME * hashCode + this.index2.declaration.getHashCode( null,
+                                                                                                   tuple.get( this.index2.declaration ).getObject() );
 
             return rehash( hashCode );
         }
@@ -696,13 +755,16 @@ public abstract class AbstractHashTable
             return this.index0.evaluator.evaluate( null,
                                                    this.index0.declaration.getExtractor(),
                                                    left1,
-                                                   this.index0.extractor, right ) && this.index1.evaluator.evaluate( null,
+                                                   this.index0.extractor,
+                                                   right ) && this.index1.evaluator.evaluate( null,
                                                                                               this.index1.declaration.getExtractor(),
                                                                                               left2,
-                                                                                              this.index1.extractor, right ) && this.index2.evaluator.evaluate( null,
+                                                                                              this.index1.extractor,
+                                                                                              right ) && this.index2.evaluator.evaluate( null,
                                                                                                                                          this.index2.declaration.getExtractor(),
                                                                                                                                          left3,
-                                                                                                                                         this.index2.extractor, right );
+                                                                                                                                         this.index2.extractor,
+                                                                                                                                         right );
         }
 
         public boolean equal(final ReteTuple tuple1,
@@ -717,13 +779,16 @@ public abstract class AbstractHashTable
             return this.index0.evaluator.evaluate( null,
                                                    this.index0.declaration.getExtractor(),
                                                    object11,
-                                                   this.index0.declaration.getExtractor(), object12 ) && this.index1.evaluator.evaluate( null,
+                                                   this.index0.declaration.getExtractor(),
+                                                   object12 ) && this.index1.evaluator.evaluate( null,
                                                                                                  this.index1.declaration.getExtractor(),
                                                                                                  object21,
-                                                                                                 this.index1.declaration.getExtractor(), object22 ) && this.index2.evaluator.evaluate( null,
+                                                                                                 this.index1.declaration.getExtractor(),
+                                                                                                 object22 ) && this.index2.evaluator.evaluate( null,
                                                                                                                                                this.index2.declaration.getExtractor(),
                                                                                                                                                object31,
-                                                                                                                                               this.index2.declaration.getExtractor(), object32 );
+                                                                                                                                               this.index2.declaration.getExtractor(),
+                                                                                                                                               object32 );
         }
 
         public boolean equal(final Object object1,
@@ -731,13 +796,16 @@ public abstract class AbstractHashTable
             return this.index0.evaluator.evaluate( null,
                                                    this.index0.extractor,
                                                    object1,
-                                                   this.index0.extractor, object2 ) && this.index1.evaluator.evaluate( null,
+                                                   this.index0.extractor,
+                                                   object2 ) && this.index1.evaluator.evaluate( null,
                                                                                                 this.index1.extractor,
                                                                                                 object1,
-                                                                                                this.index1.extractor, object2 ) && this.index2.evaluator.evaluate( null,
+                                                                                                this.index1.extractor,
+                                                                                                object2 ) && this.index2.evaluator.evaluate( null,
                                                                                                                                              this.index2.extractor,
                                                                                                                                              object1,
-                                                                                                                                             this.index2.extractor, object2 );
+                                                                                                                                             this.index2.extractor,
+                                                                                                                                             object2 );
         }
 
         public int rehash(int h) {

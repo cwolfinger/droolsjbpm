@@ -1007,8 +1007,9 @@ public abstract class AbstractWorkingMemory
             this.lock.lock();
             this.ruleBase.executeQueuedActions();
 
-            final InternalFactHandle handle = (InternalFactHandle) factHandle;
-            if ( handle.getId() == -1 ) {
+            // make sure the handles if from this working memory
+            final InternalFactHandle handle = (InternalFactHandle) this.assertMap.get( factHandle );
+            if ( handle == null || handle.getId() == -1 ) {
                 // can't retract an already retracted handle
                 return;
             }
@@ -1232,19 +1233,21 @@ public abstract class AbstractWorkingMemory
             this.lock.lock();
             this.ruleBase.executeQueuedActions();
 
-            // only needed if we maintain tms, but either way we must get it before we do the retract
-            int status = -1;
-            if ( this.maintainTms ) {
-                status = ((InternalFactHandle) factHandle).getEqualityKey().getStatus();
-            }
-            final InternalFactHandle handle = (InternalFactHandle) factHandle;
-            final Object originalObject = (handle.isShadowFact()) ? ((ShadowProxy) handle.getObject()).getShadowedObject() : handle.getObject();
+            // make sure the handle is from this working memory
+            final InternalFactHandle handle = (InternalFactHandle) this.assertMap.get( factHandle );
 
-            if ( handle.getId() == -1 || object == null ) {
+            if ( handle == null || handle.getId() == -1 || object == null ) {
                 // the handle is invalid, most likely already  retracted, so return
                 // and we cannot assert a null object
                 return;
             }
+
+            // only needed if we maintain tms, but either way we must get it before we do the retract
+            int status = -1;
+            if ( this.maintainTms ) {
+                status = handle.getEqualityKey().getStatus();
+            }
+            final Object originalObject = (handle.isShadowFact()) ? ((ShadowProxy) handle.getObject()).getShadowedObject() : handle.getObject();
 
             if ( activation != null ) {
                 // release resources so that they can be GC'ed

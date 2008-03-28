@@ -3,9 +3,14 @@
  */
 package org.drools.util;
 
-import org.drools.util.AbstractHashTable.EqualityEquals;
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 
-public class ObjectHashMap extends AbstractHashTable {
+public class ObjectHashMap extends AbstractHashTable
+    implements
+    Externalizable {
 
     private static final long serialVersionUID = 400L;
 
@@ -19,15 +24,32 @@ public class ObjectHashMap extends AbstractHashTable {
         super( capacity,
                loadFactor );
     }
-    
+
     public ObjectHashMap(final Entry[] table) {
-        super( 0.75f, table);
-    }      
-    
+        super( 0.75f,
+               table );
+    }
+
     public ObjectHashMap(final float loadFactor,
-                             final Entry[] table) {
-        super(loadFactor, table);
-    }     
+                         final Entry[] table) {
+        super( loadFactor,
+               table );
+    }
+
+    public void readExternal(ObjectInput in) throws IOException,
+                                            ClassNotFoundException {
+        super.readExternal( in );
+        resize( table.length,
+                true );
+    }
+
+    public void writeExternal(ObjectOutput out) throws IOException {
+        super.writeExternal( out );
+    }
+
+    protected void updateHashCode(Entry entry) {
+        ((ObjectEntry) entry).setHashCode( this.comparator.hashCodeOf( ((ObjectEntry) entry).getKey() ) );
+    }
 
     public Object put(final Object key,
                       final Object value) {
@@ -71,7 +93,7 @@ public class ObjectHashMap extends AbstractHashTable {
         this.table[index] = entry;
 
         if ( this.size++ >= this.threshold ) {
-            resize( 2 * this.table.length );
+            resize( 2 * this.table.length, false );
         }
         return null;
     }
@@ -145,6 +167,10 @@ public class ObjectHashMap extends AbstractHashTable {
                            final int hashCode) {
             this.key = key;
             this.value = value;
+            this.hashCode = hashCode;
+        }
+
+        public void setHashCode(int hashCode) {
             this.hashCode = hashCode;
         }
 

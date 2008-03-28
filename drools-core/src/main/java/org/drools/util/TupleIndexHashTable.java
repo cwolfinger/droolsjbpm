@@ -3,6 +3,10 @@
  */
 package org.drools.util;
 
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+
 import org.drools.common.InternalFactHandle;
 import org.drools.reteoo.ReteTuple;
 import org.drools.reteoo.TupleMemory;
@@ -23,6 +27,10 @@ public class TupleIndexHashTable extends AbstractHashTable
     private int                             factSize;
 
     private Index                           index;
+
+    // used only for serialization
+    public TupleIndexHashTable() {
+    }
 
     public TupleIndexHashTable(final FieldIndex[] index) {
         this( 16,
@@ -61,6 +69,33 @@ public class TupleIndexHashTable extends AbstractHashTable
         }
     }
 
+    public void readExternal(ObjectInput in) throws IOException,
+                                            ClassNotFoundException {
+        super.readExternal( in );
+        startResult = in.readInt();
+        factSize = in.readInt();
+        tupleValueIterator = (FieldIndexHashTableIterator) in.readObject();
+        tupleValueFullIterator = (FieldIndexHashTableFullIterator) in.readObject();
+        index = (Index) in.readObject();
+
+        resize( table.length,
+                true );
+    }
+
+    public void writeExternal(ObjectOutput out) throws IOException {
+        super.writeExternal( out );
+        out.writeInt( startResult );
+        out.writeInt( factSize );
+        out.writeObject( tupleValueIterator );
+        out.writeObject( tupleValueFullIterator );
+        out.writeObject( index );
+    }
+
+    protected void updateHashCode(Entry entry) {
+        // in theory, all tuples inside an entry have the same hashcode
+        ((FieldIndexEntry) entry).setHashCode( this.index.hashCodeOf( ((FieldIndexEntry) entry).getFirst() ) );
+    }
+
     public Iterator iterator() {
         if ( this.tupleValueFullIterator == null ) {
             this.tupleValueFullIterator = new FieldIndexHashTableFullIterator( this );
@@ -81,7 +116,7 @@ public class TupleIndexHashTable extends AbstractHashTable
     public boolean isIndexed() {
         return true;
     }
-    
+
     public Index getIndex() {
         return this.index;
     }
@@ -170,23 +205,23 @@ public class TupleIndexHashTable extends AbstractHashTable
             this.entry = null;
         }
     }
-    
+
     public Entry[] toArray() {
         Entry[] result = new Entry[this.factSize];
         int index = 0;
         for ( int i = 0; i < this.table.length; i++ ) {
-            FieldIndexEntry fieldIndexEntry = (FieldIndexEntry)this.table[i];
+            FieldIndexEntry fieldIndexEntry = (FieldIndexEntry) this.table[i];
             while ( fieldIndexEntry != null ) {
                 Entry entry = fieldIndexEntry.getFirst();
                 while ( entry != null ) {
                     result[index++] = entry;
                     entry = entry.getNext();
-                }       
-                fieldIndexEntry  = ( FieldIndexEntry ) fieldIndexEntry.getNext();
+                }
+                fieldIndexEntry = (FieldIndexEntry) fieldIndexEntry.getNext();
             }
         }
         return result;
-    }       
+    }
 
     public void add(final ReteTuple tuple) {
         final FieldIndexEntry entry = getOrCreate( tuple );
@@ -300,7 +335,8 @@ public class TupleIndexHashTable extends AbstractHashTable
             this.table[index] = entry;
 
             if ( this.size++ >= this.threshold ) {
-                resize( 2 * this.table.length );
+                resize( 2 * this.table.length,
+                        false );
             }
         }
         return entry;
@@ -317,12 +353,16 @@ public class TupleIndexHashTable extends AbstractHashTable
         private static final long serialVersionUID = 400L;
         private Entry             next;
         private ReteTuple         first;
-        private final int         hashCode;
+        private int               hashCode;
         private Index             index;
 
         public FieldIndexEntry(final Index index,
                                final int hashCode) {
             this.index = index;
+            this.hashCode = hashCode;
+        }
+
+        public void setHashCode(int hashCode) {
             this.hashCode = hashCode;
         }
 

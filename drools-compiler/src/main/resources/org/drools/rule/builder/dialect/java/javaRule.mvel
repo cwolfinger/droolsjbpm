@@ -22,7 +22,9 @@ public static boolean @{methodName}(@foreach{declarationTypes as type, declarati
 >>=::
 
 accumulateInnerClass() ::=<<
-public static class @{className} {
+public static class @{className} implements java.io.Serializable {
+ 
+    private static final long    serialVersionUID = 400L;
 
     @foreach{attributesTypes as type, attributes as attr} private @{type} @{attr};
     @end{}    

@@ -3,13 +3,19 @@
  */
 package org.drools.util;
 
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+
 import org.drools.common.InternalFactHandle;
 import org.drools.reteoo.ReteTuple;
 import org.drools.reteoo.TupleMemory;
 
 public class TupleHashTable extends AbstractHashTable
     implements
-    TupleMemory {
+    TupleMemory,
+    Externalizable {
     public TupleHashTable() {
         this( 16,
               0.75f );
@@ -19,6 +25,23 @@ public class TupleHashTable extends AbstractHashTable
                           final float loadFactor) {
         super( capacity,
                loadFactor );
+    }
+
+    public void readExternal(ObjectInput in) throws IOException,
+                                            ClassNotFoundException {
+        super.readExternal( in );
+        // since tuples does no vary hashcode, this should not need
+        // to rebuild on deserialization
+        //        resize( table.length,
+        //                true );
+    }
+
+    public void writeExternal(ObjectOutput out) throws IOException {
+        super.writeExternal( out );
+    }
+
+    protected void updateHashCode(Entry entry) {
+        // nothing to do
     }
 
     public Iterator iterator(final InternalFactHandle handle) {
@@ -34,7 +57,8 @@ public class TupleHashTable extends AbstractHashTable
         this.table[index] = tuple;
 
         if ( this.size++ >= this.threshold ) {
-            resize( 2 * this.table.length );
+            resize( 2 * this.table.length,
+                    false );
         }
     }
 
