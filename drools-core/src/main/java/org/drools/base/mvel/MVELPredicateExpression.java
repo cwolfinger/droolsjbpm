@@ -16,11 +16,14 @@ public class MVELPredicateExpression
 
     private final Serializable      expr;
     private final DroolsMVELFactory prototype;
+    private final String            exprStr;
 
     public MVELPredicateExpression(final Serializable expr,
-                                   final DroolsMVELFactory factory) {
+                                   final DroolsMVELFactory factory,
+                                   final String exprStr ) {
         this.expr = expr;
         this.prototype = factory;
+        this.exprStr = exprStr;
     }
     
     public Object createContext() {
@@ -43,6 +46,10 @@ public class MVELPredicateExpression
                                                                  object,
                                                                  factory );
         return result.booleanValue();
+    }
+    
+    public String toString() {
+        return "eval( "+exprStr+" )";
     }
 
 }

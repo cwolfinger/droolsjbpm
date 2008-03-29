@@ -133,6 +133,10 @@ public class @{invokerClassName} implements org.drools.spi.PredicateExpression, 
     @includeByRef{getMethodBytecode(package = package, ruleClassName = ruleClassName, methodName = methodName)}
     
     @includeByRef{equals()}       
+    
+    public String toString() {
+        return "eval( @{expression} )";
+    }
 }     
 >>=::
 
