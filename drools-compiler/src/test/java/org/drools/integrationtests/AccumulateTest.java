@@ -26,7 +26,6 @@ import org.drools.RuleBaseConfiguration;
 import org.drools.RuleBaseFactory;
 import org.drools.RuntimeDroolsException;
 import org.drools.StatefulSession;
-import org.drools.WorkingMemory;
 import org.drools.common.InternalFactHandle;
 import org.drools.compiler.DrlParser;
 import org.drools.compiler.DroolsParserException;
