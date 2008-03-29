@@ -27,7 +27,6 @@ import org.drools.RuleBaseFactory;
 import org.drools.RuntimeDroolsException;
 import org.drools.StatefulSession;
 import org.drools.WorkingMemory;
-import org.drools.base.ShadowProxy;
 import org.drools.common.InternalFactHandle;
 import org.drools.compiler.DrlParser;
 import org.drools.compiler.DroolsParserException;
@@ -650,43 +649,43 @@ public class AccumulateTest extends TestCase {
         execTestAccumulateSum( "test_AccumulateMultiPatternFunctionMVEL.drl" );
     }
 
-    public void FIXME_testAccumulateCountJava() throws Exception {
+    public void testAccumulateCountJava() throws Exception {
         execTestAccumulateCount( "test_AccumulateCount.drl" );
     }
 
-    public void FIXME_testAccumulateCountMVEL() throws Exception {
+    public void testAccumulateCountMVEL() throws Exception {
         execTestAccumulateCount( "test_AccumulateCountMVEL.drl" );
     }
 
-    public void FIXME_testAccumulateAverageJava() throws Exception {
+    public void testAccumulateAverageJava() throws Exception {
         execTestAccumulateAverage( "test_AccumulateAverage.drl" );
     }
 
-    public void FIXME_testAccumulateAverageMVEL() throws Exception {
+    public void testAccumulateAverageMVEL() throws Exception {
         execTestAccumulateAverage( "test_AccumulateAverageMVEL.drl" );
     }
 
-    public void FIXME_testAccumulateMinJava() throws Exception {
+    public void testAccumulateMinJava() throws Exception {
         execTestAccumulateMin( "test_AccumulateMin.drl" );
     }
 
-    public void FIXME_testAccumulateMinMVEL() throws Exception {
+    public void testAccumulateMinMVEL() throws Exception {
         execTestAccumulateMin( "test_AccumulateMinMVEL.drl" );
     }
 
-    public void FIXME_testAccumulateMaxJava() throws Exception {
+    public void testAccumulateMaxJava() throws Exception {
         execTestAccumulateMax( "test_AccumulateMax.drl" );
     }
 
-    public void FIXME_testAccumulateMaxMVEL() throws Exception {
+    public void testAccumulateMaxMVEL() throws Exception {
         execTestAccumulateMax( "test_AccumulateMaxMVEL.drl" );
     }
 
-    public void FIXME_testAccumulateMultiPatternJava() throws Exception {
+    public void testAccumulateMultiPatternJava() throws Exception {
         execTestAccumulateReverseModifyMultiPattern( "test_AccumulateMultiPattern.drl" );
     }
 
-    public void FIXME_testAccumulateMultiPatternMVEL() throws Exception {
+    public void testAccumulateMultiPatternMVEL() throws Exception {
         execTestAccumulateReverseModifyMultiPattern( "test_AccumulateMultiPatternMVEL.drl" );
     }
 
@@ -778,7 +777,7 @@ public class AccumulateTest extends TestCase {
      * @param cheeseHandles
      * @param index
      */
-    private InternalFactHandle updateHandle(StatefulSession wm,
+    private InternalFactHandle updateHandle(final StatefulSession wm,
                                             final InternalFactHandle handle) {
         for ( Iterator it = wm.iterateFactHandles(); it.hasNext(); ) {
             InternalFactHandle newHandle = (InternalFactHandle) it.next();
@@ -794,11 +793,11 @@ public class AccumulateTest extends TestCase {
         final Reader reader = new InputStreamReader( getClass().getResourceAsStream( fileName ) );
         RuleBase ruleBase = loadRuleBase( reader );
 
-        StatefulSession wm = ruleBase.newStatefulSession();
-        final List results = new ArrayList();
-
         byte[] serializedRuleBase = serializeOut( ruleBase );
         ruleBase = (RuleBase) serializeIn( serializedRuleBase );
+
+        StatefulSession wm = ruleBase.newStatefulSession();
+        List results = new ArrayList();
 
         wm.setGlobal( "results",
                       results );
@@ -813,11 +812,11 @@ public class AccumulateTest extends TestCase {
         final Person bob = new Person( "Bob",
                                        "stilton" );
 
-        final FactHandle[] cheeseHandles = new FactHandle[cheese.length];
+        final InternalFactHandle[] cheeseHandles = new InternalFactHandle[cheese.length];
         for ( int i = 0; i < cheese.length; i++ ) {
-            cheeseHandles[i] = wm.insert( cheese[i] );
+            cheeseHandles[i] = (InternalFactHandle) wm.insert( cheese[i] );
         }
-        final FactHandle bobHandle = wm.insert( bob );
+        InternalFactHandle bobHandle = (InternalFactHandle) wm.insert( bob );
 
         serializedRuleBase = serializeOut( ruleBase );
         byte[] serializedSession = serializeOut( wm );
@@ -825,6 +824,7 @@ public class AccumulateTest extends TestCase {
 
         ruleBase = (RuleBase) serializeIn( serializedRuleBase );
         wm = ruleBase.newStatefulSession( new ByteArrayInputStream( serializedSession ) );
+        results = (List) wm.getGlobal( "results" );
 
         // ---------------- 1st scenario
         wm.fireAllRules();
@@ -837,6 +837,8 @@ public class AccumulateTest extends TestCase {
         // ---------------- 2nd scenario
         final int index = 1;
         cheese[index].setPrice( 3 );
+        cheeseHandles[index] = updateHandle( wm,
+                                             cheeseHandles[index] );
         wm.update( cheeseHandles[index],
                    cheese[index] );
         wm.fireAllRules();
@@ -849,6 +851,8 @@ public class AccumulateTest extends TestCase {
 
         // ---------------- 3rd scenario
         bob.setLikes( "brie" );
+        bobHandle = updateHandle( wm,
+                                  bobHandle );
         wm.update( bobHandle,
                    bob );
         wm.fireAllRules();
@@ -860,6 +864,8 @@ public class AccumulateTest extends TestCase {
                              ((Number) results.get( results.size() - 1 )).intValue() );
 
         // ---------------- 4th scenario
+        cheeseHandles[3] = updateHandle( wm,
+                                         cheeseHandles[3] );
         wm.retract( cheeseHandles[3] );
         wm.fireAllRules();
 
@@ -874,11 +880,11 @@ public class AccumulateTest extends TestCase {
         final Reader reader = new InputStreamReader( getClass().getResourceAsStream( fileName ) );
         RuleBase ruleBase = loadRuleBase( reader );
 
-        StatefulSession wm = ruleBase.newStatefulSession();
-        final List results = new ArrayList();
-
         byte[] serializedRuleBase = serializeOut( ruleBase );
         ruleBase = (RuleBase) serializeIn( serializedRuleBase );
+
+        StatefulSession wm = ruleBase.newStatefulSession();
+        List results = new ArrayList();
 
         wm.setGlobal( "results",
                       results );
@@ -893,11 +899,11 @@ public class AccumulateTest extends TestCase {
         final Person bob = new Person( "Bob",
                                        "stilton" );
 
-        final FactHandle[] cheeseHandles = new FactHandle[cheese.length];
+        final InternalFactHandle[] cheeseHandles = new InternalFactHandle[cheese.length];
         for ( int i = 0; i < cheese.length; i++ ) {
-            cheeseHandles[i] = wm.insert( cheese[i] );
+            cheeseHandles[i] = (InternalFactHandle) wm.insert( cheese[i] );
         }
-        final FactHandle bobHandle = wm.insert( bob );
+        InternalFactHandle bobHandle = (InternalFactHandle) wm.insert( bob );
 
         serializedRuleBase = serializeOut( ruleBase );
         byte[] serializedSession = serializeOut( wm );
@@ -905,6 +911,7 @@ public class AccumulateTest extends TestCase {
 
         ruleBase = (RuleBase) serializeIn( serializedRuleBase );
         wm = ruleBase.newStatefulSession( new ByteArrayInputStream( serializedSession ) );
+        results = (List) wm.getGlobal( "results" );
 
         // ---------------- 1st scenario
         wm.fireAllRules();
@@ -915,6 +922,8 @@ public class AccumulateTest extends TestCase {
         // ---------------- 2nd scenario
         final int index = 1;
         cheese[index].setPrice( 9 );
+        cheeseHandles[index] = updateHandle( wm,
+                                             cheeseHandles[index] );
         wm.update( cheeseHandles[index],
                    cheese[index] );
         wm.fireAllRules();
@@ -927,6 +936,8 @@ public class AccumulateTest extends TestCase {
 
         // ---------------- 3rd scenario
         bob.setLikes( "brie" );
+        bobHandle = updateHandle( wm,
+                                  bobHandle );
         wm.update( bobHandle,
                    bob );
         wm.fireAllRules();
@@ -938,6 +949,10 @@ public class AccumulateTest extends TestCase {
                              ((Number) results.get( results.size() - 1 )).intValue() );
 
         // ---------------- 4th scenario
+        cheeseHandles[3] = updateHandle( wm,
+                                         cheeseHandles[3] );
+        cheeseHandles[4] = updateHandle( wm,
+                                         cheeseHandles[4] );
         wm.retract( cheeseHandles[3] );
         wm.retract( cheeseHandles[4] );
         wm.fireAllRules();
@@ -953,11 +968,11 @@ public class AccumulateTest extends TestCase {
         final Reader reader = new InputStreamReader( getClass().getResourceAsStream( fileName ) );
         RuleBase ruleBase = loadRuleBase( reader );
 
-        StatefulSession wm = ruleBase.newStatefulSession();
-        final List results = new ArrayList();
-
         byte[] serializedRuleBase = serializeOut( ruleBase );
         ruleBase = (RuleBase) serializeIn( serializedRuleBase );
+
+        StatefulSession wm = ruleBase.newStatefulSession();
+        List results = new ArrayList();
 
         wm.setGlobal( "results",
                       results );
@@ -972,11 +987,11 @@ public class AccumulateTest extends TestCase {
         final Person bob = new Person( "Bob",
                                        "stilton" );
 
-        final FactHandle[] cheeseHandles = new FactHandle[cheese.length];
+        final InternalFactHandle[] cheeseHandles = new InternalFactHandle[cheese.length];
         for ( int i = 0; i < cheese.length; i++ ) {
-            cheeseHandles[i] = wm.insert( cheese[i] );
+            cheeseHandles[i] = (InternalFactHandle) wm.insert( cheese[i] );
         }
-        final FactHandle bobHandle = wm.insert( bob );
+        InternalFactHandle bobHandle = (InternalFactHandle) wm.insert( bob );
 
         serializedRuleBase = serializeOut( ruleBase );
         byte[] serializedSession = serializeOut( wm );
@@ -984,6 +999,7 @@ public class AccumulateTest extends TestCase {
 
         ruleBase = (RuleBase) serializeIn( serializedRuleBase );
         wm = ruleBase.newStatefulSession( new ByteArrayInputStream( serializedSession ) );
+        results = (List) wm.getGlobal( "results" );
 
         // ---------------- 1st scenario
         wm.fireAllRules();
@@ -994,6 +1010,8 @@ public class AccumulateTest extends TestCase {
         // ---------------- 2nd scenario
         final int index = 1;
         cheese[index].setPrice( 3 );
+        cheeseHandles[index] = updateHandle( wm,
+                                             cheeseHandles[index] );
         wm.update( cheeseHandles[index],
                    cheese[index] );
         wm.fireAllRules();
@@ -1006,6 +1024,8 @@ public class AccumulateTest extends TestCase {
 
         // ---------------- 3rd scenario
         bob.setLikes( "brie" );
+        bobHandle = updateHandle( wm,
+                                  bobHandle );
         wm.update( bobHandle,
                    bob );
         wm.fireAllRules();
@@ -1017,6 +1037,10 @@ public class AccumulateTest extends TestCase {
                              ((Number) results.get( results.size() - 1 )).intValue() );
 
         // ---------------- 4th scenario
+        cheeseHandles[3] = updateHandle( wm,
+                                         cheeseHandles[3] );
+        cheeseHandles[4] = updateHandle( wm,
+                                         cheeseHandles[4] );
         wm.retract( cheeseHandles[3] );
         wm.retract( cheeseHandles[4] );
         wm.fireAllRules();
@@ -1032,14 +1056,14 @@ public class AccumulateTest extends TestCase {
         final Reader reader = new InputStreamReader( getClass().getResourceAsStream( fileName ) );
         RuleBase ruleBase = loadRuleBase( reader );
 
+        byte[] serializedRuleBase = serializeOut( ruleBase );
+        ruleBase = (RuleBase) serializeIn( serializedRuleBase );
+
         StatefulSession wm = ruleBase.newStatefulSession();
-        final List results = new ArrayList();
+        List results = new ArrayList();
 
         wm.setGlobal( "results",
                       results );
-
-        byte[] serializedRuleBase = serializeOut( ruleBase );
-        ruleBase = (RuleBase) serializeIn( serializedRuleBase );
 
         final Cheese[] cheese = new Cheese[]{new Cheese( "stilton",
                                                          4 ), new Cheese( "stilton",
@@ -1051,11 +1075,11 @@ public class AccumulateTest extends TestCase {
         final Person bob = new Person( "Bob",
                                        "stilton" );
 
-        final FactHandle[] cheeseHandles = new FactHandle[cheese.length];
+        final InternalFactHandle[] cheeseHandles = new InternalFactHandle[cheese.length];
         for ( int i = 0; i < cheese.length; i++ ) {
-            cheeseHandles[i] = wm.insert( cheese[i] );
+            cheeseHandles[i] = (InternalFactHandle) wm.insert( cheese[i] );
         }
-        final FactHandle bobHandle = wm.insert( bob );
+        InternalFactHandle bobHandle = (InternalFactHandle) wm.insert( bob );
 
         serializedRuleBase = serializeOut( ruleBase );
         byte[] serializedSession = serializeOut( wm );
@@ -1063,6 +1087,7 @@ public class AccumulateTest extends TestCase {
 
         ruleBase = (RuleBase) serializeIn( serializedRuleBase );
         wm = ruleBase.newStatefulSession( new ByteArrayInputStream( serializedSession ) );
+        results = (List) wm.getGlobal( "results" );
 
         // ---------------- 1st scenario
         wm.fireAllRules();
@@ -1073,6 +1098,8 @@ public class AccumulateTest extends TestCase {
         // ---------------- 2nd scenario
         final int index = 1;
         cheese[index].setPrice( 9 );
+        cheeseHandles[index] = updateHandle( wm,
+                                             cheeseHandles[index] );
         wm.update( cheeseHandles[index],
                    cheese[index] );
         wm.fireAllRules();
@@ -1085,6 +1112,8 @@ public class AccumulateTest extends TestCase {
 
         // ---------------- 3rd scenario
         bob.setLikes( "brie" );
+        bobHandle = updateHandle( wm,
+                                  bobHandle );
         wm.update( bobHandle,
                    bob );
         wm.fireAllRules();
@@ -1096,6 +1125,10 @@ public class AccumulateTest extends TestCase {
                              ((Number) results.get( results.size() - 1 )).intValue() );
 
         // ---------------- 4th scenario
+        cheeseHandles[3] = updateHandle( wm,
+                                         cheeseHandles[3] );
+        cheeseHandles[4] = updateHandle( wm,
+                                         cheeseHandles[4] );
         wm.retract( cheeseHandles[3] );
         wm.retract( cheeseHandles[4] );
         wm.fireAllRules();
@@ -1111,11 +1144,11 @@ public class AccumulateTest extends TestCase {
         final Reader reader = new InputStreamReader( getClass().getResourceAsStream( fileName ) );
         RuleBase ruleBase = loadRuleBase( reader );
 
-        StatefulSession wm = ruleBase.newStatefulSession();
-        final List results = new ArrayList();
-
         byte[] serializedRuleBase = serializeOut( ruleBase );
         ruleBase = (RuleBase) serializeIn( serializedRuleBase );
+
+        StatefulSession wm = ruleBase.newStatefulSession();
+        List results = new ArrayList();
 
         wm.setGlobal( "results",
                       results );
@@ -1132,12 +1165,12 @@ public class AccumulateTest extends TestCase {
         final Person mark = new Person( "Mark",
                                         "provolone" );
 
-        final FactHandle[] cheeseHandles = new FactHandle[cheese.length];
+        final InternalFactHandle[] cheeseHandles = new InternalFactHandle[cheese.length];
         for ( int i = 0; i < cheese.length; i++ ) {
-            cheeseHandles[i] = wm.insert( cheese[i] );
+            cheeseHandles[i] = (InternalFactHandle) wm.insert( cheese[i] );
         }
-        final FactHandle bobHandle = wm.insert( bob );
-        final FactHandle markHandle = wm.insert( mark );
+        InternalFactHandle bobHandle = (InternalFactHandle) wm.insert( bob );
+        InternalFactHandle markHandle = (InternalFactHandle) wm.insert( mark );
 
         serializedRuleBase = serializeOut( ruleBase );
         byte[] serializedSession = serializeOut( wm );
@@ -1145,6 +1178,7 @@ public class AccumulateTest extends TestCase {
 
         ruleBase = (RuleBase) serializeIn( serializedRuleBase );
         wm = ruleBase.newStatefulSession( new ByteArrayInputStream( serializedSession ) );
+        results = (List) wm.getGlobal( "results" );
 
         // ---------------- 1st scenario
         wm.fireAllRules();
@@ -1155,6 +1189,8 @@ public class AccumulateTest extends TestCase {
         // ---------------- 2nd scenario
         final int index = 1;
         cheese[index].setPrice( 9 );
+        cheeseHandles[index] = updateHandle( wm,
+                                             cheeseHandles[index] );
         wm.update( cheeseHandles[index],
                    cheese[index] );
         wm.fireAllRules();
@@ -1167,6 +1203,8 @@ public class AccumulateTest extends TestCase {
 
         // ---------------- 3rd scenario
         bob.setLikes( "brie" );
+        bobHandle = updateHandle( wm,
+                                  bobHandle );
         wm.update( bobHandle,
                    bob );
         wm.fireAllRules();
@@ -1178,6 +1216,8 @@ public class AccumulateTest extends TestCase {
                              ((Cheesery) results.get( results.size() - 1 )).getTotalAmount() );
 
         // ---------------- 4th scenario
+        cheeseHandles[3] = updateHandle( wm,
+                                         cheeseHandles[3] );
         wm.retract( cheeseHandles[3] );
         wm.fireAllRules();
 
