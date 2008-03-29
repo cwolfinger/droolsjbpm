@@ -62,19 +62,79 @@ public class AccumulateTest extends TestCase {
         final Package pkg = builder.getPackage();
 
         // add the package to a rulebase
-        final RuleBase ruleBase = getRuleBase();
+        RuleBase ruleBase = getRuleBase();
         ruleBase.addPackage( pkg );
+
+        ruleBase = serializeRuleBase( ruleBase );
+
         // load up the rulebase
         return ruleBase;
+    }
+
+    /**
+     * @param ruleBase
+     * @return
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    private RuleBase serializeRuleBase(RuleBase ruleBase) throws IOException,
+                                                         ClassNotFoundException {
+        byte[] serializedRuleBase = serializeOut( ruleBase );
+        ruleBase = (RuleBase) serializeIn( serializedRuleBase );
+        return ruleBase;
+    }
+
+    /**
+     * @param ruleBase
+     * @param wm
+     * @return
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    private StatefulSession serializeWorkingMemory(RuleBase ruleBase,
+                                                   StatefulSession wm) throws IOException,
+                                                                      ClassNotFoundException {
+        byte[] serializedSession = serializeOut( wm );
+        wm.dispose();
+        wm = ruleBase.newStatefulSession( new ByteArrayInputStream( serializedSession ) );
+        return wm;
+    }
+
+    /**
+     * @param wm
+     * @param handles
+     */
+    private void updateHandles(StatefulSession wm,
+                               final FactHandle[] handles) {
+        for ( int i = 0; i < handles.length; i++ ) {
+            handles[i] = updateHandle( wm,
+                                       (InternalFactHandle) handles[i] );
+        }
+    }
+
+    /**
+     * @param wm
+     * @param cheeseHandles
+     * @param index
+     */
+    private InternalFactHandle updateHandle(final StatefulSession wm,
+                                            final InternalFactHandle handle) {
+        for ( Iterator it = wm.iterateFactHandles(); it.hasNext(); ) {
+            InternalFactHandle newHandle = (InternalFactHandle) it.next();
+            if ( handle.getId() == newHandle.getId() ) {
+                return newHandle;
+            }
+        }
+        return null;
     }
 
     public void testAccumulateModify() throws Exception {
         // read in the source
         final Reader reader = new InputStreamReader( getClass().getResourceAsStream( "test_AccumulateModify.drl" ) );
-        final RuleBase ruleBase = loadRuleBase( reader );
+        RuleBase ruleBase = loadRuleBase( reader );
 
-        final WorkingMemory wm = ruleBase.newStatefulSession();
-        final List results = new ArrayList();
+        StatefulSession wm = ruleBase.newStatefulSession();
+        List results = new ArrayList();
 
         wm.setGlobal( "results",
                       results );
@@ -93,7 +153,16 @@ public class AccumulateTest extends TestCase {
         for ( int i = 0; i < cheese.length; i++ ) {
             cheeseHandles[i] = wm.insert( cheese[i] );
         }
-        final FactHandle bobHandle = wm.insert( bob );
+        FactHandle bobHandle = wm.insert( bob );
+
+        ruleBase = serializeRuleBase( ruleBase );
+        wm = serializeWorkingMemory( ruleBase,
+                                     wm );
+        results = (List) wm.getGlobal( "results" );
+        updateHandles( wm,
+                       cheeseHandles );
+        bobHandle = updateHandle( wm,
+                                  (InternalFactHandle) bobHandle );
 
         // ---------------- 1st scenario
         wm.fireAllRules();
@@ -140,10 +209,10 @@ public class AccumulateTest extends TestCase {
 
         // read in the source
         final Reader reader = new InputStreamReader( getClass().getResourceAsStream( "test_Accumulate.drl" ) );
-        final RuleBase ruleBase = loadRuleBase( reader );
+        RuleBase ruleBase = loadRuleBase( reader );
 
-        final WorkingMemory wm = ruleBase.newStatefulSession();
-        final List results = new ArrayList();
+        StatefulSession wm = ruleBase.newStatefulSession();
+        List results = new ArrayList();
 
         wm.setGlobal( "results",
                       results );
@@ -159,6 +228,11 @@ public class AccumulateTest extends TestCase {
                                5 ) );
         wm.insert( new Cheese( "provolone",
                                150 ) );
+
+        ruleBase = serializeRuleBase( ruleBase );
+        wm = serializeWorkingMemory( ruleBase,
+                                     wm );
+        results = (List) wm.getGlobal( "results" );
 
         wm.fireAllRules();
 
@@ -178,10 +252,10 @@ public class AccumulateTest extends TestCase {
 
         // read in the source
         final Reader reader = new InputStreamReader( getClass().getResourceAsStream( "test_AccumulateMVEL.drl" ) );
-        final RuleBase ruleBase = loadRuleBase( reader );
+        RuleBase ruleBase = loadRuleBase( reader );
 
-        final WorkingMemory wm = ruleBase.newStatefulSession();
-        final List results = new ArrayList();
+        StatefulSession wm = ruleBase.newStatefulSession();
+        List results = new ArrayList();
 
         wm.setGlobal( "results",
                       results );
@@ -197,6 +271,11 @@ public class AccumulateTest extends TestCase {
                                5 ) );
         wm.insert( new Cheese( "provolone",
                                150 ) );
+
+        ruleBase = serializeRuleBase( ruleBase );
+        wm = serializeWorkingMemory( ruleBase,
+                                     wm );
+        results = (List) wm.getGlobal( "results" );
 
         wm.fireAllRules();
 
@@ -215,10 +294,10 @@ public class AccumulateTest extends TestCase {
     public void testAccumulateModifyMVEL() throws Exception {
         // read in the source
         final Reader reader = new InputStreamReader( getClass().getResourceAsStream( "test_AccumulateModifyMVEL.drl" ) );
-        final RuleBase ruleBase = loadRuleBase( reader );
+        RuleBase ruleBase = loadRuleBase( reader );
 
-        final WorkingMemory wm = ruleBase.newStatefulSession();
-        final List results = new ArrayList();
+        StatefulSession wm = ruleBase.newStatefulSession();
+        List results = new ArrayList();
 
         wm.setGlobal( "results",
                       results );
@@ -237,7 +316,16 @@ public class AccumulateTest extends TestCase {
         for ( int i = 0; i < cheese.length; i++ ) {
             cheeseHandles[i] = wm.insert( cheese[i] );
         }
-        final FactHandle bobHandle = wm.insert( bob );
+        FactHandle bobHandle = wm.insert( bob );
+
+        ruleBase = serializeRuleBase( ruleBase );
+        wm = serializeWorkingMemory( ruleBase,
+                                     wm );
+        results = (List) wm.getGlobal( "results" );
+        updateHandles( wm,
+                       cheeseHandles );
+        bobHandle = updateHandle( wm,
+                                  (InternalFactHandle) bobHandle );
 
         // ---------------- 1st scenario
         wm.fireAllRules();
@@ -283,10 +371,10 @@ public class AccumulateTest extends TestCase {
     public void testAccumulateReverseModify() throws Exception {
         // read in the source
         final Reader reader = new InputStreamReader( getClass().getResourceAsStream( "test_AccumulateReverseModify.drl" ) );
-        final RuleBase ruleBase = loadRuleBase( reader );
+        RuleBase ruleBase = loadRuleBase( reader );
 
-        final WorkingMemory wm = ruleBase.newStatefulSession();
-        final List results = new ArrayList();
+        StatefulSession wm = ruleBase.newStatefulSession();
+        List results = new ArrayList();
 
         wm.setGlobal( "results",
                       results );
@@ -305,7 +393,16 @@ public class AccumulateTest extends TestCase {
         for ( int i = 0; i < cheese.length; i++ ) {
             cheeseHandles[i] = wm.insert( cheese[i] );
         }
-        final FactHandle bobHandle = wm.insert( bob );
+        FactHandle bobHandle = wm.insert( bob );
+
+        ruleBase = serializeRuleBase( ruleBase );
+        wm = serializeWorkingMemory( ruleBase,
+                                     wm );
+        results = (List) wm.getGlobal( "results" );
+        updateHandles( wm,
+                       cheeseHandles );
+        bobHandle = updateHandle( wm,
+                                  (InternalFactHandle) bobHandle );
 
         // ---------------- 1st scenario
         wm.fireAllRules();
@@ -351,10 +448,10 @@ public class AccumulateTest extends TestCase {
     public void testAccumulateReverseModifyMVEL() throws Exception {
         // read in the source
         final Reader reader = new InputStreamReader( getClass().getResourceAsStream( "test_AccumulateReverseModifyMVEL.drl" ) );
-        final RuleBase ruleBase = loadRuleBase( reader );
+        RuleBase ruleBase = loadRuleBase( reader );
 
-        final WorkingMemory wm = ruleBase.newStatefulSession();
-        final List results = new ArrayList();
+        StatefulSession wm = ruleBase.newStatefulSession();
+        List results = new ArrayList();
 
         wm.setGlobal( "results",
                       results );
@@ -373,7 +470,16 @@ public class AccumulateTest extends TestCase {
         for ( int i = 0; i < cheese.length; i++ ) {
             cheeseHandles[i] = wm.insert( cheese[i] );
         }
-        final FactHandle bobHandle = wm.insert( bob );
+        FactHandle bobHandle = wm.insert( bob );
+
+        ruleBase = serializeRuleBase( ruleBase );
+        wm = serializeWorkingMemory( ruleBase,
+                                     wm );
+        results = (List) wm.getGlobal( "results" );
+        updateHandles( wm,
+                       cheeseHandles );
+        bobHandle = updateHandle( wm,
+                                  (InternalFactHandle) bobHandle );
 
         // ---------------- 1st scenario
         wm.fireAllRules();
@@ -419,10 +525,10 @@ public class AccumulateTest extends TestCase {
     public void testAccumulateWithFromChaining() throws Exception {
         // read in the source
         final Reader reader = new InputStreamReader( getClass().getResourceAsStream( "test_AccumulateWithFromChaining.drl" ) );
-        final RuleBase ruleBase = loadRuleBase( reader );
+        RuleBase ruleBase = loadRuleBase( reader );
 
-        final WorkingMemory wm = ruleBase.newStatefulSession();
-        final List results = new ArrayList();
+        StatefulSession wm = ruleBase.newStatefulSession();
+        List results = new ArrayList();
 
         wm.setGlobal( "results",
                       results );
@@ -446,7 +552,16 @@ public class AccumulateTest extends TestCase {
         final Person bob = new Person( "Bob",
                                        "stilton" );
 
-        final FactHandle bobHandle = wm.insert( bob );
+        FactHandle bobHandle = wm.insert( bob );
+
+        ruleBase = serializeRuleBase( ruleBase );
+        wm = serializeWorkingMemory( ruleBase,
+                                     wm );
+        results = (List) wm.getGlobal( "results" );
+        cheeseryHandle = updateHandle( wm,
+                                       (InternalFactHandle) cheeseryHandle );
+        bobHandle = updateHandle( wm,
+                                  (InternalFactHandle) bobHandle );
 
         // ---------------- 1st scenario
         wm.fireAllRules();
@@ -495,16 +610,16 @@ public class AccumulateTest extends TestCase {
 
         // read in the source
         final Reader reader = new InputStreamReader( getClass().getResourceAsStream( "test_AccumulateMVEL.drl" ) );
-        final RuleBase ruleBase = loadRuleBase( reader );
+        RuleBase ruleBase = loadRuleBase( reader );
 
-        final WorkingMemory wm1 = ruleBase.newStatefulSession();
-        final List results1 = new ArrayList();
+        StatefulSession wm1 = ruleBase.newStatefulSession();
+        List results1 = new ArrayList();
 
         wm1.setGlobal( "results",
                        results1 );
 
-        final WorkingMemory wm2 = ruleBase.newStatefulSession();
-        final List results2 = new ArrayList();
+        StatefulSession wm2 = ruleBase.newStatefulSession();
+        List results2 = new ArrayList();
 
         wm2.setGlobal( "results",
                        results2 );
@@ -533,6 +648,15 @@ public class AccumulateTest extends TestCase {
                                 5 ) );
         wm2.insert( new Cheese( "provolone",
                                 150 ) );
+        
+        ruleBase = serializeRuleBase( ruleBase );
+        wm1 = serializeWorkingMemory( ruleBase,
+                                      wm1 );
+        results1 = (List) wm1.getGlobal( "results" );
+        wm2 = serializeWorkingMemory( ruleBase,
+                                      wm2 );
+        results2 = (List) wm2.getGlobal( "results" );
+
         wm1.fireAllRules();
 
         wm2.fireAllRules();
@@ -564,10 +688,10 @@ public class AccumulateTest extends TestCase {
 
         // read in the source
         final Reader reader = new InputStreamReader( getClass().getResourceAsStream( "test_AccumulateInnerClass.drl" ) );
-        final RuleBase ruleBase = loadRuleBase( reader );
+        RuleBase ruleBase = loadRuleBase( reader );
 
-        final WorkingMemory wm = ruleBase.newStatefulSession();
-        final List results = new ArrayList();
+        StatefulSession wm = ruleBase.newStatefulSession();
+        List results = new ArrayList();
 
         wm.setGlobal( "results",
                       results );
@@ -575,6 +699,10 @@ public class AccumulateTest extends TestCase {
         wm.insert( new OuterClass.InnerClass( 10 ) );
         wm.insert( new OuterClass.InnerClass( 5 ) );
 
+        ruleBase = serializeRuleBase( ruleBase );
+        wm = serializeWorkingMemory( ruleBase,
+                                     wm );
+        results = (List) wm.getGlobal( "results" );
         wm.fireAllRules();
 
         Assert.assertEquals( new Integer( 15 ),
@@ -585,10 +713,10 @@ public class AccumulateTest extends TestCase {
 
         // read in the source
         final Reader reader = new InputStreamReader( getClass().getResourceAsStream( "test_AccumulateReturningNull.drl" ) );
-        final RuleBase ruleBase = loadRuleBase( reader );
+        RuleBase ruleBase = loadRuleBase( reader );
 
-        final WorkingMemory wm = ruleBase.newStatefulSession();
-        final List results = new ArrayList();
+        StatefulSession wm = ruleBase.newStatefulSession();
+        List results = new ArrayList();
 
         wm.setGlobal( "results",
                       results );
@@ -605,16 +733,21 @@ public class AccumulateTest extends TestCase {
             fail( "Should have raised a DroolsRuntimeException instead of " + e );
         }
 
+        ruleBase = serializeRuleBase( ruleBase );
+        wm = serializeWorkingMemory( ruleBase,
+                                     wm );
+        wm.fireAllRules();
+        
     }
 
     public void testAccumulateReturningNullMVEL() throws Exception {
 
         // read in the source
         final Reader reader = new InputStreamReader( getClass().getResourceAsStream( "test_AccumulateReturningNullMVEL.drl" ) );
-        final RuleBase ruleBase = loadRuleBase( reader );
+        RuleBase ruleBase = loadRuleBase( reader );
 
-        final WorkingMemory wm = ruleBase.newStatefulSession();
-        final List results = new ArrayList();
+        StatefulSession wm = ruleBase.newStatefulSession();
+        List results = new ArrayList();
 
         wm.setGlobal( "results",
                       results );
@@ -631,6 +764,10 @@ public class AccumulateTest extends TestCase {
             fail( "Should have raised a DroolsRuntimeException instead of " + e );
         }
 
+        ruleBase = serializeRuleBase( ruleBase );
+        wm = serializeWorkingMemory( ruleBase,
+                                     wm );
+        wm.fireAllRules();
     }
 
     public void testAccumulateSumJava() throws Exception {
@@ -694,9 +831,6 @@ public class AccumulateTest extends TestCase {
         final Reader reader = new InputStreamReader( getClass().getResourceAsStream( fileName ) );
         RuleBase ruleBase = loadRuleBase( reader );
 
-        byte[] serializedRuleBase = serializeOut( ruleBase );
-        ruleBase = (RuleBase) serializeIn( serializedRuleBase );
-
         StatefulSession wm = ruleBase.newStatefulSession();
         List results = new ArrayList();
 
@@ -719,13 +853,14 @@ public class AccumulateTest extends TestCase {
         }
         InternalFactHandle bobHandle = (InternalFactHandle) wm.insert( bob );
 
-        serializedRuleBase = serializeOut( ruleBase );
-        byte[] serializedSession = serializeOut( wm );
-        wm.dispose();
-
-        ruleBase = (RuleBase) serializeIn( serializedRuleBase );
-        wm = ruleBase.newStatefulSession( new ByteArrayInputStream( serializedSession ) );
+        ruleBase = serializeRuleBase( ruleBase );
+        wm = serializeWorkingMemory( ruleBase,
+                                     wm );
         results = (List) wm.getGlobal( "results" );
+        updateHandles( wm,
+                       cheeseHandles );
+        bobHandle = updateHandle( wm,
+                                  (InternalFactHandle) bobHandle );
 
         // ---------------- 1st scenario
         wm.fireAllRules();
@@ -736,8 +871,6 @@ public class AccumulateTest extends TestCase {
 
         // ---------------- 2nd scenario
         final int index = 1;
-        cheeseHandles[index] = updateHandle( wm,
-                                             cheeseHandles[index] );
         cheese[index].setPrice( 3 );
         wm.update( cheeseHandles[index],
                    cheese[index] );
@@ -749,8 +882,6 @@ public class AccumulateTest extends TestCase {
                              ((Number) results.get( results.size() - 1 )).intValue() );
 
         // ---------------- 3rd scenario
-        bobHandle = updateHandle( wm,
-                                  bobHandle );
         bob.setLikes( "brie" );
         wm.update( bobHandle,
                    bob );
@@ -762,8 +893,6 @@ public class AccumulateTest extends TestCase {
                              ((Number) results.get( results.size() - 1 )).intValue() );
 
         // ---------------- 4th scenario
-        cheeseHandles[3] = updateHandle( wm,
-                                         cheeseHandles[3] );
         wm.fireAllRules();
 
         // should not have fired as per constraint
@@ -772,29 +901,10 @@ public class AccumulateTest extends TestCase {
 
     }
 
-    /**
-     * @param wm
-     * @param cheeseHandles
-     * @param index
-     */
-    private InternalFactHandle updateHandle(final StatefulSession wm,
-                                            final InternalFactHandle handle) {
-        for ( Iterator it = wm.iterateFactHandles(); it.hasNext(); ) {
-            InternalFactHandle newHandle = (InternalFactHandle) it.next();
-            if ( handle.getId() == newHandle.getId() ) {
-                return newHandle;
-            }
-        }
-        return null;
-    }
-
     public void execTestAccumulateCount(String fileName) throws Exception {
         // read in the source
         final Reader reader = new InputStreamReader( getClass().getResourceAsStream( fileName ) );
         RuleBase ruleBase = loadRuleBase( reader );
-
-        byte[] serializedRuleBase = serializeOut( ruleBase );
-        ruleBase = (RuleBase) serializeIn( serializedRuleBase );
 
         StatefulSession wm = ruleBase.newStatefulSession();
         List results = new ArrayList();
@@ -818,13 +928,14 @@ public class AccumulateTest extends TestCase {
         }
         InternalFactHandle bobHandle = (InternalFactHandle) wm.insert( bob );
 
-        serializedRuleBase = serializeOut( ruleBase );
-        byte[] serializedSession = serializeOut( wm );
-        wm.dispose();
-
-        ruleBase = (RuleBase) serializeIn( serializedRuleBase );
-        wm = ruleBase.newStatefulSession( new ByteArrayInputStream( serializedSession ) );
+        ruleBase = serializeRuleBase( ruleBase );
+        wm = serializeWorkingMemory( ruleBase,
+                                     wm );
         results = (List) wm.getGlobal( "results" );
+        updateHandles( wm,
+                       cheeseHandles );
+        bobHandle = updateHandle( wm,
+                                  (InternalFactHandle) bobHandle );
 
         // ---------------- 1st scenario
         wm.fireAllRules();
@@ -837,8 +948,6 @@ public class AccumulateTest extends TestCase {
         // ---------------- 2nd scenario
         final int index = 1;
         cheese[index].setPrice( 3 );
-        cheeseHandles[index] = updateHandle( wm,
-                                             cheeseHandles[index] );
         wm.update( cheeseHandles[index],
                    cheese[index] );
         wm.fireAllRules();
@@ -851,8 +960,6 @@ public class AccumulateTest extends TestCase {
 
         // ---------------- 3rd scenario
         bob.setLikes( "brie" );
-        bobHandle = updateHandle( wm,
-                                  bobHandle );
         wm.update( bobHandle,
                    bob );
         wm.fireAllRules();
@@ -864,8 +971,6 @@ public class AccumulateTest extends TestCase {
                              ((Number) results.get( results.size() - 1 )).intValue() );
 
         // ---------------- 4th scenario
-        cheeseHandles[3] = updateHandle( wm,
-                                         cheeseHandles[3] );
         wm.retract( cheeseHandles[3] );
         wm.fireAllRules();
 
@@ -879,9 +984,6 @@ public class AccumulateTest extends TestCase {
         // read in the source
         final Reader reader = new InputStreamReader( getClass().getResourceAsStream( fileName ) );
         RuleBase ruleBase = loadRuleBase( reader );
-
-        byte[] serializedRuleBase = serializeOut( ruleBase );
-        ruleBase = (RuleBase) serializeIn( serializedRuleBase );
 
         StatefulSession wm = ruleBase.newStatefulSession();
         List results = new ArrayList();
@@ -905,13 +1007,14 @@ public class AccumulateTest extends TestCase {
         }
         InternalFactHandle bobHandle = (InternalFactHandle) wm.insert( bob );
 
-        serializedRuleBase = serializeOut( ruleBase );
-        byte[] serializedSession = serializeOut( wm );
-        wm.dispose();
-
-        ruleBase = (RuleBase) serializeIn( serializedRuleBase );
-        wm = ruleBase.newStatefulSession( new ByteArrayInputStream( serializedSession ) );
+        ruleBase = serializeRuleBase( ruleBase );
+        wm = serializeWorkingMemory( ruleBase,
+                                     wm );
         results = (List) wm.getGlobal( "results" );
+        updateHandles( wm,
+                       cheeseHandles );
+        bobHandle = updateHandle( wm,
+                                  (InternalFactHandle) bobHandle );
 
         // ---------------- 1st scenario
         wm.fireAllRules();
@@ -922,8 +1025,6 @@ public class AccumulateTest extends TestCase {
         // ---------------- 2nd scenario
         final int index = 1;
         cheese[index].setPrice( 9 );
-        cheeseHandles[index] = updateHandle( wm,
-                                             cheeseHandles[index] );
         wm.update( cheeseHandles[index],
                    cheese[index] );
         wm.fireAllRules();
@@ -936,8 +1037,6 @@ public class AccumulateTest extends TestCase {
 
         // ---------------- 3rd scenario
         bob.setLikes( "brie" );
-        bobHandle = updateHandle( wm,
-                                  bobHandle );
         wm.update( bobHandle,
                    bob );
         wm.fireAllRules();
@@ -949,10 +1048,6 @@ public class AccumulateTest extends TestCase {
                              ((Number) results.get( results.size() - 1 )).intValue() );
 
         // ---------------- 4th scenario
-        cheeseHandles[3] = updateHandle( wm,
-                                         cheeseHandles[3] );
-        cheeseHandles[4] = updateHandle( wm,
-                                         cheeseHandles[4] );
         wm.retract( cheeseHandles[3] );
         wm.retract( cheeseHandles[4] );
         wm.fireAllRules();
@@ -967,9 +1062,6 @@ public class AccumulateTest extends TestCase {
         // read in the source
         final Reader reader = new InputStreamReader( getClass().getResourceAsStream( fileName ) );
         RuleBase ruleBase = loadRuleBase( reader );
-
-        byte[] serializedRuleBase = serializeOut( ruleBase );
-        ruleBase = (RuleBase) serializeIn( serializedRuleBase );
 
         StatefulSession wm = ruleBase.newStatefulSession();
         List results = new ArrayList();
@@ -993,13 +1085,14 @@ public class AccumulateTest extends TestCase {
         }
         InternalFactHandle bobHandle = (InternalFactHandle) wm.insert( bob );
 
-        serializedRuleBase = serializeOut( ruleBase );
-        byte[] serializedSession = serializeOut( wm );
-        wm.dispose();
-
-        ruleBase = (RuleBase) serializeIn( serializedRuleBase );
-        wm = ruleBase.newStatefulSession( new ByteArrayInputStream( serializedSession ) );
+        ruleBase = serializeRuleBase( ruleBase );
+        wm = serializeWorkingMemory( ruleBase,
+                                     wm );
         results = (List) wm.getGlobal( "results" );
+        updateHandles( wm,
+                       cheeseHandles );
+        bobHandle = updateHandle( wm,
+                                  (InternalFactHandle) bobHandle );
 
         // ---------------- 1st scenario
         wm.fireAllRules();
@@ -1010,8 +1103,6 @@ public class AccumulateTest extends TestCase {
         // ---------------- 2nd scenario
         final int index = 1;
         cheese[index].setPrice( 3 );
-        cheeseHandles[index] = updateHandle( wm,
-                                             cheeseHandles[index] );
         wm.update( cheeseHandles[index],
                    cheese[index] );
         wm.fireAllRules();
@@ -1024,8 +1115,6 @@ public class AccumulateTest extends TestCase {
 
         // ---------------- 3rd scenario
         bob.setLikes( "brie" );
-        bobHandle = updateHandle( wm,
-                                  bobHandle );
         wm.update( bobHandle,
                    bob );
         wm.fireAllRules();
@@ -1037,10 +1126,6 @@ public class AccumulateTest extends TestCase {
                              ((Number) results.get( results.size() - 1 )).intValue() );
 
         // ---------------- 4th scenario
-        cheeseHandles[3] = updateHandle( wm,
-                                         cheeseHandles[3] );
-        cheeseHandles[4] = updateHandle( wm,
-                                         cheeseHandles[4] );
         wm.retract( cheeseHandles[3] );
         wm.retract( cheeseHandles[4] );
         wm.fireAllRules();
@@ -1055,9 +1140,6 @@ public class AccumulateTest extends TestCase {
         // read in the source
         final Reader reader = new InputStreamReader( getClass().getResourceAsStream( fileName ) );
         RuleBase ruleBase = loadRuleBase( reader );
-
-        byte[] serializedRuleBase = serializeOut( ruleBase );
-        ruleBase = (RuleBase) serializeIn( serializedRuleBase );
 
         StatefulSession wm = ruleBase.newStatefulSession();
         List results = new ArrayList();
@@ -1081,13 +1163,14 @@ public class AccumulateTest extends TestCase {
         }
         InternalFactHandle bobHandle = (InternalFactHandle) wm.insert( bob );
 
-        serializedRuleBase = serializeOut( ruleBase );
-        byte[] serializedSession = serializeOut( wm );
-        wm.dispose();
-
-        ruleBase = (RuleBase) serializeIn( serializedRuleBase );
-        wm = ruleBase.newStatefulSession( new ByteArrayInputStream( serializedSession ) );
+        ruleBase = serializeRuleBase( ruleBase );
+        wm = serializeWorkingMemory( ruleBase,
+                                     wm );
         results = (List) wm.getGlobal( "results" );
+        updateHandles( wm,
+                       cheeseHandles );
+        bobHandle = updateHandle( wm,
+                                  (InternalFactHandle) bobHandle );
 
         // ---------------- 1st scenario
         wm.fireAllRules();
@@ -1098,8 +1181,6 @@ public class AccumulateTest extends TestCase {
         // ---------------- 2nd scenario
         final int index = 1;
         cheese[index].setPrice( 9 );
-        cheeseHandles[index] = updateHandle( wm,
-                                             cheeseHandles[index] );
         wm.update( cheeseHandles[index],
                    cheese[index] );
         wm.fireAllRules();
@@ -1112,8 +1193,6 @@ public class AccumulateTest extends TestCase {
 
         // ---------------- 3rd scenario
         bob.setLikes( "brie" );
-        bobHandle = updateHandle( wm,
-                                  bobHandle );
         wm.update( bobHandle,
                    bob );
         wm.fireAllRules();
@@ -1125,10 +1204,6 @@ public class AccumulateTest extends TestCase {
                              ((Number) results.get( results.size() - 1 )).intValue() );
 
         // ---------------- 4th scenario
-        cheeseHandles[3] = updateHandle( wm,
-                                         cheeseHandles[3] );
-        cheeseHandles[4] = updateHandle( wm,
-                                         cheeseHandles[4] );
         wm.retract( cheeseHandles[3] );
         wm.retract( cheeseHandles[4] );
         wm.fireAllRules();
@@ -1143,9 +1218,6 @@ public class AccumulateTest extends TestCase {
         // read in the source
         final Reader reader = new InputStreamReader( getClass().getResourceAsStream( fileName ) );
         RuleBase ruleBase = loadRuleBase( reader );
-
-        byte[] serializedRuleBase = serializeOut( ruleBase );
-        ruleBase = (RuleBase) serializeIn( serializedRuleBase );
 
         StatefulSession wm = ruleBase.newStatefulSession();
         List results = new ArrayList();
@@ -1172,13 +1244,15 @@ public class AccumulateTest extends TestCase {
         InternalFactHandle bobHandle = (InternalFactHandle) wm.insert( bob );
         InternalFactHandle markHandle = (InternalFactHandle) wm.insert( mark );
 
-        serializedRuleBase = serializeOut( ruleBase );
-        byte[] serializedSession = serializeOut( wm );
-        wm.dispose();
+        ruleBase = serializeRuleBase( ruleBase );
+        wm = serializeWorkingMemory( ruleBase,
+                                     wm );
 
-        ruleBase = (RuleBase) serializeIn( serializedRuleBase );
-        wm = ruleBase.newStatefulSession( new ByteArrayInputStream( serializedSession ) );
         results = (List) wm.getGlobal( "results" );
+        updateHandles( wm,
+                       cheeseHandles );
+        bobHandle = updateHandle( wm,
+                                  (InternalFactHandle) bobHandle );
 
         // ---------------- 1st scenario
         wm.fireAllRules();
@@ -1189,8 +1263,6 @@ public class AccumulateTest extends TestCase {
         // ---------------- 2nd scenario
         final int index = 1;
         cheese[index].setPrice( 9 );
-        cheeseHandles[index] = updateHandle( wm,
-                                             cheeseHandles[index] );
         wm.update( cheeseHandles[index],
                    cheese[index] );
         wm.fireAllRules();
@@ -1203,8 +1275,6 @@ public class AccumulateTest extends TestCase {
 
         // ---------------- 3rd scenario
         bob.setLikes( "brie" );
-        bobHandle = updateHandle( wm,
-                                  bobHandle );
         wm.update( bobHandle,
                    bob );
         wm.fireAllRules();
@@ -1216,8 +1286,6 @@ public class AccumulateTest extends TestCase {
                              ((Cheesery) results.get( results.size() - 1 )).getTotalAmount() );
 
         // ---------------- 4th scenario
-        cheeseHandles[3] = updateHandle( wm,
-                                         cheeseHandles[3] );
         wm.retract( cheeseHandles[3] );
         wm.fireAllRules();
 
@@ -1233,11 +1301,8 @@ public class AccumulateTest extends TestCase {
         final Reader reader = new InputStreamReader( getClass().getResourceAsStream( "test_AccumulatePreviousBinds.drl" ) );
         RuleBase ruleBase = loadRuleBase( reader );
 
-        byte[] serializeOut = serializeOut( ruleBase );
-        ruleBase = (RuleBase) serializeIn( serializeOut );
-
-        final WorkingMemory wm = ruleBase.newStatefulSession();
-        final List results = new ArrayList();
+        StatefulSession wm = ruleBase.newStatefulSession();
+        List results = new ArrayList();
 
         wm.setGlobal( "results",
                       results );
@@ -1250,6 +1315,11 @@ public class AccumulateTest extends TestCase {
                                150 ) );
         wm.insert( new Cheese( "brie",
                                20 ) );
+
+        ruleBase = serializeRuleBase( ruleBase );
+        wm = serializeWorkingMemory( ruleBase,
+                                     wm );
+        results = (List) wm.getGlobal( "results" );
 
         wm.fireAllRules();
 
@@ -1265,11 +1335,8 @@ public class AccumulateTest extends TestCase {
         final Reader reader = new InputStreamReader( getClass().getResourceAsStream( "test_AccumulateGlobals.drl" ) );
         RuleBase ruleBase = loadRuleBase( reader );
 
-        final WorkingMemory wm = ruleBase.newStatefulSession();
-        final List results = new ArrayList();
-
-        byte[] serializeOut = serializeOut( ruleBase );
-        ruleBase = (RuleBase) serializeIn( serializeOut );
+        StatefulSession wm = ruleBase.newStatefulSession();
+        List results = new ArrayList();
 
         wm.setGlobal( "results",
                       results );
@@ -1284,6 +1351,11 @@ public class AccumulateTest extends TestCase {
                                150 ) );
         wm.insert( new Cheese( "brie",
                                20 ) );
+
+        ruleBase = serializeRuleBase( ruleBase );
+        wm = serializeWorkingMemory( ruleBase,
+                                     wm );
+        results = (List) wm.getGlobal( "results" );
 
         wm.fireAllRules();
 
