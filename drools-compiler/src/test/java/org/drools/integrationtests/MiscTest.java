@@ -18,6 +18,7 @@ package org.drools.integrationtests;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectInput;
@@ -4688,7 +4689,9 @@ public class MiscTest extends TestCase {
     }
 
     public void testAlphaEvalWithOrCE() throws Exception {
-        final PackageBuilder builder = new PackageBuilder();
+        PackageBuilderConfiguration conf = new PackageBuilderConfiguration();
+        conf.setDumpDir( new File("./target") );
+        final PackageBuilder builder = new PackageBuilder( conf );
         builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_AlphaEvalWithOrCE.drl" ) ) );
         final Package pkg = builder.getPackage();
 
