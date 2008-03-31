@@ -17,6 +17,8 @@
  */
 package org.drools.base.accumulators;
 
+import java.io.Serializable;
+
 
 /**
  * An implementation of an accumulator capable of calculating maximum values
@@ -26,7 +28,10 @@ package org.drools.base.accumulators;
  */
 public class MaxAccumulateFunction implements AccumulateFunction {
 
-    protected static class MaxData {
+    private static final long serialVersionUID = -6110228336507748202L;
+
+    protected static class MaxData implements Serializable {
+        private static final long serialVersionUID = -7020207404432163956L;
         public double max = Double.MIN_VALUE;
     }
 

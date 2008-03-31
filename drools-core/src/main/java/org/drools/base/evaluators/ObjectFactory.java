@@ -110,8 +110,9 @@ public class ObjectFactory
 
         public boolean evaluateCachedRight(InternalWorkingMemory workingMemory,
                                            final VariableContextEntry context, final Object left) {
-            final Object value1 = context.declaration.getExtractor().getValue( workingMemory, left );
-            final Object value2 = ((ObjectVariableContextEntry) context).right;
+            final Object value2 = context.declaration.getExtractor().getValue( workingMemory, left );
+            final Object value1 = ((ObjectVariableContextEntry) context).right;
+            // the constrained field must be checked as the first parameter
             return comparator.equals( value1, value2 );
         }
 
@@ -160,8 +161,8 @@ public class ObjectFactory
 
         public boolean evaluateCachedRight(InternalWorkingMemory workingMemory,
                                            final VariableContextEntry context, final Object left) {
-            final Object value1 = context.declaration.getExtractor().getValue( workingMemory, left );
-            final Object value2 = ((ObjectVariableContextEntry) context).right;
+            final Object value2 = context.declaration.getExtractor().getValue( workingMemory, left );
+            final Object value1 = ((ObjectVariableContextEntry) context).right;
             return !comparator.equals( value1, value2 );
         }
 
@@ -544,10 +545,10 @@ public class ObjectFactory
 
         // trying to implement runtime type coercion
         public boolean equals( Object arg0, Object arg1 ) {
-            if ( arg0 == null ) {
-                return arg1 == null;
+            if ( arg0 == null || arg1 == null ) {
+                return arg0 == arg1;
             }
-            if( arg1 != null && arg1 instanceof ShadowProxy ) {
+            if( arg1 instanceof ShadowProxy ) {
                 return arg1.equals( arg0 );
             }
             if( arg0 instanceof Number ){
@@ -558,12 +559,22 @@ public class ObjectFactory
                 } else if( arg1 instanceof String ) {
                     val1 = Double.parseDouble( ( String ) arg1 );
                 } else {
-                    throw new ClassCastException( "Not possible to convert "+arg1.getClass()+" into a double value to compare it to "+arg0.getClass() );
+                    throw new ClassCastException( "Not possible to compare "+arg1.getClass()+" to "+arg0.getClass() );
                 }
                 return val0 == val1; // in the future we may need to handle rounding errors 
             } 
             if( arg0 instanceof String ) {
                 return arg0.equals( arg1.toString() );
+            }
+            if( arg0 instanceof Boolean ) {
+                if( arg1 instanceof String ) {
+                    return ((Boolean)arg0).booleanValue() == Boolean.valueOf( (String)arg1 ).booleanValue();
+                }
+            }
+            if( arg0 instanceof Character ) {
+                if( arg1 instanceof String && ((String) arg1).length() == 1 ) {
+                    return ((Character)arg0).charValue() == ((String)arg1).charAt( 0 );
+                }
             }
             return arg0.equals( arg1 );
         }
@@ -576,6 +587,13 @@ public class ObjectFactory
 
         public int compare(Object arg0,
                            Object arg1) {
+            if( arg0 == null || arg1 == null ) {
+                if( arg0 == arg1 ) {
+                    return 0;
+                } else {
+                    throw new NullPointerException( "Can't compare "+arg0+" to "+arg1 );
+                }
+            }
             if( arg0 instanceof Double || arg0 instanceof Float ) {
                 double val0 = ((Number) arg0).doubleValue();
                 double val1 = 0;
@@ -615,7 +633,11 @@ public class ObjectFactory
                 }
                 
             }
-            return ((Comparable)arg0).compareTo( arg1 );
+            try {
+                return ((Comparable)arg0).compareTo( arg1 );
+            } catch ( ClassCastException cce ) {
+                throw new ClassCastException( "Not possible to compare a "+arg0.getClass()+" with a "+arg1.getClass());
+            }
         }
     }
     

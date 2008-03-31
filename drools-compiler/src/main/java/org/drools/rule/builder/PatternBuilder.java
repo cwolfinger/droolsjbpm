@@ -17,6 +17,7 @@
 package org.drools.rule.builder;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -52,6 +53,7 @@ import org.drools.rule.Declaration;
 import org.drools.rule.LiteralConstraint;
 import org.drools.rule.LiteralRestriction;
 import org.drools.rule.MultiRestrictionFieldConstraint;
+import org.drools.rule.MutableTypeConstraint;
 import org.drools.rule.OrCompositeRestriction;
 import org.drools.rule.OrConstraint;
 import org.drools.rule.Pattern;
@@ -63,12 +65,16 @@ import org.drools.rule.RuleConditionElement;
 import org.drools.rule.VariableConstraint;
 import org.drools.rule.VariableRestriction;
 import org.drools.rule.builder.dialect.mvel.MVELDialect;
+import org.drools.rule.builder.dialect.mvel.MVELExprAnalyzer;
 import org.drools.spi.Constraint;
 import org.drools.spi.Evaluator;
 import org.drools.spi.FieldExtractor;
 import org.drools.spi.FieldValue;
 import org.drools.spi.ObjectType;
 import org.drools.spi.Restriction;
+import org.drools.spi.Constraint.ConstraintType;
+import org.mvel.ExpressionCompiler;
+import org.mvel.ParserContext;
 
 /**
  * A builder for patterns
@@ -207,9 +213,13 @@ public class PatternBuilder
                                       it.next(),
                                       and );
             }
+
             if ( container == null ) {
                 pattern.addConstraint( and );
             } else {
+                if( and.getType().equals( Constraint.ConstraintType.UNKNOWN ) ) {
+                    this.setConstraintType( pattern, (MutableTypeConstraint) and );
+                }
                 container.addConstraint( and );
             }
         } else if ( constraint instanceof OrDescr ) {
@@ -220,9 +230,13 @@ public class PatternBuilder
                                       it.next(),
                                       or );
             }
+
             if ( container == null ) {
                 pattern.addConstraint( or );
             } else {
+                if( or.getType().equals( Constraint.ConstraintType.UNKNOWN ) ) {
+                    this.setConstraintType( pattern, (MutableTypeConstraint) or );
+                }
                 container.addConstraint( or );
             }
         } else {
@@ -325,8 +339,30 @@ public class PatternBuilder
         if ( container == null ) {
             pattern.addConstraint( constraint );
         } else {
+            if( constraint.getType().equals( Constraint.ConstraintType.UNKNOWN ) ) {
+                this.setConstraintType( pattern, (MutableTypeConstraint) constraint );
+            }
             container.addConstraint( constraint );
         }
+    }
+
+    /**
+     * @param pattern
+     * @param constraint
+     */
+    private void setConstraintType(final Pattern container,
+                                   final MutableTypeConstraint constraint) {
+        final Declaration[] declarations = constraint.getRequiredDeclarations();
+
+        boolean isAlphaConstraint = true;
+        for ( int i = 0; isAlphaConstraint && i < declarations.length; i++ ) {
+            if ( !declarations[i].isGlobal() && declarations[i].getPattern() != container ) {
+                isAlphaConstraint = false;
+            }
+        }
+
+        ConstraintType type = isAlphaConstraint ? ConstraintType.ALPHA : ConstraintType.BETA; 
+        constraint.setType( type );
     }
 
     private void rewriteToEval(final RuleBuildContext context,
@@ -339,12 +375,15 @@ public class PatternBuilder
         MVELDialect mvelDialect = (MVELDialect) context.getDialect( "mvel" );
         boolean strictMode = mvelDialect.isStrictMode();
         mvelDialect.setStrictMode( false );
-
         context.setDialect( mvelDialect );
 
+        // analyze field type:
+        Class resultType = getFieldReturnType( pattern,
+                                               fieldConstraintDescr );
+        
         PredicateDescr predicateDescr = new PredicateDescr();
         MVELDumper dumper = new MVELDumper();
-        predicateDescr.setContent( dumper.dump( fieldConstraintDescr ) );
+        predicateDescr.setContent( dumper.dump( fieldConstraintDescr, Date.class.isAssignableFrom( resultType ) ) );
 
         build( context,
                pattern,
@@ -354,6 +393,23 @@ public class PatternBuilder
         mvelDialect.setStrictMode( strictMode );
         // fall back to original dialect
         context.setDialect( dialect );
+    }
+
+    /**
+     * @param pattern
+     * @param fieldConstraintDescr
+     * @return
+     */
+    private Class getFieldReturnType(final Pattern pattern,
+                                     final FieldConstraintDescr fieldConstraintDescr) {
+        String dummyField = "__DUMMY__";
+        String dummyExpr = dummyField+"."+fieldConstraintDescr.getFieldName();
+        ExpressionCompiler compiler = new ExpressionCompiler( dummyExpr );
+        ParserContext mvelcontext = new ParserContext();
+        mvelcontext.addInput( dummyField, ((ClassObjectType) pattern.getObjectType()).getClassType() );
+        compiler.compile( mvelcontext );
+        Class resultType = compiler.getReturnType();
+        return resultType;
     }
 
     private Restriction createRestriction(final RuleBuildContext context,
@@ -486,6 +542,9 @@ public class PatternBuilder
         if ( container == null ) {
             pattern.addConstraint( predicateConstraint );
         } else {
+            if( predicateConstraint.getType().equals( Constraint.ConstraintType.UNKNOWN ) ) {
+                this.setConstraintType( pattern, (MutableTypeConstraint) predicateConstraint );
+            }
             container.addConstraint( predicateConstraint );
         }
 

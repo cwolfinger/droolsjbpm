@@ -16,10 +16,13 @@ package org.drools.reteoo;
  * limitations under the License.
  */
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 
 import org.drools.RuleBaseConfiguration;
 import org.drools.common.BaseNode;
+import org.drools.common.DroolsObjectInputStream;
 import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.common.NodeMemory;
@@ -72,7 +75,7 @@ public class ObjectTypeNode extends ObjectSource
     private final ObjectType  objectType;
 
     /** The parent Rete node */
-    private final Rete        rete;
+    private transient Rete    rete;
 
     private boolean           skipOnModify     = false;
 
@@ -96,6 +99,12 @@ public class ObjectTypeNode extends ObjectSource
         this.rete = (Rete) this.objectSource;
         this.objectType = objectType;
         setObjectMemoryEnabled( context.isObjectTypeNodeMemoryEnabled() );
+    }
+
+    private void readObject(ObjectInputStream stream) throws IOException,
+                                                     ClassNotFoundException {
+        stream.defaultReadObject();
+        this.rete = ((DroolsObjectInputStream) stream).getRuleBase().getRete();
     }
 
     /**
@@ -144,7 +153,7 @@ public class ObjectTypeNode extends ObjectSource
             return;
         }
 
-        if ( this.objectMemoryEnabled) {
+        if ( this.objectMemoryEnabled ) {
             final FactHashTable memory = (FactHashTable) workingMemory.getNodeMemory( this );
             memory.add( handle,
                         false );
@@ -193,6 +202,7 @@ public class ObjectTypeNode extends ObjectSource
                                context,
                                workingMemory );
         }
+        this.skipOnModify = canSkipOnModify( this.sink.getSinks() );
     }
 
     /**
@@ -227,12 +237,12 @@ public class ObjectTypeNode extends ObjectSource
             removeObjectSink( (ObjectSink) node );
         }
         // JBRULES-1315: never remove OTNs
-//        if ( !this.isInUse() ) {
-//            for ( int i = 0, length = workingMemories.length; i < length; i++ ) {
-//                workingMemories[i].clearNodeMemory( this );
-//            }
-//            this.rete.removeObjectSink( this );
-//        }
+        //        if ( !this.isInUse() ) {
+        //            for ( int i = 0, length = workingMemories.length; i < length; i++ ) {
+        //                workingMemories[i].clearNodeMemory( this );
+        //            }
+        //            this.rete.removeObjectSink( this );
+        //        }
     }
 
     /**
@@ -282,7 +292,6 @@ public class ObjectTypeNode extends ObjectSource
      */
     protected void addObjectSink(final ObjectSink objectSink) {
         super.addObjectSink( objectSink );
-        this.skipOnModify = canSkipOnModify( this.sink.getSinks() );
     }
 
     /**
@@ -290,7 +299,6 @@ public class ObjectTypeNode extends ObjectSource
      */
     protected void removeObjectSink(final ObjectSink objectSink) {
         super.removeObjectSink( objectSink );
-        this.skipOnModify = canSkipOnModify( this.sink.getSinks() );
     }
 
     /**
@@ -304,15 +312,15 @@ public class ObjectTypeNode extends ObjectSource
         // If we have no alpha or beta node with constraints on this ObjectType, we can just skip modifies
         boolean hasConstraints = false;
         for ( int i = 0; i < sinks.length && !hasConstraints; i++ ) {
-            if ( sinks[i] instanceof AlphaNode ) {
-                hasConstraints = this.usesDeclaration( ((AlphaNode) sinks[i]).getConstraint() );
+            if ( sinks[i] instanceof AlphaNode || sinks[i] instanceof AccumulateNode || sinks[i] instanceof CollectNode || sinks[i] instanceof FromNode || sinks[i] instanceof EvalConditionNode ) {
+                hasConstraints = true;
             } else if ( sinks[i] instanceof BetaNode && ((BetaNode) sinks[i]).getConstraints().length > 0 ) {
                 hasConstraints = this.usesDeclaration( ((BetaNode) sinks[i]).getConstraints() );
             }
             if ( !hasConstraints && sinks[i] instanceof ObjectSource ) {
-                hasConstraints = this.canSkipOnModify( ((ObjectSource) sinks[i]).getSinkPropagator().getSinks() );
-            } else if ( sinks[i] instanceof TupleSource ) {
-                hasConstraints = this.canSkipOnModify( ((TupleSource) sinks[i]).getSinkPropagator().getSinks() );
+                hasConstraints = !this.canSkipOnModify( ((ObjectSource) sinks[i]).getSinkPropagator().getSinks() );
+            } else if ( !hasConstraints && sinks[i] instanceof TupleSource ) {
+                hasConstraints = !this.canSkipOnModify( ((TupleSource) sinks[i]).getSinkPropagator().getSinks() );
             }
         }
 
@@ -332,7 +340,7 @@ public class ObjectTypeNode extends ObjectSource
         boolean usesDecl = false;
         final Declaration[] declarations = constraint.getRequiredDeclarations();
         for ( int j = 0; !usesDecl && j < declarations.length; j++ ) {
-            usesDecl = (declarations[j].getPattern().getObjectType() == this.objectType);
+            usesDecl = (declarations[j].getPattern().getObjectType().equals( this.objectType ));
         }
         return usesDecl;
     }

@@ -228,15 +228,14 @@ public class RuleAgentTest extends TestCase {
     public void testDirectory() throws Exception {
         File dir = RuleBaseAssemblerTest.getTempDirectory();
 
-        Package p1 = new Package("p1");
-        File p1f = new File(dir, "p43_.pkg");
-
         File junk = new File(dir, "xxx.poo");
         FileOutputStream ojunk = new FileOutputStream(junk);
         ojunk.write("ignore me".getBytes());
         ojunk.flush();
         ojunk.close();
 
+        Package p1 = new Package("p1");
+        File p1f = new File(dir, "p43_.pkg");
         RuleBaseAssemblerTest.writePackage( p1, p1f );
 
         Properties props = new Properties();

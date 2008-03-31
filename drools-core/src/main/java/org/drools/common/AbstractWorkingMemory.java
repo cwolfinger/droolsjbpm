@@ -44,6 +44,7 @@ import org.drools.RuleBaseConfiguration.AssertBehaviour;
 import org.drools.RuleBaseConfiguration.LogicalOverride;
 import org.drools.base.MapGlobalResolver;
 import org.drools.base.ShadowProxy;
+import org.drools.concurrent.ExecutorService;
 import org.drools.event.AgendaEventListener;
 import org.drools.event.AgendaEventSupport;
 import org.drools.event.RuleBaseEventListener;
@@ -85,74 +86,79 @@ public abstract class AbstractWorkingMemory
     InternalWorkingMemoryActions,
     EventSupport,
     PropertyChangeListener {
+    
+    private static final long serialVersionUID = 405L;
+    
     // ------------------------------------------------------------
     // Constants
     // ------------------------------------------------------------
-    protected static final Class[]                  ADD_REMOVE_PROPERTY_CHANGE_LISTENER_ARG_TYPES = new Class[]{PropertyChangeListener.class};
+    protected static final Class[]         ADD_REMOVE_PROPERTY_CHANGE_LISTENER_ARG_TYPES = new Class[]{PropertyChangeListener.class};
 
     // ------------------------------------------------------------
     // Instance members
     // ------------------------------------------------------------
-    protected final long                            id;
+    protected long                         id;
 
     /** The arguments used when adding/removing a property change listener. */
-    protected final Object[]                        addRemovePropertyChangeListenerArgs           = new Object[]{this};
+    protected final Object[]               addRemovePropertyChangeListenerArgs           = new Object[]{this};
 
     /** The actual memory for the <code>JoinNode</code>s. */
-    protected final PrimitiveLongMap                nodeMemories                                  = new PrimitiveLongMap( 32,
-                                                                                                                          8 );
+    protected final PrimitiveLongMap       nodeMemories                                  = new PrimitiveLongMap( 32,
+                                                                                                                 8 );
     /** Object-to-handle mapping. */
-    private final ObjectHashMap                     assertMap;
-    private final ObjectHashMap                     identityMap;
+    private final ObjectHashMap            assertMap;
+    private final ObjectHashMap            identityMap;
 
-    protected Map                                   queryResults                                  = Collections.EMPTY_MAP;
+    protected Map                          queryResults                                  = Collections.EMPTY_MAP;
 
     /** Global values which are associated with this memory. */
-    protected GlobalResolver                        globalResolver;
+    protected GlobalResolver               globalResolver;
 
-    protected static final Object                   NULL                                          = new Serializable() {
-                                                                                                      private static final long serialVersionUID = 400L;
-                                                                                                  };
+    protected static final Object          NULL                                          = new Serializable() {
+                                                                                             private static final long serialVersionUID = 400L;
+                                                                                         };
 
     /** The eventSupport */
-    protected WorkingMemoryEventSupport             workingMemoryEventSupport                     = new WorkingMemoryEventSupport();
+    protected WorkingMemoryEventSupport    workingMemoryEventSupport                     = new WorkingMemoryEventSupport();
 
-    protected AgendaEventSupport                    agendaEventSupport                            = new AgendaEventSupport();
+    protected AgendaEventSupport           agendaEventSupport                            = new AgendaEventSupport();
 
-    protected RuleFlowEventSupport                  ruleFlowEventSupport                          = new RuleFlowEventSupport();
-    
-    protected List                                  __ruleBaseEventListeners                      = new LinkedList();                      
+    protected RuleFlowEventSupport         ruleFlowEventSupport                          = new RuleFlowEventSupport();
+
+    protected List                         __ruleBaseEventListeners                      = new LinkedList();
 
     /** The <code>RuleBase</code> with which this memory is associated. */
-    protected transient InternalRuleBase            ruleBase;
+    protected transient InternalRuleBase   ruleBase;
 
-    protected final FactHandleFactory               handleFactory;
+    protected final FactHandleFactory      handleFactory;
 
-    protected final TruthMaintenanceSystem          tms;
+    protected final TruthMaintenanceSystem tms;
 
     /** Rule-firing agenda. */
-    protected DefaultAgenda                         agenda;
+    protected DefaultAgenda                agenda;
 
-    protected final List                            actionQueue                                   = new ArrayList();
+    protected final LinkedList                  actionQueue                                   = new LinkedList();
 
-    protected final ReentrantLock                   lock                                          = new ReentrantLock();
+    protected boolean                      evaluatingActionQueue;
 
-    protected final boolean                         discardOnLogicalOverride;
+    protected final ReentrantLock          lock                                          = new ReentrantLock();
 
-    protected long                                  propagationIdCounter;
+    protected final boolean                discardOnLogicalOverride;
 
-    private final boolean                           maintainTms;
+    protected long                         propagationIdCounter;
 
-    private final boolean                           sequential;
+    private final boolean                  maintainTms;
 
-    private List                                    liaPropagations                               = Collections.EMPTY_LIST;
+    private final boolean                  sequential;
+
+    private List                           liaPropagations                               = Collections.EMPTY_LIST;
 
     /** Flag to determine if a rule is currently being fired. */
-    protected boolean                               firing;
+    protected boolean                      firing;
 
-    protected boolean                               halt;
+    protected boolean                      halt;
 
-    private int                                     processCounter;
+    private int                            processCounter;
 
     // ------------------------------------------------------------
     // Constructors
@@ -204,7 +210,7 @@ public abstract class AbstractWorkingMemory
     // Instance methods
     // ------------------------------------------------------------    
 
-    void setRuleBase(final InternalRuleBase ruleBase) {
+    public void setRuleBase(final InternalRuleBase ruleBase) {
         this.ruleBase = ruleBase;
     }
 
@@ -386,6 +392,10 @@ public abstract class AbstractWorkingMemory
 
     public long getId() {
         return this.id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public Object getGlobal(final String identifier) {
@@ -580,6 +590,20 @@ public abstract class AbstractWorkingMemory
      * @see WorkingMemory
      */
     public FactHandle getFactHandle(final Object object) {
+        try {
+            this.lock.lock();
+            final FactHandle factHandle = (FactHandle) this.assertMap.get( object );
+
+            return factHandle;
+        } finally {
+            this.lock.unlock();
+        }
+    }
+
+    /**
+     * @see InternalWorkingMemory
+     */
+    public FactHandle getFactHandleByIdentity(final Object object) {
         try {
             this.lock.lock();
             final FactHandle factHandle = (FactHandle) this.identityMap.get( object );
@@ -983,8 +1007,9 @@ public abstract class AbstractWorkingMemory
             this.lock.lock();
             this.ruleBase.executeQueuedActions();
 
-            final InternalFactHandle handle = (InternalFactHandle) factHandle;
-            if ( handle.getId() == -1 ) {
+            // make sure the handles if from this working memory
+            final InternalFactHandle handle = (InternalFactHandle) this.assertMap.get( factHandle );
+            if ( handle == null || handle.getId() == -1 ) {
                 // can't retract an already retracted handle
                 return;
             }
@@ -1208,19 +1233,21 @@ public abstract class AbstractWorkingMemory
             this.lock.lock();
             this.ruleBase.executeQueuedActions();
 
-            // only needed if we maintain tms, but either way we must get it before we do the retract
-            int status = -1;
-            if ( this.maintainTms ) {
-                status = ((InternalFactHandle) factHandle).getEqualityKey().getStatus();
-            }
-            final InternalFactHandle handle = (InternalFactHandle) factHandle;
-            final Object originalObject = (handle.isShadowFact()) ? ((ShadowProxy) handle.getObject()).getShadowedObject() : handle.getObject();
+            // make sure the handle is from this working memory
+            final InternalFactHandle handle = (InternalFactHandle) this.assertMap.get( factHandle );
 
-            if ( handle.getId() == -1 || object == null ) {
+            if ( handle == null || handle.getId() == -1 || object == null ) {
                 // the handle is invalid, most likely already  retracted, so return
                 // and we cannot assert a null object
                 return;
             }
+
+            // only needed if we maintain tms, but either way we must get it before we do the retract
+            int status = -1;
+            if ( this.maintainTms ) {
+                status = handle.getEqualityKey().getStatus();
+            }
+            final Object originalObject = (handle.isShadowFact()) ? ((ShadowProxy) handle.getObject()).getShadowedObject() : handle.getObject();
 
             if ( activation != null ) {
                 // release resources so that they can be GC'ed
@@ -1291,16 +1318,15 @@ public abstract class AbstractWorkingMemory
     }
 
     public void executeQueuedActions() {
-        while ( !actionQueue.isEmpty() ) {
-            final WorkingMemoryAction action = (WorkingMemoryAction) actionQueue.get( 0 );
-            actionQueue.remove( 0 );
-            action.execute( this );
+        if( ! evaluatingActionQueue ) {
+            evaluatingActionQueue = true;
+            WorkingMemoryAction action = null;           
+            
+            while ( actionQueue.size() != 0 && ( action = (WorkingMemoryAction) actionQueue.removeFirst() ) != null ) {
+                action.execute( this );
+            }
+            evaluatingActionQueue = false;
         }
-        //        for ( final Iterator it = this.actionQueue.iterator(); it.hasNext(); ) {
-        //            final WorkingMemoryAction action = (WorkingMemoryAction) it.next();
-        //            it.remove();
-        //            action.execute( this );
-        //        }
     }
 
     public void queueWorkingMemoryAction(final WorkingMemoryAction action) {
@@ -1459,4 +1485,11 @@ public abstract class AbstractWorkingMemory
         return result;
     }
 
+    public ExecutorService getExecutorService() {
+        return null; // no executor service
+    }
+
+    public void setExecutorService(ExecutorService executor) {
+        // no executor service, so nothing to set
+    }
 }

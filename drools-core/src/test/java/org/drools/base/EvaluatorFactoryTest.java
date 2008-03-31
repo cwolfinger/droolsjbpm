@@ -90,8 +90,17 @@ public class EvaluatorFactoryTest extends TestCase {
                                  {"foo", "not memberOf", col, Boolean.FALSE},
                                  {"xyz", "not memberOf", col, Boolean.TRUE},
                                  {null, "not memberOf", col, Boolean.FALSE},
-                                 {"foo", "not memberOf", null, Boolean.FALSE}
-
+                                 {"foo", "not memberOf", null, Boolean.FALSE},
+                                 {Boolean.TRUE, "==", "xyz", Boolean.FALSE},
+                                 {Boolean.TRUE, "==", "true", Boolean.TRUE},
+                                 {Boolean.FALSE, "==", "xyz", Boolean.TRUE},
+                                 {Boolean.FALSE, "==", "false", Boolean.TRUE},
+                                 {Boolean.FALSE, "==", "true", Boolean.FALSE},
+                                 {Boolean.TRUE, "!=", "xyz", Boolean.TRUE},
+                                 {Boolean.TRUE, "!=", "true", Boolean.FALSE},
+                                 {Boolean.FALSE, "!=", "xyz", Boolean.FALSE},
+                                 {Boolean.FALSE, "!=", "true", Boolean.TRUE},
+                                 {Boolean.FALSE, "!=", "false", Boolean.FALSE}
         };
 
         runEvaluatorTest( data,
@@ -146,6 +155,10 @@ public class EvaluatorFactoryTest extends TestCase {
                                  {"foo", "matches", ".*foo", Boolean.TRUE},
                                  {"foo", "matches", "bar", Boolean.FALSE},
                                  {null, "matches", ".*foo", Boolean.FALSE},
+                                 {"something", "matches", "something", Boolean.TRUE},
+                                 {"something", "matches", "hello ;=", Boolean.FALSE},
+                                 {"something", "not matches", "something", Boolean.FALSE},
+                                 {"something", "not matches", "hello ;=", Boolean.TRUE},
                                  {"foo", "==", null, Boolean.FALSE},
                                  {"foo", "!=", null, Boolean.TRUE},
                                  {null, "==", null, Boolean.TRUE},

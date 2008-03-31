@@ -16,12 +16,20 @@
 
 package org.drools.reteoo;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
 import java.util.Collection;
 import java.util.LinkedList;
 
 import junit.framework.Assert;
 
 import org.drools.DroolsTestCase;
+import org.drools.RuleBase;
 import org.drools.RuleBaseConfiguration;
 import org.drools.RuleBaseFactory;
 import org.drools.base.ClassObjectType;
@@ -361,10 +369,13 @@ public class CollectNodeTest extends DroolsTestCase {
 
     }
 
-    public void testMemory() {
+    public void testMemory() throws IOException, ClassNotFoundException {
         ReteooRuleBase ruleBase = (ReteooRuleBase) RuleBaseFactory.newRuleBase();
         BuildContext buildContext = new BuildContext( ruleBase,
                                                       ruleBase.getReteooBuilder().getIdGenerator() );
+        
+        byte[] serializeOut = serializeOut(ruleBase);
+        ruleBase = (ReteooRuleBase) serializeIn(serializeOut);
         
         final ReteooWorkingMemory workingMemory = ( ReteooWorkingMemory ) ruleBase.newStatefulSession();
 
@@ -434,5 +445,28 @@ public class CollectNodeTest extends DroolsTestCase {
                              2,
                              this.sink.getAsserted().size() );
     }
+    
+    
+    protected Object serializeIn(final byte[] bytes) throws IOException,
+			ClassNotFoundException {
+		final ObjectInput in = new ObjectInputStream(new ByteArrayInputStream(
+				bytes));
+		final Object obj = in.readObject();
+		in.close();
+		return obj;
+	}
+
+	protected byte[] serializeOut(final Object obj) throws IOException {
+		// Serialize to a byte array
+		final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		final ObjectOutput out = new ObjectOutputStream(bos);
+		out.writeObject(obj);
+		out.close();
+
+		// Get the bytes of the serialized object
+		final byte[] bytes = bos.toByteArray();
+		return bytes;
+	}
+
 
 }

@@ -17,6 +17,8 @@
  */
 package org.drools.base.accumulators;
 
+import java.io.Serializable;
+
 
 /**
  * An implementation of an accumulator capable of calculating average values
@@ -26,7 +28,10 @@ package org.drools.base.accumulators;
  */
 public class AverageAccumulateFunction implements AccumulateFunction {
 
-    protected static class AverageData {
+    private static final long serialVersionUID = -7290793942538074637L;
+
+    protected static class AverageData implements Serializable {
+        private static final long serialVersionUID = -4919742651209619505L;
         public int    count = 0;
         public double total = 0;
     }

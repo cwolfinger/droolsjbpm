@@ -3,9 +3,14 @@
  */
 package org.drools.util;
 
-import org.drools.util.AbstractHashTable.EqualityEquals;
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 
-public class ObjectHashSet extends AbstractHashTable {
+public class ObjectHashSet extends AbstractHashTable
+    implements
+    Externalizable {
 
     private static final long serialVersionUID = 400L;
 
@@ -29,6 +34,21 @@ public class ObjectHashSet extends AbstractHashTable {
                          final Entry[] table) {
         super( loadFactor,
                table );
+    }
+
+    public void readExternal(ObjectInput in) throws IOException,
+                                            ClassNotFoundException {
+        super.readExternal( in );
+        resize( table.length,
+                true );
+    }
+
+    public void writeExternal(ObjectOutput out) throws IOException {
+        super.writeExternal( out );
+    }
+
+    protected void updateHashCode(Entry entry) {
+        ((ObjectEntry) entry).setHashCode( this.comparator.hashCodeOf( ((ObjectEntry) entry).getValue() ) );
     }
 
     public boolean add(final Object value) {
@@ -69,7 +89,8 @@ public class ObjectHashSet extends AbstractHashTable {
         this.table[index] = entry;
 
         if ( this.size++ >= this.threshold ) {
-            resize( 2 * this.table.length );
+            resize( 2 * this.table.length,
+                    false );
         }
         return false;
     }
@@ -123,11 +144,11 @@ public class ObjectHashSet extends AbstractHashTable {
 
         return this.table[index];
     }
-    
+
     public Object[] toArray(Object[] objects) {
         Iterator it = iterator();
         int i = 0;
-        for ( ObjectEntry entry = ( ObjectEntry) it.next(); entry != null; entry = ( ObjectEntry ) it.next() ) {
+        for ( ObjectEntry entry = (ObjectEntry) it.next(); entry != null; entry = (ObjectEntry) it.next() ) {
             objects[i++] = entry.getValue();
         }
         return objects;
@@ -148,6 +169,10 @@ public class ObjectHashSet extends AbstractHashTable {
         public ObjectEntry(final Object value,
                            final int hashCode) {
             this.value = value;
+            this.hashCode = hashCode;
+        }
+
+        public void setHashCode(int hashCode) {
             this.hashCode = hashCode;
         }
 

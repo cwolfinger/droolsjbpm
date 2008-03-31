@@ -18,8 +18,7 @@ rule "Silver Priority"
 		customer : Customer( subscription == "Silver" )	
 		ticket : Ticket( customer == customer, status == "New" )	
 	then
-		ticket.setStatus( "Escalate" );
-		update( ticket );		
+		modify( ticket ) {setStatus( "Escalate" )} 		
 end
 
 rule "Gold Priority"
@@ -28,8 +27,7 @@ rule "Gold Priority"
 		customer : Customer( subscription == "Gold" )	
 		ticket : Ticket( customer == customer, status == "New" )	
 	then
-		ticket.setStatus( "Escalate" );	
-		update( ticket );		
+		modify( ticket ) {setStatus( "Escalate" )}	
 end
 
 rule "Platinum Priority"
@@ -38,7 +36,7 @@ rule "Platinum Priority"
 		ticket : Ticket( customer == customer, status == "New" )	
 	then;
 		ticket.setStatus( "Escalate" );
-		update( ticket );
+		modify ( ticket ) {setStatus( "Escalate" )}
 end
 
 rule "Escalate"

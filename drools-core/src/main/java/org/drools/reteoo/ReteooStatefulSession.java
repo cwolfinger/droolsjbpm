@@ -25,7 +25,7 @@ public class ReteooStatefulSession extends ReteooWorkingMemory
     StatefulSession {
 
     private static final long serialVersionUID = -5360554247241558374L;
-    private ExecutorService executor;
+    private transient ExecutorService executor;
     
     private transient List                          ruleBaseListeners;
 
@@ -100,6 +100,14 @@ public class ReteooStatefulSession extends ReteooWorkingMemory
             }
         }
         return this.ruleBaseListeners;
+    }
+
+    public ExecutorService getExecutorService() {
+        return executor;
+    }
+
+    public void setExecutorService(ExecutorService executor) {
+        this.executor = executor;
     }
 
 }

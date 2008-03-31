@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.drools.WorkingMemory;
+import org.drools.WorkingMemoryEventManager;
 import org.drools.audit.event.LogEvent;
 
 import com.thoughtworks.xstream.XStream;
@@ -40,8 +41,8 @@ public class WorkingMemoryInMemoryLogger extends WorkingMemoryLogger {
      * Creates a new WorkingMemoryInMemoryLogger for the given working memory.
      * @param workingMemory
      */
-    public WorkingMemoryInMemoryLogger(final WorkingMemory workingMemory) {
-        super( workingMemory );
+    public WorkingMemoryInMemoryLogger(final WorkingMemoryEventManager workingMemoryEventManager) {
+        super( workingMemoryEventManager );
     }
 
     public String getEvents() {

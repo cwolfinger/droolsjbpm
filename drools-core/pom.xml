@@ -5,7 +5,7 @@
   <parent>
     <artifactId>drools</artifactId>
     <groupId>org.drools</groupId>
-    <version>4.0.2.SNAPSHOT</version>
+    <version>4.0.6</version>
   </parent>
 
   <artifactId>drools-core</artifactId>
@@ -29,7 +29,7 @@
 
     <dependency>
       <groupId>org.mvel</groupId>
-      <artifactId>mvel14</artifactId>
+      <artifactId>mvel</artifactId>
     </dependency>     
     
   </dependencies>

@@ -18,11 +18,14 @@ package org.drools.event;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EventListener;
 import java.util.List;
 
 import org.drools.RuleBase;
 import org.drools.rule.Rule;
 import org.drools.rule.Package;
+
+import java.util.Iterator;
 
 /**
  * 
@@ -50,6 +53,15 @@ public class RuleBaseEventSupport
     
     public void setRuleBase(RuleBase ruleBase) {
         this.ruleBase = ruleBase;
+    }
+    
+    public void removeEventListener(Class cls) {
+        for ( Iterator it = this.listeners.iterator(); it.hasNext(); ) {
+            EventListener listener = ( EventListener ) it.next();
+            if ( cls.isAssignableFrom( listener.getClass() ) ) {
+                it.remove();
+            }
+        }        
     }
 
     public void removeEventListener(final RuleBaseEventListener listener) {

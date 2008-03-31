@@ -116,5 +116,5 @@ public class DroolsObjectInputStream extends ObjectInputStream {
     public void setExtractorFactory(ClassFieldExtractorCache extractorFactory) {
         this.extractorFactory = extractorFactory;
     }
-
+    
 }

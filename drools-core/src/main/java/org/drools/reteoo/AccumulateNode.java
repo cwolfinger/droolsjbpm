@@ -16,6 +16,7 @@
 
 package org.drools.reteoo;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 import org.drools.RuleBaseConfiguration;
@@ -194,7 +195,9 @@ public class AccumulateNode extends BetaNode {
                              final PropagationContext context,
                              final InternalWorkingMemory workingMemory) {
         final AccumulateMemory memory = (AccumulateMemory) workingMemory.getNodeMemory( this );
-        memory.betaMemory.getTupleMemory().remove( leftTuple );
+        if( memory.betaMemory.getTupleMemory().remove( leftTuple ) == null) {
+            return;
+        }
         final AccumulateResult accresult = (AccumulateResult) memory.betaMemory.getCreatedHandles().remove( leftTuple );
 
         // if tuple was propagated
@@ -478,7 +481,7 @@ public class AccumulateNode extends BetaNode {
         return memory;
     }
 
-    public static class AccumulateMemory {
+    public static class AccumulateMemory implements Serializable {
         private static final long serialVersionUID = 400L;
         
         public Object workingMemoryContext;
@@ -487,7 +490,9 @@ public class AccumulateNode extends BetaNode {
         public ContextEntry[] alphaContexts;
     }
 
-    private static class AccumulateResult {
+    private static class AccumulateResult implements Serializable {
+
+        private static final long serialVersionUID = -7715967986163072228L;
         // keeping attributes public just for performance
         public InternalFactHandle handle;
         public Object             context;

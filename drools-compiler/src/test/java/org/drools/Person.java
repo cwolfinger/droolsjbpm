@@ -63,13 +63,22 @@ public class Person
               0 );
     }
 
+    
+    public Person(final String name,
+                  final Cheese cheese) {
+        this( name,
+              null,
+              0 );
+        this.cheese = cheese;
+    }
+    
     public Person(final String name,
                   final String likes,
                   final int age) {
         this.name = name;
         this.likes = likes;
         this.age = age;
-    }
+    }    
 
     /* (non-Javadoc)
      * @see org.drools.PersonInterface#getStatus()

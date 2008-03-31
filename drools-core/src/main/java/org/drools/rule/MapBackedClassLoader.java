@@ -33,6 +33,11 @@ public class MapBackedClassLoader extends ClassLoader
         this.store = new HashMap();
     }
     
+    public MapBackedClassLoader(final ClassLoader parentClassLoader, final Map store) {
+        super( parentClassLoader );
+        this.store = store;
+    }
+    
     public void addResource(String className,
                             byte[] bytes) {
         addClass(className, 
@@ -46,16 +51,22 @@ public class MapBackedClassLoader extends ClassLoader
 
     public void addClass(final String className,
                          byte[] bytes) {
-    	
-        this.store.put( convertResourcePathToClassName(className),
-                        bytes );
+    	synchronized ( this.store ) {            
+            this.store.put( convertResourcePathToClassName(className),
+                            bytes );
+    	}
     }
 
     public Class fastFindClass(final String name) {
         final Class clazz = findLoadedClass( name );
 
         if ( clazz == null ) {
-            final byte[] clazzBytes = (byte[]) this.store.get( name );
+            
+            byte[] clazzBytes = null;
+            synchronized ( this.store ) {            
+                clazzBytes = (byte[]) this.store.get( name );
+            }
+            
             if ( clazzBytes != null ) {
                 return defineClass( name,
                                     clazzBytes,
@@ -103,7 +114,11 @@ public class MapBackedClassLoader extends ClassLoader
     }
 
     public InputStream getResourceAsStream(final String name) {
-        final byte[] bytes = (byte[]) this.store.get( name );
+        byte[] bytes = null;
+        synchronized ( this.store ) {            
+            bytes = (byte[]) this.store.get( name );
+        }
+        
         if ( bytes != null ) {
             return new ByteArrayInputStream( bytes );
         } else {
@@ -113,6 +128,10 @@ public class MapBackedClassLoader extends ClassLoader
             }
             return input;
         }
+    }
+    
+    public Map getStore() {
+        return this.store;
     }
 
 }

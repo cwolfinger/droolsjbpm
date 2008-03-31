@@ -22,9 +22,9 @@ import org.mvel.CompileException;
 import org.mvel.DataConversion;
 import org.mvel.integration.VariableResolver;
 
-import java.util.Map;
-
 public class LocalVariableResolver implements VariableResolver {
+
+    private static final long serialVersionUID = -422184063524963203L;
     private String name;
     private Class knownType;
     private DroolsMVELFactory factory;

@@ -30,6 +30,7 @@ import org.drools.RuleBaseConfiguration;
 import org.drools.RuleBaseFactory;
 import org.drools.StatefulSession;
 import org.drools.WorkingMemory;
+import org.drools.common.DroolsObjectInputStream;
 import org.drools.common.InternalFactHandle;
 import org.drools.compiler.PackageBuilder;
 import org.drools.compiler.PackageBuilderConfiguration;
@@ -532,6 +533,69 @@ public class DynamicRulesTest extends TestCase {
 
     }
 
+    public void testDynamicRulesAddRemove() {
+        try {
+            RuleBase ruleBase = RuleBaseFactory.newRuleBase();
+            
+            PackageBuilder tomBuilder = new PackageBuilder();
+            tomBuilder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_DynamicRulesTom.drl" ) ) );
+            ruleBase.addPackage( tomBuilder.getPackage() );
+
+            StatefulSession session = ruleBase.newStatefulSession();
+            List results = new ArrayList();
+            session.setGlobal( "results", results );
+            
+            InternalFactHandle h1 = (InternalFactHandle) session.insert( new Person( "tom", 1 ) );
+            InternalFactHandle h2 = (InternalFactHandle) session.insert( new Person( "fred", 2 ) );
+            InternalFactHandle h3 = (InternalFactHandle) session.insert( new Person( "harry", 3 ) );
+            InternalFactHandle h4 = (InternalFactHandle) session.insert( new Person( "fred", 4 ) );
+            InternalFactHandle h5 = (InternalFactHandle) session.insert( new Person( "ed", 5 ) );
+            InternalFactHandle h6 = (InternalFactHandle) session.insert( new Person( "tom", 6 ) );
+            InternalFactHandle h7 = (InternalFactHandle) session.insert( new Person( "sreeni", 7 ) );
+            InternalFactHandle h8 = (InternalFactHandle) session.insert( new Person( "jill", 8 ) );
+            InternalFactHandle h9 = (InternalFactHandle) session.insert( new Person( "ed", 9 ) );
+            InternalFactHandle h10 = (InternalFactHandle) session.insert( new Person( "tom", 10 ) );
+            
+            session.fireAllRules();
+            
+            assertEquals( 3, results.size() );
+            assertTrue( results.contains( h1.getObject() ) );
+            assertTrue( results.contains( h6.getObject() ) );
+            assertTrue( results.contains( h10.getObject() ) );
+            results.clear();
+
+            PackageBuilder fredBuilder = new PackageBuilder();
+            fredBuilder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_DynamicRulesFred.drl" ) ) );
+            ruleBase.addPackage( fredBuilder.getPackage() );
+
+            assertEquals( 2, results.size() );
+            assertTrue( results.contains( h2.getObject() ) );
+            assertTrue( results.contains( h4.getObject() ) );
+            results.clear();
+
+            ruleBase.removePackage( "tom" );
+
+            PackageBuilder edBuilder = new PackageBuilder();
+            edBuilder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_DynamicRulesEd.drl" ) ) );
+            ruleBase.addPackage( edBuilder.getPackage() );
+
+            assertEquals( 2, results.size() );
+            assertTrue( results.contains( h5.getObject() ) );
+            assertTrue( results.contains( h9.getObject() ) );
+            results.clear();
+
+            ((Person) h3.getObject()).setName( "ed" );
+            session.update( h3, h3.getObject() );
+            session.fireAllRules();
+            
+            assertEquals( 1, results.size() );
+            assertTrue( results.contains( h3.getObject() ) );
+        } catch( Exception e ) {
+            e.printStackTrace();
+            fail( "Should not raise any exception: "+e.getMessage() );
+        }
+    }
+
     public void testDynamicRuleRemovalsSubNetwork() throws Exception {
 
         final PackageBuilder builder = new PackageBuilder();
@@ -719,67 +783,58 @@ public class DynamicRulesTest extends TestCase {
         }
     }
 
-    public void testDynamicRulesAddRemove() {
-        try {
-            RuleBase ruleBase = RuleBaseFactory.newRuleBase();
-            
-            PackageBuilder tomBuilder = new PackageBuilder();
-            tomBuilder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_DynamicRulesTom.drl" ) ) );
-            ruleBase.addPackage( tomBuilder.getPackage() );
+    
+    public void testSerializeAdd() throws Exception {
 
-            StatefulSession session = ruleBase.newStatefulSession();
-            List results = new ArrayList();
-            session.setGlobal( "results", results );
-            
-            InternalFactHandle h1 = (InternalFactHandle) session.insert( new Person( "tom", 1 ) );
-            InternalFactHandle h2 = (InternalFactHandle) session.insert( new Person( "fred", 2 ) );
-            InternalFactHandle h3 = (InternalFactHandle) session.insert( new Person( "harry", 3 ) );
-            InternalFactHandle h4 = (InternalFactHandle) session.insert( new Person( "fred", 4 ) );
-            InternalFactHandle h5 = (InternalFactHandle) session.insert( new Person( "ed", 5 ) );
-            InternalFactHandle h6 = (InternalFactHandle) session.insert( new Person( "tom", 6 ) );
-            InternalFactHandle h7 = (InternalFactHandle) session.insert( new Person( "sreeni", 7 ) );
-            InternalFactHandle h8 = (InternalFactHandle) session.insert( new Person( "jill", 8 ) );
-            InternalFactHandle h9 = (InternalFactHandle) session.insert( new Person( "ed", 9 ) );
-            InternalFactHandle h10 = (InternalFactHandle) session.insert( new Person( "tom", 10 ) );
-            
-            session.fireAllRules();
-            
-            assertEquals( 3, results.size() );
-            assertTrue( results.contains( h1.getObject() ) );
-            assertTrue( results.contains( h6.getObject() ) );
-            assertTrue( results.contains( h10.getObject() ) );
-            results.clear();
-
-            PackageBuilder fredBuilder = new PackageBuilder();
-            fredBuilder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_DynamicRulesFred.drl" ) ) );
-            ruleBase.addPackage( fredBuilder.getPackage() );
-
-            assertEquals( 2, results.size() );
-            assertTrue( results.contains( h2.getObject() ) );
-            assertTrue( results.contains( h4.getObject() ) );
-            results.clear();
-
-            ruleBase.removePackage( "tom" );
-
-            PackageBuilder edBuilder = new PackageBuilder();
-            edBuilder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_DynamicRulesEd.drl" ) ) );
-            ruleBase.addPackage( edBuilder.getPackage() );
-
-            assertEquals( 2, results.size() );
-            assertTrue( results.contains( h5.getObject() ) );
-            assertTrue( results.contains( h9.getObject() ) );
-            results.clear();
-
-            ((Person) h3.getObject()).setName( "ed" );
-            session.update( h3, h3.getObject() );
-            session.fireAllRules();
-            
-            assertEquals( 1, results.size() );
-            assertTrue( results.contains( h3.getObject() ) );
-        } catch( Exception e ) {
-            e.printStackTrace();
-            fail( "Should not raise any exception: "+e.getMessage() );
-        }
+        //Create a rulebase, a session, and test it
+        RuleBase ruleBase = RuleBaseFactory.newRuleBase( );
+        PackageBuilder builder = new PackageBuilder();
+        builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_Dynamic1.drl" ) ) );
+        Package pkg = serialisePackage( builder.getPackage() );
+        ruleBase.addPackage( pkg );
+        
+        StatefulSession session = ruleBase.newStatefulSession();
+        List list = new ArrayList();
+        session.setGlobal( "list", list );
+        
+        InternalFactHandle stilton = (InternalFactHandle) session.insert( new Cheese( "stilton", 10 ) );
+        InternalFactHandle brie = (InternalFactHandle) session.insert( new Cheese( "brie", 10 ) );
+        session.fireAllRules();
+        
+        assertEquals( list.size(), 1 );
+        assertEquals( "stilton", list.get( 0 ));
+        
+        byte[] serializedSession = serializeOut( session );
+        session.dispose();
+        
+        byte[] serializedRulebase = serializeOut( ruleBase );
+        
+        // now recreate the rulebase, deserialize the session and test it
+        ruleBase = (RuleBase) serializeIn( serializedRulebase );
+        
+        session = ruleBase.newStatefulSession( new ByteArrayInputStream( serializedSession ) );
+        list = (List) session.getGlobal( "list" );
+        
+        assertNotNull( list );
+        assertEquals( list.size(), 1 );
+        assertEquals( "stilton", list.get( 0 ));
+        
+        builder = new PackageBuilder();
+        builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_Dynamic3.drl" ) ) );
+        pkg = serialisePackage( builder.getPackage() );
+        ruleBase.addPackage( pkg );
+        
+        InternalFactHandle stilton2 = (InternalFactHandle) session.insert( new Cheese( "stilton", 10 ) );
+        InternalFactHandle brie2 = (InternalFactHandle) session.insert( new Cheese( "brie", 10 ) );
+        InternalFactHandle bob = (InternalFactHandle) session.insert( new Person( "bob", 30 ) );
+        session.fireAllRules();
+        
+        assertEquals( list.size(), 3 );
+        assertEquals( bob.getObject(), list.get( 1 ));
+        assertEquals( "stilton", list.get( 2 ));
+        
+        session.dispose();
+        
     }
 
     public class SubvertedClassLoader extends URLClassLoader {

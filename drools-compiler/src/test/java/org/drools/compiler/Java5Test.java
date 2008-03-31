@@ -6,7 +6,7 @@ import org.drools.DroolsTestCase;
 import org.drools.rule.builder.dialect.java.JavaDialectConfiguration;
 
 public class Java5Test extends DroolsTestCase {
-    
+
     public void testJava5Rule() throws Exception {
         final String javaVersion = System.getProperty( "java.specification.version" );
         //do not execute tests under JDK 1.4
@@ -20,7 +20,7 @@ public class Java5Test extends DroolsTestCase {
         javaConf.setCompiler( JavaDialectConfiguration.ECLIPSE );
         javaConf.setJavaLanguageLevel( "1.5" );
         
-        final PackageBuilder builder = new PackageBuilder( conf );
+        final PackageBuilder builder = new PackageBuilder( );
         builder.addPackageFromDrl( new InputStreamReader( this.getClass().getResourceAsStream( "java5_rule.drl" ) ) );
         assertFalse( builder.hasErrors() );
     }

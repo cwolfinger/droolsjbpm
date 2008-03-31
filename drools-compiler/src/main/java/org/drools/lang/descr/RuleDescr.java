@@ -82,10 +82,12 @@ public class RuleDescr extends BaseDescr {
     }
 
     public void addAttribute(final AttributeDescr attribute) {
-        if ( this.attributes == Collections.EMPTY_LIST ) {
-            this.attributes = new ArrayList();
+        if( attribute != null ) {
+            if ( this.attributes == Collections.EMPTY_LIST ) {
+                this.attributes = new ArrayList();
+            }
+            this.attributes.add( attribute );
         }
-        this.attributes.add( attribute );
     }
 
     public void setAttributes(final List attributes) {

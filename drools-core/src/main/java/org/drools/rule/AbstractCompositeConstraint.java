@@ -17,6 +17,7 @@ package org.drools.rule;
 
 import java.util.Arrays;
 
+import org.drools.RuntimeDroolsException;
 import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.reteoo.ReteTuple;
@@ -30,14 +31,16 @@ import org.drools.util.ArrayUtils;
  * 
  * @author etirelli
  */
-public abstract class AbstractCompositeConstraint
-    implements
-    AlphaNodeFieldConstraint,
-    BetaNodeFieldConstraint {
+public abstract class AbstractCompositeConstraint extends MutableTypeConstraint {
 
     protected AlphaNodeFieldConstraint[] alphaConstraints     = new AlphaNodeFieldConstraint[0];
     protected BetaNodeFieldConstraint[]  betaConstraints      = new BetaNodeFieldConstraint[0];
     protected Declaration[]              requiredDeclarations = new Declaration[0];
+
+    public AbstractCompositeConstraint() {
+        super();
+        this.setType( Constraint.ConstraintType.ALPHA );
+    }
 
     /**
      * Adds an alpha constraint to the multi field OR constraint
@@ -73,6 +76,7 @@ public abstract class AbstractCompositeConstraint
                               tmp.length );
             this.betaConstraints[this.betaConstraints.length - 1] = constraint;
             this.updateRequiredDeclarations( constraint );
+            this.setType( Constraint.ConstraintType.BETA );
         }
     }
 
@@ -81,11 +85,12 @@ public abstract class AbstractCompositeConstraint
      * @param constraint
      */
     public void addConstraint(Constraint constraint) {
-        if ( constraint instanceof AlphaNodeFieldConstraint ) {
+        if ( constraint.getType() == ConstraintType.ALPHA ) {
             this.addAlphaConstraint( (AlphaNodeFieldConstraint) constraint );
-        }
-        if ( constraint instanceof BetaNodeFieldConstraint ) {
+        } else if ( constraint.getType() == ConstraintType.BETA ) {
             this.addBetaConstraint( (BetaNodeFieldConstraint) constraint );
+        } else {
+            throw new RuntimeDroolsException( "Constraint type MUST be known in advance.");
         }
     }
 
@@ -151,7 +156,8 @@ public abstract class AbstractCompositeConstraint
      * {@inheritDoc}
      */
     public ContextEntry createContextEntry() {
-        return new MultiFieldConstraintContextEntry( this.betaConstraints );
+        return new MultiFieldConstraintContextEntry( this.alphaConstraints,
+                                                     this.betaConstraints );
     }
 
     public int hashCode() {
@@ -178,12 +184,8 @@ public abstract class AbstractCompositeConstraint
                                                                                                                    other.requiredDeclarations );
     }
 
-    public AbstractCompositeConstraint() {
-        super();
-    }
-
     public abstract Object clone();
-
+    
     /**
      * A context entry for composite restrictions
      * 
@@ -193,15 +195,23 @@ public abstract class AbstractCompositeConstraint
         implements
         ContextEntry {
 
-        private static final long   serialVersionUID = 400L;
+        private static final long    serialVersionUID = 400L;
 
-        public final ContextEntry[] contexts;
-        public ContextEntry         next;
+        public final ContextEntry[]  alphas;
+        public final ContextEntry[]  betas;
+        public ContextEntry          next;
+        public InternalWorkingMemory workingMemory;
+        public InternalFactHandle    handle;
 
-        public MultiFieldConstraintContextEntry(BetaNodeFieldConstraint[] constraints) {
-            contexts = new ContextEntry[constraints.length];
-            for ( int i = 0; i < contexts.length; i++ ) {
-                contexts[i] = constraints[i].createContextEntry();
+        public MultiFieldConstraintContextEntry(final AlphaNodeFieldConstraint[] alphas,
+                                                final BetaNodeFieldConstraint[] betas) {
+            this.alphas = new ContextEntry[alphas.length];
+            for ( int i = 0; i < alphas.length; i++ ) {
+                this.alphas[i] = alphas[i].createContextEntry();
+            }
+            this.betas = new ContextEntry[betas.length];
+            for ( int i = 0; i < betas.length; i++ ) {
+                this.betas[i] = betas[i].createContextEntry();
             }
         }
 
@@ -215,31 +225,59 @@ public abstract class AbstractCompositeConstraint
 
         public void updateFromFactHandle(InternalWorkingMemory workingMemory,
                                          InternalFactHandle handle) {
-            for ( int i = 0; i < contexts.length; i++ ) {
-                contexts[i].updateFromFactHandle( workingMemory,
-                                                  handle );
+            this.workingMemory = workingMemory;
+            this.handle = handle;
+            for ( int i = 0; i < alphas.length; i++ ) {
+                if ( alphas[i] != null ) {
+                    alphas[i].updateFromFactHandle( workingMemory,
+                                                    handle );
+                }
+            }
+            for ( int i = 0; i < betas.length; i++ ) {
+                betas[i].updateFromFactHandle( workingMemory,
+                                               handle );
             }
         }
 
         public void updateFromTuple(InternalWorkingMemory workingMemory,
                                     ReteTuple tuple) {
-            for ( int i = 0; i < contexts.length; i++ ) {
-                contexts[i].updateFromTuple( workingMemory,
-                                             tuple );
+            this.workingMemory = workingMemory;
+            for ( int i = 0; i < alphas.length; i++ ) {
+                if ( alphas[i] != null ) {
+                    alphas[i].updateFromTuple( workingMemory,
+                                               tuple );
+                }
+            }
+            for ( int i = 0; i < betas.length; i++ ) {
+                betas[i].updateFromTuple( workingMemory,
+                                          tuple );
             }
         }
-        
+
         public void resetTuple() {
-            for ( int i = 0, length = this.contexts.length; i < length; i++ ) {
-                this.contexts[i].resetTuple();
+            this.workingMemory = null;
+            for ( int i = 0, length = this.alphas.length; i < length; i++ ) {
+                if ( alphas[i] != null ) {
+                    this.alphas[i].resetTuple();
+                }
+            }
+            for ( int i = 0, length = this.betas.length; i < length; i++ ) {
+                this.betas[i].resetTuple();
             }
         }
-        
+
         public void resetFactHandle() {
-            for ( int i = 0, length = this.contexts.length; i < length; i++ ) {
-                this.contexts[i].resetFactHandle();
+            this.workingMemory = null;
+            this.handle = null;
+            for ( int i = 0, length = this.alphas.length; i < length; i++ ) {
+                if ( alphas[i] != null ) {
+                    this.alphas[i].resetFactHandle();
+                }
             }
-        }           
+            for ( int i = 0, length = this.betas.length; i < length; i++ ) {
+                this.betas[i].resetFactHandle();
+            }
+        }
 
     }
 

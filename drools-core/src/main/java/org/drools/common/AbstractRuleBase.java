@@ -40,10 +40,11 @@ import org.drools.RuleBase;
 import org.drools.RuleBaseConfiguration;
 import org.drools.RuleIntegrationException;
 import org.drools.StatefulSession;
+import org.drools.concurrent.CommandExecutor;
+import org.drools.concurrent.ExecutorService;
 import org.drools.event.RuleBaseEventListener;
 import org.drools.event.RuleBaseEventSupport;
 import org.drools.objenesis.Objenesis;
-import org.drools.objenesis.ObjenesisStd;
 import org.drools.rule.CompositePackageClassLoader;
 import org.drools.rule.InvalidPatternException;
 import org.drools.rule.MapBackedClassLoader;
@@ -51,8 +52,10 @@ import org.drools.rule.Package;
 import org.drools.rule.PackageCompilationData;
 import org.drools.rule.Rule;
 import org.drools.ruleflow.common.core.Process;
+import org.drools.spi.ExecutorServiceFactory;
 import org.drools.spi.FactHandleFactory;
 import org.drools.util.ObjectHashSet;
+import org.drools.util.ObjenesisFactory;
 import org.drools.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -84,10 +87,10 @@ abstract public class AbstractRuleBase
 
     protected transient CompositePackageClassLoader packageClassLoader;
 
-    protected transient MapBackedClassLoader        classLoader;
+    protected MapBackedClassLoader                  classLoader;
 
 	private transient Objenesis                     objenesis;
-
+	
 	/** The fact handle factory. */
     protected FactHandleFactory                     factHandleFactory;
 
@@ -169,25 +172,31 @@ abstract public class AbstractRuleBase
      * 
      */
     public void doWriteExternal(final ObjectOutput stream,
-                                final Object[] objects) throws IOException {
+                                final Object[] objects) throws IOException {        
         stream.writeObject( this.pkgs );
+        
+        synchronized ( this.classLoader.getStore() ) {
+            stream.writeObject( this.classLoader.getStore() );
+        }
 
         // Rules must be restored by an ObjectInputStream that can resolve using a given ClassLoader to handle seaprately by storing as
         // a byte[]
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         final ObjectOutput out = new ObjectOutputStream( bos );
         out.writeObject( this.id );
+        out.writeObject( this.config );
         out.writeObject( this.processes );
         out.writeObject( this.agendaGroupRuleTotals );
         out.writeObject( this.factHandleFactory );
         out.writeObject( this.globals );
-        out.writeObject( this.config );
+        
+        this.eventSupport.removeEventListener( RuleBaseEventListener.class );
         out.writeObject( this.eventSupport );
-
+        
         for ( int i = 0, length = objects.length; i < length; i++ ) {
             out.writeObject( objects[i] );
-        }
-
+        }        
+        
         stream.writeObject( bos.toByteArray() );
     }
 
@@ -202,19 +211,19 @@ abstract public class AbstractRuleBase
                                                       ClassNotFoundException {
         // PackageCompilationData must be restored before Rules as it has the ClassLoader needed to resolve the generated code references in Rules        
         this.pkgs = (Map) stream.readObject();
-
+        Map store = (Map) stream.readObject();
+        
         if ( stream instanceof DroolsObjectInputStream ) {
             final DroolsObjectInputStream parentStream = (DroolsObjectInputStream) stream;
             parentStream.setRuleBase( this );
             this.packageClassLoader = new CompositePackageClassLoader( parentStream.getClassLoader() );
-            this.classLoader = new MapBackedClassLoader( parentStream.getClassLoader() );
+            this.classLoader = new MapBackedClassLoader( parentStream.getClassLoader(), store );
         } else {
             this.packageClassLoader = new CompositePackageClassLoader( Thread.currentThread().getContextClassLoader() );
-            this.classLoader = new MapBackedClassLoader( Thread.currentThread().getContextClassLoader() );
+            this.classLoader = new MapBackedClassLoader( Thread.currentThread().getContextClassLoader(), store );
         }
 
         this.packageClassLoader.addClassLoader( this.classLoader );
-		this.objenesis = createObjenesis();
 
 		for ( final Iterator it = this.pkgs.values().iterator(); it.hasNext(); ) {
             this.packageClassLoader.addClassLoader( ((Package) it.next()).getPackageCompilationData().getClassLoader() );
@@ -229,13 +238,16 @@ abstract public class AbstractRuleBase
         childStream.setRuleBase( this );
 
         this.id = (String) childStream.readObject();
+
+        this.config = (RuleBaseConfiguration) childStream.readObject();
+        this.config.setClassLoader( childStream.getClassLoader() );
+        this.objenesis = createObjenesis();
+
         this.processes = (Map) childStream.readObject();
         this.agendaGroupRuleTotals = (Map) childStream.readObject();
         this.factHandleFactory = (FactHandleFactory) childStream.readObject();
         this.globals = (Map) childStream.readObject();
 
-        this.config = (RuleBaseConfiguration) childStream.readObject();
-        this.config.setClassLoader( childStream.getClassLoader() );
         this.eventSupport = (RuleBaseEventSupport) childStream.readObject();
         this.eventSupport.setRuleBase( this );
 
@@ -251,7 +263,11 @@ abstract public class AbstractRuleBase
 	 * @return a standart Objenesis instanse with caching turned on.
 	 */
 	protected Objenesis createObjenesis() {
-		return new ObjenesisStd(true);
+	    if( this.config.isUseStaticObjenesis() ) {
+	        return ObjenesisFactory.getStaticObjenesis();
+	    } else {
+	        return ObjenesisFactory.getDefaultObjenesis();
+	    }
 	}
 
 	/**
@@ -493,9 +509,13 @@ abstract public class AbstractRuleBase
         final Rule[] newRules = newPkg.getRules();
         for ( int i = 0; i < newRules.length; i++ ) {
             final Rule newRule = newRules[i];
-            if ( pkg.getRule( newRule.getName() ) == null ) {
-                pkg.addRule( newRule );
+
+            // remove the rule if it already exists
+            if ( pkg.getRule( newRule.getName() ) != null ) {
+                removeRule( pkg, pkg.getRule( newRule.getName() ) );
             }
+            
+            pkg.addRule( newRule );            
         }
 
         //and now the rule flows
@@ -726,11 +746,25 @@ abstract public class AbstractRuleBase
                                                                                       this.packageClassLoader );
         streamWithLoader.setRuleBase( this );
 
-        final AbstractWorkingMemory workingMemory = (AbstractWorkingMemory) streamWithLoader.readObject();
+        final StatefulSession session = (StatefulSession) streamWithLoader.readObject();
 
         synchronized ( this.pkgs ) {
-            workingMemory.setRuleBase( this );
-            return (StatefulSession) workingMemory;
+            ((InternalWorkingMemory) session).setRuleBase( this );
+            ((InternalWorkingMemory) session).setId( ( nextWorkingMemoryCounter() ) );
+            
+            ExecutorService executor = ExecutorServiceFactory.createExecutorService(  this.config.getExecutorService() );;
+
+            executor.setCommandExecutor( new CommandExecutor( session ) );
+            ((InternalWorkingMemory) session).setExecutorService( executor );
+
+            if ( keepReference ) {
+                addStatefulSession( session );
+                for( Iterator it = session.getRuleBaseUpdateListeners().iterator(); it.hasNext(); ) {
+                    addEventListener( (RuleBaseEventListener) it.next() ); 
+                }
+            }     
+            
+            return (StatefulSession) session;
         }
     }
 
@@ -752,7 +786,7 @@ abstract public class AbstractRuleBase
         synchronized ( this.pkgs ) {
             if ( this.reloadPackageCompilationData != null ) {
                 this.reloadPackageCompilationData.execute( this );
-				this.reloadPackageCompilationData = null;
+                this.reloadPackageCompilationData = null;
             }
         }
     }

@@ -18,6 +18,7 @@ package org.drools.integrationtests;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectInput;
@@ -27,6 +28,7 @@ import java.io.ObjectOutputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -42,8 +44,13 @@ import org.drools.Address;
 import org.drools.Attribute;
 import org.drools.Cell;
 import org.drools.Cheese;
+import org.drools.CheeseEqual;
 import org.drools.Cheesery;
 import org.drools.Child;
+import org.drools.DomainObjectHolder;
+import org.drools.FactA;
+import org.drools.FactB;
+import org.drools.FactC;
 import org.drools.FactHandle;
 import org.drools.FirstClass;
 import org.drools.FromTestClass;
@@ -75,8 +82,10 @@ import org.drools.TestParam;
 import org.drools.WorkingMemory;
 import org.drools.Cheesery.Maturity;
 import org.drools.audit.WorkingMemoryFileLogger;
+import org.drools.audit.WorkingMemoryInMemoryLogger;
 import org.drools.base.ClassObjectFilter;
 import org.drools.common.AbstractWorkingMemory;
+import org.drools.common.InternalFactHandle;
 import org.drools.compiler.DrlParser;
 import org.drools.compiler.DroolsError;
 import org.drools.compiler.DroolsParserException;
@@ -105,13 +114,11 @@ import org.drools.lang.descr.PackageDescr;
 import org.drools.lang.descr.RuleDescr;
 import org.drools.rule.InvalidRulePackage;
 import org.drools.rule.Package;
-import org.drools.rule.Rule;
 import org.drools.rule.builder.dialect.java.JavaDialectConfiguration;
 import org.drools.spi.Activation;
 import org.drools.spi.ConsequenceExceptionHandler;
 import org.drools.spi.GlobalResolver;
 import org.drools.xml.XmlDumper;
-
 
 /** Run all the tests with the ReteOO engine implementation */
 public class MiscTest extends TestCase {
@@ -231,7 +238,8 @@ public class MiscTest extends TestCase {
 
         workingMemory.fireAllRules();
 
-        assertEquals(1, list.size() );
+        assertEquals( 1,
+                      list.size() );
 
         assertEquals( new Integer( 5 ),
                       list.get( 0 ) );
@@ -268,14 +276,15 @@ public class MiscTest extends TestCase {
 
         } );
 
-        Cheese bree = new Cheese ();
+        Cheese bree = new Cheese();
         bree.setPrice( 100 );
 
         workingMemory.insert( bree );
 
         workingMemory.fireAllRules();
 
-        assertEquals(2, list.size() );
+        assertEquals( 2,
+                      list.size() );
 
         assertEquals( new Integer( 5 ),
                       list.get( 0 ) );
@@ -283,7 +292,6 @@ public class MiscTest extends TestCase {
         assertEquals( new Integer( 6 ),
                       list.get( 1 ) );
     }
-
 
     public void testFieldBiningsAndEvalSharing() throws Exception {
         final String drl = "test_FieldBindingsAndEvalSharing.drl";
@@ -412,14 +420,17 @@ public class MiscTest extends TestCase {
 
         WorkingMemory workingMemory = ruleBase.newStatefulSession();
         List list = new ArrayList();
-        workingMemory.setGlobal("list", list);
+        workingMemory.setGlobal( "list",
+                                 list );
 
-        workingMemory.insert(new Attribute());
-        workingMemory.insert(new Message());
+        workingMemory.insert( new Attribute() );
+        workingMemory.insert( new Message() );
         workingMemory.fireAllRules();
 
-        assertEquals(1, list.size());
-        assertEquals("X", list.get(0));
+        assertEquals( 1,
+                      list.size() );
+        assertEquals( "X",
+                      list.get( 0 ) );
 
     }
 
@@ -681,6 +692,128 @@ public class MiscTest extends TestCase {
         workingMemory.fireAllRules();
 
         assertEquals( 1,
+                      list.size() );
+    }
+
+    // @FIXME
+    public void FIXME_testBigDecimalWithFromAndEval() throws Exception {
+        String rule = "package org.test;\n";
+        rule += "rule \"Test Rule\"\n";
+        rule += "when\n";
+        rule += "    $dec : java.math.BigDecimal() from java.math.BigDecimal.TEN;\n";
+        rule += "    eval( $dec.compareTo(java.math.BigDecimal.ONE) > 0 )\n";
+        rule += "then\n";
+        rule += "    System.out.println(\"OK!\");\n";
+        rule += "end";
+
+        final PackageBuilder builder = new PackageBuilder();
+        builder.addPackageFromDrl( new StringReader( rule ) );
+        final Package pkg = builder.getPackage();
+
+        final RuleBase ruleBase = getRuleBase();
+        ruleBase.addPackage( pkg );
+        final StatefulSession session = ruleBase.newStatefulSession();
+        session.fireAllRules();
+
+    }
+
+    public void testMVELConsequenceWithMapsAndArrays() throws Exception {
+        String rule = "package org.test;\n";
+        rule += "import java.util.ArrayList\n";
+        rule += "import java.util.HashMap\n";
+        rule += "global java.util.List list\n";
+        rule += "rule \"Test Rule\"\n";
+        rule += "    dialect \"mvel\"";
+        rule += "when\n";
+        rule += "then\n";
+        rule += "    m = new HashMap();\n";
+        rule += "    l = new ArrayList();\n";
+        rule += "    l.add(\"first\");\n";
+        rule += "    m.put(\"content\", l);\n";
+        rule += "    System.out.println(m[\"content\"][0]);\n";
+        rule += "    list.add(m[\"content\"][0]);\n";
+        rule += "end";
+
+        final PackageBuilder builder = new PackageBuilder();
+        builder.addPackageFromDrl( new StringReader( rule ) );
+        final Package pkg = builder.getPackage();
+
+        final RuleBase ruleBase = getRuleBase();
+        ruleBase.addPackage( pkg );
+        final StatefulSession session = ruleBase.newStatefulSession();
+        List list = new ArrayList();
+        session.setGlobal( "list",
+                           list );
+        session.fireAllRules();
+
+        assertEquals( 1,
+                      list.size() );
+        assertEquals( "first",
+                      list.get( 0 ) );
+    }
+
+    /* @see JBRULES-1484 */
+    public void testMVELDynamicImports() throws Exception {
+        String rule = "package org.xxx;\n";
+
+        rule += "import org.drools.*\n";
+
+        rule += "global java.util.List list\n";
+        rule += "rule \"Test Rule\"\n";
+        rule += "    dialect \"mvel\"";
+        rule += "when\n";
+        rule += "then\n";
+        rule += "    p = new Person( \"diablo\", new Cheese (\"cheddar\") );";
+        rule += "    c = new Cheese( \"y\" );";
+        rule += "    list.add( p );\n";
+        rule += "end";
+
+        final PackageBuilder builder = new PackageBuilder();
+        builder.addPackageFromDrl( new StringReader( rule ) );
+        final Package pkg = builder.getPackage();
+
+        final RuleBase ruleBase = getRuleBase();
+        ruleBase.addPackage( pkg );
+        final StatefulSession session = ruleBase.newStatefulSession();
+        List list = new ArrayList();
+        session.setGlobal( "list",
+                           list );
+        session.fireAllRules();
+
+        assertEquals( 1,
+                      list.size() );
+
+        Person p = new Person( "diablo",
+                               new Cheese( "cheddar" ) );
+
+        assertEquals( p,
+                      list.get( 0 ) );
+    }
+
+    public void testBigDecimalIntegerLiteral() throws Exception {
+
+        final PackageBuilder builder = new PackageBuilder();
+        builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "big_decimal_and_literal.drl" ) ) );
+        final Package pkg = builder.getPackage();
+
+        final RuleBase ruleBase = getRuleBase();
+        ruleBase.addPackage( pkg );
+        final WorkingMemory workingMemory = ruleBase.newStatefulSession();
+
+        final List list = new ArrayList();
+        workingMemory.setGlobal( "list",
+                                 list );
+
+        final PersonInterface bill = new Person( "bill",
+                                                 null,
+                                                 12 );
+        bill.setBigDecimal( new BigDecimal( "42" ) );
+        bill.setBigInteger( new BigInteger( "42" ) );
+
+        workingMemory.insert( bill );
+        workingMemory.fireAllRules();
+
+        assertEquals( 6,
                       list.size() );
     }
 
@@ -1161,6 +1294,49 @@ public class MiscTest extends TestCase {
         builder.addPackage( descr );
         Package pkg = builder.getPackage();
         pkg.checkValidity();
+    }
+
+    /**
+     * @see JBRULES-1415 Certain uses of from causes NullPointerException in WorkingMemoryLogger
+     */
+    public void testFromDeclarationWithWorkingMemoryLogger() throws Exception {
+        String rule = "package org.test;\n";
+        rule += "import org.drools.Cheesery\n";
+        rule += "import org.drools.Cheese\n";
+        rule += "global java.util.List list\n";
+        rule += "rule \"Test Rule\"\n";
+        rule += "when\n";
+        rule += "    $cheesery : Cheesery()\n";
+        rule += "    Cheese( $type : type) from $cheesery.cheeses\n";
+        rule += "then\n";
+        rule += "    list.add( $type );\n";
+        rule += "end";
+
+        final PackageBuilder builder = new PackageBuilder();
+        builder.addPackageFromDrl( new StringReader( rule ) );
+        final Package pkg = builder.getPackage();
+
+        final RuleBase ruleBase = getRuleBase();
+        ruleBase.addPackage( pkg );
+        final StatefulSession session = ruleBase.newStatefulSession();
+
+        WorkingMemoryInMemoryLogger logger = new WorkingMemoryInMemoryLogger( session );
+        List list = new ArrayList();
+        session.setGlobal( "list",
+                           list );
+
+        Cheesery cheesery = new Cheesery();
+        cheesery.addCheese( new Cheese( "stilton",
+                                        22 ) );
+
+        session.insert( cheesery );
+
+        session.fireAllRules();
+
+        assertEquals( 1,
+                      list.size() );
+        assertEquals( "stilton",
+                      list.get( 0 ) );
     }
 
     public void testWithInvalidRule() throws Exception {
@@ -1721,11 +1897,11 @@ public class MiscTest extends TestCase {
         final WorkingMemory workingMemory = ruleBase.newStatefulSession();
 
         // Adding person with null name and likes attributes
-        final PersonInterface bob = new Person( null,
-                                                null );
+        final PersonInterface bob = new Person( (String) null,
+                                                (String) null );
         bob.setStatus( "P1" );
-        final PersonInterface pete = new Person( null,
-                                                 null );
+        final PersonInterface pete = new Person( (String) null,
+                                                 (String) null );
         bob.setStatus( "P2" );
         workingMemory.insert( bob );
         workingMemory.insert( pete );
@@ -1739,76 +1915,6 @@ public class MiscTest extends TestCase {
                              "OK",
                              pete.getStatus() );
 
-    }
-
-    public void testSerializable() throws Exception {
-
-        final Reader reader = new InputStreamReader( getClass().getResourceAsStream( "test_Serializable.drl" ) );
-
-        final PackageBuilder builder = new PackageBuilder();
-        builder.addPackageFromDrl( reader );
-        final Package pkg = builder.getPackage();
-
-        assertEquals( 0,
-                      builder.getErrors().getErrors().length );
-
-        RuleBase ruleBase = getRuleBase();// RuleBaseFactory.newRuleBase();
-
-        ruleBase.addPackage( pkg );
-
-        Map map = new HashMap();
-        map.put( "x",
-                 ruleBase );
-        final byte[] ast = serializeOut( map );
-        map = (Map) serializeIn( ast );
-        ruleBase = (RuleBase) map.get( "x" );
-        final Rule[] rules = ruleBase.getPackages()[0].getRules();
-        assertEquals( 4,
-                      rules.length );
-
-        assertEquals( "match Person 1",
-                      rules[0].getName() );
-        assertEquals( "match Person 2",
-                      rules[1].getName() );
-        assertEquals( "match Person 3",
-                      rules[2].getName() );
-        assertEquals( "match Integer",
-                      rules[3].getName() );
-
-        WorkingMemory workingMemory = ruleBase.newStatefulSession();
-
-        workingMemory.setGlobal( "list",
-                                 new ArrayList() );
-
-        final Person bob = new Person( "bob" );
-        workingMemory.insert( bob );
-
-        final byte[] wm = serializeOut( workingMemory );
-
-        workingMemory = ruleBase.newStatefulSession( new ByteArrayInputStream( wm ) );
-
-        assertEquals( 1,
-                      IteratorToList.convert( workingMemory.iterateObjects() ).size() );
-        assertEquals( bob,
-                      IteratorToList.convert( workingMemory.iterateObjects() ).get( 0 ) );
-
-        assertEquals( 2,
-                      workingMemory.getAgenda().agendaSize() );
-
-        workingMemory.fireAllRules();
-
-        final List list = (List) workingMemory.getGlobal( "list" );
-
-        assertEquals( 3,
-                      list.size() );
-        // because of agenda-groups
-        assertEquals( new Integer( 4 ),
-                      list.get( 0 ) );
-
-        assertEquals( 2,
-                      IteratorToList.convert( workingMemory.iterateObjects() ).size() );
-        assertTrue( IteratorToList.convert( workingMemory.iterateObjects() ).contains( bob ) );
-        assertTrue( IteratorToList.convert( workingMemory.iterateObjects() ).contains( new Person( "help" ) ) );
     }
 
     public void testEmptyRule() throws Exception {
@@ -3013,7 +3119,7 @@ public class MiscTest extends TestCase {
         chili2.setAge( 38 );
         chili2.setHair( "indigigo" );
 
-        final Person oldChili1 = new Person( "old chili2" );
+        final Person oldChili1 = new Person( "old chili1" );
         oldChili1.setAge( 45 );
         oldChili1.setHair( "green" );
 
@@ -3045,7 +3151,6 @@ public class MiscTest extends TestCase {
                       results.get( 2 ) );
         assertEquals( veryold,
                       results.get( 3 ) );
-
     }
 
     public void testMatchesNotMatchesCheese() throws Exception {
@@ -3065,6 +3170,8 @@ public class MiscTest extends TestCase {
                                            12 );
         final Cheese stilton2 = new Cheese( "stilton2",
                                             12 );
+        final Cheese agedStilton = new Cheese( "aged stilton",
+                                               12 );
         final Cheese brie = new Cheese( "brie",
                                         10 );
         final Cheese brie2 = new Cheese( "brie2",
@@ -3073,22 +3180,58 @@ public class MiscTest extends TestCase {
                                               10 );
         final Cheese muzzarella2 = new Cheese( "muzzarella2",
                                                10 );
+        final Cheese provolone = new Cheese( "provolone",
+                                             10 );
+        final Cheese provolone2 = new Cheese( "another cheese (provolone)",
+                                              10 );
         workingMemory.insert( stilton );
         workingMemory.insert( stilton2 );
+        workingMemory.insert( agedStilton );
         workingMemory.insert( brie );
         workingMemory.insert( brie2 );
         workingMemory.insert( muzzarella );
         workingMemory.insert( muzzarella2 );
+        workingMemory.insert( provolone );
+        workingMemory.insert( provolone2 );
 
         workingMemory.fireAllRules();
 
-        assertEquals( 2,
+        System.out.println( list.toString() );
+        assertEquals( 4,
                       list.size() );
 
         assertEquals( stilton,
                       list.get( 0 ) );
         assertEquals( brie,
                       list.get( 1 ) );
+        assertEquals( agedStilton,
+                      list.get( 2 ) );
+        assertEquals( provolone,
+                      list.get( 3 ) );
+    }
+
+    public void testMatchesMVEL() throws Exception {
+        final PackageBuilder builder = new PackageBuilder();
+        builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_MatchesMVEL.drl" ) ) );
+        final Package pkg = builder.getPackage();
+
+        final RuleBase ruleBase = getRuleBase();
+        ruleBase.addPackage( pkg );
+        final StatefulSession session = ruleBase.newStatefulSession();
+
+        final List results = new ArrayList();
+        session.setGlobal( "results",
+                           results );
+
+        Map map = new HashMap();
+        map.put( "content",
+                 "hello ;=" );
+        session.insert( map );
+
+        session.fireAllRules();
+
+        assertEquals( 1,
+                      results.size() );
     }
 
     public void testAutomaticBindings() throws Exception {
@@ -3562,6 +3705,30 @@ public class MiscTest extends TestCase {
         }
     }
 
+    public void testMergePackageWithSameRuleNames() throws Exception {
+        PackageBuilder builder = new PackageBuilder();
+        builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_MergePackageWithSameRuleNames1.drl" ) ) );
+        final RuleBase ruleBase = getRuleBase();
+        ruleBase.addPackage( builder.getPackage() );
+
+        builder = new PackageBuilder();
+        builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_MergePackageWithSameRuleNames2.drl" ) ) );
+        ruleBase.addPackage( builder.getPackage() );
+
+        StatefulSession session = ruleBase.newStatefulSession();
+        final List results = new ArrayList();
+        session.setGlobal( "results",
+                           results );
+
+        session.fireAllRules();
+
+        assertEquals( 1,
+                      results.size() );
+
+        assertEquals( "rule1 for the package2",
+                      results.get( 0 ) );
+    }
+
     public void testRuleReplacement() throws Exception {
         // test rule replacement
         try {
@@ -3867,7 +4034,7 @@ public class MiscTest extends TestCase {
         session.insert( first42 );
         session.insert( second43 );
 
-        //System.out.println( "Firing rules ..." );
+        // System.out.println( "Firing rules ..." );
 
         session.fireAllRules();
 
@@ -3974,7 +4141,8 @@ public class MiscTest extends TestCase {
         builder.addPackageFromDrl( new StringReader( rule ) );
         pkg = builder.getPackage();
 
-        // Make sure that this rule is fired as the Package is updated, it also tests that InitialFactImpl is still in the network
+        // Make sure that this rule is fired as the Package is updated, it also
+        // tests that InitialFactImpl is still in the network
         // even though the first rule didn't use it.
         ruleBase.addPackage( pkg );
 
@@ -4255,7 +4423,7 @@ public class MiscTest extends TestCase {
 
             wm.fireAllRules();
 
-            //            logger.writeToDisk();
+            // logger.writeToDisk();
         } catch ( Exception e ) {
             e.printStackTrace();
             fail( "No exception should be raised " );
@@ -4298,6 +4466,34 @@ public class MiscTest extends TestCase {
                     list.get( 0 ) );
     }
 
+    public void testFromArrayIteration() throws Exception {
+        final PackageBuilder builder = new PackageBuilder();
+        builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_FromArrayIteration.drl" ) ) );
+
+        final RuleBase ruleBase = getRuleBase();
+        ruleBase.addPackage( builder.getPackage() );
+
+        final WorkingMemory session = ruleBase.newStatefulSession();
+        List list = new ArrayList();
+
+        session.setGlobal( "list",
+                           list );
+        session.insert( new DomainObjectHolder() );
+
+        session.fireAllRules();
+
+        assertEquals( 3,
+                      list.size() );
+
+        assertEquals( "Message3",
+                      list.get( 0 ) );
+        assertEquals( "Message2",
+                      list.get( 1 ) );
+        assertEquals( "Message1",
+                      list.get( 2 ) );
+
+    }
+
     public void testSubNetworks() throws Exception {
         final PackageBuilder builder = new PackageBuilder();
         builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_SubNetworks.drl" ) ) );
@@ -4337,14 +4533,16 @@ public class MiscTest extends TestCase {
         assertEquals( 1,
                       list.size() );
 
-        // Dynamic addition of rules which use the final class are not supported yet
-        //        final PackageBuilder builder2 = new PackageBuilder();
-        //        builder2.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_FinalClass2.drl" ) ) );
-        //        ruleBase.addPackage( builder2.getPackage() );
+        // Dynamic addition of rules which use the final class are not supported
+        // yet
+        // final PackageBuilder builder2 = new PackageBuilder();
+        // builder2.addPackageFromDrl( new InputStreamReader(
+        // getClass().getResourceAsStream( "test_FinalClass2.drl" ) ) );
+        // ruleBase.addPackage( builder2.getPackage() );
         //
-        //        // it will automatically fire the rule
-        //        assertEquals( 2,
-        //                      list.size() );
+        // // it will automatically fire the rule
+        // assertEquals( 2,
+        // list.size() );
     }
 
     public void testEvalRewriteMatches() throws Exception {
@@ -4384,10 +4582,10 @@ public class MiscTest extends TestCase {
     public void testConsequenceBuilderException() throws Exception {
         final PackageBuilder builder = new PackageBuilder();
         builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_ConsequenceBuilderException.drl" ) ) );
-        
+
         assertTrue( builder.hasErrors() );
     }
-    
+
     public void testRuntimeTypeCoercion() throws Exception {
         final PackageBuilder builder = new PackageBuilder();
         builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_RuntimeTypeCoercion.drl" ) ) );
@@ -4400,14 +4598,355 @@ public class MiscTest extends TestCase {
         final List list = new ArrayList();
         workingMemory.setGlobal( "results",
                                  list );
-        
+
         final PolymorphicFact fact = new PolymorphicFact( new Integer( 10 ) );
         final FactHandle handle = workingMemory.insert( fact );
-        
+
         workingMemory.fireAllRules();
-        
-        assertEquals( 1, list.size() );
-        assertEquals( fact.getData(), list.get( 0 ) );
+
+        assertEquals( 1,
+                      list.size() );
+        assertEquals( fact.getData(),
+                      list.get( 0 ) );
+
+        fact.setData( "10" );
+        workingMemory.update( handle,
+                              fact );
+        workingMemory.fireAllRules();
+
+        assertEquals( 2,
+                      list.size() );
+        assertEquals( fact.getData(),
+                      list.get( 1 ) );
+
+        try {
+            fact.setData( new Boolean( true ) );
+            workingMemory.update( handle,
+                                  fact );
+            fail( "Should not allow to compare < with a Boolean object" );
+        } catch ( ClassCastException cce ) {
+            // success, as can't use "<" to compare to a boolean
+        }
 
     }
+
+    public void testRuntimeTypeCoercion2() throws Exception {
+        final PackageBuilder builder = new PackageBuilder();
+        builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_RuntimeTypeCoercion2.drl" ) ) );
+        final Package pkg = builder.getPackage();
+
+        final RuleBase ruleBase = getRuleBase();
+        ruleBase.addPackage( pkg );
+        final WorkingMemory workingMemory = ruleBase.newStatefulSession();
+
+        final List list = new ArrayList();
+        workingMemory.setGlobal( "results",
+                                 list );
+
+        final Primitives fact = new Primitives();
+        fact.setBooleanPrimitive( true );
+        fact.setBooleanWrapper( new Boolean( true ) );
+        fact.setObject( new Boolean( true ) );
+        fact.setCharPrimitive( 'X' );
+        final FactHandle handle = workingMemory.insert( fact );
+
+        workingMemory.fireAllRules();
+
+        int index = 0;
+        assertEquals( list.toString(),
+                      4,
+                      list.size() );
+        assertEquals( "boolean",
+                      list.get( index++ ) );
+        assertEquals( "boolean wrapper",
+                      list.get( index++ ) );
+        assertEquals( "boolean object",
+                      list.get( index++ ) );
+        assertEquals( "char",
+                      list.get( index++ ) );
+
+        fact.setBooleanPrimitive( false );
+        fact.setBooleanWrapper( null );
+        fact.setCharPrimitive( '\0' );
+        fact.setObject( new Character( 'X' ) );
+        workingMemory.update( handle,
+                              fact );
+        workingMemory.fireAllRules();
+        assertEquals( 5,
+                      list.size() );
+        assertEquals( "char object",
+                      list.get( index++ ) );
+
+        fact.setObject( null );
+        workingMemory.update( handle,
+                              fact );
+        workingMemory.fireAllRules();
+        assertEquals( 6,
+                      list.size() );
+        assertEquals( "null object",
+                      list.get( index++ ) );
+
+    }
+
+    public void testAlphaEvalWithOrCE() throws Exception {
+        PackageBuilderConfiguration conf = new PackageBuilderConfiguration();
+        conf.setDumpDir( new File("./target") );
+        final PackageBuilder builder = new PackageBuilder( conf );
+        builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_AlphaEvalWithOrCE.drl" ) ) );
+        final Package pkg = builder.getPackage();
+
+        final RuleBase ruleBase = getRuleBase();
+        ruleBase.addPackage( pkg );
+        final WorkingMemory workingMemory = ruleBase.newStatefulSession();
+
+        final List list = new ArrayList();
+        workingMemory.setGlobal( "results",
+                                 list );
+
+        FactA a = new FactA();
+        a.setField1( "a value" );
+
+        workingMemory.insert( a );
+        workingMemory.insert( new FactB() );
+        workingMemory.insert( new FactC() );
+
+        workingMemory.fireAllRules();
+
+        assertEquals( "should not have fired",
+                      0,
+                      list.size() );
+    }
+
+    public void testAlphaCompositeConstraints() throws Exception {
+        final PackageBuilder builder = new PackageBuilder();
+        builder.addPackageFromDrl(new InputStreamReader(getClass()
+                .getResourceAsStream("test_AlphaCompositeConstraints.drl")));
+        final Package pkg = builder.getPackage();
+
+        final RuleBase ruleBase = getRuleBase();
+        ruleBase.addPackage(pkg);
+        final WorkingMemory workingMemory = ruleBase.newStatefulSession();
+
+        final List list = new ArrayList();
+        workingMemory.setGlobal("results", list);
+
+        Person bob = new Person( "bob", 30 );
+
+        workingMemory.insert(bob);
+        workingMemory.fireAllRules();
+
+        assertEquals( 1, list.size());
+    }
+
+	public void testModifyBlock() throws Exception {
+		final PackageBuilder builder = new PackageBuilder();
+		builder.addPackageFromDrl(new InputStreamReader(getClass()
+				.getResourceAsStream("test_ModifyBlock.drl")));
+		final Package pkg = builder.getPackage();
+        final RuleBase ruleBase = getRuleBase();
+        ruleBase.addPackage( pkg );
+        final WorkingMemory workingMemory = ruleBase.newStatefulSession();
+
+        final List list = new ArrayList();
+        workingMemory.setGlobal( "results",
+                                 list );
+
+        Person bob = new Person( "Bob" );
+        bob.setStatus( "hungry" );
+
+        Cheese c = new Cheese();
+
+        workingMemory.insert( bob );
+        workingMemory.insert( c );
+
+        workingMemory.fireAllRules();
+
+        assertEquals( 10,
+                      c.getPrice() );
+        assertEquals( "fine",
+                      bob.getStatus() );
+    }
+
+    // this test requires mvel 1.2.19. Leaving it commented until mvel is
+    // released.
+    public void testJavaModifyBlock() throws Exception {
+        final PackageBuilder builder = new PackageBuilder();
+        builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_JavaModifyBlock.drl" ) ) );
+        final Package pkg = builder.getPackage();
+
+        final RuleBase ruleBase = getRuleBase();
+        ruleBase.addPackage( pkg );
+        final WorkingMemory workingMemory = ruleBase.newStatefulSession();
+
+        final List list = new ArrayList();
+        workingMemory.setGlobal( "results",
+                                 list );
+
+        Person bob = new Person( "Bob",
+                                 30 );
+        bob.setStatus( "hungry" );
+        workingMemory.insert( bob );
+        workingMemory.insert( new Cheese() );
+        workingMemory.insert( new Cheese() );
+
+        workingMemory.fireAllRules( 2 );
+
+        assertEquals( "should have fired only once",
+                      1,
+                      list.size() );
+        assertEquals( "full",
+                      bob.getStatus() );
+        assertEquals( 31,
+                      bob.getAge() );
+    }
+
+    public void testOrCE() throws Exception {
+        final PackageBuilder builder = new PackageBuilder();
+        builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_OrCE.drl" ) ) );
+        final Package pkg = builder.getPackage();
+
+        final RuleBase ruleBase = getRuleBase();
+        ruleBase.addPackage( pkg );
+        final WorkingMemory workingMemory = ruleBase.newStatefulSession();
+
+        final List list = new ArrayList();
+        workingMemory.setGlobal( "results",
+                                 list );
+
+        workingMemory.insert( new Cheese( "brie",
+                                          10 ) );
+        workingMemory.insert( new Person( "bob" ) );
+
+        workingMemory.fireAllRules();
+
+        assertEquals( "should have fired once",
+                      1,
+                      list.size() );
+    }
+
+    public void testDeepNestedConstraints() throws Exception {
+        final PackageBuilder builder = new PackageBuilder();
+        builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_DeepNestedConstraints.drl" ) ) );
+        final Package pkg = builder.getPackage();
+
+        final RuleBase ruleBase = getRuleBase();
+        ruleBase.addPackage( pkg );
+        final WorkingMemory workingMemory = ruleBase.newStatefulSession();
+
+        final List list = new ArrayList();
+        workingMemory.setGlobal( "results",
+                                 list );
+
+        workingMemory.insert( new Person( "bob",
+                                          "muzzarela" ) );
+        workingMemory.insert( new Cheese( "brie",
+                                          10 ) );
+        workingMemory.insert( new Cheese( "muzzarela",
+                                          80 ) );
+
+        workingMemory.fireAllRules();
+
+        assertEquals( "should have fired twice",
+                      2,
+                      list.size() );
+    }
+
+    public void testGetFactHandleEqualityBehavior() throws Exception {
+        final RuleBaseConfiguration conf = new RuleBaseConfiguration();
+        conf.setAssertBehaviour( RuleBaseConfiguration.AssertBehaviour.EQUALITY );
+        final RuleBase ruleBase = RuleBaseFactory.newRuleBase( conf );
+
+        final StatefulSession session = ruleBase.newStatefulSession();
+
+        CheeseEqual cheese = new CheeseEqual( "stilton",
+                                              10 );
+        session.insert( cheese );
+        FactHandle fh = session.getFactHandle( new CheeseEqual( "stilton",
+                                                                10 ) );
+        assertNotNull( fh );
+    }
+
+    public void testGetFactHandleIdentityBehavior() throws Exception {
+        final RuleBaseConfiguration conf = new RuleBaseConfiguration();
+        conf.setAssertBehaviour( RuleBaseConfiguration.AssertBehaviour.IDENTITY );
+        final RuleBase ruleBase = RuleBaseFactory.newRuleBase( conf );
+
+        final StatefulSession session = ruleBase.newStatefulSession();
+
+        CheeseEqual cheese = new CheeseEqual( "stilton",
+                                              10 );
+        session.insert( cheese );
+        FactHandle fh1 = session.getFactHandle( new Cheese( "stilton",
+                                                            10 ) );
+        assertNull( fh1 );
+        FactHandle fh2 = session.getFactHandle( cheese );
+        assertNotNull( fh2 );
+    }
+
+    public void testOrCEFollowedByEval() throws Exception {
+        final PackageBuilder builder = new PackageBuilder();
+        builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_OrCEFollowedByEval.drl" ) ) );
+        final Package pkg = builder.getPackage();
+
+        final RuleBase ruleBase = getRuleBase();
+        ruleBase.addPackage( pkg );
+        final WorkingMemory workingMemory = ruleBase.newStatefulSession();
+
+        final List list = new ArrayList();
+        workingMemory.setGlobal( "results",
+                                 list );
+
+        workingMemory.insert( new FactA( "X" ) );
+        InternalFactHandle b = (InternalFactHandle) workingMemory.insert( new FactB( "X" ) );
+
+        workingMemory.fireAllRules();
+
+        assertEquals( "should have fired",
+                      2,
+                      list.size() );
+        assertTrue( list.contains( b.getObject() ) );
+    }
+
+    public void testNPEOnMVELAlphaPredicates() throws Exception {
+        final PackageBuilder builder = new PackageBuilder();
+        builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_NPEOnMVELPredicate.drl" ) ) );
+        final Package pkg = builder.getPackage();
+
+        final RuleBase ruleBase = getRuleBase();
+        ruleBase.addPackage( pkg );
+        final StatefulSession session = ruleBase.newStatefulSession();
+
+        final List list = new ArrayList();
+        session.setGlobal( "results",
+                           list );
+
+        Cheese cheese = new Cheese( "stilton",
+                                    10 );
+        Cheesery cheesery = new Cheesery();
+        cheesery.addCheese( cheese );
+        Person bob = new Person( "bob",
+                                 "stilton" );
+        Cheese cheese2 = new Cheese();
+        bob.setCheese( cheese2 );
+
+        FactHandle p = session.insert( bob );
+        FactHandle c = session.insert( cheesery );
+
+        session.fireAllRules();
+
+        assertEquals( "should not have fired",
+                      0,
+                      list.size() );
+
+        cheese2.setType( "stilton" );
+
+        session.update( p,
+                        bob );
+        session.fireAllRules();
+
+        assertEquals( 1,
+                      list.size() );
+
+    }
+
 }

@@ -1,10 +1,17 @@
 package org.drools.integrationtests;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import junit.framework.Assert;
@@ -24,6 +31,7 @@ import org.drools.SpecialString;
 import org.drools.State;
 import org.drools.StatefulSession;
 import org.drools.WorkingMemory;
+import org.drools.common.InternalFactHandle;
 import org.drools.compiler.DrlParser;
 import org.drools.compiler.DroolsParserException;
 import org.drools.compiler.PackageBuilder;
@@ -44,14 +52,112 @@ public class FirstOrderLogicTest extends TestCase {
                                             config );
     }
 
+    private RuleBase loadRuleBase(final Reader reader) throws IOException,
+                                                      DroolsParserException,
+                                                      Exception {
+        final DrlParser parser = new DrlParser();
+        final PackageDescr packageDescr = parser.parse( reader );
+        if ( parser.hasErrors() ) {
+            System.out.println( parser.getErrors() );
+            Assert.fail( "Error messages in parser, need to sort this our (or else collect error messages)" );
+        }
+        // pre build the package
+        final PackageBuilder builder = new PackageBuilder();
+        builder.addPackage( packageDescr );
+        final Package pkg = builder.getPackage();
+
+        // add the package to a rulebase
+        final RuleBase ruleBase = getRuleBase();
+        ruleBase.addPackage( pkg );
+        // load up the rulebase
+        return serializeRuleBase( ruleBase );
+    }
+
+    protected Object serializeIn(final byte[] bytes) throws IOException,
+                                                    ClassNotFoundException {
+        final ObjectInput in = new ObjectInputStream( new ByteArrayInputStream( bytes ) );
+        final Object obj = in.readObject();
+        in.close();
+        return obj;
+    }
+
+    protected byte[] serializeOut(final Object obj) throws IOException {
+        // Serialize to a byte array
+        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        final ObjectOutput out = new ObjectOutputStream( bos );
+        out.writeObject( obj );
+        out.close();
+
+        // Get the bytes of the serialized object
+        final byte[] bytes = bos.toByteArray();
+        return bytes;
+    }
+
+    /**
+     * @param ruleBase
+     * @return
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    private RuleBase serializeRuleBase(RuleBase ruleBase) throws IOException,
+                                                         ClassNotFoundException {
+        byte[] serializedRuleBase = serializeOut( ruleBase );
+        ruleBase = (RuleBase) serializeIn( serializedRuleBase );
+        return ruleBase;
+    }
+
+    /**
+     * @param ruleBase
+     * @param wm
+     * @return
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    private StatefulSession serializeWorkingMemory(RuleBase ruleBase,
+                                                   StatefulSession wm) throws IOException,
+                                                                      ClassNotFoundException {
+        byte[] serializedSession = serializeOut( wm );
+        wm.dispose();
+        wm = ruleBase.newStatefulSession( new ByteArrayInputStream( serializedSession ) );
+        return wm;
+    }
+
+    /**
+     * @param wm
+     * @param handles
+     */
+    private void updateHandles(StatefulSession wm,
+                               final FactHandle[] handles) {
+        for ( int i = 0; i < handles.length; i++ ) {
+            handles[i] = updateHandle( wm,
+                                       (InternalFactHandle) handles[i] );
+        }
+    }
+
+    /**
+     * @param wm
+     * @param cheeseHandles
+     * @param index
+     */
+    private InternalFactHandle updateHandle(final StatefulSession wm,
+                                            final FactHandle handle) {
+        for ( Iterator it = wm.iterateFactHandles(); it.hasNext(); ) {
+            InternalFactHandle newHandle = (InternalFactHandle) it.next();
+            if ( ((InternalFactHandle) handle).getId() == newHandle.getId() ) {
+                return newHandle;
+            }
+        }
+        return null;
+    }
+
     public void testCollect() throws Exception {
 
         // read in the source
         final Reader reader = new InputStreamReader( getClass().getResourceAsStream( "test_Collect.drl" ) );
-        final RuleBase ruleBase = loadRuleBase( reader );
+        RuleBase ruleBase = loadRuleBase( reader );
 
-        final WorkingMemory wm = ruleBase.newStatefulSession();
-        final List results = new ArrayList();
+        StatefulSession wm = ruleBase.newStatefulSession();
+        List results = new ArrayList();
 
         wm.setGlobal( "results",
                       results );
@@ -73,6 +179,11 @@ public class FirstOrderLogicTest extends TestCase {
         wm.insert( new Person( "Mark",
                                "provolone" ) );
 
+        ruleBase = serializeRuleBase( ruleBase );
+        wm = serializeWorkingMemory( ruleBase,
+                                     wm );
+        results = (List) wm.getGlobal( "results" );
+
         wm.fireAllRules();
 
         Assert.assertEquals( 1,
@@ -86,10 +197,10 @@ public class FirstOrderLogicTest extends TestCase {
     public void testCollectModify() throws Exception {
         // read in the source
         final Reader reader = new InputStreamReader( getClass().getResourceAsStream( "test_Collect.drl" ) );
-        final RuleBase ruleBase = loadRuleBase( reader );
+        RuleBase ruleBase = loadRuleBase( reader );
 
-        final WorkingMemory wm = ruleBase.newStatefulSession();
-        final List results = new ArrayList();
+        StatefulSession wm = ruleBase.newStatefulSession();
+        List results = new ArrayList();
 
         wm.setGlobal( "results",
                       results );
@@ -108,8 +219,16 @@ public class FirstOrderLogicTest extends TestCase {
         for ( int i = 0; i < cheese.length; i++ ) {
             cheeseHandles[i] = wm.insert( cheese[i] );
         }
-        final FactHandle bobHandle = wm.insert( bob );
+        FactHandle bobHandle = wm.insert( bob );
 
+        ruleBase = serializeRuleBase( ruleBase );
+        wm = serializeWorkingMemory( ruleBase,
+                                     wm );
+        results = (List) wm.getGlobal( "results" );
+        updateHandles( wm,
+                       cheeseHandles );
+        bobHandle = updateHandle( wm,
+                                  (InternalFactHandle) bobHandle );
         // ---------------- 1st scenario
         int fireCount = 0;
         wm.fireAllRules();
@@ -153,17 +272,12 @@ public class FirstOrderLogicTest extends TestCase {
     }
 
     public void testExistsWithBinding() throws Exception {
-        final PackageBuilder builder = new PackageBuilder();
-        builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_ExistsWithBindings.drl" ) ) );
-        final Package pkg = builder.getPackage();
+        RuleBase ruleBase = loadRuleBase( new InputStreamReader( getClass().getResourceAsStream( "test_ExistsWithBindings.drl" ) ) );
+        StatefulSession workingMemory = ruleBase.newStatefulSession();
 
-        final RuleBase ruleBase = getRuleBase();
-        ruleBase.addPackage( pkg );
-        final WorkingMemory workingMemory = ruleBase.newStatefulSession();
-
-        final List list = new ArrayList();
+        List results = new ArrayList();
         workingMemory.setGlobal( "results",
-                                 list );
+                                 results );
 
         final Cheese c = new Cheese( "stilton",
                                      10 );
@@ -171,47 +285,58 @@ public class FirstOrderLogicTest extends TestCase {
                                      "stilton" );
         workingMemory.insert( c );
         workingMemory.insert( p );
+
+        ruleBase = serializeRuleBase( ruleBase );
+        workingMemory = serializeWorkingMemory( ruleBase,
+                                                workingMemory );
+        results = (List) workingMemory.getGlobal( "results" );
+
         workingMemory.fireAllRules();
 
-        assertTrue( list.contains( c.getType() ) );
+        assertTrue( results.contains( c.getType() ) );
         assertEquals( 1,
-                      list.size() );
+                      results.size() );
     }
 
     public void testNot() throws Exception {
-        final PackageBuilder builder = new PackageBuilder();
-        builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "not_rule_test.drl" ) ) );
-        final Package pkg = builder.getPackage();
+        RuleBase ruleBase = loadRuleBase( new InputStreamReader( getClass().getResourceAsStream( "not_rule_test.drl" ) ) );
+        StatefulSession workingMemory = ruleBase.newStatefulSession();
 
-        final RuleBase ruleBase = getRuleBase();
-        ruleBase.addPackage( pkg );
-        final WorkingMemory workingMemory = ruleBase.newStatefulSession();
-
-        final List list = new ArrayList();
+        List results = new ArrayList();
         workingMemory.setGlobal( "list",
-                                 list );
+                                 results );
 
         final Cheese stilton = new Cheese( "stilton",
                                            5 );
-        final FactHandle stiltonHandle = workingMemory.insert( stilton );
+        FactHandle stiltonHandle = workingMemory.insert( stilton );
         final Cheese cheddar = new Cheese( "cheddar",
                                            7 );
-        final FactHandle cheddarHandle = workingMemory.insert( cheddar );
+        FactHandle cheddarHandle = workingMemory.insert( cheddar );
+
+        ruleBase = serializeRuleBase( ruleBase );
+        workingMemory = serializeWorkingMemory( ruleBase,
+                                                workingMemory );
+        results = (List) workingMemory.getGlobal( "list" );
+        stiltonHandle = updateHandle( workingMemory,
+                                      stiltonHandle );
+        cheddarHandle = updateHandle( workingMemory,
+                                      cheddarHandle );
+
         workingMemory.fireAllRules();
 
         assertEquals( 0,
-                      list.size() );
+                      results.size() );
 
         workingMemory.retract( stiltonHandle );
 
         workingMemory.fireAllRules();
 
         assertEquals( 4,
-                      list.size() );
-        Assert.assertTrue( list.contains( new Integer( 5 ) ) );
-        Assert.assertTrue( list.contains( new Integer( 6 ) ) );
-        Assert.assertTrue( list.contains( new Integer( 7 ) ) );
-        Assert.assertTrue( list.contains( new Integer( 8 ) ) );
+                      results.size() );
+        Assert.assertTrue( results.contains( new Integer( 5 ) ) );
+        Assert.assertTrue( results.contains( new Integer( 6 ) ) );
+        Assert.assertTrue( results.contains( new Integer( 7 ) ) );
+        Assert.assertTrue( results.contains( new Integer( 8 ) ) );
     }
 
     public void testNotWithBindings() throws Exception {
@@ -223,25 +348,38 @@ public class FirstOrderLogicTest extends TestCase {
         assertTrue( rule.isValid() );
         assertEquals( 0,
                       builder.getErrors().getErrors().length );
-        final RuleBase ruleBase = getRuleBase();
-        ruleBase.addPackage( pkg );
-        final WorkingMemory workingMemory = ruleBase.newStatefulSession();
 
-        final List list = new ArrayList();
+        RuleBase ruleBase = getRuleBase();
+        ruleBase.addPackage( pkg );
+        ruleBase = serializeRuleBase( ruleBase );
+
+        StatefulSession workingMemory = ruleBase.newStatefulSession();
+
+        List list = new ArrayList();
         workingMemory.setGlobal( "list",
                                  list );
 
         final Cheese stilton = new Cheese( "stilton",
                                            5 );
-        final FactHandle stiltonHandle = workingMemory.insert( stilton );
+        FactHandle stiltonHandle = workingMemory.insert( stilton );
         final Cheese cheddar = new Cheese( "cheddar",
                                            7 );
-        final FactHandle cheddarHandle = workingMemory.insert( cheddar );
+        FactHandle cheddarHandle = workingMemory.insert( cheddar );
 
         final PersonInterface paul = new Person( "paul",
                                                  "stilton",
                                                  12 );
         workingMemory.insert( paul );
+
+        ruleBase = serializeRuleBase( ruleBase );
+        workingMemory = serializeWorkingMemory( ruleBase,
+                                                workingMemory );
+        list = (List) workingMemory.getGlobal( "list" );
+        stiltonHandle = updateHandle( workingMemory,
+                                      stiltonHandle );
+        cheddarHandle = updateHandle( workingMemory,
+                                      cheddarHandle );
+
         workingMemory.fireAllRules();
 
         assertEquals( 0,
@@ -256,21 +394,22 @@ public class FirstOrderLogicTest extends TestCase {
     }
 
     public void testExists() throws Exception {
-        final PackageBuilder builder = new PackageBuilder();
-        builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "exists_rule_test.drl" ) ) );
-        final Package pkg = builder.getPackage();
+        RuleBase ruleBase = loadRuleBase( new InputStreamReader( getClass().getResourceAsStream( "exists_rule_test.drl" ) ) );
+        StatefulSession workingMemory = ruleBase.newStatefulSession();
 
-        final RuleBase ruleBase = getRuleBase();
-        ruleBase.addPackage( pkg );
-        final WorkingMemory workingMemory = ruleBase.newStatefulSession();
-
-        final List list = new ArrayList();
+        List list = new ArrayList();
         workingMemory.setGlobal( "list",
                                  list );
 
         final Cheese cheddar = new Cheese( "cheddar",
                                            7 );
         final FactHandle cheddarHandle = workingMemory.insert( cheddar );
+
+        ruleBase = serializeRuleBase( ruleBase );
+        workingMemory = serializeWorkingMemory( ruleBase,
+                                                workingMemory );
+        list = (List) workingMemory.getGlobal( "list" );
+
         workingMemory.fireAllRules();
 
         assertEquals( 0,
@@ -279,6 +418,12 @@ public class FirstOrderLogicTest extends TestCase {
         final Cheese stilton = new Cheese( "stilton",
                                            5 );
         final FactHandle stiltonHandle = workingMemory.insert( stilton );
+
+        ruleBase = serializeRuleBase( ruleBase );
+        workingMemory = serializeWorkingMemory( ruleBase,
+                                                workingMemory );
+        list = (List) workingMemory.getGlobal( "list" );
+
         workingMemory.fireAllRules();
 
         assertEquals( 1,
@@ -287,6 +432,12 @@ public class FirstOrderLogicTest extends TestCase {
         final Cheese brie = new Cheese( "brie",
                                         5 );
         final FactHandle brieHandle = workingMemory.insert( brie );
+
+        ruleBase = serializeRuleBase( ruleBase );
+        workingMemory = serializeWorkingMemory( ruleBase,
+                                                workingMemory );
+        list = (List) workingMemory.getGlobal( "list" );
+
         workingMemory.fireAllRules();
 
         assertEquals( 1,
@@ -294,15 +445,10 @@ public class FirstOrderLogicTest extends TestCase {
     }
 
     public void testExists2() throws Exception {
-        final PackageBuilder builder = new PackageBuilder();
-        builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_exists.drl" ) ) );
-        final Package pkg = builder.getPackage();
+        RuleBase ruleBase = loadRuleBase( new InputStreamReader( getClass().getResourceAsStream( "test_exists.drl" ) ) );
+        StatefulSession workingMemory = ruleBase.newStatefulSession();
 
-        final RuleBase ruleBase = getRuleBase();
-        ruleBase.addPackage( pkg );
-        final WorkingMemory workingMemory = ruleBase.newStatefulSession();
-
-        final List list = new ArrayList();
+        List list = new ArrayList();
         workingMemory.setGlobal( "list",
                                  list );
 
@@ -316,36 +462,51 @@ public class FirstOrderLogicTest extends TestCase {
                                        "muzzarela" );
 
         workingMemory.insert( cheddar );
+        ruleBase = serializeRuleBase( ruleBase );
+        workingMemory = serializeWorkingMemory( ruleBase,
+                                                workingMemory );
+        list = (List) workingMemory.getGlobal( "list" );
+
         workingMemory.fireAllRules();
         assertEquals( 0,
                       list.size() );
 
         workingMemory.insert( provolone );
+        ruleBase = serializeRuleBase( ruleBase );
+        workingMemory = serializeWorkingMemory( ruleBase,
+                                                workingMemory );
+        list = (List) workingMemory.getGlobal( "list" );
+
         workingMemory.fireAllRules();
         assertEquals( 0,
                       list.size() );
 
         workingMemory.insert( edson );
+        ruleBase = serializeRuleBase( ruleBase );
+        workingMemory = serializeWorkingMemory( ruleBase,
+                                                workingMemory );
+        list = (List) workingMemory.getGlobal( "list" );
+
         workingMemory.fireAllRules();
         assertEquals( 1,
                       list.size() );
 
         workingMemory.insert( bob );
+        ruleBase = serializeRuleBase( ruleBase );
+        workingMemory = serializeWorkingMemory( ruleBase,
+                                                workingMemory );
+        list = (List) workingMemory.getGlobal( "list" );
+
         workingMemory.fireAllRules();
         assertEquals( 1,
                       list.size() );
     }
 
     public void testForall() throws Exception {
-        final PackageBuilder builder = new PackageBuilder();
-        builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_Forall.drl" ) ) );
-        final Package pkg = builder.getPackage();
+        RuleBase ruleBase = loadRuleBase( new InputStreamReader( getClass().getResourceAsStream( "test_Forall.drl" ) ) );
+        StatefulSession workingMemory = ruleBase.newStatefulSession();
 
-        final RuleBase ruleBase = getRuleBase();
-        ruleBase.addPackage( pkg );
-        final WorkingMemory workingMemory = ruleBase.newStatefulSession();
-
-        final List list = new ArrayList();
+        List list = new ArrayList();
         workingMemory.setGlobal( "results",
                                  list );
 
@@ -357,6 +518,11 @@ public class FirstOrderLogicTest extends TestCase {
         bob.setLikes( "stilton" );
         workingMemory.insert( bob );
 
+        ruleBase = serializeRuleBase( ruleBase );
+        workingMemory = serializeWorkingMemory( ruleBase,
+                                                workingMemory );
+        list = (List) workingMemory.getGlobal( "results" );
+
         workingMemory.fireAllRules();
 
         assertEquals( 0,
@@ -364,6 +530,12 @@ public class FirstOrderLogicTest extends TestCase {
 
         workingMemory.insert( new Cheese( bob.getLikes(),
                                           10 ) );
+
+        ruleBase = serializeRuleBase( ruleBase );
+        workingMemory = serializeWorkingMemory( ruleBase,
+                                                workingMemory );
+        list = (List) workingMemory.getGlobal( "results" );
+
         workingMemory.fireAllRules();
 
         assertEquals( 1,
@@ -377,11 +549,14 @@ public class FirstOrderLogicTest extends TestCase {
 
         final RuleBaseConfiguration config = new RuleBaseConfiguration();
         config.setRemoveIdentities( true );
-        final RuleBase ruleBase = getRuleBase( config );
+        RuleBase ruleBase = getRuleBase( config );
         ruleBase.addPackage( pkg );
-        final WorkingMemory workingMemory = ruleBase.newStatefulSession();
 
-        final List list = new ArrayList();
+        ruleBase = serializeRuleBase( ruleBase );
+
+        StatefulSession workingMemory = ruleBase.newStatefulSession();
+
+        List list = new ArrayList();
         workingMemory.setGlobal( "results",
                                  list );
 
@@ -395,10 +570,19 @@ public class FirstOrderLogicTest extends TestCase {
 
         final Cheese stilton1 = new Cheese( "stilton",
                                             6 );
-        final FactHandle stilton1Handle = workingMemory.insert( stilton1 );
+        FactHandle stilton1Handle = workingMemory.insert( stilton1 );
         final Cheese stilton2 = new Cheese( "stilton",
                                             7 );
-        final FactHandle stilton2Handle = workingMemory.insert( stilton2 );
+        FactHandle stilton2Handle = workingMemory.insert( stilton2 );
+
+        ruleBase = serializeRuleBase( ruleBase );
+        workingMemory = serializeWorkingMemory( ruleBase,
+                                                workingMemory );
+        list = (List) workingMemory.getGlobal( "results" );
+        stilton1Handle = updateHandle( workingMemory,
+                                       stilton1Handle );
+        stilton2Handle = updateHandle( workingMemory,
+                                       stilton2Handle );
 
         workingMemory.fireAllRules();
         assertEquals( 0,
@@ -422,15 +606,10 @@ public class FirstOrderLogicTest extends TestCase {
     }
 
     public void testCollectWithNestedFromWithParams() throws Exception {
-        final PackageBuilder builder = new PackageBuilder();
-        builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_CollectWithNestedFrom.drl" ) ) );
-        final Package pkg = builder.getPackage();
+        RuleBase ruleBase = loadRuleBase( new InputStreamReader( getClass().getResourceAsStream( "test_CollectWithNestedFrom.drl" ) ) );
+        StatefulSession workingMemory = ruleBase.newStatefulSession();
 
-        final RuleBase ruleBase = getRuleBase();
-        ruleBase.addPackage( pkg );
-
-        final WorkingMemory workingMemory = ruleBase.newStatefulSession();
-        final List results = new ArrayList();
+        List results = new ArrayList();
         workingMemory.setGlobal( "results",
                                  results );
 
@@ -452,6 +631,11 @@ public class FirstOrderLogicTest extends TestCase {
         workingMemory.insert( bob );
         workingMemory.insert( cheesery );
 
+        ruleBase = serializeRuleBase( ruleBase );
+        workingMemory = serializeWorkingMemory( ruleBase,
+                                                workingMemory );
+        results = (List) workingMemory.getGlobal( "results" );
+
         workingMemory.fireAllRules();
 
         assertEquals( 1,
@@ -469,11 +653,10 @@ public class FirstOrderLogicTest extends TestCase {
     public void testCollectModifyAlphaRestriction() throws Exception {
         // read in the source
         final Reader reader = new InputStreamReader( getClass().getResourceAsStream( "test_CollectAlphaRestriction.drl" ) );
-        final RuleBase ruleBase = loadRuleBase( reader );
+        RuleBase ruleBase = loadRuleBase( reader );
 
-        final WorkingMemory wm = ruleBase.newStatefulSession();
-        final List results = new ArrayList();
-
+        StatefulSession wm = ruleBase.newStatefulSession();
+        List results = new ArrayList();
         wm.setGlobal( "results",
                       results );
 
@@ -489,6 +672,13 @@ public class FirstOrderLogicTest extends TestCase {
         for ( int i = 0; i < cheese.length; i++ ) {
             cheeseHandles[i] = wm.insert( cheese[i] );
         }
+
+        ruleBase = serializeRuleBase( ruleBase );
+        wm = serializeWorkingMemory( ruleBase,
+                                     wm );
+        results = (List) wm.getGlobal( "results" );
+        updateHandles( wm,
+                       cheeseHandles );
 
         // ---------------- 1st scenario
         int fireCount = 0;
@@ -527,35 +717,11 @@ public class FirstOrderLogicTest extends TestCase {
 
     }
 
-    private RuleBase loadRuleBase(final Reader reader) throws IOException,
-                                                      DroolsParserException,
-                                                      Exception {
-        final DrlParser parser = new DrlParser();
-        final PackageDescr packageDescr = parser.parse( reader );
-        if ( parser.hasErrors() ) {
-            System.out.println( parser.getErrors() );
-            Assert.fail( "Error messages in parser, need to sort this our (or else collect error messages)" );
-        }
-        // pre build the package
-        final PackageBuilder builder = new PackageBuilder();
-        builder.addPackage( packageDescr );
-        final Package pkg = builder.getPackage();
-
-        // add the package to a rulebase
-        final RuleBase ruleBase = getRuleBase();
-        ruleBase.addPackage( pkg );
-        // load up the rulebase
-        return ruleBase;
-    }
-
     public void testForallSinglePattern() throws Exception {
-        final PackageBuilder builder = new PackageBuilder();
-        builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_ForallSinglePattern.drl" ) ) );
-        final Package pkg = builder.getPackage();
+        final Reader reader = new InputStreamReader( getClass().getResourceAsStream( "test_ForallSinglePattern.drl" ) );
+        RuleBase ruleBase = loadRuleBase( reader );
 
-        final RuleBase ruleBase = getRuleBase();
-        ruleBase.addPackage( pkg );
-        final WorkingMemory workingMemory = ruleBase.newStatefulSession();
+        StatefulSession workingMemory = ruleBase.newStatefulSession();
 
         final List list = new ArrayList();
         workingMemory.setGlobal( "results",
@@ -610,13 +776,12 @@ public class FirstOrderLogicTest extends TestCase {
     }
 
     public void testMVELCollect() throws Exception {
-
-        // read in the source
         final Reader reader = new InputStreamReader( getClass().getResourceAsStream( "test_MVELCollect.drl" ) );
-        final RuleBase ruleBase = loadRuleBase( reader );
+        RuleBase ruleBase = loadRuleBase( reader );
 
-        final WorkingMemory wm = ruleBase.newStatefulSession();
-        final List results = new ArrayList();
+        StatefulSession wm = ruleBase.newStatefulSession();
+
+        List results = new ArrayList();
 
         wm.setGlobal( "results",
                       results );
@@ -638,6 +803,11 @@ public class FirstOrderLogicTest extends TestCase {
         wm.insert( new Person( "Mark",
                                "provolone" ) );
 
+        ruleBase = serializeRuleBase( ruleBase );
+        wm = serializeWorkingMemory( ruleBase,
+                                     wm );
+        results = (List) wm.getGlobal( "results" );
+
         wm.fireAllRules();
 
         Assert.assertEquals( 1,
@@ -647,13 +817,10 @@ public class FirstOrderLogicTest extends TestCase {
     }
 
     public void testNestedCorelatedRulesWithForall() throws Exception {
+        final Reader reader = new InputStreamReader( getClass().getResourceAsStream( "test_NestedCorrelatedRulesWithForall.drl" ) );
+        RuleBase ruleBase = loadRuleBase( reader );
 
-        PackageBuilder builder = new PackageBuilder();
-        builder.addPackageFromDrl( new InputStreamReader( FirstOrderLogicTest.class.getResourceAsStream( "test_NestedCorrelatedRulesWithForall.drl" ) ) );
-
-        RuleBase rb = RuleBaseFactory.newRuleBase();
-        rb.addPackage( builder.getPackage() );
-        StatefulSession session = rb.newStatefulSession();
+        StatefulSession session = ruleBase.newStatefulSession();
 
         List list1 = new ArrayList();
         List list2 = new ArrayList();
@@ -711,13 +878,10 @@ public class FirstOrderLogicTest extends TestCase {
     }
 
     public void testFromInsideNotAndExists() throws Exception {
-        final PackageBuilder builder = new PackageBuilder();
-        builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_FromInsideNotAndExists.drl" ) ) );
-        final Package pkg = builder.getPackage();
+        final Reader reader = new InputStreamReader( getClass().getResourceAsStream( "test_FromInsideNotAndExists.drl" ) );
+        RuleBase ruleBase = loadRuleBase( reader );
 
-        final RuleBase ruleBase = getRuleBase();
-        ruleBase.addPackage( pkg );
-        final WorkingMemory workingMemory = ruleBase.newStatefulSession();
+        StatefulSession workingMemory = ruleBase.newStatefulSession();
 
         final List list = new ArrayList();
         workingMemory.setGlobal( "results",
@@ -749,13 +913,10 @@ public class FirstOrderLogicTest extends TestCase {
     }
 
     public void testOr() throws Exception {
-        final PackageBuilder builder = new PackageBuilder();
-        builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_OrNesting.drl" ) ) );
-        final Package pkg = builder.getPackage();
+        final Reader reader = new InputStreamReader( getClass().getResourceAsStream( "test_OrNesting.drl" ) );
+        RuleBase ruleBase = loadRuleBase( reader );
 
-        final RuleBase ruleBase = getRuleBase();
-        ruleBase.addPackage( pkg );
-        final WorkingMemory workingMemory = ruleBase.newStatefulSession();
+        StatefulSession workingMemory = ruleBase.newStatefulSession();
 
         final List list = new ArrayList();
         workingMemory.setGlobal( "results",
@@ -781,13 +942,10 @@ public class FirstOrderLogicTest extends TestCase {
     }
 
     public void testCollectWithMemberOfOperators() throws Exception {
-        final PackageBuilder builder = new PackageBuilder();
-        builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_CollectMemberOfOperator.drl" ) ) );
-        final Package pkg = builder.getPackage();
+        final Reader reader = new InputStreamReader( getClass().getResourceAsStream( "test_CollectMemberOfOperator.drl" ) );
+        RuleBase ruleBase = loadRuleBase( reader );
 
-        final RuleBase ruleBase = getRuleBase();
-        ruleBase.addPackage( pkg );
-        final WorkingMemory workingMemory = ruleBase.newStatefulSession();
+        StatefulSession workingMemory = ruleBase.newStatefulSession();
 
         final List list = new ArrayList();
         workingMemory.setGlobal( "results",
@@ -838,13 +996,10 @@ public class FirstOrderLogicTest extends TestCase {
     }
 
     public void testCollectWithContainsOperators() throws Exception {
-        final PackageBuilder builder = new PackageBuilder();
-        builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_CollectContainsOperator.drl" ) ) );
-        final Package pkg = builder.getPackage();
+        final Reader reader = new InputStreamReader( getClass().getResourceAsStream( "test_CollectContainsOperator.drl" ) );
+        RuleBase ruleBase = loadRuleBase( reader );
 
-        final RuleBase ruleBase = getRuleBase();
-        ruleBase.addPackage( pkg );
-        final WorkingMemory workingMemory = ruleBase.newStatefulSession();
+        StatefulSession workingMemory = ruleBase.newStatefulSession();
 
         final List list = new ArrayList();
         workingMemory.setGlobal( "results",

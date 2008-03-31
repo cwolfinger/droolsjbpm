@@ -17,8 +17,12 @@
 package org.drools.rule.builder.dialect.java;
 
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.drools.compiler.Dialect;
 import org.drools.compiler.RuleError;
@@ -26,7 +30,10 @@ import org.drools.lang.descr.RuleDescr;
 import org.drools.rule.Declaration;
 import org.drools.rule.builder.ConsequenceBuilder;
 import org.drools.rule.builder.RuleBuildContext;
+import org.drools.rule.builder.dialect.java.parser.JavaModifyBlockDescr;
+import org.drools.rule.builder.dialect.mvel.MVELDialect;
 import org.drools.spi.PatternExtractor;
+import org.mvel.ExecutableStatement;
 
 /**
  * @author etirelli
@@ -51,12 +58,22 @@ public class JavaConsequenceBuilder extends AbstractJavaBuilder
         Dialect.AnalysisResult analysis = context.getDialect().analyzeBlock( context,
                                                                              ruleDescr,
                                                                              (String) ruleDescr.getConsequence() );
-        
-        if( analysis == null ) {
+
+        if ( analysis == null ) {
             // not possible to get the analysis results
             return;
         }
-        
+
+        String fixedConsequence = this.fixModifyBlocks( context,
+                                                        (JavaAnalysisResult) analysis,
+                                                        (String) ruleDescr.getConsequence() );
+
+        if ( fixedConsequence == null ) {
+            // not possible to rewrite the modify blocks
+            return;
+        }
+        fixedConsequence = ((JavaDialect) context.getDialect()).getKnowledgeHelperFixer().fix( fixedConsequence );
+
         final List[] usedIdentifiers = analysis.getBoundIdentifiers();
 
         final Declaration[] declarations = new Declaration[usedIdentifiers[0].size()];
@@ -72,7 +89,7 @@ public class JavaConsequenceBuilder extends AbstractJavaBuilder
                                                null,
                                                (String[]) usedIdentifiers[1].toArray( new String[usedIdentifiers[1].size()] ) );
         map.put( "text",
-                 ((JavaDialect) context.getDialect()).getKnowledgeHelperFixer().fix( (String) ruleDescr.getConsequence() ) );
+                 fixedConsequence );
 
         // Must use the rule declarations, so we use the same order as used in the generated invoker
         final List list = Arrays.asList( context.getRule().getDeclarations() );
@@ -108,6 +125,85 @@ public class JavaConsequenceBuilder extends AbstractJavaBuilder
 
         // popping Rule.getLHS() from the build stack
         context.getBuildStack().pop();
+    }
+
+    protected String fixModifyBlocks(final RuleBuildContext context,
+                                     final JavaAnalysisResult analysis,
+                                     final String originalCode) {
+        MVELDialect mvel = (MVELDialect) context.getDialect( "mvel" );
+
+        TreeSet blocks = new TreeSet( new Comparator() {
+            public int compare(Object o1,
+                               Object o2) {
+                JavaModifyBlockDescr d1 = (JavaModifyBlockDescr) o1;
+                JavaModifyBlockDescr d2 = (JavaModifyBlockDescr) o2;
+                return d1.getStart() - d2.getStart();
+            }
+        } );
+
+        for ( Iterator it = analysis.getModifyBlocks().iterator(); it.hasNext(); ) {
+            blocks.add( it.next() );
+        }
+
+        StringBuffer consequence = new StringBuffer();
+        int lastAdded = 0;
+        for ( Iterator it = blocks.iterator(); it.hasNext(); ) {
+            JavaModifyBlockDescr d = (JavaModifyBlockDescr) it.next();
+            // adding chunk
+            consequence.append( originalCode.substring( lastAdded,
+                                                        d.getStart() - 1 ) );
+            lastAdded = d.getEnd();
+
+            Dialect.AnalysisResult mvelAnalysis = mvel.analyzeBlock( context,
+                                                                     context.getRuleDescr(),
+                                                                     mvel.getInterceptors(),
+                                                                     d.getModifyExpression(),
+                                                                     null );
+
+            final ExecutableStatement expr = (ExecutableStatement) mvel.compile( d.getModifyExpression(),
+                                                                                 mvelAnalysis,
+                                                                                 mvel.getInterceptors(),
+                                                                                 null,
+                                                                                 null,
+                                                                                 context );
+
+            Class ret = expr.getKnownEgressType();
+
+            if ( ret == null ) {
+                // not possible to evaluate expression return value
+                context.getErrors().add( new RuleError( context.getRule(),
+                                                        context.getRuleDescr(),
+                                                        originalCode,
+                                                        "Unable to determine the resulting type of the expression: " + d.getModifyExpression() + "\n" ) );
+
+                return null;
+            }
+
+            // adding modify expression
+            consequence.append( "{\n" );
+            consequence.append( ret.getName() );
+            consequence.append( " __obj__ = (" );
+            consequence.append( ret.getName() );
+            consequence.append( ") " );
+            consequence.append( d.getModifyExpression() );
+            consequence.append( ";\n" );
+            // adding the modifyRetract call:
+            consequence.append( "modifyRetract( __obj__ );\n" );
+            
+
+            // adding each of the expressions:
+            for ( Iterator exprIt = d.getExpressions().iterator(); exprIt.hasNext(); ) {
+                consequence.append( "__obj__." );
+                consequence.append( exprIt.next() );
+                consequence.append( ";\n" );
+            }
+            // adding the modifyInsert call:
+            consequence.append( "modifyInsert( __obj__ );" );
+            consequence.append( "}\n" );
+        }
+        consequence.append( originalCode.substring( lastAdded ) );
+
+        return consequence.toString();
     }
 
 }

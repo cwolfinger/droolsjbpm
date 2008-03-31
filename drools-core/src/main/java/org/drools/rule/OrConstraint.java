@@ -44,12 +44,12 @@ public class OrConstraint extends AbstractCompositeConstraint {
      */
     public boolean isAllowed(Object object,
                              InternalWorkingMemory workingMemory,
-                             final ContextEntry ctx ) {
+                             final ContextEntry ctx) {
         if ( this.alphaConstraints.length > 0 ) {
             for ( int i = 0; i < this.alphaConstraints.length; i++ ) {
                 if ( this.alphaConstraints[i].isAllowed( object,
                                                          workingMemory,
-                                                         ctx ) ) {
+                                                         ((MultiFieldConstraintContextEntry) ctx).alphas[i] ) ) {
                     return true;
                 }
             }
@@ -63,16 +63,24 @@ public class OrConstraint extends AbstractCompositeConstraint {
      */
     public boolean isAllowedCachedLeft(ContextEntry context,
                                        Object object) {
-        if ( this.betaConstraints.length > 0 ) {
-            for ( int i = 0; i < this.betaConstraints.length; i++ ) {
-                if ( this.betaConstraints[i].isAllowedCachedLeft( ((MultiFieldConstraintContextEntry)context).contexts[i],
-                                                                  object ) ) {
-                    return true;
-                }
-            }
-            return false;
+        if( this.alphaConstraints.length == 0 && this.betaConstraints.length == 0 ) {
+            return true;
         }
-        return true;
+        for ( int i = 0; i < this.alphaConstraints.length; i++ ) {
+            if ( this.alphaConstraints[i].isAllowed( object,
+                                                     ((MultiFieldConstraintContextEntry) context).workingMemory,
+                                                     ((MultiFieldConstraintContextEntry) context).alphas[i] ) ) {
+                return true;
+            }
+        }
+        for ( int i = 0; i < this.betaConstraints.length; i++ ) {
+            if ( this.betaConstraints[i].isAllowedCachedLeft( ((MultiFieldConstraintContextEntry) context).betas[i],
+                                                              object ) ) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -80,10 +88,20 @@ public class OrConstraint extends AbstractCompositeConstraint {
      */
     public boolean isAllowedCachedRight(ReteTuple tuple,
                                         ContextEntry context) {
+        if( this.alphaConstraints.length == 0 && this.betaConstraints.length == 0 ) {
+            return true;
+        }
+        for ( int i = 0; i < this.alphaConstraints.length; i++ ) {
+            if ( this.alphaConstraints[i].isAllowed( ((MultiFieldConstraintContextEntry) context).handle.getObject(),
+                                                     ((MultiFieldConstraintContextEntry) context).workingMemory,
+                                                     ((MultiFieldConstraintContextEntry) context).alphas[i] ) ) {
+                return true;
+            }
+        }
         if ( this.betaConstraints.length > 0 ) {
             for ( int i = 0; i < this.betaConstraints.length; i++ ) {
                 if ( this.betaConstraints[i].isAllowedCachedRight( tuple,
-                                                                   ((MultiFieldConstraintContextEntry)context).contexts[i] ) ) {
+                                                                   ((MultiFieldConstraintContextEntry) context).betas[i] ) ) {
                     return true;
                 }
             }
@@ -118,21 +136,21 @@ public class OrConstraint extends AbstractCompositeConstraint {
 
     public Object clone() {
         OrConstraint clone = new OrConstraint();
-        
+
         // clone alpha constraints
-        clone.alphaConstraints = new AlphaNodeFieldConstraint[ this.alphaConstraints.length ];
-        for( int i = 0; i < this.alphaConstraints.length; i++ ) {
+        clone.alphaConstraints = new AlphaNodeFieldConstraint[this.alphaConstraints.length];
+        for ( int i = 0; i < this.alphaConstraints.length; i++ ) {
             clone.alphaConstraints[i] = (AlphaNodeFieldConstraint) this.alphaConstraints[i].clone();
             clone.updateRequiredDeclarations( clone.alphaConstraints[i] );
         }
-        
+
         // clone beta constraints
-        clone.betaConstraints = new BetaNodeFieldConstraint[ this.betaConstraints.length ];
-        for( int i = 0; i < this.betaConstraints.length; i++ ) {
+        clone.betaConstraints = new BetaNodeFieldConstraint[this.betaConstraints.length];
+        for ( int i = 0; i < this.betaConstraints.length; i++ ) {
             clone.betaConstraints[i] = (BetaNodeFieldConstraint) this.betaConstraints[i].clone();
             clone.updateRequiredDeclarations( clone.betaConstraints[i] );
         }
-        
+
         return clone;
     }
 }

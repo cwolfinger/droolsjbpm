@@ -28,6 +28,7 @@ import junit.framework.TestCase;
 import org.drools.PackageIntegrationException;
 import org.drools.RuleBase;
 import org.drools.RuleIntegrationException;
+import org.drools.StatefulSession;
 import org.drools.WorkingMemory;
 import org.drools.compiler.DrlParser;
 import org.drools.compiler.DroolsParserException;
@@ -48,31 +49,24 @@ public abstract class Waltz extends TestCase {
 
             //load up the rulebase
             final RuleBase ruleBase = readRule();
-            final WorkingMemory workingMemory = ruleBase.newStatefulSession();
-
-            workingMemory.setGlobal( "sysout",
-                                     System.out );
-
-            //            DebugWorkingMemoryEventListener wmListener = new DebugWorkingMemoryEventListener();
-            //            DebugAgendaEventListener agendaListener = new DebugAgendaEventListener();
-            //            workingMemory.addEventListener( wmListener );
-            //            workingMemory.addEventListener( agendaListener );
-
-            //go !     
-            this.loadLines( workingMemory,
-                            "waltz50.dat" );
-
-            //final Stage stage = new Stage( Stage.START );
-            //workingMemory.assertObject( stage );
-
-            final long start = System.currentTimeMillis();
-
-            final Stage stage = new Stage( Stage.DUPLICATE );
-            workingMemory.insert( stage );
-            workingMemory.fireAllRules();
-
-            final long end = System.currentTimeMillis();
-            System.out.println( end - start );
+            long total = 0;
+            for ( int i = 0; i < 5; i++ ) {
+                final StatefulSession workingMemory = ruleBase.newStatefulSession();
+                workingMemory.setGlobal( "sysout",
+                                         System.out );
+                //go !     
+                this.loadLines( workingMemory,
+                                "waltz50.dat" );
+                final long start = System.currentTimeMillis();
+                final Stage stage = new Stage( Stage.DUPLICATE );
+                workingMemory.insert( stage );
+                workingMemory.fireAllRules();
+                workingMemory.dispose();
+                final long end = System.currentTimeMillis();
+                total += end - start;
+                System.out.print( end - start + ", ");
+            }
+            System.out.println("Average: "+total/5+" ms");
         } catch ( final Throwable t ) {
             t.printStackTrace();
             fail( t.getMessage() );

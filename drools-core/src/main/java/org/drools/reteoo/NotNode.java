@@ -97,20 +97,19 @@ public class NotNode extends BetaNode {
         this.constraints.updateFromTuple( memory.getContext(),
                                           workingMemory,
                                           leftTuple );
-        int matches = 0;
+        
         for ( FactEntry entry = (FactEntry) it.next(); entry != null; entry = (FactEntry) it.next() ) {
             final InternalFactHandle handle = entry.getFactHandle();
             if ( this.constraints.isAllowedCachedLeft( memory.getContext(),
                                                        handle.getObject() ) ) {
-                matches++;
+                leftTuple.setMatch( handle );
+                break;
             }
         }
         
         this.constraints.resetTuple( memory.getContext() );
 
-        leftTuple.setMatches( matches );
-
-        if ( matches == 0 ) {
+        if ( leftTuple.getMatch() == null ) {
             this.sink.propagateAssertTuple( leftTuple,
                                             context,
                                             workingMemory );
@@ -145,16 +144,12 @@ public class NotNode extends BetaNode {
                                                workingMemory,
                                                handle );
         for ( ReteTuple tuple = (ReteTuple) it.next(); tuple != null; tuple = (ReteTuple) it.next() ) {
-            if ( this.constraints.isAllowedCachedRight(memory.getContext(),
-                    								   tuple ) ) {
-                final int matches = tuple.getMatches();
-                tuple.setMatches( matches + 1 );
-                if ( matches == 0 ) {
-
+            if ( this.constraints.isAllowedCachedRight( memory.getContext(),
+                                                        tuple ) &&  tuple.getMatch() == null) {
+                    tuple.setMatch( handle );
                     this.sink.propagateRetractTuple( tuple,
                                                      context,
-                                                     workingMemory );
-                }
+                                                     workingMemory );                    
             }
         }
         
@@ -189,11 +184,32 @@ public class NotNode extends BetaNode {
         for ( ReteTuple tuple = (ReteTuple) it.next(); tuple != null; tuple = (ReteTuple) it.next() ) {
             if ( this.constraints.isAllowedCachedRight( memory.getContext(),
                                                         tuple ) ) {
-                tuple.setMatches( tuple.getMatches() - 1 );
-                if ( tuple.getMatches() == 0 ) {
-                    this.sink.propagateAssertTuple( tuple,
-                                                    context,
-                                                    workingMemory );
+                
+                if ( tuple.getMatch() == handle ) {
+                    // reset the match                    
+                    tuple.setMatch( null );
+                    
+                    // find next match, remember it and break.
+                    final Iterator tupleIt = memory.getFactHandleMemory().iterator( tuple );
+                    this.constraints.updateFromTuple( memory.getContext(),
+                                                      workingMemory, tuple );
+                    
+                    for ( FactEntry entry = (FactEntry) tupleIt.next(); entry != null; entry = (FactEntry) tupleIt.next() ) {
+                        final InternalFactHandle rightHandle = entry.getFactHandle();
+                        if ( this.constraints.isAllowedCachedLeft( memory.getContext(),
+                                                                   rightHandle.getObject() ) ) {
+                            tuple.setMatch( rightHandle );
+                            break;
+                        }
+                    }
+                    
+                    this.constraints.resetTuple( memory.getContext() );
+                    // if there is now no new tuple match then propagate assert.
+                    if ( tuple.getMatch() == null ) {
+                        this.sink.propagateAssertTuple( tuple,
+                                                        context,
+                                                        workingMemory );
+                    }                    
                 }
             }
         }
@@ -223,7 +239,7 @@ public class NotNode extends BetaNode {
             return;
         }
 
-        if ( tuple.getMatches() == 0 ) {
+        if ( tuple.getMatch() ==  null) {
             this.sink.propagateRetractTuple( tuple,
                                              context,
                                              workingMemory );
@@ -240,7 +256,7 @@ public class NotNode extends BetaNode {
 
         final Iterator tupleIter = memory.getTupleMemory().iterator();
         for ( ReteTuple tuple = (ReteTuple) tupleIter.next(); tuple != null; tuple = (ReteTuple) tupleIter.next() ) {
-            if ( tuple.getMatches() == 0 ) {
+            if ( tuple.getMatch() == null ) {
                 sink.assertTuple( new ReteTuple( tuple ),
                                   context,
                                   workingMemory );

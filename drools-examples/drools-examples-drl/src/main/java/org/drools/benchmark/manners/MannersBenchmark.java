@@ -2,6 +2,7 @@ package org.drools.benchmark.manners;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -9,13 +10,17 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 import java.util.Random;
 import java.util.StringTokenizer;
 
 import org.drools.RuleBase;
+import org.drools.RuleBaseConfiguration;
+import org.drools.RuleBaseConfigurationTest;
 import org.drools.RuleBaseFactory;
 import org.drools.StatefulSession;
 import org.drools.compiler.PackageBuilder;
+import org.drools.compiler.PackageBuilderConfiguration;
 import org.drools.rule.Package;
 
 public class MannersBenchmark {
@@ -32,13 +37,20 @@ public class MannersBenchmark {
 	private int maxHobbies = 3;
 
 	public static void main(final String[] args) throws Exception {
-		PackageBuilder builder = new PackageBuilder();
+	    PackageBuilderConfiguration config = new PackageBuilderConfiguration();
+	    config.setDumpDir( new File("/stash") );
+	    
+		PackageBuilder builder = new PackageBuilder(config);
 		builder.addPackageFromDrl(new InputStreamReader(MannersBenchmark.class
 				.getResourceAsStream("manners.drl")));
 		Package pkg = builder.getPackage();
+		
 
-		// add the package to a rulebase
-		final RuleBase ruleBase = RuleBaseFactory.newRuleBase();
+        RuleBaseConfiguration conf = new RuleBaseConfiguration();
+        conf.setShadowProxy( false );
+        
+        // add the package to a rulebase
+		final RuleBase ruleBase = RuleBaseFactory.newRuleBase(conf);
 		ruleBase.addPackage(pkg);
 
 		StatefulSession session = ruleBase.newStatefulSession();

@@ -17,6 +17,8 @@
  */
 package org.drools.base.accumulators;
 
+import java.io.Serializable;
+
 
 /**
  * An implementation of an accumulator capable of counting occurences
@@ -26,7 +28,10 @@ package org.drools.base.accumulators;
  */
 public class CountAccumulateFunction implements AccumulateFunction {
 
-    protected static class CountData {
+    private static final long serialVersionUID = 872167792984974537L;
+
+    protected static class CountData implements Serializable {
+        private static final long serialVersionUID = -2599726572843160004L;
         public long   count = 0;
     }
 

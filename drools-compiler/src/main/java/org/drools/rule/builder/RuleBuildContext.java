@@ -114,6 +114,7 @@ public class RuleBuildContext {
         } else {
             this.rule = new Rule( ruleDescr.getName() );
         }
+        this.rule.setPackage( pkg.getName() );
 
         // Assign attributes
         setAttributes( this.rule,

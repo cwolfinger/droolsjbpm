@@ -28,6 +28,7 @@ public class JavaPredicateBuilder extends AbstractJavaBuilder
                                          previousDeclarations,
                                          localDeclarations,
                                          (String[]) usedIdentifiers[1].toArray( new String[usedIdentifiers[1].size()] ) );
+        map.put( "expression", predicateDescr.getContent().toString().replaceAll( "\"", "\\\\\\\"" ) );
 
         generatTemplates( "predicateMethod",
                           "predicateInvoker",

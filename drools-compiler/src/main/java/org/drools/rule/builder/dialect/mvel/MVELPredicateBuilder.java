@@ -30,9 +30,6 @@ import org.drools.rule.Declaration;
 import org.drools.rule.PredicateConstraint;
 import org.drools.rule.builder.PredicateBuilder;
 import org.drools.rule.builder.RuleBuildContext;
-import org.mvel.ExpressionCompiler;
-import org.mvel.MVEL;
-import org.mvel.ParserContext;
 
 /**
  * @author etirelli
@@ -77,7 +74,8 @@ public class MVELPredicateBuilder
                                                                                     context );
 
             predicate.setPredicateExpression( new MVELPredicateExpression( expr,
-                                                                           factory ) );
+                                                                           factory,
+                                                                           (String) predicateDescr.getContent() ) );
         } catch ( final Exception e ) {
             context.getErrors().add( new RuleError( context.getRule(),
                                                     predicateDescr,

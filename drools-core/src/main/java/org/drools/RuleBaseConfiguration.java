@@ -26,7 +26,6 @@ import java.util.Properties;
 import org.drools.common.AgendaGroupFactory;
 import org.drools.common.ArrayAgendaGroupFactory;
 import org.drools.common.PriorityQueueAgendaGroupFactory;
-import org.drools.concurrent.ExecutorService;
 import org.drools.spi.ConflictResolver;
 import org.drools.spi.ConsequenceExceptionHandler;
 import org.drools.util.ChainedProperties;
@@ -66,6 +65,7 @@ import org.drools.util.ChainedProperties;
  * drools.conflictResolver = <qualified class name>
  * drools.consequenceExceptionHandler = <qualified class name>
  * drools.ruleBaseUpdateHandler = <qualified class name>
+ * drools.useStaticObjenesis = <false|true>
  * 
  */
 public class RuleBaseConfiguration
@@ -99,6 +99,8 @@ public class RuleBaseConfiguration
 
     private boolean                     shadowProxy;
     private Map                         shadowProxyExcludes;
+    private boolean                     useStaticObjenesis;
+
     private static final String         STAR             = "*";
 
     private transient ClassLoader       classLoader;
@@ -148,7 +150,7 @@ public class RuleBaseConfiguration
      * of this rule base classloaders, and the properties to be used
      * as base configuration options
      * 
-     * @param classLoader
+     * @param classLoder
      * @param properties
      */
     public RuleBaseConfiguration(ClassLoader classLoader,
@@ -217,9 +219,9 @@ public class RuleBaseConfiguration
 
         setConsequenceExceptionHandler( RuleBaseConfiguration.determineConsequenceExceptionHandler( this.chainedProperties.getProperty( "drools.consequenceExceptionHandler",
                                                                                                                                         "org.drools.base.DefaultConsequenceExceptionHandler" ) ) );
-        
+
         setRuleBaseUpdateHandler( this.chainedProperties.getProperty( "drools.ruleBaseUpdateHandler",
-                                                                      "org.drools.base.FireAllRulesRuleBaseUpdateListener" ) );        
+                                                                      "org.drools.base.FireAllRulesRuleBaseUpdateListener" ) );
 
         setConflictResolver( RuleBaseConfiguration.determineConflictResolver( this.chainedProperties.getProperty( "drools.conflictResolver",
                                                                                                                   "org.drools.conflict.DepthConflictResolver" ) ) );
@@ -230,6 +232,10 @@ public class RuleBaseConfiguration
 
         setShadowProxyExcludes( this.chainedProperties.getProperty( "drools.shadowProxyExcludes",
                                                                     "" ) );
+
+        setUseStaticObjenesis( Boolean.valueOf( this.chainedProperties.getProperty( "drools.useStaticObjenesis",
+                                                                                    "false" ) ).booleanValue() );
+
     }
 
     /**
@@ -385,7 +391,7 @@ public class RuleBaseConfiguration
         checkCanChange(); // throws an exception if a change isn't possible;        
         this.consequenceExceptionHandler = consequenceExceptionHandler;
     }
-    
+
     public String getRuleBaseUpdateHandler() {
         return ruleBaseUpdateHandler;
     }
@@ -393,7 +399,7 @@ public class RuleBaseConfiguration
     public void setRuleBaseUpdateHandler(String ruleBaseUpdateHandler) {
         checkCanChange(); // throws an exception if a change isn't possible;        
         this.ruleBaseUpdateHandler = ruleBaseUpdateHandler;
-    }    
+    }
 
     public AgendaGroupFactory getAgendaGroupFactory() {
         if ( isSequential() ) {
@@ -421,7 +427,7 @@ public class RuleBaseConfiguration
             // sequential never needs shadowing, so always override
             return false;
         }
-        
+
         if ( userValue != null ) {
             return Boolean.valueOf( userValue ).booleanValue();
         } else {
@@ -472,6 +478,15 @@ public class RuleBaseConfiguration
 
     public boolean isShadowProxy() {
         return this.shadowProxy;
+    }
+
+    public boolean isUseStaticObjenesis() {
+        return useStaticObjenesis;
+    }
+
+    public void setUseStaticObjenesis(boolean useStaticObjenesis) {
+        checkCanChange(); // throws an exception if a change isn't possible;
+        this.useStaticObjenesis = useStaticObjenesis;
     }
 
     public ClassLoader getClassLoader() {
@@ -545,7 +560,7 @@ public class RuleBaseConfiguration
     private static ConsequenceExceptionHandler determineConsequenceExceptionHandler(String className) {
         return (ConsequenceExceptionHandler) instantiateClass( "ConsequenceExceptionHandler",
                                                                className );
-    }   
+    }
 
     private static Object instantiateClass(String type,
                                            String className) {

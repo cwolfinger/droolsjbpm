@@ -427,21 +427,29 @@ If the template is [Foo(bar &lt; $1, baz == $2)] and the cell is [42,42] then th
             </row>
 
             <row>
-              <entry>UNLOOP</entry>
-
-              <entry>Indicates that if there cell values in this column, the
-              no-loop attribute should be set</entry>
+              <entry>NO-LOOP</entry>
+			  <entry>if there is a column with the this keyword, the
+              no-loop attribute will be set for the rule. Setting no-loop column means the attempt to create the Activation for the current set of data will be ignored.</entry>
 
               <entry>optional</entry>
             </row>
 
             <row>
-              <entry>XOR-GROUP</entry>
+              <entry>ACTIVATION-GROUP</entry>
 
               <entry>Cell values in this column mean that the rule-row belongs
               to the given XOR/activation group . An Activation group means
               that only one rule in the named group will fire (ie the first
               one to fire cancels the other rules activations).</entry>
+
+              <entry>optional</entry>
+            </row>
+
+            <row>
+              <entry>RULEFLOW-GROUP</entry>
+
+              <entry>Cell values in this column mean that the rule-row belongs
+              to the given RULEFLOW-GROUP. Ruleflow allows you to specify the order in which rule sets should be evaluated by using a flow chart. See the documentation for ruleflow on this manual</entry>
 
               <entry>optional</entry>
             </row>
@@ -457,6 +465,17 @@ If the template is [Foo(bar &lt; $1, baz == $2)] and the cell is [42,42] then th
           </tbody>
         </tgroup>
       </table>
+
+      <screenshot>
+        <screeninfo>Example usage of keywords for imports, functions
+        etc.</screeninfo>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="Key.png" />
+          </imageobject>
+        </mediaobject>
+      </screenshot>
 
       <screenshot>
         <screeninfo>Example usage of keywords for imports, functions

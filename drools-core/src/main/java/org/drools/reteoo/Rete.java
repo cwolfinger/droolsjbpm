@@ -322,14 +322,14 @@ public class Rete extends ObjectSource
         //            }
         //        }
     }
-    
+
     public boolean isObjectMemoryEnabled() {
-        throw new UnsupportedOperationException("Rete has no Object memory");
+        throw new UnsupportedOperationException( "Rete has no Object memory" );
     }
 
     public void setObjectMemoryEnabled(boolean objectMemoryEnabled) {
-        throw new UnsupportedOperationException("ORete has no Object memory");
-    }     
+        throw new UnsupportedOperationException( "ORete has no Object memory" );
+    }
 
     public static interface ObjectTypeConf {
         public ObjectTypeNode[] getObjectTypeNodes();
@@ -343,7 +343,7 @@ public class Rete extends ObjectSource
         public void resetCache();
 
         public boolean isAssignableFrom(Object object);
-        
+
         public boolean isActive();
     }
 
@@ -351,10 +351,10 @@ public class Rete extends ObjectSource
         implements
         ObjectTypeConf,
         Serializable {
-        private InternalRuleBase ruleBase;
-        private FactTemplate     factTemplate;
-        private ObjectTypeNode   concreteObjectTypeNode;
-        private ObjectTypeNode[] cache;
+        private InternalRuleBase           ruleBase;
+        private FactTemplate               factTemplate;
+        private ObjectTypeNode             concreteObjectTypeNode;
+        private transient ObjectTypeNode[] cache;
 
         public FactTemplateTypeConf(FactTemplate factTemplate,
                                     InternalRuleBase ruleBase) {
@@ -422,22 +422,23 @@ public class Rete extends ObjectSource
 
         private final Class                    cls;
         private transient InternalRuleBase     ruleBase;
-        private ObjectTypeNode[]               objectTypeNodes;
+        private transient ObjectTypeNode[]     objectTypeNodes;
 
         protected boolean                      shadowEnabled;
         protected Class                        shadowClass;
         protected transient ObjectInstantiator instantiator;
 
-        private ObjectTypeNode                 concreteObjectTypeNode;
+        private transient ObjectTypeNode       concreteObjectTypeNode;
+        private ObjectType                     objectType;
 
         public ClassObjectTypeConf(Class clazz,
                                    InternalRuleBase ruleBase) {
             this.cls = clazz;
             this.ruleBase = ruleBase;
 
-            ObjectType objectType = new ClassObjectType( clazz );
+            objectType = new ClassObjectType( clazz );
             this.concreteObjectTypeNode = (ObjectTypeNode) ruleBase.getRete().getObjectTypeNodes().get( objectType );
-            
+
             // JBRULES-1315: do not add OTN dynamically anymore
             if ( this.concreteObjectTypeNode == null ) {
                 BuildContext context = new BuildContext( ruleBase,
@@ -471,8 +472,8 @@ public class Rete extends ObjectSource
         public ObjectTypeNode getConcreteObjectTypeNode() {
             return this.concreteObjectTypeNode;
         }
-        
-        public void setConcreteObjectTypeNode( ObjectTypeNode node ) {
+
+        public void setConcreteObjectTypeNode(ObjectTypeNode node) {
             this.concreteObjectTypeNode = node;
         }
 
@@ -599,13 +600,14 @@ public class Rete extends ObjectSource
                                                          ClassNotFoundException {
             stream.defaultReadObject();
             this.ruleBase = ((DroolsObjectInputStream) stream).getRuleBase();
+            this.concreteObjectTypeNode = (ObjectTypeNode) ruleBase.getRete().getObjectTypeNodes().get( objectType );
         }
 
         /**
          *
          */
         private void setInstantiator() {
-            this.instantiator = ruleBase.getObjenesis().getInstantiatorOf(this.shadowClass);
+            this.instantiator = ruleBase.getObjenesis().getInstantiatorOf( this.shadowClass );
         }
 
         public Object getShadow(final Object fact) throws RuntimeDroolsException {

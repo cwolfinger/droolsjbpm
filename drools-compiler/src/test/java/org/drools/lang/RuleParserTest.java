@@ -3635,6 +3635,21 @@ public class RuleParserTest extends TestCase {
 
     }
 
+    public void testNPEOnParser() throws Exception {
+        final DRLParser parser = parseResource( "npe_on_parser.drl" );
+        parser.compilation_unit();
+
+        assertTrue( "Parser should have raised errors",
+                    parser.hasErrors() );
+
+        List errors = parser.getErrors();
+        assertEquals( 2,
+                      errors.size() );
+
+        assertTrue( errors.get( 0 ) instanceof MismatchedTokenException ); // "action" is a reserved word
+        assertTrue( errors.get( 1 ) instanceof NoViableAltException ); // no title in the rule
+
+    }
 
     public void testCommaMisuse() throws Exception {
         final DRLParser parser = parseResource( "comma_misuse.drl" );

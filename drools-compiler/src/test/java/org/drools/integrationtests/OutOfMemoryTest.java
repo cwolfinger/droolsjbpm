@@ -26,9 +26,10 @@ import org.drools.RuleBaseConfiguration;
 import org.drools.RuleBaseFactory;
 import org.drools.StatefulSession;
 import org.drools.WorkingMemory;
+import org.drools.audit.WorkingMemoryFileLogger;
+import org.drools.audit.WorkingMemoryInMemoryLogger;
 import org.drools.compiler.PackageBuilder;
 import org.drools.rule.Package;
-
 
 /** Run all the tests with the ReteOO engine implementation */
 public class OutOfMemoryTest extends TestCase {
@@ -53,22 +54,22 @@ public class OutOfMemoryTest extends TestCase {
 
         final RuleBase ruleBase = getRuleBase();
         ruleBase.addPackage( pkg );
-        
+
         int i = 0;
-        
+
         try {
-            for( i = 0; i < 300000; i++ ) {
+            for ( i = 0; i < 300000; i++ ) {
                 final StatefulSession session = ruleBase.newStatefulSession( true );
                 session.dispose();
-            } 
+            }
         } catch ( Throwable e ) {
-            System.out.println("Error at: "+i);
+            System.out.println( "Error at: " + i );
             e.printStackTrace();
-            fail("Should not raise any error or exception.");
+            fail( "Should not raise any error or exception." );
         }
 
     }
-    
+
     public void testAgendaLoop() throws Exception {
         final PackageBuilder builder = new PackageBuilder();
         builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_OutOfMemory.drl" ) ) );
@@ -86,4 +87,27 @@ public class OutOfMemoryTest extends TestCase {
         // just for profiling
         //Thread.currentThread().wait();
     }
+
+    public void testWorkingMemoryFileLogger() throws Exception {
+
+        final PackageBuilder builder = new PackageBuilder();
+        builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_OutOfMemoryError.drl" ) ) );
+        final Package pkg = builder.getPackage();
+
+        final RuleBase ruleBase = getRuleBase();
+        ruleBase.addPackage( pkg );
+
+        try {
+            for ( int i = 0; i < 100000; i++ ) {
+                StatefulSession session = ruleBase.newStatefulSession();
+                WorkingMemoryInMemoryLogger logger = new WorkingMemoryInMemoryLogger( session );
+                session.fireAllRules();
+                session.dispose();
+            }
+        } catch ( Throwable e ) {
+            e.printStackTrace();
+            fail( "Should not raise OOME.");
+        }
+    }
+
 }

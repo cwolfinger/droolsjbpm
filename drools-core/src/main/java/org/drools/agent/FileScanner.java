@@ -78,6 +78,7 @@ public class FileScanner extends PackageProvider {
                              f.lastModified() ) ) {
                 Package p = readPackage( f );
                 if ( p != null ) list.add( p );
+
             }
         }
         return (Package[]) list.toArray( new Package[list.size()] );
@@ -88,13 +89,12 @@ public class FileScanner extends PackageProvider {
      * Especially IO, as generally they are temporary.
      */
     private Package readPackage(File pkgFile) {
-
     	String name = pkgFile.getName();
     	if (!(name.endsWith(".pkg") || name.endsWith(".drl"))) {
     		return null;
     	}
     	//use reflection to load if its DRL, the provider lives in drools compiler.
-    	if (pkgFile.getName().endsWith(".drl")) {
+    	if (name.endsWith(".drl")) {
     		try {
 				FileLoader fl = (FileLoader) Class.forName("org.drools.compiler.SourcePackageProvider").newInstance();
 				return fl.loadPackage(pkgFile);

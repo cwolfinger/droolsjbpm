@@ -2,13 +2,13 @@ package org.drools.rule;
 
 /*
  * Copyright 2005 JBoss Inc
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,7 +27,7 @@ import org.drools.spi.Tuple;
 
 public class EvalCondition extends ConditionalElement {
     /**
-     * 
+     *
      */
     private static final long          serialVersionUID = 400L;
 
@@ -65,7 +65,7 @@ public class EvalCondition extends ConditionalElement {
     public Declaration[] getRequiredDeclarations() {
         return this.requiredDeclarations;
     }
-    
+
     public Object createContext() {
         return this.expression.createContext();
     }
@@ -79,13 +79,13 @@ public class EvalCondition extends ConditionalElement {
                                              workingMemory,
                                              context );
         } catch ( final Exception e ) {
-            throw new RuntimeDroolsException( e );
+        	throw new RuntimeDroolsException( this.getEvalExpression() + " : " + e, e );
         }
     }
 
     public Object clone() {
         final EvalCondition eval = new EvalCondition( this.expression,
-                                                      this.requiredDeclarations );
+                                                      (Declaration[]) this.requiredDeclarations.clone() );
         return eval;
     }
 
@@ -138,6 +138,15 @@ public class EvalCondition extends ConditionalElement {
 
     public List getNestedElements() {
         return Collections.EMPTY_LIST;
+    }
+
+    public void replaceDeclaration(Declaration declaration,
+                                   Declaration resolved) {
+        for ( int i = 0; i < this.requiredDeclarations.length; i++ ) {
+            if ( this.requiredDeclarations[i].equals( declaration ) ) {
+                this.requiredDeclarations[i] = resolved;
+            }
+        }
     }
 
 };

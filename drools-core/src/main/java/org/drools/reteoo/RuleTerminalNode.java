@@ -16,13 +16,13 @@ package org.drools.reteoo;
  * limitations under the License.
  */
 
+import java.io.IOException;
 import java.io.Serializable;
 
-import org.drools.common.EventSupport;
 import org.drools.RuleBaseConfiguration;
-import org.drools.common.BinaryHeapQueueAgendaGroup;
 import org.drools.common.AgendaItem;
 import org.drools.common.BaseNode;
+import org.drools.common.EventSupport;
 import org.drools.common.InternalAgenda;
 import org.drools.common.InternalAgendaGroup;
 import org.drools.common.InternalFactHandle;
@@ -62,8 +62,8 @@ public final class RuleTerminalNode extends BaseNode
     // Instance members
     // ------------------------------------------------------------
 
-    private int sequence;
-    
+    private int                sequence;
+
     /**
      * 
      */
@@ -79,8 +79,8 @@ public final class RuleTerminalNode extends BaseNode
 
     private TupleSinkNode      previousTupleSinkNode;
     private TupleSinkNode      nextTupleSinkNode;
-    
-    protected boolean          tupleMemoryEnabled;    
+
+    protected boolean          tupleMemoryEnabled;
 
     // ------------------------------------------------------------
     // Constructors
@@ -118,7 +118,7 @@ public final class RuleTerminalNode extends BaseNode
     public Rule getRule() {
         return this.rule;
     }
-    
+
     public void setSequence(int seq) {
         this.sequence = seq;
     }
@@ -126,7 +126,7 @@ public final class RuleTerminalNode extends BaseNode
     public int getSequence() {
         return this.sequence;
     }
-    
+
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     // org.drools.impl.TupleSink
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -195,14 +195,14 @@ public final class RuleTerminalNode extends BaseNode
 
             agenda.scheduleItem( item );
             tuple.setActivation( item );
-            
+
             if ( this.tupleMemoryEnabled ) {
                 memory.getTupleMemory().add( tuple );
             }
 
             item.setActivated( true );
             ((EventSupport) workingMemory).getAgendaEventSupport().fireActivationCreated( item,
-                                                                         workingMemory );
+                                                                                          workingMemory );
         } else {
             // -----------------
             // Lazy instantiation and addition to the Agenda of AgendGroup
@@ -232,11 +232,12 @@ public final class RuleTerminalNode extends BaseNode
 
             final AgendaItem item = new AgendaItem( context.getPropagationNumber(),
                                                     cloned,
-                                                    rule.getSalience().getValue( tuple, workingMemory ),
+                                                    rule.getSalience().getValue( tuple,
+                                                                                 workingMemory ),
                                                     context,
                                                     this.rule,
                                                     this.subrule );
-            
+
             if ( this.tupleMemoryEnabled ) {
                 item.setSequenence( this.sequence );
             }
@@ -328,8 +329,8 @@ public final class RuleTerminalNode extends BaseNode
 
             // We only want to fire an event on a truly new Activation and not on an Activation as a result of a modify
             if ( fireActivationCreated ) {
-            	((EventSupport) workingMemory).getAgendaEventSupport().fireActivationCreated( item,
-                                                                             workingMemory );
+                ((EventSupport) workingMemory).getAgendaEventSupport().fireActivationCreated( item,
+                                                                                              workingMemory );
             }
         }
 
@@ -393,7 +394,7 @@ public final class RuleTerminalNode extends BaseNode
             }
 
             ((EventSupport) workingMemory).getAgendaEventSupport().fireActivationCancelled( activation,
-                                                                           workingMemory );
+                                                                                            workingMemory );
             ((InternalAgenda) workingMemory.getAgenda()).decreaseActiveActivations();
         } else {
             ((InternalAgenda) workingMemory.getAgenda()).decreaseDormantActivations();
@@ -446,7 +447,7 @@ public final class RuleTerminalNode extends BaseNode
                 if ( activation.isActivated() ) {
                     activation.remove();
                     ((EventSupport) workingMemory).getAgendaEventSupport().fireActivationCancelled( activation,
-                                                                                   workingMemory );
+                                                                                                    workingMemory );
                 }
 
                 final PropagationContext propagationContext = new PropagationContextImpl( workingMemory.getNextPropagationIdCounter(),
@@ -455,15 +456,15 @@ public final class RuleTerminalNode extends BaseNode
                                                                                           null );
                 workingMemory.getTruthMaintenanceSystem().removeLogicalDependencies( activation,
                                                                                      propagationContext,
-                                                                                     this.rule );                                
+                                                                                     this.rule );
             }
 
             workingMemory.executeQueuedActions();
             workingMemory.clearNodeMemory( this );
         }
 
-        if( !context.alreadyVisited( this.tupleSource ) ) {
-            this.tupleSource.remove( context, 
+        if ( !context.alreadyVisited( this.tupleSource ) ) {
+            this.tupleSource.remove( context,
                                      this,
                                      workingMemories );
         }
@@ -474,16 +475,16 @@ public final class RuleTerminalNode extends BaseNode
     }
 
     public Object createMemory(final RuleBaseConfiguration config) {
-        return new TerminalNodeMemory();
+        return new TerminalNodeMemory( );
     }
-    
+
     public boolean isTupleMemoryEnabled() {
         return tupleMemoryEnabled;
     }
 
     public void setTupleMemoryEnabled(boolean tupleMemoryEnabled) {
         this.tupleMemoryEnabled = tupleMemoryEnabled;
-    }     
+    }
 
     /**
      * Returns the next node
@@ -538,19 +539,19 @@ public final class RuleTerminalNode extends BaseNode
         return this.rule.equals( other.rule );
     }
 
-    class TerminalNodeMemory
+    static class TerminalNodeMemory
         implements
         Serializable {
-        private static final long serialVersionUID = 400L;
+        private static final long   serialVersionUID = 400L;
 
-        private InternalAgendaGroup   agendaGroup;
+        private InternalAgendaGroup agendaGroup;
 
-        private ActivationGroup   activationGroup;
+        private ActivationGroup     activationGroup;
 
-        private RuleFlowGroup     ruleFlowGroup;
+        private RuleFlowGroup       ruleFlowGroup;
 
-        private TupleHashTable    tupleMemory;
-
+        private TupleHashTable      tupleMemory;
+        
         public TerminalNodeMemory() {
             this.tupleMemory = new TupleHashTable();
         }
@@ -582,5 +583,6 @@ public final class RuleTerminalNode extends BaseNode
         public void setRuleFlowGroup(final RuleFlowGroup ruleFlowGroup) {
             this.ruleFlowGroup = ruleFlowGroup;
         }
+        
     }
 }
