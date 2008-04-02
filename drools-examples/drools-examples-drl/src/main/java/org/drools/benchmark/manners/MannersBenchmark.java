@@ -2,7 +2,6 @@ package org.drools.benchmark.manners;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -36,8 +35,6 @@ public class MannersBenchmark {
 
 	public static void main(final String[] args) throws Exception {
 	    PackageBuilderConfiguration config = new PackageBuilderConfiguration();
-	    config.setDumpDir( new File("/stash") );
-	    
 		PackageBuilder builder = new PackageBuilder(config);
 		builder.addPackageFromDrl(new InputStreamReader(MannersBenchmark.class
 				.getResourceAsStream("manners.drl")));

@@ -1,6 +1,5 @@
 package org.drools.examples;
 
-import java.io.File;
 import java.io.InputStreamReader;
 
 import org.drools.RuleBase;
@@ -18,7 +17,6 @@ public class HonestPoliticianExample {
     public static void main(final String[] args) throws Exception {
 
         PackageBuilderConfiguration conf = new PackageBuilderConfiguration();
-        conf.setDumpDir( new File("target") );
         final PackageBuilder builder = new PackageBuilder(conf);
         builder.addPackageFromDrl( new InputStreamReader( HonestPoliticianExample.class.getResourceAsStream( "HonestPolitician.drl" ) ) );
 
