@@ -16,11 +16,13 @@ public class Java5Test extends DroolsTestCase {
             return;
         }
         final PackageBuilderConfiguration conf = new PackageBuilderConfiguration();
+        
+        // this test must run only with JDT... JANINO does not support enhanced for loop
         JavaDialectConfiguration javaConf = ( JavaDialectConfiguration ) conf.getDialectConfiguration( "java" );
         javaConf.setCompiler( JavaDialectConfiguration.ECLIPSE );
         javaConf.setJavaLanguageLevel( "1.5" );
         
-        final PackageBuilder builder = new PackageBuilder( );
+        final PackageBuilder builder = new PackageBuilder( conf );
         builder.addPackageFromDrl( new InputStreamReader( this.getClass().getResourceAsStream( "java5_rule.drl" ) ) );
         assertFalse( builder.hasErrors() );
     }

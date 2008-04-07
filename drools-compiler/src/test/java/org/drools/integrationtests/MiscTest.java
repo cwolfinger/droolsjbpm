@@ -115,6 +115,7 @@ import org.drools.lang.descr.PackageDescr;
 import org.drools.lang.descr.RuleDescr;
 import org.drools.rule.InvalidRulePackage;
 import org.drools.rule.Package;
+import org.drools.rule.builder.dialect.java.JavaDialect;
 import org.drools.rule.builder.dialect.java.JavaDialectConfiguration;
 import org.drools.spi.Activation;
 import org.drools.spi.ConsequenceExceptionHandler;
@@ -1341,7 +1342,12 @@ public class MiscTest extends TestCase {
     }
 
     public void testWithInvalidRule() throws Exception {
-        final PackageBuilder builder = new PackageBuilder();
+        PackageBuilderConfiguration conf = new PackageBuilderConfiguration();
+
+        // this test must run only with JDT... JANINO has problems with this test
+        JavaDialectConfiguration javaconf = (JavaDialectConfiguration) conf.getDialectConfiguration( "java" );
+        javaconf.setCompiler( JavaDialectConfiguration.ECLIPSE );
+        final PackageBuilder builder = new PackageBuilder( conf );
         builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "invalid_rule.drl" ) ) );
         final Package pkg = builder.getPackage();
         // Mark: please check if the conseqeuence/should/shouldn't be built
@@ -4691,7 +4697,6 @@ public class MiscTest extends TestCase {
 
     public void testAlphaEvalWithOrCE() throws Exception {
         PackageBuilderConfiguration conf = new PackageBuilderConfiguration();
-        conf.setDumpDir( new File("./target") );
         final PackageBuilder builder = new PackageBuilder( conf );
         builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_AlphaEvalWithOrCE.drl" ) ) );
         final Package pkg = builder.getPackage();
