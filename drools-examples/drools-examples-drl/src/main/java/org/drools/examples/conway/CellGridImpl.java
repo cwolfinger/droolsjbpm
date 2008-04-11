@@ -186,7 +186,9 @@ public class CellGridImpl implements CellGrid {
         for ( int i = 0; i < this.cells.length; i++ ) {
             for ( int j = 0; j < this.cells[i].length; j++ ) {
                 Cell cell = this.cells[i][j];
-                System.out.print( cell.getLiveNeighbors() + ((cell.getCellState() == CellState.DEAD) ? "D" : "L") + " " );
+                if ( cell != null ) {
+                    System.out.print( cell.getLiveNeighbors() + ((cell.getCellState() == CellState.DEAD) ? "D" : "L") + " " );
+                }
             }
             System.out.println( "" );
         }

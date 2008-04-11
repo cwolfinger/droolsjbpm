@@ -50,7 +50,6 @@ public class ConwayGUI extends JPanel {
         final String clearLabel = ConwayApplicationProperties.getProperty( "clear.label" );
         this.clearButton = new JButton( clearLabel );
         
-        //this.grid = new CellGridAgendaGroup( 30, 30 );
         this.grid = new CellGridImpl( 30, 30, executionControl );
         
         final CellGridCanvas canvas = new CellGridCanvas( grid );
