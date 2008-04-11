@@ -1101,11 +1101,6 @@ public abstract class AbstractWorkingMemory
             this.lock.lock();
             this.ruleBase.executeQueuedActions();
 
-            // only needed if we maintain tms, but either way we must get it before we do the retract
-            int status = -1;
-            if ( this.maintainTms ) {
-                status = ((InternalFactHandle) factHandle).getEqualityKey().getStatus();
-            }
             final InternalFactHandle handle = (InternalFactHandle) factHandle;
             //final Object originalObject = (handle.isShadowFact()) ? ((ShadowProxy) handle.getObject()).getShadowedObject() : handle.getObject();
 
@@ -1167,13 +1162,13 @@ public abstract class AbstractWorkingMemory
             final Object originalObject = (handle.isShadowFact()) ? ((ShadowProxy) handle.getObject()).getShadowedObject() : handle.getObject();
 
             if ( this.maintainTms ) {
-                EqualityKey key = handle.getEqualityKey();
+                int status  = handle.getEqualityKey().getStatus();
 
                 // now use an  existing  EqualityKey, if it exists, else create a new one
-                key = this.tms.get( object );
+                EqualityKey key = this.tms.get( object );
                 if ( key == null ) {
                     key = new EqualityKey( handle,
-                                           0 );
+                                           status );
                     this.tms.put( key );
                 } else {
                     key.addFactHandle( handle );
