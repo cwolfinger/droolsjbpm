@@ -1085,6 +1085,8 @@ public abstract class AbstractWorkingMemory
             this.identityMap.remove( handle );
         }
     }
+    
+    private Map modifyContexts = new HashMap();    
 
     public void modifyRetract(final FactHandle factHandle) {
         modifyRetract( factHandle,
@@ -1123,6 +1125,9 @@ public abstract class AbstractWorkingMemory
                                                                                       activation,
                                                                                       this.agenda.getActiveActivations(),
                                                                                       this.agenda.getDormantActivations() );
+            
+            modifyContexts.put( handle, propagationContext );
+            
             doRetract( handle,
                        propagationContext );
 
@@ -1184,12 +1189,7 @@ public abstract class AbstractWorkingMemory
                 activation.getPropagationContext().releaseResources();
             }
             // Nowretract any trace  of the original fact
-            final PropagationContext propagationContext = new PropagationContextImpl( this.propagationIdCounter++,
-                                                                                      PropagationContext.MODIFICATION,
-                                                                                      rule,
-                                                                                      activation,
-                                                                                      this.agenda.getActiveActivations(),
-                                                                                      this.agenda.getDormantActivations() );
+            final PropagationContext propagationContext = ( PropagationContext ) this.modifyContexts.remove( handle );
 
             doInsert( handle,
                       object,
