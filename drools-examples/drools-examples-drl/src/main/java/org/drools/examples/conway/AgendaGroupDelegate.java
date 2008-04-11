@@ -19,9 +19,7 @@ public class AgendaGroupDelegate implements ConwayRuleDelegate {
         final Reader drl = new InputStreamReader( AgendaGroupDelegate.class.getResourceAsStream( "/org/drools/examples/conway/conway-agendagroup.drl" ) );
 
         try {            
-            PackageBuilderConfiguration conf = new PackageBuilderConfiguration();
-            conf.setDumpDir( new File( "." )  );
-            PackageBuilder builder = new PackageBuilder( conf );
+            PackageBuilder builder = new PackageBuilder( );
             builder.addPackageFromDrl( drl );
             
             RuleBase ruleBase = RuleBaseFactory.newRuleBase( );
