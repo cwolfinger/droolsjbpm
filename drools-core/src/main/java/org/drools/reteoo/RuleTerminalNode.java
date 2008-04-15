@@ -62,7 +62,7 @@ public final class RuleTerminalNode extends BaseNode
     // Instance members
     // ------------------------------------------------------------
 
-    private int                sequence;
+    private int               sequence = -1; // -1 means not set
 
     /**
      * 
@@ -238,9 +238,7 @@ public final class RuleTerminalNode extends BaseNode
                                                     this.rule,
                                                     this.subrule );
 
-            if ( this.tupleMemoryEnabled ) {
-                item.setSequenence( this.sequence );
-            }
+            item.setSequenence( this.sequence );
 
             if ( this.rule.getActivationGroup() != null ) {
                 // Lazy cache activationGroup
