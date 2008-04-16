@@ -29,7 +29,6 @@ import org.antlr.runtime.RecognitionException;
 import org.drools.rule.builder.RuleBuildContext;
 import org.mvel.ExpressionCompiler;
 import org.mvel.ParserContext;
-import org.mvel.integration.impl.MapVariableResolver;
 
 /**
  * Expression analyzer.
