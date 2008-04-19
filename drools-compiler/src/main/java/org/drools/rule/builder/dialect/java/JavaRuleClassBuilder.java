@@ -48,12 +48,14 @@ public class JavaRuleClassBuilder
         buffer.append( "package " + context.getPkg().getName() + ";" + lineSeparator );
 
         for ( final Iterator it = context.getPkg().getImports().iterator(); it.hasNext(); ) {
-            buffer.append( "import " + it.next() + ";" + lineSeparator );
+            buffer.append( "import " + it.next() + ";");
         }
 
         for ( final Iterator it = context.getPkg().getStaticImports().iterator(); it.hasNext(); ) {
-            buffer.append( "import static " + it.next() + ";" + lineSeparator );
+            buffer.append( "import static " + it.next() + ";");
         }
+
+        buffer.append( lineSeparator );
 
         final RuleDescr ruleDescr = context.getRuleDescr();
         
