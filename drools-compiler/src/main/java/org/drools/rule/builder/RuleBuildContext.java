@@ -123,8 +123,15 @@ public class RuleBuildContext {
 
         this.dialectRegistry = dialectRegistry;
         this.dialect = (this.rule.getDialect() != null) ? this.dialectRegistry.getDialect( this.rule.getDialect() ) : defaultDialect;
+        
+        if ( dialect == null && (component != null && component.getDialect() != null) ) {
+            this.errors.add( new DescrBuildError(null,parentDescr, component, "Unable to load Dialect '" + component.getDialect() + "'") );
+        }         
 
-        getDialect().init( ruleDescr );
+        if ( dialect != null ) {
+            dialect.init( ruleDescr );
+        } 
+        
     }
 
     public Dialect getDialect() {
