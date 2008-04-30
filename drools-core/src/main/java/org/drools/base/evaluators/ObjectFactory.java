@@ -557,9 +557,15 @@ public class ObjectFactory
                 if( arg1 instanceof Number ) {
                     val1 = ((Number) arg1).doubleValue();
                 } else if( arg1 instanceof String ) {
-                    val1 = Double.parseDouble( ( String ) arg1 );
+                    try {
+                        val1 = Double.parseDouble( ( String ) arg1 );
+                    } catch( Exception ex ) {
+                        // parsing failed, so not a number
+                        return false;
+                    }
                 } else {
-                    throw new ClassCastException( "Not possible to compare "+arg1.getClass()+" to "+arg0.getClass() );
+                    // if it is not a number, it is not equals
+                    return false;
                 }
                 return val0 == val1; // in the future we may need to handle rounding errors 
             } 
