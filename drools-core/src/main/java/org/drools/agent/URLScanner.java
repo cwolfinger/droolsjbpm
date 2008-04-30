@@ -89,6 +89,7 @@ public class URLScanner extends PackageProvider {
             return changes;
         } catch ( IOException e ) {
             if (this.localCacheFileScanner != null) {
+            	listener.exception(e);
                 listener.warning( "Falling back to local cache." );
                 return localCacheFileScanner.loadPackageChanges();
             }
