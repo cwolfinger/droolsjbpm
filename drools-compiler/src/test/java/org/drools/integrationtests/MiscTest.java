@@ -18,7 +18,6 @@ package org.drools.integrationtests;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectInput;
@@ -58,6 +57,8 @@ import org.drools.Guess;
 import org.drools.IndexedNumber;
 import org.drools.InsertedObject;
 import org.drools.Message;
+import org.drools.MockPersistentSet;
+import org.drools.ObjectWithSet;
 import org.drools.Order;
 import org.drools.OrderItem;
 import org.drools.OuterClass;
@@ -115,7 +116,6 @@ import org.drools.lang.descr.PackageDescr;
 import org.drools.lang.descr.RuleDescr;
 import org.drools.rule.InvalidRulePackage;
 import org.drools.rule.Package;
-import org.drools.rule.builder.dialect.java.JavaDialect;
 import org.drools.rule.builder.dialect.java.JavaDialectConfiguration;
 import org.drools.spi.Activation;
 import org.drools.spi.ConsequenceExceptionHandler;
@@ -4329,6 +4329,38 @@ public class MiscTest extends TestCase {
                       cheesery.getCheeses().get( 0 ) );
     }
 
+    public void testShadowProxyOnCollections2() throws Exception {
+        final PackageBuilder builder = new PackageBuilder();
+        builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_ShadowProxyOnCollections2.drl" ) ) );
+        final Package pkg = builder.getPackage();
+
+        final RuleBase ruleBase = getRuleBase();
+        ruleBase.addPackage( pkg );
+        final StatefulSession workingMemory = ruleBase.newStatefulSession();
+
+        final List results = new ArrayList();
+        workingMemory.setGlobal( "results",
+                                 results );
+
+        List list = new ArrayList();
+        list.add( "example1" );
+        list.add( "example2" );
+
+        MockPersistentSet mockPersistentSet = new MockPersistentSet( false );
+        mockPersistentSet.addAll( list );
+        org.drools.ObjectWithSet objectWithSet = new ObjectWithSet();
+        objectWithSet.setSet( mockPersistentSet );
+
+        workingMemory.insert( objectWithSet );
+
+        workingMemory.fireAllRules();
+
+        assertEquals( 1,
+                      results.size() );
+        assertEquals( "show",
+                      objectWithSet.getMessage() );
+    }
+
     public void testQueryWithCollect() throws Exception {
         final PackageBuilder builder = new PackageBuilder();
         builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_Query.drl" ) ) );
@@ -4725,30 +4757,31 @@ public class MiscTest extends TestCase {
 
     public void testAlphaCompositeConstraints() throws Exception {
         final PackageBuilder builder = new PackageBuilder();
-        builder.addPackageFromDrl(new InputStreamReader(getClass()
-                .getResourceAsStream("test_AlphaCompositeConstraints.drl")));
+        builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_AlphaCompositeConstraints.drl" ) ) );
         final Package pkg = builder.getPackage();
 
         final RuleBase ruleBase = getRuleBase();
-        ruleBase.addPackage(pkg);
+        ruleBase.addPackage( pkg );
         final WorkingMemory workingMemory = ruleBase.newStatefulSession();
 
         final List list = new ArrayList();
-        workingMemory.setGlobal("results", list);
+        workingMemory.setGlobal( "results",
+                                 list );
 
-        Person bob = new Person( "bob", 30 );
+        Person bob = new Person( "bob",
+                                 30 );
 
-        workingMemory.insert(bob);
+        workingMemory.insert( bob );
         workingMemory.fireAllRules();
 
-        assertEquals( 1, list.size());
+        assertEquals( 1,
+                      list.size() );
     }
 
-	public void testModifyBlock() throws Exception {
-		final PackageBuilder builder = new PackageBuilder();
-		builder.addPackageFromDrl(new InputStreamReader(getClass()
-				.getResourceAsStream("test_ModifyBlock.drl")));
-		final Package pkg = builder.getPackage();
+    public void testModifyBlock() throws Exception {
+        final PackageBuilder builder = new PackageBuilder();
+        builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_ModifyBlock.drl" ) ) );
+        final Package pkg = builder.getPackage();
         final RuleBase ruleBase = getRuleBase();
         ruleBase.addPackage( pkg );
         final WorkingMemory workingMemory = ruleBase.newStatefulSession();
@@ -4796,7 +4829,7 @@ public class MiscTest extends TestCase {
         workingMemory.insert( new Cheese() );
         workingMemory.insert( new OuterClass.InnerClass( 1 ) );
 
-        workingMemory.fireAllRules( );
+        workingMemory.fireAllRules();
 
         assertEquals( 2,
                       list.size() );
@@ -4805,7 +4838,7 @@ public class MiscTest extends TestCase {
         assertEquals( 31,
                       bob.getAge() );
         assertEquals( 2,
-                      ((OuterClass.InnerClass)list.get( 1 )).getIntAttr() );
+                      ((OuterClass.InnerClass) list.get( 1 )).getIntAttr() );
     }
 
     public void testOrCE() throws Exception {
