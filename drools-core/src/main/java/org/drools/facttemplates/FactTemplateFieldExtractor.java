@@ -35,11 +35,11 @@ public class FactTemplateFieldExtractor
     }
 
     public Class getExtractToClass() {
-        return Fact.class;//this.factTemplate.getFieldTemplate( fieldIndex ).getValueType().getClass();
+        return this.factTemplate.getFieldTemplate( fieldIndex ).getValueType().getClassType();
     }
 
     public String getExtractToClassName() {
-        return ClassUtils.canonicalName( Fact.class );//this.factTemplate.getFieldTemplate( fieldIndex ).getValueType().getClass();
+        return ClassUtils.canonicalName( getExtractToClass() );
     }
 
     public boolean getBooleanValue(InternalWorkingMemory workingMemory, final Object object) {
@@ -77,7 +77,7 @@ public class FactTemplateFieldExtractor
     public Method getNativeReadMethod() {
         try {
             return this.getClass().getDeclaredMethod( "getValue",
-                                                      new Class[]{Object.class} );
+                                                      new Class[]{InternalWorkingMemory.class, Object.class} );
         } catch ( final Exception e ) {
             throw new RuntimeDroolsException( "This is a bug. Please report to development team: " + e.getMessage(),
                                               e );
