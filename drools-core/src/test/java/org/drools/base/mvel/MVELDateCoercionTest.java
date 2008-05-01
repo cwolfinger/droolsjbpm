@@ -1,5 +1,7 @@
 package org.drools.base.mvel;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.drools.base.evaluators.DateFactory;
@@ -17,11 +19,13 @@ public class MVELDateCoercionTest extends TestCase {
         assertSame(d, co.convertFrom( d ));
     }
 
-    public void testString() {
+    public void testString() throws ParseException {
         MVELDateCoercion co = new MVELDateCoercion();
         assertTrue(co.canConvertFrom( Date.class ));
 
-        String dt = "10-Jul-1974";
+        SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
+
+        String dt = df.format(df.parse("10-Jul-1974"));
         Date dt_ = DateFactory.parseDate( dt );
         assertEquals(dt_, co.convertFrom( dt ));
     }

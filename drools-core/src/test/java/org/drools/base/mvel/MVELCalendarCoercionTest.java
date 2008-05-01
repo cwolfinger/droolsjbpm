@@ -1,5 +1,7 @@
 package org.drools.base.mvel;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -18,11 +20,13 @@ public class MVELCalendarCoercionTest extends TestCase {
         assertSame(d, co.convertFrom( d ));
     }
 
-    public void testString() {
+    public void testString() throws ParseException {
         MVELCalendarCoercion co = new MVELCalendarCoercion();
         assertTrue(co.canConvertFrom( Calendar.class ));
+        SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
 
-        String dt = "10-Jul-1974";
+        String dt = df.format(df.parse("10-Jul-1974"));
+
         Date dt_ = DateFactory.parseDate( dt );
         Calendar cal = Calendar.getInstance();
         cal.setTime( dt_ );

@@ -16,9 +16,11 @@ package org.drools.base.evaluators;
  * limitations under the License.
  */
 
+import java.text.DateFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import org.drools.base.BaseEvaluator;
 import org.drools.base.ValueType;
@@ -48,11 +50,20 @@ public class DateFactory
     private static final long       serialVersionUID    = 400L;
     private static final String     DEFAULT_FORMAT_MASK = "dd-MMM-yyyy";
     private static final String     DATE_FORMAT_MASK    = getDateFormatMask();
+	 private static final String DEFAULT_COUNTRY = Locale.getDefault().getCountry();
+	 private static final String DEFINE_COUNTRY = getDefaultContry();
+	 private static final String DEFAULT_LANGUAGE = Locale.getDefault().getLanguage();
+	 private static final String DEFINE_LANGUAGE = getDefaultLanguage();
+
 
     private static EvaluatorFactory INSTANCE            = new DateFactory();
     private static ThreadLocal df = new ThreadLocal() {
         protected Object initialValue() {
-            return new SimpleDateFormat( DateFactory.DATE_FORMAT_MASK );
+            DateFormatSymbols dateSymbol = new DateFormatSymbols( new Locale( DateFactory.DEFINE_LANGUAGE,
+                                                                              DateFactory.DEFINE_COUNTRY ) );
+            SimpleDateFormat dateFormat = new SimpleDateFormat( DateFactory.DATE_FORMAT_MASK,
+                                                                dateSymbol );
+            return dateFormat;
         };
     };
 
@@ -538,5 +549,19 @@ public class DateFactory
         }
         return fmt;
     }
+    private static String getDefaultLanguage() {
+        String fmt = System.getProperty( "drools.defaultlanguage" );
+        if ( fmt == null ) {
+            fmt = DateFactory.DEFAULT_LANGUAGE;
+        }
+        return fmt;
+    }
 
+    private static String getDefaultContry() {
+        String fmt = System.getProperty( "drools.defaultcountry" );
+        if ( fmt == null ) {
+            fmt = DateFactory.DEFAULT_COUNTRY;
+        }
+        return fmt;
+    }
 }
