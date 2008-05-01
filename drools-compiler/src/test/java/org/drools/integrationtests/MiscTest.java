@@ -371,52 +371,6 @@ public class MiscTest extends TestCase {
                       list.size() );
     }
 
-    public void testFactBindings() throws Exception {
-        final PackageBuilder builder = new PackageBuilder();
-        builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_FactBindings.drl" ) ) );
-        final Package pkg = builder.getPackage();
-
-        // add the package to a rulebase
-        final RuleBase ruleBase = getRuleBase();
-        ruleBase.addPackage( pkg );
-
-        final WorkingMemory workingMemory = ruleBase.newStatefulSession();
-
-        final List events = new ArrayList();
-        final WorkingMemoryEventListener listener = new DefaultWorkingMemoryEventListener() {
-            public void objectUpdated(ObjectUpdatedEvent event) {
-                events.add( event );
-            }
-        };
-
-        workingMemory.addEventListener( listener );
-
-        final Person bigCheese = new Person( "big cheese" );
-        final Cheese cheddar = new Cheese( "cheddar",
-                                           15 );
-        bigCheese.setCheese( cheddar );
-
-        final FactHandle bigCheeseHandle = workingMemory.insert( bigCheese );
-        final FactHandle cheddarHandle = workingMemory.insert( cheddar );
-        workingMemory.fireAllRules();
-
-        ObjectUpdatedEvent event = (ObjectUpdatedEvent) events.get( 0 );
-        assertSame( cheddarHandle,
-                    event.getFactHandle() );
-        assertSame( cheddar,
-                    event.getOldObject() );
-        assertSame( cheddar,
-                    event.getObject() );
-
-        event = (ObjectUpdatedEvent) events.get( 1 );
-        assertSame( bigCheeseHandle,
-                    event.getFactHandle() );
-        assertSame( bigCheese,
-                    event.getOldObject() );
-        assertSame( bigCheese,
-                    event.getObject() );
-    }
-
     public void testNullHandling() throws Exception {
         final PackageBuilder builder = new PackageBuilder();
         builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_NullHandling.drl" ) ) );
@@ -667,8 +621,53 @@ public class MiscTest extends TestCase {
                     fact );
         assertEquals( new Integer( 200 ),
                       fact.getFieldValue( "price" ) );
-
     }
+    
+    public void testFactBindings() throws Exception {
+        final PackageBuilder builder = new PackageBuilder();
+        builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_FactBindings.drl" ) ) );
+        final Package pkg = builder.getPackage();
+
+        // add the package to a rulebase
+        final RuleBase ruleBase = getRuleBase();
+        ruleBase.addPackage( pkg );
+
+        final WorkingMemory workingMemory = ruleBase.newStatefulSession();
+
+        final List events = new ArrayList();
+        final WorkingMemoryEventListener listener = new DefaultWorkingMemoryEventListener() {
+            public void objectUpdated(ObjectUpdatedEvent event) {
+                events.add( event );
+            }
+        };
+
+        workingMemory.addEventListener( listener );
+
+        final Person bigCheese = new Person( "big cheese" );
+        final Cheese cheddar = new Cheese( "cheddar",
+                                           15 );
+        bigCheese.setCheese( cheddar );
+
+        final FactHandle bigCheeseHandle = workingMemory.insert( bigCheese );
+        final FactHandle cheddarHandle = workingMemory.insert( cheddar );
+        workingMemory.fireAllRules();
+
+        ObjectUpdatedEvent event = (ObjectUpdatedEvent) events.get( 0 );
+        assertSame( cheddarHandle,
+                    event.getFactHandle() );
+        assertSame( cheddar,
+                    event.getOldObject() );
+        assertSame( cheddar,
+                    event.getObject() );
+
+        event = (ObjectUpdatedEvent) events.get( 1 );
+        assertSame( bigCheeseHandle,
+                    event.getFactHandle() );
+        assertSame( bigCheese,
+                    event.getOldObject() );
+        assertSame( bigCheese,
+                    event.getObject() );
+    }    
     
     public void testFactTemplateFieldBinding() throws Exception {
         // from JBRULES-1512
