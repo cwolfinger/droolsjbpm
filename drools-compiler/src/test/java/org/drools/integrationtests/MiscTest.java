@@ -609,7 +609,7 @@ public class MiscTest extends TestCase {
                                "stilton" );
         stilton.setFieldValue( "price",
                                new Integer( 100 ) );
-        workingMemory.insert( stilton );
+        InternalFactHandle stiltonHandle = ( InternalFactHandle ) workingMemory.insert( stilton );
         workingMemory.fireAllRules();
 
         assertEquals( 1,
@@ -621,6 +621,8 @@ public class MiscTest extends TestCase {
                     fact );
         assertEquals( new Integer( 200 ),
                       fact.getFieldValue( "price" ) );
+        assertEquals( -1, stiltonHandle.getId() );
+        
     }
     
     public void testFactBindings() throws Exception {
