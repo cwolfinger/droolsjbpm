@@ -132,6 +132,7 @@ public class ScheduledAgendaItem extends TimerTask
      */
     public void run() {
         this.agenda.fireActivation( this );
+        this.agenda.getScheduledActivationsLinkedList().remove( this );
         this.agenda.getWorkingMemory().fireAllRules();
     }
 
