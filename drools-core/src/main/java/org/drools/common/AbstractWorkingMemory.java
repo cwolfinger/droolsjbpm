@@ -86,9 +86,9 @@ public abstract class AbstractWorkingMemory
     InternalWorkingMemoryActions,
     EventSupport,
     PropertyChangeListener {
-    
-    private static final long serialVersionUID = 405L;
-    
+
+    private static final long              serialVersionUID                              = 405L;
+
     // ------------------------------------------------------------
     // Constants
     // ------------------------------------------------------------
@@ -137,9 +137,9 @@ public abstract class AbstractWorkingMemory
     /** Rule-firing agenda. */
     protected DefaultAgenda                agenda;
 
-    protected final LinkedList                  actionQueue                                   = new LinkedList();
+    protected final LinkedList             actionQueue                                   = new LinkedList();
 
-    protected boolean                      evaluatingActionQueue;
+    protected volatile boolean             evaluatingActionQueue;
 
     protected final ReentrantLock          lock                                          = new ReentrantLock();
 
@@ -154,9 +154,9 @@ public abstract class AbstractWorkingMemory
     private List                           liaPropagations                               = Collections.EMPTY_LIST;
 
     /** Flag to determine if a rule is currently being fired. */
-    protected boolean                      firing;
+    protected volatile boolean             firing;
 
-    protected boolean                      halt;
+    protected volatile boolean             halt;
 
     private int                            processCounter;
 
@@ -464,9 +464,7 @@ public abstract class AbstractWorkingMemory
             }
         }
 
-        if ( !this.actionQueue.isEmpty() ) {
-            executeQueuedActions();
-        }
+        executeQueuedActions();
 
         boolean noneFired = true;
 
@@ -477,9 +475,7 @@ public abstract class AbstractWorkingMemory
                 while ( continueFiring( fireLimit ) && this.agenda.fireNextItem( agendaFilter ) ) {
                     fireLimit = updateFireLimit( fireLimit );
                     noneFired = false;
-                    if ( !this.actionQueue.isEmpty() ) {
-                        executeQueuedActions();
-                    }
+                    executeQueuedActions();
                 }
             } finally {
                 this.firing = false;
@@ -916,9 +912,7 @@ public abstract class AbstractWorkingMemory
                   object,
                   propagationContext );
 
-        if ( !this.actionQueue.isEmpty() ) {
-            executeQueuedActions();
-        }
+        executeQueuedActions();
 
         this.workingMemoryEventSupport.fireObjectInserted( propagationContext,
                                                            handle,
@@ -1060,9 +1054,7 @@ public abstract class AbstractWorkingMemory
 
             this.handleFactory.destroyFactHandle( handle );
 
-            if ( !this.actionQueue.isEmpty() ) {
-                executeQueuedActions();
-            }
+            executeQueuedActions();
         } finally {
             this.lock.unlock();
         }
@@ -1085,8 +1077,8 @@ public abstract class AbstractWorkingMemory
             this.identityMap.remove( handle );
         }
     }
-    
-    private Map modifyContexts = new HashMap();    
+
+    private Map modifyContexts = new HashMap();
 
     public void modifyRetract(final FactHandle factHandle) {
         modifyRetract( factHandle,
@@ -1120,9 +1112,10 @@ public abstract class AbstractWorkingMemory
                                                                                       activation,
                                                                                       this.agenda.getActiveActivations(),
                                                                                       this.agenda.getDormantActivations() );
-            
-            modifyContexts.put( handle, propagationContext );
-            
+
+            modifyContexts.put( handle,
+                                propagationContext );
+
             doRetract( handle,
                        propagationContext );
 
@@ -1162,7 +1155,7 @@ public abstract class AbstractWorkingMemory
             final Object originalObject = (handle.isShadowFact()) ? ((ShadowProxy) handle.getObject()).getShadowedObject() : handle.getObject();
 
             if ( this.maintainTms ) {
-                int status  = handle.getEqualityKey().getStatus();
+                int status = handle.getEqualityKey().getStatus();
 
                 // now use an  existing  EqualityKey, if it exists, else create a new one
                 EqualityKey key = this.tms.get( object );
@@ -1184,7 +1177,7 @@ public abstract class AbstractWorkingMemory
                 activation.getPropagationContext().releaseResources();
             }
             // Nowretract any trace  of the original fact
-            final PropagationContext propagationContext = ( PropagationContext ) this.modifyContexts.remove( handle );
+            final PropagationContext propagationContext = (PropagationContext) this.modifyContexts.remove( handle );
 
             doInsert( handle,
                       object,
@@ -1198,9 +1191,8 @@ public abstract class AbstractWorkingMemory
 
             propagationContext.clearRetractedTuples();
 
-            if ( !this.actionQueue.isEmpty() ) {
-                executeQueuedActions();
-            }
+            executeQueuedActions();
+
         } finally {
             this.lock.unlock();
         }
@@ -1304,28 +1296,30 @@ public abstract class AbstractWorkingMemory
 
             propagationContext.clearRetractedTuples();
 
-            if ( !this.actionQueue.isEmpty() ) {
-                executeQueuedActions();
-            }
+            executeQueuedActions();
         } finally {
             this.lock.unlock();
         }
     }
 
     public void executeQueuedActions() {
-        if( ! evaluatingActionQueue ) {
-            evaluatingActionQueue = true;
-            WorkingMemoryAction action = null;           
-            
-            while ( actionQueue.size() != 0 && ( action = (WorkingMemoryAction) actionQueue.removeFirst() ) != null ) {
-                action.execute( this );
+        synchronized ( this.actionQueue ) {
+            if ( !this.actionQueue.isEmpty() && !this.evaluatingActionQueue ) {
+                this.evaluatingActionQueue = true;
+                WorkingMemoryAction action = null;
+
+                while ( this.actionQueue.size() != 0 && (action = (WorkingMemoryAction) this.actionQueue.removeFirst()) != null ) {
+                    action.execute( this );
+                }
+                this.evaluatingActionQueue = false;
             }
-            evaluatingActionQueue = false;
         }
     }
 
     public void queueWorkingMemoryAction(final WorkingMemoryAction action) {
-        this.actionQueue.add( action );
+        synchronized ( this.actionQueue ) {
+            this.actionQueue.add( action );
+        }
     }
 
     public void removeLogicalDependencies(final Activation activation,
