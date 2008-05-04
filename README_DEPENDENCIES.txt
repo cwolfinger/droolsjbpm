@@ -5,7 +5,7 @@ CORE RUNTIME
 Runtime assumes that you are "compiling" rules using drools-compiler.
 
     * drools-core - the rule engine itself.
-    * mvel-1.2.24-java1.4
+    * mvel-1.3.0-java1.4
     * optional packages:
           o xpp3-1.1.3.4.O, xstream-1.2.2 - if you are using the file based
 audit feature
