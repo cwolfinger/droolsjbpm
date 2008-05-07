@@ -19,6 +19,7 @@
 package org.drools.integrationtests;
 
 import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
@@ -31,10 +32,14 @@ import org.drools.Child;
 import org.drools.GrandParent;
 import org.drools.Order;
 import org.drools.Parent;
+import org.drools.Person;
 import org.drools.RuleBase;
 import org.drools.RuleBaseFactory;
 import org.drools.StatefulSession;
+import org.drools.WorkingMemory;
 import org.drools.compiler.PackageBuilder;
+import org.drools.event.DebugAgendaEventListener;
+import org.drools.rule.Package;
 
 /**
  * This is a test case for multi-thred issues
@@ -100,7 +105,7 @@ public class MultithreadTest extends TestCase {
         private static final int ITERATIONS = 300;
         private final int        id;
         private final RuleBase   rulebase;
-        private int           status;
+        private int              status;
 
         public RulebaseRunner(final int id,
                               final RuleBase rulebase) {
@@ -137,8 +142,8 @@ public class MultithreadTest extends TestCase {
         }
 
         public class Status {
-            static final int SUCCESS = 1; 
-            static final int FAIL = 0;
+            static final int SUCCESS = 1;
+            static final int FAIL    = 0;
         }
 
         /**
@@ -202,10 +207,10 @@ public class MultithreadTest extends TestCase {
                         errorList.isEmpty() );
         } catch ( Exception e ) {
             e.printStackTrace();
-            fail( "No exception should have been raised: "+e.getMessage());
+            fail( "No exception should have been raised: " + e.getMessage() );
         }
     }
-    
+
     public void testMultithreadDateStringConstraints() {
         try {
             final int THREAD_COUNT = 10;
@@ -214,47 +219,84 @@ public class MultithreadTest extends TestCase {
             final RuleBase ruleBase = RuleBaseFactory.newRuleBase();
             ruleBase.addPackage( packageBuilder.getPackage() );
             final Vector errors = new Vector();
-            
+
             final Thread t[] = new Thread[THREAD_COUNT];
-            for(int j=0;j<10;j++)
-            {
-                for (int i = 0; i < t.length; i++) {
+            for ( int j = 0; j < 10; j++ ) {
+                for ( int i = 0; i < t.length; i++ ) {
                     t[i] = new Thread() {
                         public void run() {
                             try {
                                 final int ITERATIONS = 300;
                                 StatefulSession session = ruleBase.newStatefulSession();
                                 List results = new ArrayList();
-                                session.setGlobal( "results", results );
-                                for( int k = 0; k < ITERATIONS; k++ ) {
+                                session.setGlobal( "results",
+                                                   results );
+                                for ( int k = 0; k < ITERATIONS; k++ ) {
                                     session.insert( new Order() );
                                 }
                                 session.fireAllRules();
                                 session.dispose();
-                                if( results.size() != ITERATIONS ) {
-                                    errors.add( "Rules did not fired correctly. Expected: "+ITERATIONS+". Actual: "+results.size() );
+                                if ( results.size() != ITERATIONS ) {
+                                    errors.add( "Rules did not fired correctly. Expected: " + ITERATIONS + ". Actual: " + results.size() );
                                 }
-                            } catch( Exception ex ) {
+                            } catch ( Exception ex ) {
                                 ex.printStackTrace();
                                 errors.add( ex );
                             }
                         }
-                        
+
                     };
                     t[i].start();
                 }
-                for (int i = 0; i < t.length; i++) {
+                for ( int i = 0; i < t.length; i++ ) {
                     t[i].join();
                 }
             }
-            if( !errors.isEmpty() ) {
-                fail(" Errors occured during execution ");
+            if ( !errors.isEmpty() ) {
+                fail( " Errors occured during execution " );
             }
         } catch ( Exception e ) {
             e.printStackTrace();
             fail( "Should not raise exception" );
         }
     }
-    
+
+    public void testMultiThreadOnSingleSession() throws Exception {
+        String str = "package org.drools.test\n" + 
+        "import org.drools.Person\n" + 
+        "rule \"Auto Retract\"" + 
+        "when\n" + 
+        "    person:Person()\n" + 
+        "then\n" + 
+        "    retract(person);\n" + 
+        "end\n";
+
+        RuleBase ruleBase = RuleBaseFactory.newRuleBase();
+        PackageBuilder builder = new PackageBuilder();
+        builder.addPackageFromDrl( new StringReader( str ) );
+        Package pkg = builder.getPackage();
+        ruleBase.addPackage( pkg );
+        final WorkingMemory workingMemory = ruleBase.newStatefulSession();
+        workingMemory.addEventListener( new DebugAgendaEventListener() );
+
+        Runnable runnable = new Runnable() {
+            public void run() {
+                while ( true ) {
+                    workingMemory.insert( new Person( "bobba fet",
+                                                      35 ) );
+                    workingMemory.fireAllRules();
+                }
+            }
+        };
+
+        Thread thread1 = new Thread( runnable,
+                                     "thread1" );
+        Thread thread2 = new Thread( runnable,
+                                     "thread2" );
+        thread1.start();
+        thread2.start();
+
+        Thread.sleep( 15000 );
+    }
 
 }
