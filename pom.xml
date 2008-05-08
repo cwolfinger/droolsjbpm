@@ -908,10 +908,10 @@
            <url>${rules.site.deploy.dir}</url>
        </site>
     <!-- TODO configure this if it's needed -->
-    <!--<repository>-->
-      <!--<id>shell.jboss.org?</id>-->
-      <!--<url>scp://???.jboss.org/???/maven2</url>-->
-    <!--</repository>-->
+    <!--repository>
+      <id>local</id>
+      <url>file:///home/etirelli/workspace/jboss/maven_repo</url>
+    </repository -->
     <!--<snapshotRepository>-->
       <!--<id>shell.jboss.org?</id>-->
       <!--<url>scp://???.jboss.org/???/maven2snapshots???</url>-->
