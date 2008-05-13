@@ -9,7 +9,7 @@ rule "New Ticket"
 	then
 	   Log "New ticket..."
 end
-
+ 
 rule "Silver Priorty"
 	#if after a certain time, we still have an issue, then escalate
 	duration 3000

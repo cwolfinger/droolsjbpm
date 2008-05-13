@@ -498,11 +498,15 @@ abstract public class AbstractRuleBase
             final String identifier = (String) it.next();
             final Class type = (Class) globals.get( identifier );
             if ( globals.containsKey( identifier ) && !globals.get( identifier ).equals( type ) ) {
-                throw new PackageIntegrationException( "Unable to merge new Package",
+                throw new PackageIntegrationException( "Unable to merge new Package, because it re-declares a global using a different type.",
                                                        newPkg );
             }
         }
-        globals.putAll( newPkg.getGlobals() );
+        for ( Iterator it = newPkg.getGlobals().entrySet().iterator(); it.hasNext(); ) {
+            Entry entry = ( Entry ) it.next();
+            pkg.addGlobal( (String) entry.getKey(), (Class) entry.getValue() );
+        }
+        
 
         //Add rules into the RuleBase package
         //as this is needed for individual rule removal later on

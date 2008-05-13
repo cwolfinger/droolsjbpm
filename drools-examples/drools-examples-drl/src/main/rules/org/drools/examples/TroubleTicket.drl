@@ -11,7 +11,7 @@ rule "New Ticket"
 	then
 		System.out.println( "New : " + ticket );		
 end
- 
+  
 rule "Silver Priority"
 	duration 3000
 	when

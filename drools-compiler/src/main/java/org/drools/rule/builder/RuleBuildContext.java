@@ -29,6 +29,7 @@ import org.drools.compiler.Dialect;
 import org.drools.compiler.DialectConfiguration;
 import org.drools.compiler.DialectRegistry;
 import org.drools.compiler.PackageBuilderConfiguration;
+import org.drools.compiler.RuleError;
 import org.drools.lang.descr.AttributeDescr;
 import org.drools.lang.descr.QueryDescr;
 import org.drools.lang.descr.RuleDescr;
@@ -123,8 +124,15 @@ public class RuleBuildContext {
 
         this.dialectRegistry = dialectRegistry;
         this.dialect = (this.rule.getDialect() != null) ? this.dialectRegistry.getDialect( this.rule.getDialect() ) : defaultDialect;
+        
+        if ( dialect == null && this.rule.getDialect()  != null ) {
+            this.errors.add( new RuleError(this.rule,ruleDescr, null, "Unable to load Dialect '" +this.rule.getDialect() + "'") );
+        }         
 
-        getDialect().init( ruleDescr );
+        if ( dialect != null ) {
+            dialect.init( ruleDescr );
+        } 
+        
     }
 
     public Dialect getDialect() {

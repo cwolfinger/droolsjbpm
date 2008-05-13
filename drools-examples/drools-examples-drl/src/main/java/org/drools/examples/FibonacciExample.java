@@ -23,7 +23,7 @@ public class FibonacciExample {
         final WorkingMemoryFileLogger logger = new WorkingMemoryFileLogger( session );
         logger.setFileName( "log/fibonacci" );
 
-        session.insert( new Fibonacci( 10 ) );
+        session.insert( new Fibonacci( 50 ) );
 
         session.fireAllRules();
 

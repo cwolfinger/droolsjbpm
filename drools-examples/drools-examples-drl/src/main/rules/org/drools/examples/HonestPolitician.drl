@@ -26,12 +26,14 @@ rule "Hope is Dead"
         System.out.println( "We are all Doomed!!! Democracy is Dead" );
 end
 
-rule "Corrupt the Honest"
-    when
+rule "Corrupt the Honest" 
+    when 
         politician : Politician( honest == true )   
         exists( Hope() )
     then
         System.out.println( "I'm an evil corporation and I have corrupted " + politician.getName() );
-        modify( politician ) {setHonest( false )}
+        modify( politician ) { 
+            setHonest( false ) 
+        }
 end
 

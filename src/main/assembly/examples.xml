@@ -23,6 +23,9 @@
          <include>**/**</include>
       </includes>
       <excludes>
+        <!-- excluding drools insurance example from the bundle until we have it stable -->
+        <exclude>drools-insurance/**</exclude>
+        <!-- .-.-.-.-.-.-.-.-.-.-.-.-.-. -->
         <exclude>**/target/**</exclude>
         <exclude>**/.svn/**</exclude>
         <exclude>**/.metadata/**</exclude>

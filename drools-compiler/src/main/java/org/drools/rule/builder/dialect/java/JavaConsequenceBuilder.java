@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.drools.compiler.Dialect;
 import org.drools.compiler.RuleError;
@@ -33,6 +35,7 @@ import org.drools.rule.builder.RuleBuildContext;
 import org.drools.rule.builder.dialect.java.parser.JavaModifyBlockDescr;
 import org.drools.rule.builder.dialect.mvel.MVELDialect;
 import org.drools.spi.PatternExtractor;
+import org.drools.util.ClassUtils;
 import org.mvel.ExecutableStatement;
 
 /**
@@ -42,6 +45,8 @@ import org.mvel.ExecutableStatement;
 public class JavaConsequenceBuilder extends AbstractJavaBuilder
     implements
     ConsequenceBuilder {
+
+    private final Pattern lineBreakFinder = Pattern.compile( "\\r\\n|\\r|\\n" ); 
 
     /* (non-Javadoc)
      * @see org.drools.semantics.java.builder.ConsequenceBuilder#buildConsequence(org.drools.semantics.java.builder.BuildContext, org.drools.semantics.java.builder.BuildUtils, org.drools.lang.descr.RuleDescr)
@@ -178,32 +183,60 @@ public class JavaConsequenceBuilder extends AbstractJavaBuilder
 
                 return null;
             }
+            String retString = ClassUtils.canonicalName( ret );
 
             // adding modify expression
-            consequence.append( "{\n" );
-            consequence.append( ret.getName() );
+            consequence.append( "{ " );
+            consequence.append( retString );
             consequence.append( " __obj__ = (" );
-            consequence.append( ret.getName() );
+            consequence.append( retString );
             consequence.append( ") " );
             consequence.append( d.getModifyExpression() );
-            consequence.append( ";\n" );
+            consequence.append( "; " );
             // adding the modifyRetract call:
-            consequence.append( "modifyRetract( __obj__ );\n" );
-            
+            consequence.append( "modifyRetract( __obj__ ); " );
 
+            // the following is a hack to preserve line breaks.
+            String originalBlock = originalCode.substring( d.getStart()-1,
+                                                           d.getEnd() );
+            int end = originalBlock.indexOf( "{" );
+            addLineBreaks( consequence,
+                           originalBlock.substring( 0,
+                                                    end ) );
+
+            int start = end+1;
             // adding each of the expressions:
             for ( Iterator exprIt = d.getExpressions().iterator(); exprIt.hasNext(); ) {
+                String exprStr = (String) exprIt.next();
+                end = originalBlock.indexOf( exprStr,
+                                             start );
+                addLineBreaks( consequence,
+                               originalBlock.substring( start,
+                                                        end ) );
                 consequence.append( "__obj__." );
-                consequence.append( exprIt.next() );
-                consequence.append( ";\n" );
+                consequence.append( exprStr );
+                consequence.append( "; " );
+                start = end + exprStr.length();
             }
             // adding the modifyInsert call:
-            consequence.append( "modifyInsert( __obj__ );" );
-            consequence.append( "}\n" );
+            addLineBreaks( consequence, originalBlock.substring( end ) );
+            consequence.append( "modifyInsert( __obj__ ); }" );
         }
         consequence.append( originalCode.substring( lastAdded ) );
 
         return consequence.toString();
+    }
+
+    /**
+     * @param consequence
+     * @param chunk
+     */
+    private void addLineBreaks(StringBuffer consequence,
+                               String chunk) {
+        Matcher m = lineBreakFinder.matcher( chunk );
+        while ( m.find() ) {
+            consequence.append( "\n" );
+        }
     }
 
 }

@@ -195,7 +195,10 @@ public class Rete extends ObjectSource
         final Object object = handle.getObject();
 
         ObjectTypeConf objectTypeConf;
-        if ( object instanceof ShadowProxy ) {
+        if ( object instanceof Fact ) {
+            String key = ((Fact) object).getFactTemplate().getName();
+            objectTypeConf = (ObjectTypeConf) memory.get( key );
+        } else if ( object instanceof ShadowProxy ) {
             objectTypeConf = (ObjectTypeConf) memory.get( ((ShadowProxy) object).getShadowedObject().getClass() );
         } else {
             objectTypeConf = (ObjectTypeConf) memory.get( object.getClass() );

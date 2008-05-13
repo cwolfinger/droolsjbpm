@@ -76,11 +76,11 @@ public class Main
       mainFrame.setJMenuBar(menuBar);
       sudokuGridView = new SudokuGridView();
       droolsSudokuGridModel = new DroolsSudokuGridModel(SudokuGridSamples.getInstance().getSample("Simple"));
-      mainFrame.setLayout(borderLayout);
-      mainFrame.add(BorderLayout.CENTER, sudokuGridView);
+      mainFrame.getContentPane().setLayout(borderLayout);
+      mainFrame.getContentPane().add(BorderLayout.CENTER, sudokuGridView);
       buttonPanel.add(solveButton);
       solveButton.addActionListener(this);
-      mainFrame.add(BorderLayout.SOUTH, buttonPanel);
+      mainFrame.getContentPane().add(BorderLayout.SOUTH, buttonPanel);
       mainFrame.setSize(400,400);
       mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
       mainFrame.setVisible(true);

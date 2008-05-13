@@ -13,6 +13,7 @@ import org.drools.Person;
 import org.drools.RuleBase;
 import org.drools.RuleBaseConfiguration;
 import org.drools.RuleBaseFactory;
+import org.drools.StatefulSession;
 import org.drools.StatelessSession;
 import org.drools.compiler.DroolsParserException;
 import org.drools.compiler.PackageBuilder;
@@ -54,6 +55,31 @@ public class SequentialTest extends TestCase {
                       list.size() );
 
     }
+    
+    public void testSalience() throws Exception {
+        final PackageBuilder builder = new PackageBuilder();
+        builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "simpleSalience.drl" ) ) );
+        final Package pkg = builder.getPackage();
+
+        RuleBaseConfiguration conf = new RuleBaseConfiguration();
+        conf.setSequential( true );
+        RuleBase ruleBase = getRuleBase( conf );
+        ruleBase.addPackage( pkg );
+        final StatelessSession session = ruleBase.newStatelessSession();
+
+        final List list = new ArrayList();
+        session.setGlobal( "list",
+                           list );
+
+        session.execute( new Person( "pob")  );
+
+        assertEquals( 3,
+                      list.size() );
+        
+        assertEquals( "rule 3", list.get( 0 ));
+        assertEquals( "rule 2", list.get( 1 ));
+        assertEquals( "rule 1", list.get( 2 ));
+    }        
 
     public void XXtestProfileSequential() throws Exception {
 

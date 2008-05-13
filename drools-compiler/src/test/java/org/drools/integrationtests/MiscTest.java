@@ -18,7 +18,6 @@ package org.drools.integrationtests;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectInput;
@@ -58,8 +57,11 @@ import org.drools.Guess;
 import org.drools.IndexedNumber;
 import org.drools.InsertedObject;
 import org.drools.Message;
+import org.drools.MockPersistentSet;
+import org.drools.ObjectWithSet;
 import org.drools.Order;
 import org.drools.OrderItem;
+import org.drools.OuterClass;
 import org.drools.Person;
 import org.drools.PersonFinal;
 import org.drools.PersonInterface;
@@ -114,7 +116,6 @@ import org.drools.lang.descr.PackageDescr;
 import org.drools.lang.descr.RuleDescr;
 import org.drools.rule.InvalidRulePackage;
 import org.drools.rule.Package;
-import org.drools.rule.builder.dialect.java.JavaDialect;
 import org.drools.rule.builder.dialect.java.JavaDialectConfiguration;
 import org.drools.spi.Activation;
 import org.drools.spi.ConsequenceExceptionHandler;
@@ -204,6 +205,47 @@ public class MiscTest extends TestCase {
                       results.size() );
         assertEquals( "not memberOf",
                       results.get( 1 ) );
+    }
+    
+    public void testGlobalMerge() throws Exception {
+        // from JBRULES-1512
+        String rule1 = "package com.sample\n" +
+        "rule \"rule 1\"\n" +
+        "    salience 10\n"+        
+        "    when\n" +       
+        "    l : java.util.List()\n" +
+        "    then\n" +
+        "        l.add( \"rule 1 executed\" );\n" + 
+        "end\n";
+        
+        String rule2 = "package com.sample\n" +
+        "global String str;\n" +
+        "rule \"rule 2\"\n" +
+        "    when\n" +
+        "    l : java.util.List()\n" +        
+        "    then\n" +
+        "        l.add( \"rule 2 executed \" + str);\n" + 
+        "end\n";        
+        
+        PackageBuilder builder1 = new PackageBuilder();
+        builder1.addPackageFromDrl( new StringReader( rule1 ));
+        Package pkg1 = builder1.getPackage();
+        // build second package
+        PackageBuilder builder2 = new PackageBuilder();
+        builder2.addPackageFromDrl( new StringReader( rule2 ) );
+        Package pkg2 = builder2.getPackage();       
+        // create rule base and add both packages
+        RuleBase ruleBase = RuleBaseFactory.newRuleBase();
+        ruleBase.addPackage(pkg1);
+        ruleBase.addPackage(pkg2);
+
+        WorkingMemory wm = ruleBase.newStatefulSession();
+        wm.setGlobal(  "str", "boo" );
+        List list = new ArrayList();
+        wm.insert(  list );
+        wm.fireAllRules();
+        assertEquals( "rule 1 executed", list.get(  0 ) );
+        assertEquals( "rule 2 executed boo", list.get(  1 ));
     }
 
     public void testCustomGlobalResolver() throws Exception {
@@ -327,52 +369,6 @@ public class MiscTest extends TestCase {
 
         assertEquals( 1,
                       list.size() );
-    }
-
-    public void testFactBindings() throws Exception {
-        final PackageBuilder builder = new PackageBuilder();
-        builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_FactBindings.drl" ) ) );
-        final Package pkg = builder.getPackage();
-
-        // add the package to a rulebase
-        final RuleBase ruleBase = getRuleBase();
-        ruleBase.addPackage( pkg );
-
-        final WorkingMemory workingMemory = ruleBase.newStatefulSession();
-
-        final List events = new ArrayList();
-        final WorkingMemoryEventListener listener = new DefaultWorkingMemoryEventListener() {
-            public void objectUpdated(ObjectUpdatedEvent event) {
-                events.add( event );
-            }
-        };
-
-        workingMemory.addEventListener( listener );
-
-        final Person bigCheese = new Person( "big cheese" );
-        final Cheese cheddar = new Cheese( "cheddar",
-                                           15 );
-        bigCheese.setCheese( cheddar );
-
-        final FactHandle bigCheeseHandle = workingMemory.insert( bigCheese );
-        final FactHandle cheddarHandle = workingMemory.insert( cheddar );
-        workingMemory.fireAllRules();
-
-        ObjectUpdatedEvent event = (ObjectUpdatedEvent) events.get( 0 );
-        assertSame( cheddarHandle,
-                    event.getFactHandle() );
-        assertSame( cheddar,
-                    event.getOldObject() );
-        assertSame( cheddar,
-                    event.getObject() );
-
-        event = (ObjectUpdatedEvent) events.get( 1 );
-        assertSame( bigCheeseHandle,
-                    event.getFactHandle() );
-        assertSame( bigCheese,
-                    event.getOldObject() );
-        assertSame( bigCheese,
-                    event.getObject() );
     }
 
     public void testNullHandling() throws Exception {
@@ -613,7 +609,7 @@ public class MiscTest extends TestCase {
                                "stilton" );
         stilton.setFieldValue( "price",
                                new Integer( 100 ) );
-        workingMemory.insert( stilton );
+        InternalFactHandle stiltonHandle = ( InternalFactHandle ) workingMemory.insert( stilton );
         workingMemory.fireAllRules();
 
         assertEquals( 1,
@@ -625,8 +621,94 @@ public class MiscTest extends TestCase {
                     fact );
         assertEquals( new Integer( 200 ),
                       fact.getFieldValue( "price" ) );
-
+        assertEquals( -1, stiltonHandle.getId() );
+        
     }
+    
+    public void testFactBindings() throws Exception {
+        final PackageBuilder builder = new PackageBuilder();
+        builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_FactBindings.drl" ) ) );
+        final Package pkg = builder.getPackage();
+
+        // add the package to a rulebase
+        final RuleBase ruleBase = getRuleBase();
+        ruleBase.addPackage( pkg );
+
+        final WorkingMemory workingMemory = ruleBase.newStatefulSession();
+
+        final List events = new ArrayList();
+        final WorkingMemoryEventListener listener = new DefaultWorkingMemoryEventListener() {
+            public void objectUpdated(ObjectUpdatedEvent event) {
+                events.add( event );
+            }
+        };
+
+        workingMemory.addEventListener( listener );
+
+        final Person bigCheese = new Person( "big cheese" );
+        final Cheese cheddar = new Cheese( "cheddar",
+                                           15 );
+        bigCheese.setCheese( cheddar );
+
+        final FactHandle bigCheeseHandle = workingMemory.insert( bigCheese );
+        final FactHandle cheddarHandle = workingMemory.insert( cheddar );
+        workingMemory.fireAllRules();
+
+        ObjectUpdatedEvent event = (ObjectUpdatedEvent) events.get( 0 );
+        assertSame( cheddarHandle,
+                    event.getFactHandle() );
+        assertSame( cheddar,
+                    event.getOldObject() );
+        assertSame( cheddar,
+                    event.getObject() );
+
+        event = (ObjectUpdatedEvent) events.get( 1 );
+        assertSame( bigCheeseHandle,
+                    event.getFactHandle() );
+        assertSame( bigCheese,
+                    event.getOldObject() );
+        assertSame( bigCheese,
+                    event.getObject() );
+    }    
+    
+    public void testFactTemplateFieldBinding() throws Exception {
+        // from JBRULES-1512
+        String rule1 = "package org.drools.entity\n" +
+        " global java.util.List list\n" +
+        "template Settlement\n" +
+        "    String InstrumentType\n" +
+        "    String InstrumentName\n" +
+        "end\n"  +
+        "rule TestEntity\n" +
+
+        "    when\n" +
+        "        Settlement(InstrumentType == \"guitar\", name : InstrumentName)\n" +        
+        "    then \n" +
+        "        list.add( name ) ;\n" +
+        "end\n";
+              
+        PackageBuilder builder = new PackageBuilder();
+        builder.addPackageFromDrl( new StringReader( rule1 ));
+        Package pkg = builder.getPackage();
+        
+        RuleBase ruleBase = RuleBaseFactory.newRuleBase();
+        ruleBase.addPackage(pkg);
+
+        WorkingMemory wm = ruleBase.newStatefulSession();
+        List list = new ArrayList();
+        wm.setGlobal(  "list", list );
+        
+        final FactTemplate cheese = pkg.getFactTemplate( "Settlement" );
+        final Fact guitar = cheese.createFact( 0 );
+        guitar.setFieldValue( "InstrumentType",
+                               "guitar" );
+        guitar.setFieldValue( "InstrumentName",
+                               "gibson" );
+        wm.insert( guitar );
+
+        wm.fireAllRules();
+        assertEquals( "gibson", list.get(  0 ) );
+    }    
 
     public void testPropertyChangeSupport() throws Exception {
         final PackageBuilder builder = new PackageBuilder();
@@ -4328,6 +4410,38 @@ public class MiscTest extends TestCase {
                       cheesery.getCheeses().get( 0 ) );
     }
 
+    public void testShadowProxyOnCollections2() throws Exception {
+        final PackageBuilder builder = new PackageBuilder();
+        builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_ShadowProxyOnCollections2.drl" ) ) );
+        final Package pkg = builder.getPackage();
+
+        final RuleBase ruleBase = getRuleBase();
+        ruleBase.addPackage( pkg );
+        final StatefulSession workingMemory = ruleBase.newStatefulSession();
+
+        final List results = new ArrayList();
+        workingMemory.setGlobal( "results",
+                                 results );
+
+        List list = new ArrayList();
+        list.add( "example1" );
+        list.add( "example2" );
+
+        MockPersistentSet mockPersistentSet = new MockPersistentSet( false );
+        mockPersistentSet.addAll( list );
+        org.drools.ObjectWithSet objectWithSet = new ObjectWithSet();
+        objectWithSet.setSet( mockPersistentSet );
+
+        workingMemory.insert( objectWithSet );
+
+        workingMemory.fireAllRules();
+
+        assertEquals( 1,
+                      results.size() );
+        assertEquals( "show",
+                      objectWithSet.getMessage() );
+    }
+
     public void testQueryWithCollect() throws Exception {
         final PackageBuilder builder = new PackageBuilder();
         builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_Query.drl" ) ) );
@@ -4724,30 +4838,31 @@ public class MiscTest extends TestCase {
 
     public void testAlphaCompositeConstraints() throws Exception {
         final PackageBuilder builder = new PackageBuilder();
-        builder.addPackageFromDrl(new InputStreamReader(getClass()
-                .getResourceAsStream("test_AlphaCompositeConstraints.drl")));
+        builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_AlphaCompositeConstraints.drl" ) ) );
         final Package pkg = builder.getPackage();
 
         final RuleBase ruleBase = getRuleBase();
-        ruleBase.addPackage(pkg);
+        ruleBase.addPackage( pkg );
         final WorkingMemory workingMemory = ruleBase.newStatefulSession();
 
         final List list = new ArrayList();
-        workingMemory.setGlobal("results", list);
+        workingMemory.setGlobal( "results",
+                                 list );
 
-        Person bob = new Person( "bob", 30 );
+        Person bob = new Person( "bob",
+                                 30 );
 
-        workingMemory.insert(bob);
+        workingMemory.insert( bob );
         workingMemory.fireAllRules();
 
-        assertEquals( 1, list.size());
+        assertEquals( 1,
+                      list.size() );
     }
 
-	public void testModifyBlock() throws Exception {
-		final PackageBuilder builder = new PackageBuilder();
-		builder.addPackageFromDrl(new InputStreamReader(getClass()
-				.getResourceAsStream("test_ModifyBlock.drl")));
-		final Package pkg = builder.getPackage();
+    public void testModifyBlock() throws Exception {
+        final PackageBuilder builder = new PackageBuilder();
+        builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_ModifyBlock.drl" ) ) );
+        final Package pkg = builder.getPackage();
         final RuleBase ruleBase = getRuleBase();
         ruleBase.addPackage( pkg );
         final WorkingMemory workingMemory = ruleBase.newStatefulSession();
@@ -4793,16 +4908,18 @@ public class MiscTest extends TestCase {
         workingMemory.insert( bob );
         workingMemory.insert( new Cheese() );
         workingMemory.insert( new Cheese() );
+        workingMemory.insert( new OuterClass.InnerClass( 1 ) );
 
-        workingMemory.fireAllRules( 2 );
+        workingMemory.fireAllRules();
 
-        assertEquals( "should have fired only once",
-                      1,
+        assertEquals( 2,
                       list.size() );
         assertEquals( "full",
                       bob.getStatus() );
         assertEquals( 31,
                       bob.getAge() );
+        assertEquals( 2,
+                      ((OuterClass.InnerClass) list.get( 1 )).getIntAttr() );
     }
 
     public void testOrCE() throws Exception {
