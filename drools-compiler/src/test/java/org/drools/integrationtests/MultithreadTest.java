@@ -277,7 +277,7 @@ public class MultithreadTest extends TestCase {
         Package pkg = builder.getPackage();
         ruleBase.addPackage( pkg );
         final WorkingMemory workingMemory = ruleBase.newStatefulSession();
-        workingMemory.addEventListener( new DebugAgendaEventListener() );
+        //workingMemory.addEventListener( new DebugAgendaEventListener() );
 
         Runnable runnable = new Runnable() {
             public void run() {
