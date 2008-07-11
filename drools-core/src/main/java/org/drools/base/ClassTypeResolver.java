@@ -236,9 +236,10 @@ public class ClassTypeResolver
             }
 
             // maybe its a nested class?
-            if ( clazz == null ) {
+            int lastIndex;
+            while ( clazz == null && (lastIndex = qualifiedClass.lastIndexOf( '.' )) != -1 ) {
                 try {
-                    final int lastIndex = qualifiedClass.lastIndexOf( '.' );
+
                     qualifiedClass = qualifiedClass.substring( 0,
                                                                lastIndex ) + "$" + qualifiedClass.substring( lastIndex + 1 );
                     clazz = this.classLoader.loadClass( qualifiedClass );
