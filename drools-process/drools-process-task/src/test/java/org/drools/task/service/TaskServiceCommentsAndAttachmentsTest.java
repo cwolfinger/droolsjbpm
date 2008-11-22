@@ -126,7 +126,7 @@ public class TaskServiceCommentsAndAttachmentsTest extends BaseTest {
         assertEquals( "This is my comment1!!!!!", comments2.get( 0 ).getText() );
     }
     
-    public void testAddRemoveAttachment() throws Exception {
+    public void FIXMEtestAddRemoveAttachment() throws Exception {
         Map  vars = new HashedMap();     
         vars.put( "users", users );
         vars.put( "groups", groups );
