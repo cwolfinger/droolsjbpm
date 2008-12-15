@@ -1,5 +1,7 @@
 package org.drools.ruleflow.instance;
 
+import java.io.Serializable;
+
 /*
  * Copyright 2005 JBoss Inc
  * 
@@ -24,7 +26,7 @@ package org.drools.ruleflow.instance;
  * 
  * @author <a href="mailto:kris_verlaenen@hotmail.com">Kris Verlaenen</a>
  */
-public interface RuleFlowNodeInstance {
+public interface RuleFlowNodeInstance extends Serializable {
 
     void setId(long id);
 
