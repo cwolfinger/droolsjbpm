@@ -32,7 +32,7 @@ public class MaxAccumulateFunction implements AccumulateFunction {
 
     protected static class MaxData implements Serializable {
         private static final long serialVersionUID = -7020207404432163956L;
-        public double max = Double.MIN_VALUE;
+        public double max = -Double.MAX_VALUE;
     }
 
     /* (non-Javadoc)
@@ -47,7 +47,7 @@ public class MaxAccumulateFunction implements AccumulateFunction {
      */
     public void init(Object context) throws Exception {
         MaxData data = (MaxData) context;
-        data.max = Double.MIN_VALUE;
+        data.max = -Double.MAX_VALUE;
     }
 
     /* (non-Javadoc)
