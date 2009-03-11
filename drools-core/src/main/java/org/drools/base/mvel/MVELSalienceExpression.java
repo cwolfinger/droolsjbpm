@@ -15,23 +15,24 @@ public class MVELSalienceExpression
     private static final long       serialVersionUID = 400L;
 
     private final Serializable      expr;
-    private final DroolsMVELFactory factory;
+    private final DroolsMVELFactory prototype;
 
     public MVELSalienceExpression(final Serializable expr,
                                   final DroolsMVELFactory factory) {
         this.expr = expr;
-        this.factory = factory;
+        this.prototype = factory;
     }
 
     public int getValue(final Tuple tuple,
                         final WorkingMemory workingMemory) {
-        this.factory.setContext( tuple,
+        DroolsMVELFactory factory = (DroolsMVELFactory) this.prototype.clone();
+        factory.setContext( tuple,
                                  null,
                                  null,
                                  workingMemory,
                                  null );
         return ((Number) MVEL.executeExpression( this.expr,
-                                                  this.factory )).intValue();
+                                                 factory )).intValue();
     }
 
 }
