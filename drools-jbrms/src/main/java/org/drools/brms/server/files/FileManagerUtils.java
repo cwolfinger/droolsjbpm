@@ -47,6 +47,7 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.security.Restrict;
+import org.jboss.seam.annotations.Destroy; 
 
 /**
  * This assists the file manager servlets.
@@ -217,6 +218,11 @@ public class FileManagerUtils {
             item = repository.loadPackageSnapshot( name, version );
         }
         return item.getLastModified().getTimeInMillis();
+    }
+    
+    @Destroy
+    public void close() {
+        repository.logout();
     }
 
 }
