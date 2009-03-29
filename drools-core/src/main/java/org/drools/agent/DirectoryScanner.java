@@ -30,7 +30,7 @@ public class DirectoryScanner extends PackageProvider {
         this.currentList = dir.listFiles();
         scanner = new FileScanner();
         scanner.setFiles( currentList );
-
+		scanner.setAgentListener( this.listener );        
     }
 
     Package[] loadPackageChanges()  {
