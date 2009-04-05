@@ -1,0 +1,28 @@
+package org.drools.degrees.operators.simple;
+
+import java.util.Collection;
+
+import org.drools.degrees.IDegree;
+import org.drools.degrees.SimpleDegree;
+import org.drools.degrees.operators.IDegreeCombiner;
+
+
+public class SimpleMaxOr implements IDegreeCombiner {
+
+	
+	public IDegree eval(IDegree[] args) {
+		float ans = 1;
+		for (IDegree deg : args) {
+			SimpleDegree d = deg.getDegree();				
+				ans = Math.max(ans,d.getValue());
+		}
+		
+		return new SimpleDegree(ans);
+	}
+
+	public IDegree eval(Collection<? extends IDegree> args) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}
