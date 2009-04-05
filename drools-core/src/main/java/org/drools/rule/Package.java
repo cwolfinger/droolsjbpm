@@ -36,6 +36,7 @@ import org.drools.common.DroolsObjectOutputStream;
 import org.drools.definition.process.Process;
 import org.drools.definition.type.FactType;
 import org.drools.facttemplates.FactTemplate;
+import org.drools.reteoo.ConstraintKey;
 
 /**
  * Collection of related <code>Rule</code>s.
@@ -98,6 +99,8 @@ public class Package
      * valid
      */
     private String                         errorSummary;
+
+//	private Map<ConstraintKey, Set<String>> dependencies;
 
     // ------------------------------------------------------------
     // Constructors
@@ -555,4 +558,30 @@ public class Package
         this.classFieldAccessorStore.setClassFieldAccessorCache( classFieldAccessorCache );
     }
 
+    
+    
+    
+    
+    
+    
+    
+    
+//    
+//    /**
+//	 * @param dependencies the dependencies to set
+//	 */
+//	public void setDependencies(Map<ConstraintKey,Set<String>> dependencies) {
+//		this.dependencies = dependencies;
+//	}
+//
+//	/**
+//	 * @return the dependencies
+//	 */
+//	public Map<ConstraintKey,Set<String>> getDependencies() {
+//		return dependencies;
+//	}
+//    
+//    
+    
+    
 }

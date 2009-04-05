@@ -25,10 +25,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.drools.RuleBaseConfiguration;
 import org.drools.RuntimeDroolsException;
 import org.drools.common.BaseNode;
+import org.drools.common.ImperfectFactHandle;
 import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.common.NodeMemory;
 import org.drools.common.WorkingMemoryAction;
+import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.marshalling.impl.MarshallerReaderContext;
 import org.drools.marshalling.impl.MarshallerWriteContext;
 import org.drools.reteoo.builder.BuildContext;
@@ -183,6 +185,16 @@ public class PropagationQueuingNode extends ObjectSource implements ObjectSinkNo
         }
     }
 
+    
+    public void assertObject(ImperfectFactHandle factHandle,
+			PropagationContext propagationContext,
+			InternalWorkingMemory workingMemory, IDegreeFactory factory,
+			EvalRecord record) {
+    	//TODO: add support
+    	throw new UnsupportedOperationException("Imperfect queueing not supported");
+		
+	}
+    
     public boolean isObjectMemoryEnabled() {
         return true;
     }
@@ -394,4 +406,6 @@ public class PropagationQueuingNode extends ObjectSource implements ObjectSinkNo
             this.node.propagateActions( workingMemory );
         }
     }
+
+	
 }

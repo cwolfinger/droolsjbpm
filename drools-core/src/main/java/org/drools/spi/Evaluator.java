@@ -21,6 +21,8 @@ import java.io.Serializable;
 import org.drools.base.ValueType;
 import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
+import org.drools.degrees.IDegree;
+import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.rule.VariableRestriction.VariableContextEntry;
 import org.drools.runtime.rule.Operator;
 import org.drools.time.Interval;
@@ -126,6 +128,14 @@ public interface Evaluator
                             InternalReadAccessor extractor,
                             Object object,
                             FieldValue value);
+    
+    
+    public IDegree evaluate(InternalWorkingMemory workingMemory,
+    		IDegreeFactory factory,
+            InternalReadAccessor extractor,
+            Object object,
+            FieldValue value
+            );
 
     /**
      * Evaluates the expression using the provided parameters.
@@ -164,6 +174,14 @@ public interface Evaluator
                             Object left,
                             InternalReadAccessor rightExtractor,
                             Object right);
+    
+    public IDegree evaluate(InternalWorkingMemory workingMemory,
+    		IDegreeFactory factory,
+            InternalReadAccessor leftExtractor,
+            Object left,
+            InternalReadAccessor rightExtractor,
+            Object right
+            );
 
     /**
      * Evaluates the expression using the provided parameters.
@@ -196,6 +214,12 @@ public interface Evaluator
     public boolean evaluateCachedLeft(InternalWorkingMemory workingMemory,
                                       VariableContextEntry context,
                                       Object right);
+    
+    public IDegree evaluateCachedLeft(InternalWorkingMemory workingMemory,    		
+            VariableContextEntry context,
+            IDegreeFactory factory,
+            Object right);
+
 
     /**
      * Evaluates the expression using the provided parameters.
@@ -227,6 +251,11 @@ public interface Evaluator
     public boolean evaluateCachedRight(InternalWorkingMemory workingMemory,
                                        VariableContextEntry context,
                                        Object left);
+    
+    public IDegree evaluateCachedRight(InternalWorkingMemory workingMemory,    		
+            VariableContextEntry context,
+            IDegreeFactory factory,
+            Object left);
     
     /**
      * Returns true if this evaluator implements a temporal evaluation,

@@ -39,6 +39,8 @@ public interface RuleBase
     RuleBaseEventManager {
 
     public static final int RETEOO = 1;
+    
+    public static final int IMPERFECT_RETEOO = 99;
 
     StatelessSession newStatelessSession();
 

@@ -21,7 +21,10 @@ import java.util.Map;
 
 import org.drools.FactException;
 import org.drools.common.InternalWorkingMemoryActions;
+import org.drools.degrees.IDegree;
 import org.drools.impl.StatefulKnowledgeSessionImpl;
+import org.drools.reteoo.ConstraintKey;
+import org.drools.reteoo.Evaluation;
 import org.drools.reteoo.ReteooStatefulSession;
 import org.drools.reteoo.ReteooWorkingMemory;
 import org.drools.rule.Declaration;
@@ -204,4 +207,22 @@ public class SequentialKnowledgeHelper
     public Map<String, ExitPoint> getExitPoints() {
         return Collections.unmodifiableMap( this.workingMemory.getExitPoints() );
     }
+
+    
+    
+    
+	public void inject(Object object, String field, String op, String value) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public IDegree getConsequenceDegree() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void setConsequenceDegree(IDegree deg) {
+		// TODO Auto-generated method stub
+		
+	}
 }

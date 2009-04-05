@@ -12,7 +12,10 @@ import org.drools.RuleBase;
 import org.drools.RuntimeDroolsException;
 import org.drools.WorkingMemoryEntryPoint;
 import org.drools.RuleBaseConfiguration.AssertBehaviour;
+import org.drools.degrees.IDegree;
+import org.drools.reteoo.ConstraintKey;
 import org.drools.reteoo.EntryPointNode;
+import org.drools.reteoo.Evaluation;
 import org.drools.reteoo.LeftTuple;
 import org.drools.reteoo.ObjectTypeConf;
 import org.drools.rule.EntryPoint;
@@ -482,5 +485,16 @@ public class NamedEntryPoint
     public RuleBase getRuleBase() {
         return this.ruleBase;
     }
+
+	
+	public void inject(String premise, Object object,
+			ConstraintKey key, IDegree degree) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	
+
+	
 
 }

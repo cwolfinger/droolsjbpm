@@ -18,6 +18,7 @@ import org.drools.common.InternalWorkingMemory;
 import org.drools.common.InternalWorkingMemoryEntryPoint;
 import org.drools.common.ObjectStore;
 import org.drools.common.ObjectTypeConfigurationRegistry;
+import org.drools.degrees.IDegree;
 import org.drools.event.ActivationCancelledEvent;
 import org.drools.event.ActivationCreatedEvent;
 import org.drools.event.AfterActivationFiredEvent;
@@ -50,7 +51,10 @@ import org.drools.event.rule.impl.BeforeActivationFiredEventImpl;
 import org.drools.event.rule.impl.ObjectInsertedEventImpl;
 import org.drools.event.rule.impl.ObjectRetractedEventImpl;
 import org.drools.event.rule.impl.ObjectUpdatedEventImpl;
+import org.drools.reteoo.ConstraintKey;
+import org.drools.reteoo.Evaluation;
 import org.drools.reteoo.ReteooWorkingMemory;
+import org.drools.rule.Rule;
 import org.drools.runtime.BatchExecutionResults;
 import org.drools.runtime.BatchExecutor;
 import org.drools.runtime.Environment;
@@ -658,5 +662,22 @@ public class StatefulKnowledgeSessionImpl
             session.endBatchExecution();
         }
     }
+
+    
+    
+    
+	public void inject(String rule, Object object, ConstraintKey key,
+			IDegree degree) {
+		// TODO Auto-generated method stub
+		
+	}
+
+    
+    
+    
+    
+    
+    
+    
 
 }

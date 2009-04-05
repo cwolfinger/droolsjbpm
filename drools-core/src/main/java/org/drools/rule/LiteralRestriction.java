@@ -20,9 +20,15 @@ import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.util.Collection;
+import java.util.LinkedList;
 
+import org.drools.base.ClassFieldReader;
 import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
+import org.drools.degrees.IDegree;
+import org.drools.degrees.factory.IDegreeFactory;
+import org.drools.reteoo.ConstraintKey;
 import org.drools.reteoo.LeftTuple;
 import org.drools.spi.AcceptsReadAccessor;
 import org.drools.spi.Evaluator;
@@ -94,6 +100,16 @@ public class LiteralRestriction
                                         handle.getObject(),
                                         this.field );
     }
+    
+    public IDegree isSatisfied(InternalReadAccessor extractor,
+			InternalFactHandle handle, InternalWorkingMemory workingMemory,
+			ContextEntry context, IDegreeFactory factory) {
+    	return this.evaluator.evaluate( null,
+    			factory,
+                this.readAccessor,
+                handle.getObject(),
+                this.field );
+	}
 
     public boolean isAllowedCachedLeft(final ContextEntry context,
                                        final InternalFactHandle handle) {
@@ -102,6 +118,15 @@ public class LiteralRestriction
                                         handle.getObject(),
                                         this.field );
     }
+    
+    public IDegree isSatisfiedCachedLeft(ContextEntry context,
+			InternalFactHandle handle, IDegreeFactory factory) {
+    	return this.evaluator.evaluate( null,
+    			factory,
+                ((LiteralContextEntry) context).getFieldExtractor(),
+                handle.getObject(),
+                this.field );
+	}
 
     public boolean isAllowedCachedRight(final LeftTuple tuple,
                                         final ContextEntry context) {
@@ -110,6 +135,15 @@ public class LiteralRestriction
                                         ((LiteralContextEntry) context).getObject(),
                                         this.field );
     }
+
+    
+	public IDegree isSatisfiedCachedRight(LeftTuple tuple,
+			ContextEntry context, IDegreeFactory factory) {
+	    return this.evaluator.evaluate( null,
+	    		factory,
+                ((LiteralContextEntry) context).getFieldExtractor(),
+                ((LiteralContextEntry) context).getObject(),
+                this.field );	}
 
     /**
      * Literal constraints cannot have required declarations, so always return an empty array.
@@ -225,5 +259,24 @@ public class LiteralRestriction
         }
 
     }
+
+	
+    private ConstraintKey singletonKey = null;
+    
+	public ConstraintKey getConstraintKey() {
+		if (singletonKey == null) {			
+			singletonKey = new ConstraintKey(((ClassFieldReader) this.readAccessor).getFieldName(),this.getEvaluator().toString(),this.getField().toString());
+		}
+		return singletonKey;
+	}
+	
+	public Collection<ConstraintKey> getAllConstraintKeys() {
+		Collection<ConstraintKey> ans = new LinkedList<ConstraintKey>();
+					
+		ans.add(this.getConstraintKey());
+		return ans;
+	}
+	
+	
 
 }

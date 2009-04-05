@@ -18,9 +18,19 @@
 package org.drools.rule;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Set;
 
 import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
+import org.drools.degrees.IDegree;
+import org.drools.degrees.factory.IDegreeFactory;
+import org.drools.reteoo.CompositeEvaluationTemplate;
+import org.drools.reteoo.ConstraintKey;
+import org.drools.reteoo.Evaluation;
+import org.drools.reteoo.EvaluationTemplate;
 import org.drools.reteoo.LeftTuple;
 import org.drools.spi.AlphaNodeFieldConstraint;
 import org.drools.spi.BetaNodeFieldConstraint;
@@ -38,6 +48,9 @@ public class AndConstraint extends AbstractCompositeConstraint {
 
     private static final long serialVersionUID = 400L;
 
+
+    
+    
     /**
      * {@inheritDoc}
      */
@@ -53,6 +66,25 @@ public class AndConstraint extends AbstractCompositeConstraint {
         }
         return true;
     }
+    
+    
+    public Evaluation isSatisfied(InternalFactHandle handle,
+			InternalWorkingMemory workingMemory, ContextEntry context,
+			IDegreeFactory factory) {
+    	
+    	int N = this.alphaConstraints.length;
+    	Evaluation[] evals = new Evaluation[N];
+    	
+    	for ( int i = 0; i < N; i++ ) 
+            evals[i] = this.alphaConstraints[i].isSatisfied( handle,
+                                                      	workingMemory,
+                                                      	((MultiFieldConstraintContextEntry) context).alphas[i],
+                                                      	factory);
+           
+        return getTemplate().spawn(evals);
+    	
+	}
+    
 
     /**
      * {@inheritDoc}
@@ -76,6 +108,34 @@ public class AndConstraint extends AbstractCompositeConstraint {
         return true;
     }
 
+    public IDegree isSatisfiedCachedLeft(ContextEntry context,
+			InternalFactHandle handle, IDegreeFactory factory) {
+    	
+    	int N1 = this.alphaConstraints.length;
+    	int N2 = this.betaConstraints.length;
+    	int N = N1 + N2; 
+    	Evaluation[] evals = new Evaluation[N];
+    	
+    	for ( int i = 0; i < N1; i++ ) 
+            evals[i] = this.alphaConstraints[i].isSatisfied( handle,
+            											((MultiFieldConstraintContextEntry) context).workingMemory,
+                                                      	((MultiFieldConstraintContextEntry) context).alphas[i],
+                                                      	factory);
+    	for ( int i = 0; i < N2; i++ )
+    		//TODO: Extend BetaConstraints as well..
+    		evals[N1+i] = new Evaluation(0, 
+    			this.betaConstraints[i].isSatisfiedCachedLeft(
+    				((MultiFieldConstraintContextEntry) context).betas[i],
+    				handle, 
+    				factory),
+    				null,factory.getMergeStrategy(),factory.getNullHandlingStrategy());
+    				
+
+    	return getTemplate().spawn(evals).getDegree();
+    	
+	}
+    
+    
     /**
      * {@inheritDoc}
      */
@@ -96,6 +156,37 @@ public class AndConstraint extends AbstractCompositeConstraint {
         }
         return true;
     }
+    
+    
+    public IDegree isSatisfiedCachedRight(LeftTuple tuple,
+			ContextEntry context, IDegreeFactory factory) {
+		
+    	int N1 = this.alphaConstraints.length;
+    	int N2 = this.betaConstraints.length;
+    	int N = N1 + N2; 
+    	Evaluation[] evals = new Evaluation[N];
+    	
+    	for ( int i = 0; i < N1; i++ ) 
+            evals[i] = this.alphaConstraints[i].isSatisfied( ((MultiFieldConstraintContextEntry) context).handle,
+            											((MultiFieldConstraintContextEntry) context).workingMemory,
+                                                      	((MultiFieldConstraintContextEntry) context).alphas[i],
+                                                      	factory);
+    	for ( int i = 0; i < N2; i++ )
+    		//TODO: Extend Beta as well
+    		evals[N1+i] = new Evaluation(0,     			
+    			this.betaConstraints[i].isSatisfiedCachedRight(
+    				tuple,
+    				((MultiFieldConstraintContextEntry) context).betas[i],    				
+    				factory),
+    				
+    				null,factory.getMergeStrategy(),factory.getNullHandlingStrategy());
+    				
+
+    	return getTemplate().spawn(evals).getDegree();
+    	
+	}
+    
+    
 
     public int hashCode() {
         final int PRIME = 31;
@@ -140,5 +231,67 @@ public class AndConstraint extends AbstractCompositeConstraint {
 
         return clone;
     }
+
+
+    
+    private ConstraintKey singletonKey = null;
+    
+	public ConstraintKey getConstraintKey() {
+		if (singletonKey == null) {
+			int Na = this.alphaConstraints.length;
+			int Nb = this.betaConstraints.length;
+			ConstraintKey[] cks = new ConstraintKey[Na+Nb];
+			for (int j = 0; j < Na; j++)
+				cks[j] = this.alphaConstraints[j].getConstraintKey();
+			for (int j = 0; j < Nb; j++)
+				cks[Na+j] = this.betaConstraints[j].getConstraintKey();
+			singletonKey = new ConstraintKey("and",cks);
+		}
+		return singletonKey;
+	}
+
+	public Collection<ConstraintKey> getAllConstraintKeys() {
+		Collection<ConstraintKey> ans = new LinkedList<ConstraintKey>();
+		
+			int Na = this.alphaConstraints.length;
+			int Nb = this.betaConstraints.length;		
+		
+			for (int j = 0; j < Na; j++)
+				ans.add(alphaConstraints[j].getConstraintKey());
+			for (int j = 0; j < Nb; j++)
+				ans.add(betaConstraints[j].getConstraintKey());
+					
+		ans.add(this.getConstraintKey());
+		return ans;
+	}
+
+
+	
+    public EvaluationTemplate buildEvaluationTemplate(int id, Map<ConstraintKey, Set<String>> dependencies, IDegreeFactory factory) {
+		//BUILD A COMPOSITE TEMPLATE
+    	int N = this.getAlphaConstraints().length + this.getBetaConstraints().length;
+    	CompositeEvaluationTemplate temp = new CompositeEvaluationTemplate(id,this.getConstraintKey(),dependencies.get(this.getConstraintKey()),N,factory.getAndOperator(),factory.getMergeStrategy(),factory.getNullHandlingStrategy());
+
+    	int Na = this.alphaConstraints.length;
+		int Nb = this.betaConstraints.length;		
+	
+		for (int j = 0; j < Na; j++)
+			temp.addChild(alphaConstraints[j].buildEvaluationTemplate(id, dependencies, factory));
+		//for (int j = 0; j < Nb; j++)
+		//	temp.addChild(betaConstraints[j].build);
+
+    	
+    	this.setTemplate(temp);
+    	return temp;
+    }
+
+//    public void buildEvaluationTemplate(int id, Map<ConstraintKey, Set<String>> dependencies, IDegreeFactory factory) {
+//    	
+//    	setTemplate(new EvaluationTemplate(id,this.getConstraintKey(),dependencies.get(this.getConstraintKey()),N,factory.getAndOperator(),factory.getMergeStrategy(),factory.getNullHandlingStrategy()));
+//    }
+
+	
+
+	
 
 }

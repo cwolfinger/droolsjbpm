@@ -22,6 +22,8 @@ import java.util.Map;
 import org.drools.FactException;
 import org.drools.FactHandle;
 import org.drools.WorkingMemory;
+import org.drools.degrees.IDegree;
+import org.drools.reteoo.Evaluation;
 import org.drools.rule.Declaration;
 import org.drools.rule.Rule;
 import org.drools.runtime.ExitPoint;
@@ -126,5 +128,13 @@ public interface KnowledgeHelper
     public Declaration getDeclaration(String identifier);
     
     public void halt();
+    
+    
+    public IDegree getConsequenceDegree();
+    
+    public void inject(Object object, String field, String op, String value);
 
+    public void setConsequenceDegree(IDegree deg);
+    
+    
 }

@@ -20,10 +20,16 @@ import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.util.Collection;
+import java.util.LinkedList;
 
 import org.drools.RuntimeDroolsException;
 import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
+import org.drools.degrees.IDegree;
+import org.drools.degrees.factory.IDegreeFactory;
+import org.drools.reteoo.ConstraintKey;
+import org.drools.reteoo.Evaluation;
 import org.drools.reteoo.LeftTuple;
 import org.drools.rule.ReturnValueRestriction.ReturnValueContextEntry;
 import org.drools.runtime.rule.Evaluator;
@@ -140,6 +146,25 @@ public class ReturnValueConstraint extends MutableTypeConstraint
         }
     }
 
+    
+    public Evaluation isSatisfied(InternalFactHandle handle,
+			InternalWorkingMemory workingMemory, ContextEntry context,
+			IDegreeFactory factory) {
+    	try {
+            IDegree deg = this.restriction.isSatisfied( this.readAccessor,
+                                               handle,
+                                               null,
+                                               workingMemory,
+                                               context,
+                                               factory);
+            return getTemplate().spawn(deg);
+        } catch ( final Exception e ) {
+            throw new RuntimeDroolsException( "Exception executing ReturnValue constraint " + this.restriction + " : " + e.getMessage(),
+                                              e );            
+        }        
+	}
+    
+    
     public boolean isAllowedCachedLeft(final ContextEntry context,
                                        final InternalFactHandle handle) {
         try {
@@ -154,6 +179,23 @@ public class ReturnValueConstraint extends MutableTypeConstraint
                                               e );
         }
     }
+    
+    public IDegree isSatisfiedCachedLeft(ContextEntry context,
+			InternalFactHandle handle, IDegreeFactory factory) {
+    	 try {
+             final ReturnValueContextEntry ctx = (ReturnValueContextEntry) context;
+             return this.restriction.isSatisfied( this.readAccessor,
+                                                handle,
+                                                ctx.getTuple(),
+                                                ctx.getWorkingMemory(),
+                                                ctx,
+                                                factory);
+         } catch ( final Exception e ) {
+             throw new RuntimeDroolsException( "Exception executing ReturnValue constraint " + this.restriction + " : " + e.getMessage(),
+                                               e );
+         }
+	}
+    
 
     public boolean isAllowedCachedRight(final LeftTuple tuple,
                                         final ContextEntry context) {
@@ -170,9 +212,44 @@ public class ReturnValueConstraint extends MutableTypeConstraint
         }
     }
 
+
+	public IDegree isSatisfiedCachedRight(LeftTuple tuple,
+			ContextEntry context, IDegreeFactory factory) {
+        try {
+            final ReturnValueContextEntry ctx = (ReturnValueContextEntry) context;
+            return this.restriction.isSatisfied( this.readAccessor,
+                                               ctx.getHandle(),
+                                               tuple,
+                                               ctx.getWorkingMemory(),
+                                               ctx,
+                                               factory);
+        } catch ( final Exception e ) {
+            throw new RuntimeDroolsException( "Exception executing ReturnValue constraint " + this.restriction + " : " + e.getMessage(),
+                                              e );
+        }
+		
+	}
+
+    
+    
     public Object clone() {
         return new ReturnValueConstraint( this.readAccessor,
                                           (ReturnValueRestriction) this.restriction.clone() );
     }
+
+	public ConstraintKey getConstraintKey() {
+		return this.restriction.getConstraintKey();
+	}
+
+	public Collection<ConstraintKey> getAllConstraintKeys() {
+		Collection<ConstraintKey> ans = new LinkedList<ConstraintKey>();
+			ans.add(getConstraintKey());
+	return ans;
+	}
+	
+    
+    
+
+	
 
 }

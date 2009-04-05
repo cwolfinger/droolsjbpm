@@ -8,6 +8,7 @@ import org.drools.common.BaseNode;
 import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.common.RuleBasePartitionId;
+import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.spi.PropagationContext;
 
 public class SingleLeftTupleSinkAdapter extends AbstractLeftTupleSinkAdapter {
@@ -28,12 +29,41 @@ public class SingleLeftTupleSinkAdapter extends AbstractLeftTupleSinkAdapter {
         doPropagateAssertLeftTuple( context, workingMemory,
                                     new LeftTuple( leftTuple, rightTuple, this.sink, leftTupleMemoryEnabled ) );
     }
+    
+    
+    public void propagateAssertLeftTuple(ImperfectLeftTuple leftTuple,
+			ImperfectRightTuple rightTuple, PropagationContext context,
+			InternalWorkingMemory workingMemory, IDegreeFactory factory,
+			EvalRecord record, boolean leftTupleMemoryEnabled) {
+    	
+    	doPropagateAssertLeftTuple( context, workingMemory, factory, record,
+                new ImperfectLeftTuple( leftTuple, rightTuple, this.sink, leftTupleMemoryEnabled, record ) );
+		
+	}
+
+    
+    
+	
 
     public void propagateAssertLeftTuple( final LeftTuple tuple, final PropagationContext context,
                                           final InternalWorkingMemory workingMemory, boolean leftTupleMemoryEnabled ) {
         doPropagateAssertLeftTuple( context, workingMemory, new LeftTuple( tuple, this.sink, leftTupleMemoryEnabled ) );
     }
 
+
+
+    
+    
+    public void propagateAssertLeftTuple(ImperfectLeftTuple tuple,
+			PropagationContext context, InternalWorkingMemory workingMemory,
+			IDegreeFactory factory, EvalRecord record,
+			boolean leftTupleMemoryEnabled) {
+    	doPropagateAssertLeftTuple( context, workingMemory, factory, record, new ImperfectLeftTuple( tuple, this.sink, leftTupleMemoryEnabled, record ) );
+		
+	}
+    
+    
+    
     public void propagateRetractLeftTuple( final LeftTuple leftTuple, final PropagationContext context,
                                            final InternalWorkingMemory workingMemory ) {
         LeftTuple child = leftTuple.getBetaChildren();
@@ -78,6 +108,20 @@ public class SingleLeftTupleSinkAdapter extends AbstractLeftTupleSinkAdapter {
         doPropagateAssertLeftTuple( context, workingMemory,
                                     new LeftTuple( factHandle, this.sink, leftTupleMemoryEnabled ) );
     }
+    
+    
+    public void createAndPropagateAssertLeftTuple(
+			InternalFactHandle factHandle, PropagationContext context,
+			InternalWorkingMemory workingMemory, IDegreeFactory factory,
+			EvalRecord record, boolean leftTupleMemoryEnabled) {
+    	
+    	doPropagateAssertLeftTuple( context, workingMemory, factory, record,
+                new ImperfectLeftTuple( factHandle, this.sink, leftTupleMemoryEnabled, record ) );
+		
+	}
+
+	
+    
 
     public BaseNode getMatchingNode( BaseNode candidate ) {
         if( candidate.equals( sink ) ) {
@@ -116,6 +160,12 @@ public class SingleLeftTupleSinkAdapter extends AbstractLeftTupleSinkAdapter {
                                                LeftTuple newLeftTuple ) {
         this.sink.assertLeftTuple( newLeftTuple, context, workingMemory );
     }
+    
+    
+    protected void doPropagateAssertLeftTuple( PropagationContext context, InternalWorkingMemory workingMemory,
+            IDegreeFactory factory, EvalRecord record, ImperfectLeftTuple newLeftTuple ) {
+    	this.sink.assertLeftTuple( newLeftTuple, context, workingMemory, factory );
+    }
 
     /**
      * This is a hook method that may be overriden by subclasses. Please keep it
@@ -130,5 +180,9 @@ public class SingleLeftTupleSinkAdapter extends AbstractLeftTupleSinkAdapter {
                                                 LeftTuple child, LeftTupleSink tupleSink ) {
         tupleSink.retractLeftTuple( child, context, workingMemory );
     }
+
+	
+
+	
 
 }

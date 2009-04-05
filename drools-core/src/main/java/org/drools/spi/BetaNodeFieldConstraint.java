@@ -17,6 +17,8 @@ package org.drools.spi;
  */
 
 import org.drools.common.InternalFactHandle;
+import org.drools.degrees.IDegree;
+import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.reteoo.LeftTuple;
 import org.drools.rule.ContextEntry;
 
@@ -26,9 +28,17 @@ public interface BetaNodeFieldConstraint
 
     public boolean isAllowedCachedLeft(ContextEntry context,
                                        InternalFactHandle handle);
+    
+    public IDegree isSatisfiedCachedLeft(ContextEntry context,
+            							  InternalFactHandle handle,
+            							  IDegreeFactory factory);
 
     public boolean isAllowedCachedRight(LeftTuple tuple,
-                                        ContextEntry context);
+             							ContextEntry context);
+
+    public IDegree isSatisfiedCachedRight(LeftTuple tuple,
+                                        ContextEntry context,
+                                        IDegreeFactory factory);
 
     public ContextEntry createContextEntry();
 

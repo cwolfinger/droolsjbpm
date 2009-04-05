@@ -28,11 +28,13 @@ import java.util.Map;
 
 import org.drools.common.BaseNode;
 import org.drools.common.DroolsObjectInputStream;
+import org.drools.common.ImperfectFactHandle;
 import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalRuleBase;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.common.InternalWorkingMemoryEntryPoint;
 import org.drools.common.RuleBasePartitionId;
+import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.rule.EntryPoint;
 import org.drools.spi.ObjectType;
 import org.drools.spi.PropagationContext;
@@ -72,6 +74,9 @@ public class Rete extends ObjectSource
     private Map<EntryPoint, EntryPointNode> entryPoints;
 
     private transient InternalRuleBase      ruleBase;
+    
+    
+    private Map<ConstraintKey,IGammaNode>	constraintIndex;
 
     public Rete() {
         this( null );
@@ -84,7 +89,10 @@ public class Rete extends ObjectSource
     public Rete(InternalRuleBase ruleBase) {
         super( 0, RuleBasePartitionId.MAIN_PARTITION, ruleBase != null ? ruleBase.getConfiguration().isMultithreadEvaluation() : false );
         this.entryPoints = Collections.synchronizedMap( new HashMap<EntryPoint, EntryPointNode>() );
-        this.ruleBase = ruleBase;
+        this.ruleBase = ruleBase;     
+        
+        this.constraintIndex = new HashMap<ConstraintKey, IGammaNode>();
+        
     }
 
     // ------------------------------------------------------------
@@ -244,4 +252,36 @@ public class Rete extends ObjectSource
     public Map<EntryPoint,EntryPointNode> getEntryPointNodes() {
         return this.entryPoints;
     }
+
+    
+    
+    
+	public void assertObject(ImperfectFactHandle factHandle,
+			PropagationContext propagationContext,
+			InternalWorkingMemory workingMemory, IDegreeFactory factory,
+			EvalRecord record) {
+		
+		EntryPoint entryPoint = propagationContext.getEntryPoint();
+        EntryPointNode node = this.entryPoints.get( entryPoint );
+        ObjectTypeConf typeConf = ((InternalWorkingMemoryEntryPoint) workingMemory.getWorkingMemoryEntryPoint( entryPoint.getEntryPointId() )).getObjectTypeConfigurationRegistry().getObjectTypeConf( entryPoint,
+                                                                                                                                                                                                       factHandle.getObject() );
+        node.assertImperfectObject(factHandle,
+                           propagationContext,
+                           typeConf,
+                           workingMemory,
+                           factory );
+		
+	}
+	
+	
+	
+	public void indexGammaNode(ConstraintKey key, IGammaNode node) {
+		this.constraintIndex.put(key, node);
+	}
+	
+	public IGammaNode getNode(ConstraintKey key) {
+		return this.constraintIndex.get(key);
+	}
+	
+	
 }

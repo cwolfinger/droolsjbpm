@@ -1,7 +1,13 @@
 package org.drools.rule;
 
+import java.util.Collection;
+import java.util.LinkedList;
+
 import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
+import org.drools.degrees.IDegree;
+import org.drools.degrees.factory.IDegreeFactory;
+import org.drools.reteoo.ConstraintKey;
 import org.drools.reteoo.LeftTuple;
 import org.drools.spi.InternalReadAccessor;
 import org.drools.spi.Restriction;
@@ -32,6 +38,26 @@ public class AndCompositeRestriction extends AbstractCompositeRestriction {
         return true;
     }
 
+    
+    public IDegree isSatisfied(InternalReadAccessor extractor,
+			InternalFactHandle handle, InternalWorkingMemory workingMemory,
+			ContextEntry context, IDegreeFactory factory) {
+    	
+    	int N = this.restrictions.length;
+    	IDegree[] degs = new IDegree[N];
+    	
+    	for ( int i = 0; i < N; i++ ) 
+            degs[i] = this.restrictions[i].isSatisfied( extractor,
+                                                  handle,
+                                                  workingMemory,
+                                                  context, factory );
+    	return factory.getAndOperator().eval(degs);
+        
+	}
+
+	
+
+    
     public boolean isAllowedCachedLeft(final ContextEntry context,
                                        final InternalFactHandle handle) {
         CompositeContextEntry contextEntry = (CompositeContextEntry) context;
@@ -43,6 +69,22 @@ public class AndCompositeRestriction extends AbstractCompositeRestriction {
         }
         return true;
     }
+    
+    public IDegree isSatisfiedCachedLeft(ContextEntry context,
+			InternalFactHandle handle, IDegreeFactory factory) {
+    	
+    	int N = this.restrictions.length;
+    	IDegree[] degs = new IDegree[N];
+    	CompositeContextEntry contextEntry = (CompositeContextEntry) context;
+        for ( int i = 0; i < N; i++ ) 
+        	degs[i] = this.restrictions[i].isSatisfiedCachedLeft( contextEntry.contextEntries[i],
+                                                            handle, factory );
+            
+        
+        return factory.getAndOperator().eval(degs);
+	}
+
+	
 
     public boolean isAllowedCachedRight(final LeftTuple tuple,
                                         final ContextEntry context) {
@@ -55,7 +97,24 @@ public class AndCompositeRestriction extends AbstractCompositeRestriction {
         }
         return true;
     }
+    
+    
+    public IDegree isSatisfiedCachedRight(LeftTuple tuple,
+			ContextEntry context, IDegreeFactory factory) {
+		
+    	int N = this.restrictions.length;
+    	IDegree[] degs = new IDegree[N];
+    	CompositeContextEntry contextEntry = (CompositeContextEntry) context;
+        for ( int i = 0; i < N; i++ ) 
+        	degs[i] = this.restrictions[i].isSatisfiedCachedRight( tuple, 
+        													contextEntry.contextEntries[i],
+        													factory );
+                   
+        return factory.getAndOperator().eval(degs);
+	}
 
+    
+    
     public Object clone() {
         Restriction[] clone = new Restriction[ this.restrictions.length ];
         for( int i = 0; i < clone.length; i++ ) {
@@ -64,4 +123,28 @@ public class AndCompositeRestriction extends AbstractCompositeRestriction {
         return new AndCompositeRestriction( clone );
     }
 
+	private ConstraintKey singletonKey = null;
+    
+	public ConstraintKey getConstraintKey() {
+		if (singletonKey == null) {
+			int N = this.restrictions.length;			
+			ConstraintKey[] cks = new ConstraintKey[N];
+			for (int j = 0; j < N; j++)
+				cks[j] = this.restrictions[j].getConstraintKey();			
+			singletonKey = new ConstraintKey("and",cks);
+		}
+		return singletonKey;
+	}
+	
+	public Collection<ConstraintKey> getAllConstraintKeys() {
+		Collection<ConstraintKey> ans = new LinkedList<ConstraintKey>();
+		
+			int N = this.restrictions.length;			
+			for (int j = 0; j < N; j++) 		
+				ans.add(this.restrictions[j].getConstraintKey());
+		
+		ans.add(getConstraintKey());
+		return ans;
+	}
+	
 }

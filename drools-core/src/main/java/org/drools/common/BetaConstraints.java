@@ -3,7 +3,10 @@ package org.drools.common;
 import java.io.Externalizable;
 
 import org.drools.RuleBaseConfiguration;
+import org.drools.degrees.IDegree;
+import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.reteoo.BetaMemory;
+import org.drools.reteoo.ConstraintKey;
 import org.drools.reteoo.LeftTuple;
 import org.drools.rule.ContextEntry;
 import org.drools.util.LinkedList;
@@ -27,6 +30,12 @@ public interface BetaConstraints
 
     public boolean isAllowedCachedRight(ContextEntry[] context,
                                         LeftTuple tuple);
+    
+    public IDegree isSatisfiedCachedLeft(ContextEntry[] context,
+            InternalFactHandle handle, IDegreeFactory factory);
+
+    public IDegree isSatisfiedCachedRight(ContextEntry[] context,
+             LeftTuple tuple, IDegreeFactory factory);
 
     public LinkedList getConstraints();
 
@@ -41,5 +50,7 @@ public interface BetaConstraints
     public void resetTuple(final ContextEntry[] context);
 
     public void resetFactHandle(final ContextEntry[] context);
+    
+    public ConstraintKey getConstraintKey();
 
 }

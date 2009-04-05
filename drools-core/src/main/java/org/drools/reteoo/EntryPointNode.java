@@ -27,12 +27,14 @@ import java.util.Map;
 
 import org.drools.base.ShadowProxy;
 import org.drools.common.BaseNode;
+import org.drools.common.ImperfectFactHandle;
 import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.common.InternalWorkingMemoryEntryPoint;
 import org.drools.common.NodeMemory;
 import org.drools.common.PropagationContextImpl;
 import org.drools.common.RuleBasePartitionId;
+import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.reteoo.builder.BuildContext;
 import org.drools.rule.EntryPoint;
 import org.drools.spi.ObjectType;
@@ -142,6 +144,7 @@ public class EntryPointNode extends ObjectSource
         
         ObjectTypeNode[] cachedNodes = objectTypeConf.getObjectTypeNodes();
 
+                
         for ( int i = 0, length = cachedNodes.length; i < length; i++ ) {
             cachedNodes[i].assertObject( handle,
                                          context,
@@ -305,5 +308,36 @@ public class EntryPointNode extends ObjectSource
     public String toString() {
         return "[EntryPointNode(" + this.id + ") " + this.entryPoint + " ]";
     }
+
+	public void assertObject(ImperfectFactHandle factHandle,
+			PropagationContext propagationContext,
+			InternalWorkingMemory workingMemory, IDegreeFactory factory, EvalRecord record) {
+	
+	}
+	public void assertImperfectObject(final ImperfectFactHandle handle,
+            final PropagationContext context,
+            final ObjectTypeConf objectTypeConf,	//TODO: extend to have node type constraint
+            final InternalWorkingMemory workingMemory,
+            IDegreeFactory factory) {
+		
+			// checks if shadow is enabled
+			if ( objectTypeConf.isShadowEnabled() ) {
+		//the user has implemented the ShadowProxy interface, let their implementation
+		// know it is safe to update the information the engine can see.
+				((ShadowProxy) handle.getObject()).updateProxy();
+			}
+		
+			ObjectTypeNode[] cachedNodes = objectTypeConf.getObjectTypeNodes();
+		
+			for ( int i = 0, length = cachedNodes.length; i < length; i++ ) {
+				System.out.println(this.getClass() + " dispatching obj to node "+i);
+				EvalRecord record = new EvalRecord();				
+				cachedNodes[i].assertObject(handle,
+		                        context,
+		                        workingMemory,
+		                        factory,
+		                        record);
+			}
+	}
 
 }

@@ -23,7 +23,13 @@ import java.io.ObjectOutput;
 
 import org.drools.base.evaluators.Operator;
 import org.drools.common.InternalFactHandle;
+import org.drools.common.InternalWorkingMemory;
+import org.drools.degrees.IDegree;
+import org.drools.degrees.factory.IDegreeFactory;
+import org.drools.rule.VariableRestriction.VariableContextEntry;
 import org.drools.spi.Evaluator;
+import org.drools.spi.FieldValue;
+import org.drools.spi.InternalReadAccessor;
 import org.drools.time.Interval;
 
 /**
@@ -117,5 +123,59 @@ public abstract class BaseEvaluator
     public int hashCode() {
         return (this.getValueType().hashCode()) ^ (this.getOperator().hashCode()) ^ (this.getClass().hashCode());
     }
+    
+    
+    
+    
+    
+    
+    
+    public abstract boolean evaluate(InternalWorkingMemory workingMemory,
+            final InternalReadAccessor leftExtractor,
+            final Object left,
+            final InternalReadAccessor rightExtractor,
+            final Object right);
+    
+    public abstract boolean evaluateCachedRight(InternalWorkingMemory workingMemory,
+            final VariableContextEntry context,
+            final Object left);
+    
+    public abstract boolean evaluateCachedLeft(InternalWorkingMemory workingMemory,
+            final VariableContextEntry context,
+            final Object right);
+    
+    public abstract boolean evaluate(InternalWorkingMemory workingMemory,
+            final InternalReadAccessor extractor,
+            final Object object,
+            final FieldValue value); 
+    
+    
+    
+    public IDegree evaluate(InternalWorkingMemory workingMemory,
+			IDegreeFactory factory, InternalReadAccessor extractor,
+			Object object, FieldValue value) {
+		return factory.fromBoolean(this.evaluate(workingMemory, extractor, object, value));
+	}
+
+	public IDegree evaluate(InternalWorkingMemory workingMemory,
+			IDegreeFactory factory, InternalReadAccessor leftExtractor,
+			Object left, InternalReadAccessor rightExtractor, Object right) {
+		return factory.fromBoolean(this.evaluate(workingMemory, leftExtractor, left, rightExtractor, right));
+	}
+
+	public IDegree evaluateCachedLeft(InternalWorkingMemory workingMemory,
+			VariableContextEntry context, IDegreeFactory factory,
+			Object right) {
+		return factory.fromBoolean(this.evaluateCachedLeft(workingMemory, context, right));
+	}
+
+	public IDegree evaluateCachedRight(InternalWorkingMemory workingMemory,
+			VariableContextEntry context, IDegreeFactory factory,
+			Object left) {
+		return factory.fromBoolean(this.evaluateCachedRight(workingMemory, context, left));
+	}
+    
+    
+    
 
 }

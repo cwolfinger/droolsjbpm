@@ -19,11 +19,14 @@ package org.drools.reteoo.builder;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
+import java.util.Set;
 
 import org.drools.common.BaseNode;
 import org.drools.common.InternalRuleBase;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.common.RuleBasePartitionId;
+import org.drools.reteoo.ConstraintKey;
 import org.drools.reteoo.LeftTupleSource;
 import org.drools.reteoo.ObjectSource;
 import org.drools.reteoo.ReteooBuilder;
@@ -96,6 +99,15 @@ public class BuildContext {
 
     /** the calculate temporal distance matrix */
     private TemporalDependencyMatrix         temporal;
+    
+    
+    
+    
+    private Map<ConstraintKey,Set<String>> dependencies;
+    
+    
+    
+    
 
     public BuildContext(final InternalRuleBase rulebase,
                         final ReteooBuilder.IdGenerator idGenerator) {
@@ -432,5 +444,23 @@ public class BuildContext {
     public void setRule(Rule rule) {
         this.rule = rule;
     }
+
+    
+    
+    
+    
+	/**
+	 * @param dependencies the dependencies to set
+	 */
+	public void setDependencies(Map<ConstraintKey,Set<String>> dependencies) {
+		this.dependencies = dependencies;
+	}
+
+	/**
+	 * @return the dependencies
+	 */
+	public Map<ConstraintKey,Set<String>> getDependencies() {
+		return dependencies;
+	}
 
 }

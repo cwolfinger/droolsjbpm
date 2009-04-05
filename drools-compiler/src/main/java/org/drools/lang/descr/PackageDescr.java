@@ -22,7 +22,10 @@ import java.io.ObjectOutput;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+import org.drools.reteoo.ConstraintKey;
 import org.drools.rule.Namespaceable;
 
 public class PackageDescr extends BaseDescr
@@ -43,6 +46,8 @@ public class PackageDescr extends BaseDescr
     private List<FunctionDescr>        functions        = Collections.emptyList();
     private List<RuleDescr>            rules            = Collections.emptyList();
     private List<TypeDeclarationDescr> typeDeclarations = Collections.emptyList();
+    
+    private Map<ConstraintKey,Set<String>> dependencies = Collections.emptyMap();
 
     public PackageDescr() {
     }
@@ -196,4 +201,30 @@ public class PackageDescr extends BaseDescr
     public List<TypeDeclarationDescr> getTypeDeclarations() {
         return this.typeDeclarations;
     }
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+	/**
+	 * @param dependencies the dependencies to set
+	 */
+	public void setDependencies(Map<ConstraintKey,Set<String>> dependencies) {
+		this.dependencies = dependencies;
+	}
+
+	/**
+	 * @return the dependencies
+	 */
+	public Map<ConstraintKey,Set<String>> getDependencies() {
+		return dependencies;
+	}
 }

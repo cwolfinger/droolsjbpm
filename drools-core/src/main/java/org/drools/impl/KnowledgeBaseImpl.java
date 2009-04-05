@@ -52,6 +52,8 @@ import org.drools.event.knowlegebase.impl.BeforeRuleAddedEventImpl;
 import org.drools.event.knowlegebase.impl.BeforeRuleRemovedEventImpl;
 import org.drools.process.command.CommandService;
 import org.drools.process.command.impl.CommandBasedStatefulKnowledgeSession;
+import org.drools.reteoo.ImperfectAgendaItem;
+import org.drools.reteoo.ImperfectRuleBase;
 import org.drools.reteoo.ReteooRuleBase;
 import org.drools.reteoo.ReteooStatefulSession;
 import org.drools.rule.Package;
@@ -119,6 +121,8 @@ public class KnowledgeBaseImpl
             list.add( ((KnowledgePackageImp) knowledgePackage).pkg  );
         }
         ((ReteooRuleBase)ruleBase).addPackages( list);
+
+        
     }
 
     public Collection<KnowledgePackage> getKnowledgePackages() {

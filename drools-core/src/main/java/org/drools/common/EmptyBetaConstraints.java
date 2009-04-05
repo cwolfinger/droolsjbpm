@@ -21,7 +21,10 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
 import org.drools.RuleBaseConfiguration;
+import org.drools.degrees.IDegree;
+import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.reteoo.BetaMemory;
+import org.drools.reteoo.ConstraintKey;
 import org.drools.reteoo.LeftTuple;
 import org.drools.rule.ContextEntry;
 import org.drools.util.LeftTupleList;
@@ -142,5 +145,24 @@ public class EmptyBetaConstraints
     public ContextEntry[] createContext() {
         return EMPTY;
     }
+
+	public IDegree isSatisfiedCachedLeft(ContextEntry[] context,
+			InternalFactHandle handle, IDegreeFactory factory) {
+		return factory.True();
+	}
+
+	public IDegree isSatisfiedCachedRight(ContextEntry[] context,
+			LeftTuple tuple, IDegreeFactory factory) { 
+		return factory.True();
+	}
+	
+	private ConstraintKey singletonKey = null;
+    
+	public ConstraintKey getConstraintKey() {
+		if (singletonKey == null) {				
+			singletonKey = new ConstraintKey("and",new ConstraintKey[] {});
+		}
+		return singletonKey;
+	}
 
 }

@@ -25,12 +25,16 @@ import java.util.List;
 import org.drools.RuleBaseConfiguration;
 import org.drools.common.BaseNode;
 import org.drools.common.BetaConstraints;
+import org.drools.common.InternalRuleBase;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.common.NodeMemory;
 import org.drools.common.PropagationContextImpl;
 import org.drools.common.RuleBasePartitionId;
+import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.reteoo.AccumulateNode.AccumulateMemory;
 import org.drools.reteoo.CollectNode.CollectMemory;
+import org.drools.reteoo.filters.IFilterStrategy;
+import org.drools.reteoo.filters.IFilteringNode;
 import org.drools.rule.Behavior;
 import org.drools.rule.BehaviorManager;
 import org.drools.spi.BetaNodeFieldConstraint;
@@ -56,7 +60,7 @@ public abstract class BetaNode extends LeftTupleSource
     LeftTupleSinkNode,
     ObjectSinkNode,
     RightTupleSink,
-    NodeMemory {
+    NodeMemory, IFilteringNode {
     
     // ------------------------------------------------------------
     // Instance members
@@ -81,6 +85,9 @@ public abstract class BetaNode extends LeftTupleSource
     protected boolean         objectMemory = true;   // hard coded to true
     protected boolean         tupleMemoryEnabled;
 
+    
+    protected IFilterStrategy filterStrat;
+    
     // ------------------------------------------------------------
     // Constructors
     // ------------------------------------------------------------
@@ -114,6 +121,7 @@ public abstract class BetaNode extends LeftTupleSource
         if ( this.constraints == null ) {
             throw new RuntimeException( "cannot have null constraints, must at least be an instance of EmptyBetaConstraints" );
         }
+                     
     }
 
     public void readExternal(ObjectInput in) throws IOException,
@@ -413,5 +421,15 @@ public abstract class BetaNode extends LeftTupleSource
     public void setPreviousObjectSinkNode(final ObjectSinkNode previous) {
         this.previousObjectSinkNode = previous;
     }
+    
+    
+    public void setStrategy(IFilterStrategy newStrat) {
+		this.filterStrat = newStrat;
+	}
+    
+    protected IFilterStrategy getStrategy() {
+		return this.filterStrat;
+	}
+    
     
 }

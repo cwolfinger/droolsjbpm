@@ -8,6 +8,7 @@ import org.drools.common.BaseNode;
 import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.common.RuleBasePartitionId;
+import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.spi.PropagationContext;
 
 public class EmptyLeftTupleSinkAdapter extends AbstractLeftTupleSinkAdapter {
@@ -75,5 +76,29 @@ public class EmptyLeftTupleSinkAdapter extends AbstractLeftTupleSinkAdapter {
     public int size() {
         return 0;
     }
+
+	public void createAndPropagateAssertLeftTuple(
+			InternalFactHandle factHandle, PropagationContext context,
+			InternalWorkingMemory workingMemory, IDegreeFactory factory,
+			EvalRecord record, boolean leftTupleWorkingMemoryEnabled) {
+		
+		
+	}
+
+	public void propagateAssertLeftTuple(ImperfectLeftTuple leftTuple,
+			ImperfectRightTuple rightTuple, PropagationContext context,
+			InternalWorkingMemory workingMemory, IDegreeFactory factory,
+			EvalRecord record, boolean leftTupleMemoryEnabled) {
+		
+		
+	}
+
+	public void propagateAssertLeftTuple(ImperfectLeftTuple tuple,
+			PropagationContext context, InternalWorkingMemory workingMemory,
+			IDegreeFactory factory, EvalRecord record,
+			boolean leftTupleMemoryEnabled) {
+		
+		
+	}
 
 }

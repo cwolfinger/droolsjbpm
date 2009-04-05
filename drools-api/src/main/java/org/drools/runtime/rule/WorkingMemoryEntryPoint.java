@@ -1,5 +1,9 @@
 package org.drools.runtime.rule;
 
+import org.drools.degrees.IDegree;
+import org.drools.reteoo.ConstraintKey;
+
+
 /**
  * <p>An entry-point is an abstract channel through where facts are inserted into the engine.</p>
  * <p>Drools 5 supports multiple entry-points into a single <code>StatefulKnowledgeBase</code>: the
@@ -54,5 +58,13 @@ public interface WorkingMemoryEntryPoint {
      */
     void update(FactHandle handle,
                 Object object);
+    
+    
+    
+    
+    
+    void inject(String ruleName, Object object, ConstraintKey key, IDegree degree);
+    
+    
 
 }

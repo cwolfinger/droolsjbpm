@@ -17,9 +17,11 @@ import org.drools.base.evaluators.Operator;
 import org.drools.base.field.LongFieldImpl;
 import org.drools.base.field.ObjectFieldImpl;
 import org.drools.common.EmptyBetaConstraints;
+import org.drools.common.ImperfectFactHandle;
 import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.common.RuleBasePartitionId;
+import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.reteoo.builder.BuildContext;
 import org.drools.rule.Behavior;
 import org.drools.rule.LiteralConstraint;
@@ -603,5 +605,21 @@ public class CompositeObjectSinkAdapterTest extends TestCase {
             // TODO Auto-generated method stub
             return 0;
         }
+
+		public void assertObject(ImperfectFactHandle factHandle,
+				PropagationContext propagationContext,
+				InternalWorkingMemory workingMemory, IDegreeFactory factory,
+				EvalRecord record) {
+			// Auto-generated method stub
+			
+		}
+
+		public void assertLeftTuple(ImperfectLeftTuple leftTuple,
+				PropagationContext context,
+				InternalWorkingMemory workingMemory, IDegreeFactory factory
+				) {
+			// TODO Auto-generated method stub
+			
+		}
     }
 }

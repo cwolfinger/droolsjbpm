@@ -25,8 +25,10 @@ import java.util.Collection;
 
 import org.drools.RuleBaseConfiguration;
 import org.drools.common.BetaConstraints;
+import org.drools.common.ImperfectFactHandle;
 import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
+import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.reteoo.builder.BuildContext;
 import org.drools.rule.Behavior;
 import org.drools.rule.Collect;
@@ -560,5 +562,22 @@ public class CollectNode extends BetaNode
         }
 
     }
+
+	public void assertObject(ImperfectFactHandle factHandle,
+			PropagationContext propagationContext,
+			InternalWorkingMemory workingMemory, IDegreeFactory factory,
+			EvalRecord record) {
+		//TODO: Define method... 
+		throw new UnsupportedOperationException("Imperfect collect will be supported soon");
+		
+	}
+
+	public void assertLeftTuple(ImperfectLeftTuple leftTuple,
+			PropagationContext context, InternalWorkingMemory workingMemory,
+			IDegreeFactory factory) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Imperfect collect will be supported soon");
+		
+	}
 
 }

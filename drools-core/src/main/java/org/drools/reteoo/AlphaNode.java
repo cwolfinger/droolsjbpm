@@ -19,16 +19,26 @@ import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.util.Collection;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.Set;
 
 import org.drools.FactException;
 import org.drools.RuleBaseConfiguration;
 import org.drools.common.BaseNode;
+import org.drools.common.ImperfectFactHandle;
 import org.drools.common.InternalFactHandle;
+import org.drools.common.InternalRuleBase;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.common.NodeMemory;
 import org.drools.common.PropagationContextImpl;
 import org.drools.common.RuleBasePartitionId;
+import org.drools.degrees.IDegree;
+import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.reteoo.builder.BuildContext;
+import org.drools.reteoo.filters.IFilterStrategy;
+import org.drools.reteoo.filters.IFilteringNode;
 import org.drools.rule.ContextEntry;
 import org.drools.spi.AlphaNodeFieldConstraint;
 import org.drools.spi.PropagationContext;
@@ -47,18 +57,29 @@ import org.drools.spi.PropagationContext;
 public class AlphaNode extends ObjectSource
     implements
     ObjectSinkNode,
-    NodeMemory {
+    NodeMemory,
+    IFilteringNode, 
+    Observer,
+    IGammaNode {
 
+
+	
     /**
      *
      */
-    private static final long        serialVersionUID = 400L;
+    private static final long        serialVersionUID = 500L;
 
+    
+    private IFilterStrategy filterStrat; 
+    
     /** The <code>FieldConstraint</code> */
     private AlphaNodeFieldConstraint constraint;
 
     private ObjectSinkNode      previousRightTupleSinkNode;
     private ObjectSinkNode      nextRightTupleSinkNode;
+    
+    
+    private GammaMemory 		gammaMemory;
 
     public AlphaNode() {
 
@@ -85,6 +106,28 @@ public class AlphaNode extends ObjectSource
                objectSource,
                context.getRuleBase().getConfiguration().getAlphaNodeHashingThreshold() );
         this.constraint = constraint;
+       
+        
+        this.gammaMemory = new GammaMemory();
+        InternalRuleBase ruleBase = context.getRuleBase();
+        if (ruleBase instanceof ImperfectRuleBase) {
+        	IDegreeFactory factory = ((ImperfectRuleBase) ruleBase).getDegreeFactory();
+        	this.filterStrat = factory.getDefaultStrategy();                	
+        
+        	
+        	
+        	this.constraint.buildEvaluationTemplate(this.id,context.getRule().getDependencies(), factory);
+        	
+        	Collection<ConstraintKey> keys = this.constraint.getAllConstraintKeys();
+        	for (ConstraintKey key : keys)
+        		context.getRuleBase().getRete().indexGammaNode(key,this);
+        	
+		        
+		        
+        }        
+        //TODO:
+        //System.out.println(this.getClass().getName() + "(id "+id+") constructor hacked to add filter strategy");
+        
     }
 
     public void readExternal(ObjectInput in) throws IOException,
@@ -126,7 +169,8 @@ public class AlphaNode extends ObjectSource
         for ( int i = 0, length = workingMemories.length; i < length; i++ ) {
             final InternalWorkingMemory workingMemory = workingMemories[i];
             final PropagationContext propagationContext = new PropagationContextImpl( workingMemory.getNextPropagationIdCounter(),
-                                                                                      PropagationContext.RULE_ADDITION,
+                                                                                      PropagationContext.RULE_ADDITION, 
+                                                                                      
                                                                                       null,
                                                                                       null,
                                                                                       null );
@@ -149,6 +193,115 @@ public class AlphaNode extends ObjectSource
                                              workingMemory );
         }
     }
+    
+	public void assertObject(ImperfectFactHandle factHandle,
+			PropagationContext propagationContext,
+			InternalWorkingMemory workingMemory, IDegreeFactory factory,
+			EvalRecord record) {
+		
+		final AlphaMemory memory = (AlphaMemory) workingMemory.getNodeMemory( this );
+		
+		System.out.println("--------------     Passing by alpha" + id);
+
+		//Collect any provided info
+		Collection<Evaluation> storedEvals = this.gammaMemory.retrieve(factHandle.getObject());
+		if (storedEvals != null) {
+			record.addEvaluations(storedEvals);
+			factHandle.addPropertyDegrees(storedEvals);
+		}
+			
+		
+		//Call internal evaluator, if not done before
+		ConstraintKey key = this.constraint.getConstraintKey();
+		Evaluation eval = factHandle.getPropertyDegree(key);
+		if (eval == null) {
+			eval = this.constraint.isSatisfied(factHandle,
+					workingMemory,
+					memory.context,
+					factory
+                	);	
+			Collection<Evaluation> useless = eval.getEvalTree(); 
+			for (Evaluation subEval : eval.getEvalTree()) {
+				factHandle.addPropertyDegree(subEval);
+				record.addEvaluation(subEval);
+			}
+				
+			
+		} else {
+			if (eval.getDegreeBit(Evaluation.EVAL) == null) {
+				Evaluation localEval = this.constraint.isSatisfied(factHandle,
+						workingMemory,
+						memory.context,
+						factory
+	                	);		
+				record.addEvaluation(localEval);
+			}			
+		}   
+		 
+		//IMPORTANT: LAST ADDITION IS MAIN NOW
+		
+		System.out.println("Answer is given by " + record.getMainEval().toString()+ " info : " +record.getMainEval().getInfoRate());
+		//Merge is automatical, so now we decide what to do
+		switch (this.filterStrat.doTry(record.getMainEval())) {
+			case IFilterStrategy.DROP : 
+				//time to die
+				return;
+			
+			case IFilterStrategy.HOLD : 
+				System.out.println("WARNING::::::::::::::::::::::::::: OBJECT HELD AT NODE "+this.constraint.getConstraintKey());
+					record.setFactHandle(factHandle);
+					record.setFactory(factory);
+					record.setPropagationContext(propagationContext);
+					record.setWorkingMemory(workingMemory);
+				record.addObserver(this);				
+				//wait for more
+				return;
+			
+			case IFilterStrategy.PASS :
+				//go on
+				this.sink.propagateAssertObject(factHandle,
+		            propagationContext,
+		            workingMemory,
+		            factory,
+		            record);
+				break;
+			default : return;			
+		}
+		
+	}  
+ 	
+	
+	public void update(Observable watcher, Object info) {
+		EvalRecord record = (EvalRecord) watcher;
+System.out.println("**************************************************************UPDATE");
+		switch (this.filterStrat.doTry(record.getMainEval())) {
+		case IFilterStrategy.DROP : 
+			record.deleteObserver(this);
+			return;
+		
+		case IFilterStrategy.HOLD : 
+			//do nothing
+			return;
+		
+		case IFilterStrategy.PASS :
+			//go on
+			record.deleteObserver(this);
+			//throw new RuntimeException("Awakened objeect");
+			//TODO
+			this.sink.propagateAssertObject(record.getFactHandle(),
+	            record.getPropagationContext(),
+	            record.getWorkingMemory(),
+	            record.getFactory(),
+	            record);
+			//break;
+		default : return;	
+		
+		}
+		
+		
+		// propagate
+	}
+
 
     public void updateSink(final ObjectSink sink,
                            final PropagationContext context,
@@ -260,6 +413,49 @@ public class AlphaNode extends ObjectSource
     public void setPreviousObjectSinkNode(final ObjectSinkNode previous) {
         this.previousRightTupleSinkNode = previous;
     }
+    
+    
+    
+    
+    public void setStrategy(IFilterStrategy newStrat) {
+		this.filterStrat = newStrat;
+	}
+    
+    protected IFilterStrategy getStrategy() {
+		return this.filterStrat;
+	    
+    }
+    
+    
+    
+    protected Evaluation fromTemplate() {
+    	return null;
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
 
     public static class AlphaMemory
         implements
@@ -328,6 +524,56 @@ public class AlphaNode extends ObjectSource
             // this is a short living adapter class, so no need for serialization
         }
 
+		public void assertObject(ImperfectFactHandle factHandle,
+				PropagationContext propagationContext,
+				InternalWorkingMemory workingMemory, IDegreeFactory factory,
+				EvalRecord record) {
+			
+			
+			Evaluation eval = this.constraint.isSatisfied( factHandle,
+                    workingMemory,
+                    this.contextEntry,
+                    factory);
+			
+			
+			record.addEvaluation(eval);
+		
+			
+			
+			
+			this.sink.assertObject(factHandle,
+                propagationContext,
+                workingMemory,
+                factory,
+                record);
+			
+			
+		}
+
 
     }
+
+    
+	public EvaluationTemplate getEvaluationTemplate(ConstraintKey key) {
+		return this.constraint.getEvalTemplate(key);
+	}
+	
+	
+	
+	
+	
+	
+
+	public Collection<Evaluation> getStoredEvals(Object o) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void storeEvaluation(Object object, Evaluation prepareEval) {
+		this.gammaMemory.store(object, prepareEval);
+	}
+
+	
+
+	
 }

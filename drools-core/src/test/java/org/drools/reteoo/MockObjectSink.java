@@ -22,9 +22,11 @@ import java.io.ObjectOutput;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.drools.common.ImperfectFactHandle;
 import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.common.RuleBasePartitionId;
+import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.spi.PropagationContext;
 
 public class MockObjectSink
@@ -44,6 +46,15 @@ public class MockObjectSink
         this.asserted.add( new Object[]{factHandle, context, workingMemory} );
     }
 
+    
+    public void assertObject(ImperfectFactHandle factHandle,
+			PropagationContext context,
+			InternalWorkingMemory workingMemory, IDegreeFactory factory,
+			EvalRecord record) {
+		this.asserted.add( new Object[]{factHandle, context, workingMemory, factory, record} );
+		
+	}
+    
     public void retractRightTuple(final RightTuple rightTuple,
                               final PropagationContext context,
                               final InternalWorkingMemory workingMemory) {
@@ -125,4 +136,6 @@ public class MockObjectSink
         // TODO Auto-generated method stub
         return NodeTypeEnums.JoinNode;
     }
+
+	
 }

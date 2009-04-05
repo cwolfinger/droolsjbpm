@@ -25,6 +25,8 @@ import org.drools.process.instance.ProcessInstance;
 import org.drools.process.instance.WorkItemManager;
 import org.drools.process.instance.event.SignalManager;
 import org.drools.process.instance.timer.TimerManager;
+import org.drools.reteoo.ConstraintKey;
+import org.drools.rule.Rule;
 import org.drools.runtime.Environment;
 import org.drools.runtime.ObjectFilter;
 import org.drools.spi.AgendaFilter;
@@ -32,6 +34,7 @@ import org.drools.spi.AgendaGroup;
 import org.drools.spi.AsyncExceptionHandler;
 import org.drools.spi.GlobalResolver;
 import org.drools.time.SessionClock;
+import org.drools.degrees.IDegree;
 
 public class ExternalSheetListenerTest extends TestCase {
 
@@ -436,6 +439,13 @@ public class ExternalSheetListenerTest extends TestCase {
                     // TODO Auto-generated method stub
                     return null;
                 }
+
+				
+
+				public void inject(String rule, Object object, ConstraintKey key, IDegree degree) {
+					// TODO Auto-generated method stub
+					
+				}
 			};
 		}
 	}

@@ -5,6 +5,7 @@ import java.util.Properties;
 import org.drools.KnowledgeBase;
 import org.drools.KnowledgeBaseConfiguration;
 import org.drools.KnowledgeBaseProvider;
+import org.drools.RuleBase;
 import org.drools.RuleBaseConfiguration;
 import org.drools.RuleBaseFactory;
 import org.drools.SessionConfiguration;
@@ -29,12 +30,17 @@ public class KnowledgeBaseProviderImpl implements KnowledgeBaseProvider {
         return new SessionConfiguration(properties);
     }        
     
+    
+    
 	public KnowledgeBase newKnowledgeBase() {		
-		return new KnowledgeBaseImpl( RuleBaseFactory.newRuleBase() );		
+		System.out.println("WARNING "+this.getClass().getName()+ " HACKED METHOD TO ACTIVATE IMPERFECTION");
+		return new KnowledgeBaseImpl( RuleBaseFactory.newRuleBase(RuleBase.IMPERFECT_RETEOO) );
+		//return new KnowledgeBaseImpl( RuleBaseFactory.newRuleBase(RuleBase.RETEOO) );
 	}	
 	
     public KnowledgeBase newKnowledgeBase(KnowledgeBaseConfiguration conf) {
-        return new KnowledgeBaseImpl( RuleBaseFactory.newRuleBase( ( RuleBaseConfiguration ) conf ) );
+    	System.out.println("WARNING "+this.getClass().getName()+ " HACKED METHOD TO ACTIVATE IMPERFECTION");		
+        return new KnowledgeBaseImpl( RuleBaseFactory.newRuleBase(RuleBase.IMPERFECT_RETEOO, ( RuleBaseConfiguration ) conf ) );
     }
 
 	public Environment newEnvironment() {

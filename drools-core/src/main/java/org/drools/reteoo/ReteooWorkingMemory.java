@@ -345,4 +345,5 @@ public class ReteooWorkingMemory extends AbstractWorkingMemory {
         }
     }
 
+	
 }

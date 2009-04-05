@@ -1,7 +1,12 @@
 package org.drools.spi;
 
 import java.io.Externalizable;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
 
+import org.drools.reteoo.ConstraintKey;
+import org.drools.reteoo.EvaluationTemplate;
 import org.drools.rule.Declaration;
 
 /*
@@ -67,6 +72,17 @@ public interface Constraint
      * @return
      */
     public boolean isTemporal();
+    
+    
+    public ConstraintKey getConstraintKey();
+    
+    public Collection<ConstraintKey> getAllConstraintKeys();
+    
+//    public void setDependencies(Map<ConstraintKey,Set<String>> deps);
+//    
+//    public Map<ConstraintKey,Set<String>> getDependencies();
+    
+    public EvaluationTemplate getEvalTemplate(ConstraintKey key);
     
     /**
      * An enum for Constraint Types

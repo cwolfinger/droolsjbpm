@@ -24,7 +24,10 @@ import java.util.List;
 
 import org.drools.RuleBaseConfiguration;
 import org.drools.base.evaluators.Operator;
+import org.drools.degrees.IDegree;
+import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.reteoo.BetaMemory;
+import org.drools.reteoo.ConstraintKey;
 import org.drools.reteoo.LeftTuple;
 import org.drools.reteoo.LeftTupleMemory;
 import org.drools.reteoo.RightTupleMemory;
@@ -172,6 +175,27 @@ public class DoubleBetaConstraints
                                                                        handle )) && (this.indexed1 || this.constraint1.isAllowedCachedLeft( context[1],
                                                                                                                                             handle ));
     }
+    
+    public IDegree isSatisfiedCachedLeft(ContextEntry[] context,
+			InternalFactHandle handle, IDegreeFactory factory) {
+    	IDegree[] degs = new IDegree[2];
+    	degs[0] = this.constraint0.isSatisfiedCachedLeft(context[0], handle, factory);
+    	degs[1] = this.constraint1.isSatisfiedCachedLeft(context[1], handle, factory);
+    	
+    	return factory.getAndOperator().eval(degs);
+		
+	}
+	
+    
+    public IDegree isSatisfiedCachedRight(ContextEntry[] context,
+			LeftTuple tuple, IDegreeFactory factory) {
+    	IDegree[] degs = new IDegree[2];
+		degs[0] = this.constraint0.isSatisfiedCachedRight(tuple, context[0], factory);
+		degs[1] = this.constraint0.isSatisfiedCachedRight(tuple, context[1], factory);
+		
+    	return factory.getAndOperator().eval(degs);
+	}
+
 
     /* (non-Javadoc)
      * @see org.drools.common.BetaNodeConstraints#isAllowedCachedRight(org.drools.reteoo.ReteTuple)
@@ -299,5 +323,16 @@ public class DoubleBetaConstraints
     public ContextEntry[] createContext() {
         return new ContextEntry[]{this.constraint0.createContextEntry(), this.constraint1.createContextEntry()};
     }
-
+    
+    
+    
+    private ConstraintKey singletonKey = null;
+    
+	public ConstraintKey getConstraintKey() {
+		if (singletonKey == null) {				
+			singletonKey = new ConstraintKey("and",new ConstraintKey[] {constraint0.getConstraintKey(),constraint1.getConstraintKey()});
+		}
+		return singletonKey;
+	}
+	
 }

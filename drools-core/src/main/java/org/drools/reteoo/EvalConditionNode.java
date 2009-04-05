@@ -26,6 +26,8 @@ import org.drools.common.BaseNode;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.common.NodeMemory;
 import org.drools.common.PropagationContextImpl;
+import org.drools.degrees.IDegree;
+import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.reteoo.builder.BuildContext;
 import org.drools.rule.EvalCondition;
 import org.drools.spi.PropagationContext;
@@ -192,6 +194,42 @@ public class EvalConditionNode extends LeftTupleSource
                                                 this.tupleMemoryEnabled );
         }
     }
+    
+    
+    
+    
+    public void assertLeftTuple(ImperfectLeftTuple leftTuple,
+			PropagationContext context, InternalWorkingMemory workingMemory,
+			IDegreeFactory factory) {
+    	
+    	final EvalMemory memory = (EvalMemory) workingMemory.getNodeMemory( this );
+
+        final IDegree ans = this.condition.isSatisfied( leftTuple,
+                                                          workingMemory,
+                                                          memory.context,
+                                                          factory);
+
+        EvalRecord record = leftTuple.getRecord();
+        ConstraintKey key = new ConstraintKey("eval",this.condition.getEvalExpression().toString());
+        Evaluation eval = new Evaluation(this.getId(),ans,key,factory.getMergeStrategy(),factory.getNullHandlingStrategy());
+        record.addEvaluation(eval);
+        
+        //TODO: Imperfect strategy here!
+        //if ( allowed ) {
+            if ( this.tupleMemoryEnabled ) {
+                memory.tupleMemory.add( leftTuple );
+            }
+
+            this.sink.propagateAssertLeftTuple( leftTuple,
+                                                context,
+                                                workingMemory,
+                                                factory, 
+                                                record,
+                                                this.tupleMemoryEnabled );
+        //}
+
+		
+	}
 
     public void retractLeftTuple(final LeftTuple leftTuple,
                                  final PropagationContext context,
@@ -366,5 +404,9 @@ public class EvalConditionNode extends LeftTupleSource
             out.writeObject( context );
         }
     }
+
+	
+
+	
 
 }

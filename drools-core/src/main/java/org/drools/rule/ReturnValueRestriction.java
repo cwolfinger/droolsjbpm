@@ -21,13 +21,18 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.drools.RuntimeDroolsException;
 import org.drools.WorkingMemory;
 import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
+import org.drools.degrees.IDegree;
+import org.drools.degrees.factory.IDegreeFactory;
+import org.drools.reteoo.ConstraintKey;
 import org.drools.reteoo.LeftTuple;
 import org.drools.spi.AcceptsReadAccessor;
 import org.drools.spi.CompiledInvoker;
@@ -235,6 +240,29 @@ public class ReturnValueRestriction
         }
     }
 
+    
+    public IDegree isSatisfied(final InternalReadAccessor readAccessor,
+            final InternalFactHandle handle,
+            final Tuple tuple,
+            final WorkingMemory workingMemory,
+            final ContextEntry context,
+            IDegreeFactory factory) {
+    	try {
+    			return this.evaluator.evaluate( null,
+    					   factory,
+                           this.readAccessor,
+                           handle.getObject(),
+                           this.expression.evaluate( handle.getObject(),
+                                                     tuple,
+                                                     this.previousDeclarations,
+                                                     this.localDeclarations,
+                                                     workingMemory,
+                                                     ((ReturnValueContextEntry) context).dialectContext ) );
+    	} catch ( final Exception e ) {
+    		throw new RuntimeDroolsException( e );
+    	}
+    }
+    
     public boolean isAllowed(final InternalReadAccessor extractor,
                              final InternalFactHandle handle,
                              final InternalWorkingMemory workingMemoiry,
@@ -469,4 +497,35 @@ public class ReturnValueRestriction
         }
     }
 
+	public IDegree isSatisfied(InternalReadAccessor extractor,
+			InternalFactHandle handle, InternalWorkingMemory workingMemory,
+			ContextEntry context, IDegreeFactory factory) {
+		throw new UnsupportedOperationException( "does not support method call isAllowed(Object object, InternalWorkingMemory workingMemoiry)" );
+	}
+
+	public IDegree isSatisfiedCachedLeft(ContextEntry context,
+			InternalFactHandle handle, IDegreeFactory factory) {
+		throw new UnsupportedOperationException( "does not support method call isAllowed(Object object, InternalWorkingMemory workingMemoiry)" );
+	}
+
+	public IDegree isSatisfiedCachedRight(LeftTuple tuple,
+			ContextEntry context, IDegreeFactory factory) {
+		throw new UnsupportedOperationException( "does not support method call isAllowed(Object object, InternalWorkingMemory workingMemoiry)" );
+	}
+
+
+    
+	private ConstraintKey singletonKey = null;
+    
+	public ConstraintKey getConstraintKey() {
+		if (singletonKey == null)
+			singletonKey = new ConstraintKey(readAccessor.toString(),evaluator.toString(),"retval");
+		return singletonKey;
+	}
+	
+	public Collection<ConstraintKey> getAllConstraintKeys() {
+		Collection<ConstraintKey> ans = new LinkedList<ConstraintKey>();
+			ans.add(getConstraintKey());
+	return ans;
+	}
 }

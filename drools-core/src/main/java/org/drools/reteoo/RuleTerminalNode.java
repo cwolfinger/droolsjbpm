@@ -32,6 +32,7 @@ import org.drools.common.InternalWorkingMemory;
 import org.drools.common.NodeMemory;
 import org.drools.common.PropagationContextImpl;
 import org.drools.common.ScheduledAgendaItem;
+import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.event.rule.ActivationCancelledCause;
 import org.drools.reteoo.builder.BuildContext;
 import org.drools.rule.GroupElement;
@@ -41,6 +42,8 @@ import org.drools.spi.Duration;
 import org.drools.spi.PropagationContext;
 import org.drools.util.Iterator;
 import org.drools.util.LeftTupleList;
+
+import org.drools.degrees.IDegree;
 
 /**
  * Leaf Rete-OO node responsible for enacting <code>Action</code> s on a
@@ -168,7 +171,50 @@ public final class RuleTerminalNode extends BaseNode
                      true );
 
     }
+    
+    public void assertLeftTuple(ImperfectLeftTuple tuple,
+			PropagationContext context, InternalWorkingMemory workingMemory,
+			IDegreeFactory factory) {
+    	
+    	EvalRecord record = tuple.getRecord();
+    	System.out.println(this.rule);
+    	System.out.println(""+this.hashCode() + record);
+    	
+    	IDegree degree = record.getOverallDegree();
+    	
+    	 // @FIXME
+        final LeftTuple cloned = tuple;//new LeftTuple( tuple );
 
+        final InternalAgenda agenda = (InternalAgenda) workingMemory.getAgenda();
+    	
+        final TerminalNodeMemory memory = (TerminalNodeMemory) workingMemory.getNodeMemory( this );
+
+        final AgendaItem item = new ImperfectAgendaItem( context.getPropagationNumber(),
+                                                cloned,
+                                                rule.getSalience().getValue( tuple,
+                                                                             workingMemory ),
+                                                context,
+                                                this.rule,
+                                                this.subrule,
+                                                degree);
+
+        item.setSequenence( this.sequence );
+
+        tuple.setActivation( item );
+        memory.getTupleMemory().add( tuple );
+        
+        boolean added = agenda.addActivation( item );
+
+        item.setActivated( added );
+
+        // We only want to fire an event on a truly new Activation and not on an Activation as a result of a modify
+        if ( added ) {
+            ((EventSupport) workingMemory).getAgendaEventSupport().fireActivationCreated( item,
+                                                                                          workingMemory );
+        }
+		
+	}
+    
     /**
      * Assert a new <code>Tuple</code>.
      *
@@ -523,4 +569,8 @@ public final class RuleTerminalNode extends BaseNode
 //            this.ruleFlowGroup = ruleFlowGroup;
 //        }
     }
+
+	
+
+	
 }

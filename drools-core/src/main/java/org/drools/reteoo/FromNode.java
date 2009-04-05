@@ -13,6 +13,7 @@ import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.common.NodeMemory;
 import org.drools.common.PropagationContextImpl;
+import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.reteoo.builder.BuildContext;
 import org.drools.rule.ContextEntry;
 import org.drools.spi.AlphaNodeFieldConstraint;
@@ -106,6 +107,15 @@ public class FromNode extends LeftTupleSource
                               workingMemory,
                               memory );
     }
+    
+    
+    public void assertLeftTuple(ImperfectLeftTuple leftTuple,
+			PropagationContext context, InternalWorkingMemory workingMemory,
+			IDegreeFactory factory) {
+		// TODO Imperfect
+		throw new UnsupportedOperationException("Imperfect from will be supported");
+	}
+    
 
     /**
      * @param leftTuple
@@ -329,4 +339,6 @@ public class FromNode extends LeftTupleSource
             }
         }
     }
+
+	
 }

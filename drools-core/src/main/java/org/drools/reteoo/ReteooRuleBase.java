@@ -144,7 +144,7 @@ public class ReteooRuleBase extends AbstractRuleBase {
         super( id,
                config,
                factHandleFactory );
-        setupRete();
+        setupRete();        
     }
 
     private void setupRete() {

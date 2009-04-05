@@ -22,10 +22,12 @@ import java.io.ObjectOutput;
 
 import org.drools.RuleBaseConfiguration;
 import org.drools.common.BaseNode;
+import org.drools.common.ImperfectFactHandle;
 import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.common.NodeMemory;
 import org.drools.common.PropagationContextImpl;
+import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.reteoo.builder.BuildContext;
 import org.drools.spi.PropagationContext;
 import org.drools.util.Iterator;
@@ -137,6 +139,34 @@ public class RightInputAdapterNode extends ObjectSource
                                          workingMemory );
     }
 
+    
+    
+    public void assertLeftTuple(ImperfectLeftTuple tuple,
+			PropagationContext context, InternalWorkingMemory workingMemory,
+			IDegreeFactory factory) {
+    	
+    	// creating a dummy fact handle to wrap the tuple
+        final ImperfectFactHandle handle = (ImperfectFactHandle) workingMemory.getFactHandleFactory().newFactHandle( tuple,
+                                                                                              workingMemory.getObjectTypeConfigurationRegistry().getObjectTypeConf( context.getEntryPoint(),
+                                                                                                                                                           tuple ),
+                                                                                              workingMemory );
+
+        if ( this.tupleMemoryEnabled ) {
+            final ObjectHashMap memory = (ObjectHashMap) workingMemory.getNodeMemory( this );
+            // add it to a memory mapping
+            memory.put( tuple,
+                        handle );
+        }
+
+        // propagate it
+        this.sink.propagateAssertObject( handle,
+                                         context,
+                                         workingMemory,
+                                         factory,
+                                         tuple.getRecord());
+		
+	}
+    
     /**
      * Retracts the corresponding tuple by retrieving and retracting
      * the fact created for it
@@ -310,4 +340,8 @@ public class RightInputAdapterNode extends ObjectSource
 
         return this.tupleMemoryEnabled == other.tupleMemoryEnabled && this.tupleSource.equals( other.tupleSource );
     }
+
+	
+
+	
 }

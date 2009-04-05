@@ -26,6 +26,7 @@ import org.drools.common.BaseNode;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.common.NodeMemory;
 import org.drools.common.PropagationContextImpl;
+import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.reteoo.builder.BuildContext;
 import org.drools.rule.GroupElement;
 import org.drools.rule.Rule;
@@ -150,7 +151,17 @@ public final class QueryTerminalNode extends BaseNode
         }
         list.add( tuple );
     }
+    
+     
 
+    public void assertLeftTuple(ImperfectLeftTuple leftTuple,
+			PropagationContext context, InternalWorkingMemory workingMemory,
+			IDegreeFactory factory) {
+    	//TODO: Imperfect queries will be supported soon
+    	throw new UnsupportedOperationException("Imperfect Query not supported");		
+	}
+
+    
     public void retractLeftTuple(final LeftTuple tuple,
                                  final PropagationContext context,
                                  final InternalWorkingMemory workingMemory) {
@@ -270,6 +281,9 @@ public final class QueryTerminalNode extends BaseNode
     
     public short getType() {
         return NodeTypeEnums.QueryTerminalNode;
-    } 
+    }
+
+	
+	
 
 }

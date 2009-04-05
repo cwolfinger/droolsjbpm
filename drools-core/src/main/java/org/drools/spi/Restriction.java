@@ -1,9 +1,13 @@
 package org.drools.spi;
 
 import java.io.Externalizable;
+import java.util.Collection;
 
 import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
+import org.drools.degrees.IDegree;
+import org.drools.degrees.factory.IDegreeFactory;
+import org.drools.reteoo.ConstraintKey;
 import org.drools.reteoo.LeftTuple;
 import org.drools.rule.ContextEntry;
 import org.drools.rule.Declaration;
@@ -24,6 +28,21 @@ public interface Restriction
 
     public boolean isAllowedCachedRight(LeftTuple tuple,
                                         ContextEntry context);
+    
+    
+    public IDegree isSatisfied(InternalReadAccessor extractor,
+            InternalFactHandle handle,
+            InternalWorkingMemory workingMemory,
+            ContextEntry context,
+            IDegreeFactory factory);
+
+    public IDegree isSatisfiedCachedLeft(ContextEntry context,
+                      InternalFactHandle handle,
+                      IDegreeFactory factory);
+
+    public IDegree isSatisfiedCachedRight(LeftTuple tuple,
+                       ContextEntry context,
+                       IDegreeFactory factory);
 
     public ContextEntry createContextEntry();
 
@@ -45,5 +64,10 @@ public interface Restriction
     public boolean isTemporal();
 
     public Object clone();
+
+    
+    public ConstraintKey getConstraintKey();
+    
+    public Collection<ConstraintKey> getAllConstraintKeys();
 
 }

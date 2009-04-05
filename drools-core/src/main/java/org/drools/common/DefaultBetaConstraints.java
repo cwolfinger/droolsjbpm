@@ -20,11 +20,15 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.drools.RuleBaseConfiguration;
 import org.drools.base.evaluators.Operator;
+import org.drools.degrees.IDegree;
+import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.reteoo.BetaMemory;
+import org.drools.reteoo.ConstraintKey;
 import org.drools.reteoo.LeftTuple;
 import org.drools.reteoo.LeftTupleMemory;
 import org.drools.reteoo.RightTupleMemory;
@@ -36,6 +40,7 @@ import org.drools.util.LeftTupleIndexHashTable;
 import org.drools.util.LeftTupleList;
 import org.drools.util.LinkedList;
 import org.drools.util.LinkedListEntry;
+import org.drools.util.LinkedListNode;
 import org.drools.util.RightTupleIndexHashTable;
 import org.drools.util.RightTupleList;
 import org.drools.util.AbstractHashTable.FieldIndex;
@@ -187,6 +192,26 @@ public class DefaultBetaConstraints
         return true;
     }
 
+    public IDegree isSatisfiedCachedLeft(ContextEntry[] context,
+			InternalFactHandle handle, IDegreeFactory factory) {
+    	// skip the indexed constraints
+        LinkedListEntry entry = (LinkedListEntry) findNode( this.indexed+1 );
+        java.util.LinkedList<IDegree> degs = new java.util.LinkedList<IDegree>();
+        
+        int i = 1;
+        while ( entry != null ) {
+            IDegree deg = ((BetaNodeFieldConstraint) entry.getObject()).isSatisfiedCachedLeft( context[this.indexed + i],
+                                                                                     handle, factory );
+            degs.add(deg);
+            entry = (LinkedListEntry) entry.getNext();
+            i++;
+        }
+        
+        return factory.getAndOperator().eval(degs);
+        
+	}
+	
+    
     /* (non-Javadoc)
      * @see org.drools.common.BetaNodeConstraints#isAllowedCachedRight(org.drools.reteoo.ReteTuple)
      */
@@ -206,6 +231,24 @@ public class DefaultBetaConstraints
         }
         return true;
     }
+    
+    public IDegree isSatisfiedCachedRight(ContextEntry[] context,
+			LeftTuple tuple, IDegreeFactory factory) {
+    	LinkedListEntry entry = (LinkedListEntry) findNode( this.indexed+1 );
+        java.util.LinkedList<IDegree> degs = new java.util.LinkedList<IDegree>();
+        
+        int i = 1;
+        while ( entry != null ) {
+            IDegree deg = ((BetaNodeFieldConstraint) entry.getObject()).isSatisfiedCachedRight(tuple, 
+            																		 context[this.indexed + i],
+                                                                                     factory );
+            degs.add(deg);
+            entry = (LinkedListEntry) entry.getNext();
+            i++;
+        }
+        
+        return factory.getAndOperator().eval(degs);
+	}
 
     public boolean isIndexed() {
         // false if -1
@@ -303,5 +346,24 @@ public class DefaultBetaConstraints
 
         return this.constraints.equals( other.constraints );
     }
-
+    
+    
+    private ConstraintKey singletonKey = null;
+    
+	public ConstraintKey getConstraintKey() {
+		if (singletonKey == null) {
+			int N = this.constraints.size();			
+			ConstraintKey[] cks = new ConstraintKey[N];
+			LinkedListEntry entry = (LinkedListEntry) this.constraints.getFirst();
+			int j = 0;
+			while (entry != null) {				
+				cks[j++] = ((BetaNodeFieldConstraint) entry.getObject()).getConstraintKey();
+			}
+							
+			singletonKey = new ConstraintKey("and",cks);
+		}
+		return singletonKey;
+	}
+	
+	
 }

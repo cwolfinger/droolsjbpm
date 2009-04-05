@@ -5,9 +5,11 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
 import org.drools.common.BaseNode;
+import org.drools.common.ImperfectFactHandle;
 import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.common.RuleBasePartitionId;
+import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.spi.PropagationContext;
 
 public class SingleObjectSinkAdapter extends AbstractObjectSinkAdapter {
@@ -43,6 +45,18 @@ public class SingleObjectSinkAdapter extends AbstractObjectSinkAdapter {
                                 context,
                                 workingMemory );
     }
+    
+    public void propagateAssertObject(ImperfectFactHandle factHandle,
+			PropagationContext context, InternalWorkingMemory workingMemory,
+			IDegreeFactory factory, EvalRecord record) {
+
+    	this.sink.assertObject(factHandle, 
+    						   context, 
+    						   workingMemory, 
+    						   factory, 
+    						   record);
+		
+	}
 
     public BaseNode getMatchingNode(BaseNode candidate) {
         if (candidate.equals(sink)) {
@@ -58,5 +72,7 @@ public class SingleObjectSinkAdapter extends AbstractObjectSinkAdapter {
     public int size() {
         return 1;
     }
+
+	
 
 }

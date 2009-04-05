@@ -20,10 +20,15 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedList;
 
 import org.drools.base.ValueType;
 import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
+import org.drools.degrees.IDegree;
+import org.drools.degrees.factory.IDegreeFactory;
+import org.drools.reteoo.ConstraintKey;
 import org.drools.reteoo.LeftTuple;
 import org.drools.spi.AcceptsReadAccessor;
 import org.drools.spi.Evaluator;
@@ -103,6 +108,22 @@ public class VariableRestriction
                                         this.declaration.getExtractor(),
                                         this.evaluator.prepareLeftObject( handle ) );
     }
+    
+    public IDegree isSatisfied(InternalReadAccessor extractor,
+			InternalFactHandle handle, InternalWorkingMemory workingMemory,
+			ContextEntry context, IDegreeFactory factory) {
+    	
+    	return this.evaluator.evaluate( workingMemory,
+    			factory,
+                this.readAccessor,
+                this.evaluator.prepareLeftObject( handle ),
+                this.declaration.getExtractor(),
+                this.evaluator.prepareLeftObject( handle ) );
+    	
+	}
+    
+    
+            	  
 
     public boolean isAllowedCachedLeft(final ContextEntry context,
                                        final InternalFactHandle handle) {
@@ -110,13 +131,36 @@ public class VariableRestriction
                                                   (VariableContextEntry) context,
                                                   this.evaluator.prepareLeftObject( handle ) );
     }
+    
+    public IDegree isSatisfiedCachedLeft(ContextEntry context,
+			InternalFactHandle handle, IDegreeFactory factory) {
+    	return this.evaluator.evaluateCachedLeft(    			
+    			((VariableContextEntry) context).workingMemory,    			
+                (VariableContextEntry) context,
+                factory,
+                this.evaluator.prepareLeftObject( handle ) );
+	}
 
+    
     public boolean isAllowedCachedRight(final LeftTuple tuple,
                                         final ContextEntry context) {
         return this.evaluator.evaluateCachedRight( ((VariableContextEntry) context).workingMemory,
                                                    (VariableContextEntry) context,
                                                    this.evaluator.prepareLeftObject( tuple.get( this.declaration ) ) );
     }
+    
+    public IDegree isSatisfiedCachedRight(LeftTuple tuple, ContextEntry context,
+			IDegreeFactory factory) {
+    	return this.evaluator.evaluateCachedRight(
+    			((VariableContextEntry) context).workingMemory,
+                (VariableContextEntry) context,
+                factory,
+                this.evaluator.prepareLeftObject( tuple.get( this.declaration ) ) );
+	}
+
+    
+    
+    
     
     public boolean isTemporal() {
         return this.evaluator.isTemporal();
@@ -586,4 +630,20 @@ public class VariableRestriction
             }
         }
     }
+
+    
+    private ConstraintKey singletonKey = null;
+    
+	public ConstraintKey getConstraintKey() {
+		if (singletonKey == null)
+			singletonKey = new ConstraintKey(readAccessor.toString(),evaluator.toString(),declaration.toString());
+		return singletonKey;
+	}
+	
+	public Collection<ConstraintKey> getAllConstraintKeys() {
+		Collection<ConstraintKey> ans = new LinkedList<ConstraintKey>();
+			ans.add(getConstraintKey());
+	return ans;
+	}
+
 }

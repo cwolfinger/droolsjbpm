@@ -32,6 +32,8 @@ import org.drools.base.evaluators.EvaluatorDefinition.Target;
 import org.drools.common.EventFactHandle;
 import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
+import org.drools.degrees.IDegree;
+import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.rule.VariableRestriction.LongVariableContextEntry;
 import org.drools.rule.VariableRestriction.ObjectVariableContextEntry;
 import org.drools.rule.VariableRestriction.VariableContextEntry;
@@ -435,6 +437,8 @@ public class AfterEvaluatorDefinition
                 throw new RuntimeDroolsException( "[After Evaluator]: Not possible to have more than 2 parameters: '" + paramText + "'" );
             }
         }
+
+		
 
     }
 

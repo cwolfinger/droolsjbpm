@@ -8,6 +8,7 @@ import org.drools.common.BaseNode;
 import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.common.RuleBasePartitionId;
+import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.spi.PropagationContext;
 
 public class CompositeLeftTupleSinkAdapter extends AbstractLeftTupleSinkAdapter {
@@ -39,6 +40,22 @@ public class CompositeLeftTupleSinkAdapter extends AbstractLeftTupleSinkAdapter 
             doPropagateAssertLeftTuple( context, workingMemory, sink, newLeftTuple );
         }
     }
+    
+    public void propagateAssertLeftTuple(ImperfectLeftTuple leftTuple,
+			ImperfectRightTuple rightTuple, PropagationContext context,
+			InternalWorkingMemory workingMemory, IDegreeFactory factory,
+			EvalRecord record, boolean leftTupleMemoryEnabled) {
+    	
+    	for( LeftTupleSinkNode sink = this.sinks.getFirst(); sink != null; sink = sink.getNextLeftTupleSinkNode() ) {
+            ImperfectLeftTuple newLeftTuple = new ImperfectLeftTuple( leftTuple, rightTuple, sink, leftTupleMemoryEnabled,record);
+            doPropagateAssertLeftTuple( context, workingMemory, factory, sink, newLeftTuple );
+        }
+		
+	}
+    
+
+
+	
 
     public void propagateAssertLeftTuple( final LeftTuple tuple, final PropagationContext context,
                                           final InternalWorkingMemory workingMemory,
@@ -49,6 +66,17 @@ public class CompositeLeftTupleSinkAdapter extends AbstractLeftTupleSinkAdapter 
         }
     }
 
+    
+    public void propagateAssertLeftTuple(ImperfectLeftTuple tuple,
+			PropagationContext context, InternalWorkingMemory workingMemory,
+			IDegreeFactory factory, EvalRecord record,
+			boolean leftTupleMemoryEnabled) {
+    	for( LeftTupleSinkNode sink = this.sinks.getFirst(); sink != null; sink = sink.getNextLeftTupleSinkNode() ) {
+            doPropagateAssertLeftTuple( context, workingMemory, factory, sink,
+                                        new ImperfectLeftTuple( tuple, sink, leftTupleMemoryEnabled, record ) );
+        }
+	}
+        
     public void createAndPropagateAssertLeftTuple( final InternalFactHandle factHandle,
                                                    final PropagationContext context,
                                                    final InternalWorkingMemory workingMemory,
@@ -58,6 +86,19 @@ public class CompositeLeftTupleSinkAdapter extends AbstractLeftTupleSinkAdapter 
                                         new LeftTuple( factHandle, sink, leftTupleMemoryEnabled ) );
         }
     }
+    
+    public void createAndPropagateAssertLeftTuple(
+			InternalFactHandle factHandle, PropagationContext context,
+			InternalWorkingMemory workingMemory, IDegreeFactory factory,
+			EvalRecord record,
+			boolean leftTupleMemoryEnabled) {
+
+    	for( LeftTupleSinkNode sink = this.sinks.getFirst(); sink != null; sink = sink.getNextLeftTupleSinkNode() ) {
+            doPropagateAssertLeftTuple( context, workingMemory, factory, sink,
+                                        new ImperfectLeftTuple( factHandle, sink, leftTupleMemoryEnabled, record ) );
+        }
+		
+	}
 
 
     public void propagateRetractLeftTuple( final LeftTuple leftTuple, final PropagationContext context,
@@ -145,6 +186,14 @@ public class CompositeLeftTupleSinkAdapter extends AbstractLeftTupleSinkAdapter 
         sink.assertLeftTuple( leftTuple, context, workingMemory );
     }
 
+    
+    
+    protected void doPropagateAssertLeftTuple( PropagationContext context, InternalWorkingMemory workingMemory,
+    		IDegreeFactory factory,
+            LeftTupleSinkNode sink, ImperfectLeftTuple leftTuple ) {
+    	sink.assertLeftTuple( leftTuple, context, workingMemory, factory );
+    }
+    
     /**
      * This is a hook method that may be overriden by subclasses. Please keep it
      * protected.
@@ -158,6 +207,17 @@ public class CompositeLeftTupleSinkAdapter extends AbstractLeftTupleSinkAdapter 
                                                 LeftTuple leftTuple, LeftTupleSink sink ) {
         sink.retractLeftTuple( leftTuple, context, workingMemory );
     }
+
+	
+
+	
+
+	
+	
+
+	
+
+	
 
 
 }

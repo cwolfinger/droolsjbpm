@@ -36,6 +36,7 @@ import org.drools.common.RuleFlowGroupImpl.DeactivateCallback;
 import org.drools.event.rule.ActivationCancelledCause;
 import org.drools.impl.StatefulKnowledgeSessionImpl;
 import org.drools.process.instance.ProcessInstance;
+import org.drools.reteoo.ImperfectAgendaItem;
 import org.drools.reteoo.LeftTuple;
 import org.drools.reteoo.ReteooWorkingMemory;
 import org.drools.rule.Declaration;
@@ -930,6 +931,12 @@ public class DefaultAgenda
         activation.setActivated( false );
 
         try {
+        	//TODO:
+        	//System.out.println(this.getClass()+"Hacked fireActivation to insert consequence degree");
+        	
+        	if (activation instanceof ImperfectAgendaItem)
+        		this.knowledgeHelper.setConsequenceDegree(((ImperfectAgendaItem) activation).getDegree());
+        	
             this.knowledgeHelper.setActivation( activation );
             activation.getRule().getConsequence().evaluate( this.knowledgeHelper,
                                                             this.workingMemory );

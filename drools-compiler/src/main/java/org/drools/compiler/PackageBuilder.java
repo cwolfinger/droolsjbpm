@@ -24,6 +24,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -31,6 +32,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.StringTokenizer;
 
 import org.drools.ChangeSet;
 import org.drools.PackageIntegrationException;
@@ -75,6 +77,7 @@ import org.drools.lang.descr.TypeFieldDescr;
 import org.drools.lang.dsl.DSLMappingFile;
 import org.drools.lang.dsl.DSLTokenizedMappingFile;
 import org.drools.lang.dsl.DefaultExpander;
+import org.drools.reteoo.ConstraintKey;
 import org.drools.reteoo.ReteooRuleBase;
 import org.drools.rule.CompositeClassLoader;
 import org.drools.rule.Function;
@@ -284,15 +287,29 @@ public class PackageBuilder {
                                                     IOException {
         this.resource = resource;
         final DrlParser parser = new DrlParser();
-        final PackageDescr pkg = parser.parse( resource.getInputStream() );
+        final PackageDescr pkg = parser.parse( resource.getInputStream() );                                  
+        
+        
+        
         this.results.addAll( parser.getErrors() );
         if ( !parser.hasErrors() ) {
-            addPackage( pkg );
+        	 //TODO: Where to do it?
+            System.out.println(this.getClass().toString()+" HACKED TO DO LEXICAL ANALYSIS");
+            pkg.setDependencies(doLexicalAnalysis(pkg));
+        	
+            addPackage( pkg );            
         }
+        
+        this.getPackageRegistry();
+        
+        
+        
         this.resource = null;
     }
 
-    /**
+    
+
+	/**
      * Load a rule package from XML source.
      * 
      * @param reader
@@ -646,6 +663,10 @@ public class PackageBuilder {
                 if ( isEmpty( ruleDescr.getDialect() ) ) {
                     ruleDescr.addAttribute( new AttributeDescr( "dialect", pkgRegistry.getDialect() ) );
                 }
+                
+                //TODO : ...
+            	ruleDescr.setDependencies(packageDescr.getDependencies());
+            	
                 addRule( ruleDescr );
             }
         }
@@ -657,7 +678,8 @@ public class PackageBuilder {
         // iterate and compile
         if ( this.ruleBase != null ) {
             for ( final Iterator it = packageDescr.getRules().iterator(); it.hasNext(); ) {
-                RuleDescr ruleDescr = (RuleDescr) it.next();
+                RuleDescr ruleDescr = (RuleDescr) it.next();                                	
+                
                 pkgRegistry = this.pkgRegistryMap.get( ruleDescr.getNamespace() );
                 this.ruleBase.addRule( pkgRegistry.getPackage(),
                                        pkgRegistry.getPackage().getRule( ruleDescr.getName() ) );
@@ -771,6 +793,11 @@ public class PackageBuilder {
         // Merge imports
         final Map<String, ImportDeclaration> imports = pkg.getImports();
         imports.putAll( newPkg.getImports() );
+        
+        
+        //TODO: remove
+//        System.out.println(this.getClass()+" HACKED TO MERGE DEPs INTO PACKAGE");
+//        pkg.setDependencies(newPkg.getDependencies());
 
         String lastType = null;
         try {
@@ -860,6 +887,9 @@ public class PackageBuilder {
             // define a new package
             pkg = new Package( packageDescr.getName() );
             pkg.setClassFieldAccessorCache( new ClassFieldAccessorCache( this.rootClassLoader ) );
+            
+//            //TODO: Remove the hack;
+//            pkg.setDependencies(packageDescr.getDependencies());
 
             // if there is a rulebase then add the package.
             if ( this.ruleBase != null ) {
@@ -880,6 +910,7 @@ public class PackageBuilder {
         this.pkgRegistryMap.put( packageDescr.getName(),
                                  pkgRegistry );
 
+        
         mergePackage( packageDescr );
 
         return pkgRegistry;
@@ -1503,4 +1534,68 @@ public class PackageBuilder {
     public CompositeClassLoader getRootClassLoader() {
         return this.rootClassLoader;
     }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    private Map<ConstraintKey,Set<String>> doLexicalAnalysis(PackageDescr pkg) {
+    	Map<ConstraintKey,Set<String>> ans = new HashMap<ConstraintKey, Set<String>>();
+    	if (pkg == null)
+    		return Collections.emptyMap();
+    	
+    	for (RuleDescr r : pkg.getRules()) {
+    		String cons = (String) r.getConsequence();
+    		
+    		
+    		int idx = cons.indexOf("inject");
+    		while (idx != -1) {
+    			int endIdx = cons.indexOf(';', idx);
+    			
+    			StringTokenizer tok = new StringTokenizer(cons.substring(idx,endIdx),",)");
+    			tok.nextToken();
+    			ConstraintKey ck = new ConstraintKey(tok.nextToken().replaceAll("\"", ""),tok.nextToken().replaceAll("\"", ""),tok.nextToken().replaceAll("\"", ""));    			
+    			
+    			Set<String> deps = ans.get(ck);
+    			if (deps == null) {
+    				deps = new HashSet<String>();
+    				ans.put(ck,deps);
+    			}
+    			deps.add(r.getName());
+    				
+    		
+    			idx = cons.indexOf("inject",endIdx);
+    		}
+    		    		
+    	}
+    	
+    	
+    	for (ConstraintKey ck : ans.keySet()) {
+			Set<String> rNs = ans.get(ck);
+			System.out.print(ck+ " ");
+			for (String id : rNs) {
+				System.out.print(id+ " ");
+			}
+			System.out.println();
+		}
+		
+		return ans;
+	}
+    
+    
+    
 }

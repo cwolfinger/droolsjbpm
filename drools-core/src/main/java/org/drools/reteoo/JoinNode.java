@@ -17,9 +17,14 @@ package org.drools.reteoo;
  */
 
 import org.drools.common.BetaConstraints;
+import org.drools.common.ImperfectFactHandle;
 import org.drools.common.InternalFactHandle;
+import org.drools.common.InternalRuleBase;
 import org.drools.common.InternalWorkingMemory;
+import org.drools.degrees.IDegree;
+import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.reteoo.builder.BuildContext;
+import org.drools.reteoo.filters.IFilterStrategy;
 import org.drools.rule.Behavior;
 import org.drools.spi.PropagationContext;
 import org.drools.util.Iterator;
@@ -77,6 +82,14 @@ public class JoinNode extends BetaNode {
                binder,
                behaviors );
         tupleMemoryEnabled = context.isTupleMemoryEnabled();
+        
+        InternalRuleBase ruleBase = context.getRuleBase();
+        if (ruleBase instanceof ImperfectRuleBase) {
+        	IDegreeFactory factory = ((ImperfectRuleBase) ruleBase).getDegreeFactory();
+        	this.filterStrat = factory.getDefaultStrategy();
+        }
+        System.out.println(this.getClass().getName() + "(id "+id+") constructor hacked to add filter strategy");
+
     }
 
     /**
@@ -123,6 +136,58 @@ public class JoinNode extends BetaNode {
 
         this.constraints.resetTuple( memory.getContext() );
     }
+    
+    
+    public void assertLeftTuple(ImperfectLeftTuple leftTuple,
+			PropagationContext context, InternalWorkingMemory workingMemory,
+			IDegreeFactory factory) {
+    	
+    	final BetaMemory memory = (BetaMemory) workingMemory.getNodeMemory( this );
+
+        if ( this.tupleMemoryEnabled ) {
+            memory.getLeftTupleMemory().add( leftTuple );
+        }
+
+        this.constraints.updateFromTuple( memory.getContext(),
+                                          workingMemory,
+                                          leftTuple );
+        for ( ImperfectRightTuple rightTuple = (ImperfectRightTuple) memory.getRightTupleMemory().getFirst( leftTuple ); rightTuple != null; rightTuple = (ImperfectRightTuple) rightTuple.getNext() ) {
+            final InternalFactHandle handle = rightTuple.getFactHandle();
+            
+            //TODO : Imperfect beta constraint
+            IDegree ans = this.constraints.isSatisfiedCachedLeft( memory.getContext(), handle,factory );
+            
+            EvalRecord record = new EvalRecord();
+            ConstraintKey key = this.constraints.getConstraintKey();
+            Evaluation eval = new Evaluation(this.getId(),ans,key,factory.getMergeStrategy(),factory.getNullHandlingStrategy());
+            record.addEvaluation(eval);
+            	record.addEvaluations(leftTuple.getRecord());
+            	record.addEvaluations(rightTuple.getRecord());
+            
+            
+            switch (this.filterStrat.doTry(record.getMainEval())) {
+    		case IFilterStrategy.DROP : return;
+		
+    		case IFilterStrategy.HOLD : //TODO: HOLD
+    			break;
+		
+    		case IFilterStrategy.PASS : 
+    			this.sink.propagateAssertLeftTuple( leftTuple,
+                        rightTuple,
+                        context,
+                        workingMemory,
+                        factory,
+                        record,
+                        this.tupleMemoryEnabled  );
+
+    			break;
+    		default : return;			
+    	}
+            
+        }
+
+        this.constraints.resetTuple( memory.getContext() );
+	}
 
     /**
      * Assert a new <code>FactHandleImpl</code>. The left input of
@@ -183,6 +248,77 @@ public class JoinNode extends BetaNode {
         this.constraints.resetFactHandle( memory.getContext() );
     }
 
+    
+    
+    
+    public void assertObject(ImperfectFactHandle factHandle,
+			PropagationContext context,
+			InternalWorkingMemory workingMemory, IDegreeFactory factory,
+			EvalRecord record) {
+    	
+        final BetaMemory memory = (BetaMemory) workingMemory.getNodeMemory( this );
+
+        ImperfectRightTuple rightTuple = new ImperfectRightTuple( factHandle,
+                                                this, record );
+
+        if ( !behavior.assertRightTuple( memory.getBehaviorContext(),
+                                         rightTuple,
+                                         workingMemory ) ) {
+            // destroy right tuple
+            rightTuple.unlinkFromRightParent();
+            return;
+        }
+
+        memory.getRightTupleMemory().add( rightTuple );
+        if ( !this.tupleMemoryEnabled ) {
+            // do nothing here, as we know there are no left tuples at this stage in sequential mode.
+            return;
+        }
+
+        this.constraints.updateFromFactHandle( memory.getContext(),
+                                               workingMemory,
+                                               factHandle );
+        int i = 0;
+        for ( ImperfectLeftTuple leftTuple = (ImperfectLeftTuple) memory.getLeftTupleMemory().getFirst( rightTuple ); leftTuple != null; leftTuple = (ImperfectLeftTuple) leftTuple.getNext() ) {
+        	IDegree ans = this.constraints.isSatisfiedCachedRight( memory.getContext(),
+                                                        leftTuple, factory );
+        	ConstraintKey key = this.constraints.getConstraintKey();
+        	
+        	EvalRecord clonedRecord = record.clone();        	
+        	Evaluation eval = new Evaluation(this.getId(),ans,key,factory.getMergeStrategy(),factory.getNullHandlingStrategy());
+        	clonedRecord.addEvaluation(eval);
+        		clonedRecord.addEvaluations(leftTuple.getRecord());
+        	
+        	
+        	
+        	switch (this.filterStrat.doTry(record.getMainEval())) {
+        		case IFilterStrategy.DROP : return;
+			
+        		case IFilterStrategy.HOLD : //TODO: HOLD
+        			break;
+			
+        		case IFilterStrategy.PASS : 
+        			this.sink.propagateAssertLeftTuple( leftTuple,
+                            rightTuple,
+                            context,
+                            workingMemory,
+                            factory,
+                            clonedRecord,
+                            this.tupleMemoryEnabled  );
+
+        			break;
+        		default : return;			
+        	}
+        	
+        			
+            i++;
+        }
+        this.constraints.resetFactHandle( memory.getContext() );
+		
+	}
+    
+    
+    
     /**
      * Retract a FactHandleImpl. Iterates the referenced TupleMatches stored in
      * the handle's ObjectMatches retracting joined tuples.
@@ -276,4 +412,10 @@ public class JoinNode extends BetaNode {
 
         return "[JoinNode(" + this.getId() + ") - " + ((ObjectTypeNode) source).getObjectType() + "]";
     }
+
+	
+
+	
+
+	
 }

@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.drools.KnowledgeBase;
 import org.drools.command.Command;
+import org.drools.degrees.IDegree;
 import org.drools.event.process.ProcessEventListener;
 import org.drools.event.rule.AgendaEventListener;
 import org.drools.event.rule.WorkingMemoryEventListener;
@@ -49,7 +50,10 @@ import org.drools.process.command.SignalEventCommand;
 import org.drools.process.command.StartProcessCommand;
 import org.drools.process.command.UnregisterExitPointCommand;
 import org.drools.process.command.UpdateCommand;
+import org.drools.reteoo.ConstraintKey;
+import org.drools.reteoo.Evaluation;
 import org.drools.reteoo.ReteooWorkingMemory;
+import org.drools.rule.Rule;
 import org.drools.runtime.BatchExecutionResults;
 import org.drools.runtime.Environment;
 import org.drools.runtime.ExitPoint;
@@ -382,6 +386,14 @@ public class CommandBasedStatefulKnowledgeSession
                                         Object[] arguments) {
         QueryCommand cmd = new QueryCommand(null, query, arguments);
         return this.commandService.execute( cmd );
-    }    
+    }
+
+	
+
+	public void inject(String premise, Object object, ConstraintKey key,
+			IDegree degree) {
+		// TODO Auto-generated method stub
+		
+	}    
 
 }

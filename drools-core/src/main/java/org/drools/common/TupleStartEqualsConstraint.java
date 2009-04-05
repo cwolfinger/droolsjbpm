@@ -19,7 +19,13 @@ package org.drools.common;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.util.Collection;
+import java.util.LinkedList;
 
+import org.drools.degrees.IDegree;
+import org.drools.degrees.factory.IDegreeFactory;
+import org.drools.reteoo.ConstraintKey;
+import org.drools.reteoo.EvaluationTemplate;
 import org.drools.reteoo.LeftTuple;
 import org.drools.rule.ContextEntry;
 import org.drools.rule.Declaration;
@@ -95,12 +101,23 @@ public class TupleStartEqualsConstraint
         final LeftTuple tuple = ((LeftTuple) handle.getObject()).getSubTuple( ((TupleStartEqualsConstraintContextEntry) context).compareSize );
         return ((TupleStartEqualsConstraintContextEntry) context).left.equals( tuple );
     }
+    
+    public IDegree isSatisfiedCachedLeft(ContextEntry context,
+			InternalFactHandle handle, IDegreeFactory factory) {
+		return factory.fromBoolean(isAllowedCachedLeft(context, handle));
+	}
+    
 
     public boolean isAllowedCachedRight(final LeftTuple tuple,
                                         final ContextEntry context) {
         return tuple.equals( ((TupleStartEqualsConstraintContextEntry) context).right.getSubTuple( tuple.size() ) );
     }
 
+    public IDegree isSatisfiedCachedRight(LeftTuple tuple,
+			ContextEntry context, IDegreeFactory factory) {
+		return factory.fromBoolean(isAllowedCachedRight(tuple, context));
+	}
+    
     public String toString() {
         return "[ TupleStartEqualsConstraint ]";
     }
@@ -184,4 +201,25 @@ public class TupleStartEqualsConstraint
     public ConstraintType getType() {
         return ConstraintType.BETA;
     }
+
+    private ConstraintKey singletonKey = null;
+    
+	public ConstraintKey getConstraintKey() {
+		if (singletonKey == null)
+			singletonKey = new ConstraintKey("tuple","starts","...");
+		return singletonKey;
+	}
+
+	public Collection<ConstraintKey> getAllConstraintKeys() {
+		Collection<ConstraintKey> ans = new LinkedList<ConstraintKey>();
+			ans.add(getConstraintKey());
+	return ans;
+	}
+	
+	public EvaluationTemplate getEvalTemplate(ConstraintKey key) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	
 }

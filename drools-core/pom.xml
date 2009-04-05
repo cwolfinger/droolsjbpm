@@ -28,7 +28,9 @@
     <dependency>
       <groupId>org.drools</groupId>
       <artifactId>drools-api</artifactId>
-    </dependency>         
+    </dependency>    
+    
+     
     
     <dependency>
       <groupId>joda-time</groupId>

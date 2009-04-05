@@ -19,10 +19,16 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.Arrays;
+import java.util.Map;
+import java.util.Set;
 
 import org.drools.RuntimeDroolsException;
 import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
+import org.drools.degrees.factory.IDegreeFactory;
+import org.drools.reteoo.CompositeEvaluationTemplate;
+import org.drools.reteoo.ConstraintKey;
+import org.drools.reteoo.EvaluationTemplate;
 import org.drools.reteoo.LeftTuple;
 import org.drools.spi.AlphaNodeFieldConstraint;
 import org.drools.spi.BetaNodeFieldConstraint;
@@ -81,6 +87,16 @@ public abstract class AbstractCompositeConstraint extends MutableTypeConstraint 
         return false;
     }
 
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     /**
      * Adds an alpha constraint to the multi field OR constraint
      *
@@ -338,5 +354,38 @@ public abstract class AbstractCompositeConstraint extends MutableTypeConstraint 
         }
 
     }
+    
+    
+    
+    
+    
+    
+	
+	 public EvaluationTemplate getEvalTemplate(ConstraintKey key) {
+			return ((CompositeEvaluationTemplate) this.getTemplate()).getTemplate(key);
+	}
+	
+    
+    
+    
+    
+//    public EvaluationTemplate getEvalTemplate(ConstraintKey key) {
+//		if (this.getTemplate().getConstraintKey().equals(key)) {
+//			return this.getTemplate();
+//		} else {
+//			for (int j = 0; j < this.alphaConstraints.length; j++) {
+//				EvaluationTemplate temp = this.alphaConstraints[j].getEvalTemplate(key);
+//				if (temp != null) return temp;
+//			}
+//			for (int j = 0; j < this.betaConstraints.length; j++) {
+//				EvaluationTemplate temp = this.betaConstraints[j].getEvalTemplate(key);
+//				if (temp != null) return temp;
+//			}
+//			return null;
+//		}	
+//	}
+    
+    
+    
 
 }

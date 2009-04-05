@@ -57,6 +57,9 @@ public class RuleBaseFactory {
                 
                 return new org.drools.reteoo.ReteooRuleBase( UUID.randomUUID().toString(),
                                                              config );
+                
+            case RuleBase.IMPERFECT_RETEOO :
+             	return new org.drools.reteoo.ImperfectRuleBase( UUID.randomUUID().toString(), config );
             default :
                 throw new IllegalArgumentException( "Unknown engine type: " + type );
 

@@ -35,6 +35,10 @@ public abstract class AbstractCompositeRestriction
         out.writeObject(restrictions);
     }
 
+    public Restriction[] getRestrictions() {
+    	return restrictions;
+    }
+    
     public Declaration[] getRequiredDeclarations() {
         // Iterate all restrictions building up a unique list of declarations
         // No need to cache, as this should only be called once at build time

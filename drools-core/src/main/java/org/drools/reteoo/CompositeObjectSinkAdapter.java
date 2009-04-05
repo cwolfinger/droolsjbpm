@@ -10,9 +10,11 @@ import java.util.List;
 import org.drools.base.ValueType;
 import org.drools.base.evaluators.Operator;
 import org.drools.common.BaseNode;
+import org.drools.common.ImperfectFactHandle;
 import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.common.RuleBasePartitionId;
+import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.rule.LiteralConstraint;
 import org.drools.runtime.rule.Evaluator;
 import org.drools.spi.AlphaNodeFieldConstraint;
@@ -25,6 +27,7 @@ import org.drools.util.LinkedList;
 import org.drools.util.LinkedListNode;
 import org.drools.util.ObjectHashMap;
 import org.drools.util.ObjectHashMap.ObjectEntry;
+import org.joda.time.field.ImpreciseDateTimeField;
 
 public class CompositeObjectSinkAdapter extends AbstractObjectSinkAdapter {
 
@@ -335,6 +338,8 @@ public class CompositeObjectSinkAdapter extends AbstractObjectSinkAdapter {
                 }
             }
         }
+        
+        
 
         // propagate unhashed
         if ( this.hashableSinks != null ) {
@@ -352,6 +357,55 @@ public class CompositeObjectSinkAdapter extends AbstractObjectSinkAdapter {
 
     }
 
+    
+    
+    public void propagateAssertObject(ImperfectFactHandle factHandle,
+			PropagationContext context, InternalWorkingMemory workingMemory,
+			IDegreeFactory factory, EvalRecord record) {
+    	
+    	final Object object = factHandle.getObject();
+
+        // Iterates t he FieldIndex collection, which tells you if particularly field is hashed or not
+        // if the field is hashed then it builds the hashkey to return the correct sink for the current objects slot's
+        // value, one object may have multiple fields indexed.
+        if ( this.hashedFieldIndexes != null ) {
+            // Iterate the FieldIndexes to see if any are hashed
+            for ( FieldIndex fieldIndex = (FieldIndex) this.hashedFieldIndexes.getFirst(); fieldIndex != null; fieldIndex = (FieldIndex) fieldIndex.getNext() ) {
+                if ( !fieldIndex.isHashed() ) {
+                    continue;
+                }
+                // this field is hashed so set the existing hashKey and see if there is a sink for it
+                final int index = fieldIndex.getIndex();
+                final ReadAccessor extractor = fieldIndex.getFieldExtactor();
+                HashKey hashKey = new HashKey( index,
+                                               object,
+                                               fieldIndex.getFieldExtractor() );
+                final ObjectSink sink = (ObjectSink) this.hashedSinkMap.get( hashKey );
+                if ( sink != null ) {
+                    // The sink exists so propagate
+                    doPropagateAssertObject( factHandle, context, workingMemory, factory, record.clone(), sink );
+                }
+            }
+        }
+        
+        
+
+        // propagate unhashed
+        if ( this.hashableSinks != null ) {
+            for ( ObjectSinkNode sink = this.hashableSinks.getFirst(); sink != null; sink = sink.getNextObjectSinkNode() ) {
+                doPropagateAssertObject( factHandle, context, workingMemory, factory, record.clone(), sink );
+            }
+        }
+
+        if ( this.otherSinks != null ) {
+            // propagate others
+            for ( ObjectSinkNode sink = this.otherSinks.getFirst(); sink != null; sink = sink.getNextObjectSinkNode() ) {
+                doPropagateAssertObject( factHandle, context, workingMemory, factory, record.clone(), sink );
+            }
+        }
+		
+	}
+    
     /**
      * This is a Hook method for subclasses to override. Please keep it protected unless you know
      * what you are doing.
@@ -367,6 +421,15 @@ public class CompositeObjectSinkAdapter extends AbstractObjectSinkAdapter {
                            context,
                            workingMemory );
     }
+    
+    protected void doPropagateAssertObject( ImperfectFactHandle factHandle, PropagationContext context,
+            InternalWorkingMemory workingMemory, IDegreeFactory factory, EvalRecord record, ObjectSink sink ) {
+    	sink.assertObject( factHandle,
+    					   context,
+    					   workingMemory, 
+    					   factory, 
+    					   record );
+}
 
     public BaseNode getMatchingNode(BaseNode candidate) {
         if ( this.otherSinks != null ) {
@@ -801,4 +864,6 @@ public class CompositeObjectSinkAdapter extends AbstractObjectSinkAdapter {
             this.previous = previous;
         }
     }
+
+	
 }

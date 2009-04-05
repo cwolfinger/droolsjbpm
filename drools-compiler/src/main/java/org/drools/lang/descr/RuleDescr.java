@@ -23,8 +23,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.drools.io.Resource;
+import org.drools.reteoo.ConstraintKey;
 import org.drools.rule.Dialectable;
 import org.drools.rule.Namespaceable;
 
@@ -50,6 +52,8 @@ public class RuleDescr extends BaseDescr
     private String                      className;
 
     private Resource                    resource;
+	private Map<ConstraintKey, Set<String>> dependencies;
+    
 
     public RuleDescr() {
     }
@@ -239,4 +243,24 @@ public class RuleDescr extends BaseDescr
     public String toString() {
         return "[Rule name='" + this.name + "']";
     }
+
+    
+    
+    
+    
+    /**
+	 * @param dependencies the dependencies to set
+	 */
+	public void setDependencies(Map<ConstraintKey,Set<String>> dependencies) {
+		this.dependencies = dependencies;
+	}
+
+	/**
+	 * @return the dependencies
+	 */
+	public Map<ConstraintKey,Set<String>> getDependencies() {
+		return dependencies;
+	}
+    
+	
 }

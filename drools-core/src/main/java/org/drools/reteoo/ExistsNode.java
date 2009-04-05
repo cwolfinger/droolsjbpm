@@ -17,8 +17,10 @@
 package org.drools.reteoo;
 
 import org.drools.common.BetaConstraints;
+import org.drools.common.ImperfectFactHandle;
 import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
+import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.reteoo.builder.BuildContext;
 import org.drools.rule.Behavior;
 import org.drools.spi.PropagationContext;
@@ -394,6 +396,23 @@ public class ExistsNode extends BetaNode {
     
     public short getType() {
         return NodeTypeEnums.ExistsNode;
-    }     
+    }
+
+	public void assertObject(ImperfectFactHandle factHandle,
+			PropagationContext propagationContext,
+			InternalWorkingMemory workingMemory, IDegreeFactory factory,
+			EvalRecord record) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Imperfect exist will be supported soon");
+	}
+
+	
+
+	public void assertLeftTuple(ImperfectLeftTuple leftTuple,
+			PropagationContext context, InternalWorkingMemory workingMemory,
+			IDegreeFactory factory) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Imperfect exist will be supported soon");
+	}   
 
 }

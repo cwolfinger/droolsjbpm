@@ -20,9 +20,20 @@ import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Set;
 
 import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
+import org.drools.degrees.IDegree;
+import org.drools.degrees.factory.IDegreeFactory;
+import org.drools.reteoo.ConstraintKey;
+import org.drools.reteoo.Evaluation;
+import org.drools.reteoo.EvaluationTemplate;
+import org.drools.reteoo.SingleEvaluationTemplate;
 import org.drools.spi.AcceptsReadAccessor;
 import org.drools.spi.AlphaNodeFieldConstraint;
 import org.drools.spi.Constraint;
@@ -40,6 +51,8 @@ public class LiteralConstraint
 
     private InternalReadAccessor readAccesor;
     private LiteralRestriction   restriction;
+
+	private EvaluationTemplate template;
 
     public LiteralConstraint() {
         this( null,
@@ -111,6 +124,17 @@ public class LiteralConstraint
                                            workingMemory,
                                            ctx );
     }
+    
+    public Evaluation isSatisfied(InternalFactHandle handle,
+			InternalWorkingMemory workingMemory, ContextEntry context,
+			IDegreeFactory factory) {
+    	IDegree deg =  this.restriction.isSatisfied( this.readAccesor,
+    												handle,
+    												workingMemory,
+    												context,
+    												factory);
+    	return template.spawn(deg);
+	}
 
     public String toString() {
         return "[LiteralConstraint fieldExtractor=" + this.readAccesor + " evaluator=" + getEvaluator() + " value=" + getField() + "]";
@@ -154,4 +178,37 @@ public class LiteralConstraint
     public boolean isTemporal() {
         return this.restriction.isTemporal();
     }
+
+	public ConstraintKey getConstraintKey() {
+		return restriction.getConstraintKey();
+	}
+	
+	public Collection<ConstraintKey> getAllConstraintKeys() {
+		Collection<ConstraintKey> ans = new LinkedList<ConstraintKey>();
+									
+		ans.add(this.getConstraintKey());
+		return ans;
+	}
+
+	
+	
+	
+	 public EvaluationTemplate buildEvaluationTemplate(int id, Map<ConstraintKey, Set<String>> dependencies, IDegreeFactory factory) {
+		 Set<String> deps;
+		 if (dependencies == null)
+			 deps = Collections.emptySet();
+		 else 
+			 deps = dependencies.get(this.getConstraintKey());
+	    	this.template = new SingleEvaluationTemplate(id,this.getConstraintKey(),deps,factory.getMergeStrategy(),factory.getNullHandlingStrategy());
+	    	return template;
+	    }
+
+	public EvaluationTemplate getEvalTemplate(ConstraintKey key) {
+		if (this.template.getConstraintKey().equals(key))
+			return this.template;
+		else return null;
+	}
+	
+
+	
 }

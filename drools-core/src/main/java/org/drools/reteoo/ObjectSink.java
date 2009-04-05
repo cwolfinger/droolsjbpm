@@ -16,8 +16,10 @@ package org.drools.reteoo;
  * limitations under the License.
  */
 
+import org.drools.common.ImperfectFactHandle;
 import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
+import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.spi.PropagationContext;
 
 /**
@@ -37,4 +39,10 @@ public interface ObjectSink
     public void assertObject(InternalFactHandle factHandle,
                              PropagationContext propagationContext,
                              InternalWorkingMemory workingMemory);
+    
+    public void assertObject(ImperfectFactHandle factHandle,
+            PropagationContext propagationContext,
+            InternalWorkingMemory workingMemory,
+            IDegreeFactory factory,
+            EvalRecord record);
 }

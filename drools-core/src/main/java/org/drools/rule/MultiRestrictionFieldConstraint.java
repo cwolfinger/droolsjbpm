@@ -3,10 +3,22 @@ package org.drools.rule;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Set;
 
 import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
+import org.drools.degrees.IDegree;
+import org.drools.degrees.factory.IDegreeFactory;
+import org.drools.degrees.operators.IDegreeCombiner;
+import org.drools.reteoo.CompositeEvaluationTemplate;
+import org.drools.reteoo.ConstraintKey;
+import org.drools.reteoo.Evaluation;
+import org.drools.reteoo.EvaluationTemplate;
 import org.drools.reteoo.LeftTuple;
+import org.drools.reteoo.SingleEvaluationTemplate;
 import org.drools.spi.AcceptsReadAccessor;
 import org.drools.spi.InternalReadAccessor;
 import org.drools.spi.ReadAccessor;
@@ -99,6 +111,17 @@ public class MultiRestrictionFieldConstraint extends MutableTypeConstraint
                                             workingMemory,
                                             context );
     }
+    
+    public Evaluation isSatisfied(InternalFactHandle handle,
+			InternalWorkingMemory workingMemory, ContextEntry context,
+			IDegreeFactory factory) {
+		IDegree deg = this.restrictions.isSatisfied(this.readAccessor,
+											 handle, 
+											 workingMemory, 
+											 context, 
+											 factory);			
+		return getTemplate().spawn(deg);
+	}
 
     public ContextEntry createContextEntry() {
         return this.restrictions.createContextEntry();
@@ -110,15 +133,105 @@ public class MultiRestrictionFieldConstraint extends MutableTypeConstraint
                                                       handle );
     }
 
+    public IDegree isSatisfiedCachedLeft(ContextEntry context,
+			InternalFactHandle handle, IDegreeFactory factory) {
+    	return this.restrictions.isSatisfiedCachedLeft( context,
+                handle, factory );
+	}
+    
     public boolean isAllowedCachedRight(final LeftTuple tuple,
                                         final ContextEntry context) {
         return this.restrictions.isAllowedCachedRight( tuple,
                                                        context );
     }
+    
+    public IDegree isSatisfiedCachedRight(LeftTuple tuple,
+			ContextEntry context, IDegreeFactory factory) {
+    	return this.restrictions.isSatisfiedCachedRight( tuple,
+                context, factory );
+	}
 
     public Object clone() {
         return new MultiRestrictionFieldConstraint( this.readAccessor,
                                                     (Restriction) this.restrictions.clone() );
     }
+
+    
+    
+      
+	public ConstraintKey getConstraintKey() {
+		
+		return this.restrictions.getConstraintKey();
+	}
+
+	public Collection<ConstraintKey> getAllConstraintKeys() {
+		Collection<ConstraintKey> ans = new LinkedList<ConstraintKey>();
+							
+		//ans.addAll(this.restrictions.getAllConstraintKeys());
+		ans.add(this.getConstraintKey());
+		return ans;
+	}
+
+	
+	public EvaluationTemplate buildEvaluationTemplate(int id, Map<ConstraintKey, Set<String>> dependencies, IDegreeFactory factory) {
+		//BUILD A COMPOSITE TEMPLATE
+    	
+				
+		//EvaluationTemplate temp = buildTemplateForRestriction(this.restrictions, null, id, dependencies, factory);
+		EvaluationTemplate temp = new SingleEvaluationTemplate(id,this.restrictions.getConstraintKey(),dependencies.get(restrictions.getConstraintKey()),factory.getMergeStrategy(),factory.getNullHandlingStrategy());
+    			    	    		
+		this.setTemplate(temp);
+    	return getTemplate();
+    }
+	
+	 public EvaluationTemplate getEvalTemplate(ConstraintKey key) {
+			if (this.getTemplate().getConstraintKey().equals(key))
+				return this.getTemplate();
+			else return null;
+	}
+	
+	 
+	 
+	 
+	 /*
+	 private EvaluationTemplate buildTemplateForRestriction(Restriction restr, CompositeEvaluationTemplate master, int id, Map<ConstraintKey, Set<String>> dependencies, IDegreeFactory factory) {
+		 EvaluationTemplate temp = null;
+		 	if (restr instanceof AbstractCompositeRestriction) {
+		 		AbstractCompositeRestriction compRestr = (AbstractCompositeRestriction) restr;
+		 		
+		 		IDegreeCombiner operator = null;
+		 			if (restr instanceof AndCompositeRestriction) {
+		 				operator = factory.getAndOperator();
+		 			} else if (restr instanceof OrCompositeRestriction) {
+		 				operator = factory.getOrOperator();
+		 			} else {
+		 				throw new UnsupportedOperationException("Unknown composite restriction...");
+		 			}
+		 			
+		 		temp = new CompositeEvaluationTemplate(id,
+		 				getConstraintKey(),
+		 				dependencies.get(getConstraintKey()),
+		 				compRestr.getRestrictions().length,
+		 				operator,
+		 				factory.getMergeStrategy(),
+		 				factory.getNullHandlingStrategy()		 				
+		 				);
+		 		
+		 		for (Restriction r : compRestr.getRestrictions())
+		 			buildTemplateForRestriction(r, (CompositeEvaluationTemplate) temp, id, dependencies, factory); 
+		 		
+		 	} else {
+		 		temp = new SingleEvaluationTemplate(id,
+		 				restr.getConstraintKey(),
+		 				dependencies.get(restr.getConstraintKey()),
+		 				factory.getMergeStrategy(),
+		 				factory.getNullHandlingStrategy());
+		 	}
+		 if (master != null)
+			 master.addChild(temp);
+		 return temp;
+	 }
+*/
+	
 
 }

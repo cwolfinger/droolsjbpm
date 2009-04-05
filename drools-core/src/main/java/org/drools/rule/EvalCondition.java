@@ -27,6 +27,8 @@ import java.util.Map;
 
 import org.drools.RuntimeDroolsException;
 import org.drools.WorkingMemory;
+import org.drools.degrees.IDegree;
+import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.spi.CompiledInvoker;
 import org.drools.spi.EvalExpression;
 import org.drools.spi.Tuple;
@@ -122,6 +124,13 @@ public class EvalCondition extends ConditionalElement
             throw new RuntimeDroolsException( this.getEvalExpression() + " : " + e,
                                               e );
         }
+    }
+    
+    public IDegree isSatisfied(final Tuple tuple,
+            final WorkingMemory workingMemory,
+            final Object context,
+            final IDegreeFactory factory) {
+    	return factory.fromBoolean(this.isAllowed(tuple, workingMemory, context));
     }
 
     public Object clone() {

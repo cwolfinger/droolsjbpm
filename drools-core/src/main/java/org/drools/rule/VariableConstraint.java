@@ -20,9 +20,15 @@ import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.util.Collection;
+import java.util.LinkedList;
 
 import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
+import org.drools.degrees.IDegree;
+import org.drools.degrees.factory.IDegreeFactory;
+import org.drools.reteoo.ConstraintKey;
+import org.drools.reteoo.Evaluation;
 import org.drools.reteoo.LeftTuple;
 import org.drools.spi.AcceptsReadAccessor;
 import org.drools.spi.Evaluator;
@@ -113,6 +119,39 @@ public class VariableConstraint extends MutableTypeConstraint
                                                       context );
     }
     
+    
+    
+    
+    
+    public Evaluation isSatisfied(InternalFactHandle handle,
+			InternalWorkingMemory workingMemory, ContextEntry context,
+			IDegreeFactory factory) {
+    	IDegree deg = this.restriction.isSatisfied( this.fieldExtractor,
+                handle,
+                workingMemory,
+                context,
+                factory);
+    	return getTemplate().spawn(deg);
+	}
+
+	public IDegree isSatisfiedCachedLeft(ContextEntry context,
+			InternalFactHandle handle, IDegreeFactory factory) {
+		return this.restriction.isSatisfiedCachedLeft( context,
+                handle,
+                factory);
+	}
+
+	public IDegree isSatisfiedCachedRight(LeftTuple tuple,
+			ContextEntry context, IDegreeFactory factory) {
+		return this.restriction.isSatisfiedCachedRight( tuple,
+                context, 
+                factory);
+	}
+    
+    
+    
+    
+    
     public boolean isTemporal() {
         return this.restriction.isTemporal();
     }
@@ -155,5 +194,21 @@ public class VariableConstraint extends MutableTypeConstraint
         return new VariableConstraint( this.fieldExtractor,
                                        (VariableRestriction) this.restriction.clone() );
     }
+
+    
+    
+    
+    
+	public ConstraintKey getConstraintKey() {
+		return this.restriction.getConstraintKey();
+	}
+	
+	public Collection<ConstraintKey> getAllConstraintKeys() {
+		Collection<ConstraintKey> ans = new LinkedList<ConstraintKey>();
+			ans.add(getConstraintKey());
+	return ans;
+	}
+
+	
 
 }

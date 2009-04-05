@@ -27,6 +27,7 @@ import org.drools.common.BaseNode;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.common.NodeMemory;
 import org.drools.common.RuleBasePartitionId;
+import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.spi.PropagationContext;
 
 public class MockLeftTupleSink extends LeftTupleSource
@@ -57,6 +58,15 @@ public class MockLeftTupleSink extends LeftTupleSource
         this.asserted.add( new Object[]{tuple, context, workingMemory} );
 
     }
+    
+    
+    
+    public void assertLeftTuple(ImperfectLeftTuple leftTuple,
+			PropagationContext context, InternalWorkingMemory workingMemory,
+			IDegreeFactory factory) {
+    	this.asserted.add( new Object[]{leftTuple, context, workingMemory, factory} );
+		
+	}
 
     public void retractLeftTuple(final LeftTuple tuple,
                              final PropagationContext context,
@@ -170,5 +180,9 @@ public class MockLeftTupleSink extends LeftTupleSource
         // TODO Auto-generated method stub
         return 0;
     }
+
+	
+
+	
 
 }

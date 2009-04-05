@@ -22,12 +22,18 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.drools.RuntimeDroolsException;
 import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
+import org.drools.degrees.IDegree;
+import org.drools.degrees.factory.IDegreeFactory;
+import org.drools.reteoo.ConstraintKey;
+import org.drools.reteoo.Evaluation;
 import org.drools.reteoo.LeftTuple;
 import org.drools.spi.CompiledInvoker;
 import org.drools.spi.InternalReadAccessor;
@@ -280,6 +286,15 @@ public class PredicateConstraint extends MutableTypeConstraint
                                               e );
         }
     }
+    
+    public Evaluation isSatisfied(final InternalFactHandle handle,
+            final InternalWorkingMemory workingMemory,
+            final ContextEntry ctx, IDegreeFactory factory) {
+    	
+    	IDegree deg = factory.fromBoolean(this.isAllowed(handle, workingMemory, ctx));
+    	return getTemplate().spawn(deg);
+	}
+        
 
     public boolean isAllowed(InternalReadAccessor extractor,
                              InternalFactHandle handle,
@@ -287,6 +302,13 @@ public class PredicateConstraint extends MutableTypeConstraint
                              ContextEntry context) {
         throw new UnsupportedOperationException( "Method not supported. Please contact development team." );
     }
+    
+    public IDegree isSatisfied(InternalReadAccessor extractor,
+			InternalFactHandle handle, InternalWorkingMemory workingMemory,
+			ContextEntry context, IDegreeFactory factory) {
+    	throw new UnsupportedOperationException( "Method not supported. Please contact development team." );
+	}
+
 
     public boolean isAllowedCachedLeft(final ContextEntry context,
                                        final InternalFactHandle handle) {
@@ -303,6 +325,12 @@ public class PredicateConstraint extends MutableTypeConstraint
                                               e );
         }
     }
+    
+    public IDegree isSatisfiedCachedLeft(ContextEntry context,
+			InternalFactHandle handle, IDegreeFactory factory) {
+		return factory.fromBoolean(this.isAllowedCachedLeft(context, handle));
+	}
+
 
     public boolean isAllowedCachedRight(final LeftTuple tuple,
                                         final ContextEntry context) {
@@ -319,6 +347,11 @@ public class PredicateConstraint extends MutableTypeConstraint
                                               e );
         }
     }
+    
+    public IDegree isSatisfiedCachedRight(LeftTuple tuple,
+			ContextEntry context, IDegreeFactory factory) {
+		return factory.fromBoolean(this.isAllowedCachedRight(tuple, context));
+	}
 
     public Object clone() {
         Declaration[] previous = new Declaration[this.previousDeclarations.length];
@@ -408,5 +441,25 @@ public class PredicateConstraint extends MutableTypeConstraint
             this.rightObject = null;
         }
     }
+
+    
+    
+    private ConstraintKey singletonKey = null;
+    
+	public ConstraintKey getConstraintKey() {
+		if (singletonKey == null)
+			singletonKey = new ConstraintKey("...","predicate","...");
+		return singletonKey;
+	}
+	
+	public Collection<ConstraintKey> getAllConstraintKeys() {
+		Collection<ConstraintKey> ans = new LinkedList<ConstraintKey>();
+			ans.add(getConstraintKey());
+	return ans;
+	}
+	
+	
+
+	
 
 }

@@ -5,6 +5,7 @@ import java.io.Externalizable;
 import org.drools.common.BaseNode;
 import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
+import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.spi.PropagationContext;
 
 public interface LeftTupleSinkPropagator
@@ -25,6 +26,30 @@ public interface LeftTupleSinkPropagator
                                                   PropagationContext context,
                                                   InternalWorkingMemory workingMemory,
                                                   boolean leftTupleWorkingMemoryEnabled );
+    
+    
+    public void propagateAssertLeftTuple(ImperfectLeftTuple leftTuple,
+            ImperfectRightTuple rightTuple,
+            PropagationContext context,
+            InternalWorkingMemory workingMemory,
+            IDegreeFactory factory,
+            EvalRecord record,
+            boolean leftTupleMemoryEnabled);
+
+    public void propagateAssertLeftTuple(ImperfectLeftTuple tuple,
+            PropagationContext context,
+            InternalWorkingMemory workingMemory,
+            IDegreeFactory factory,     
+            EvalRecord record,
+            boolean leftTupleMemoryEnabled);
+
+    public void createAndPropagateAssertLeftTuple(InternalFactHandle factHandle,
+                     PropagationContext context,
+                     InternalWorkingMemory workingMemory,
+                     IDegreeFactory factory,
+                     EvalRecord record,
+                     boolean leftTupleWorkingMemoryEnabled );
+    
 
     public void propagateRetractLeftTuple(LeftTuple tuple,
                                           PropagationContext context,

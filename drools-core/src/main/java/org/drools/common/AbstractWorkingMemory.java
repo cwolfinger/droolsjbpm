@@ -53,6 +53,8 @@ import org.drools.RuleBaseConfiguration.LogicalOverride;
 import org.drools.base.MapGlobalResolver;
 import org.drools.concurrent.ExecutorService;
 import org.drools.definition.process.Process;
+import org.drools.degrees.IDegree;
+import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.event.AgendaEventListener;
 import org.drools.event.AgendaEventSupport;
 import org.drools.event.RuleBaseEventListener;
@@ -72,11 +74,17 @@ import org.drools.process.instance.WorkItemManager;
 import org.drools.process.instance.context.variable.VariableScopeInstance;
 import org.drools.process.instance.event.SignalManager;
 import org.drools.process.instance.timer.TimerManager;
+import org.drools.reteoo.ConstraintKey;
 import org.drools.reteoo.EntryPointNode;
+import org.drools.reteoo.Evaluation;
+import org.drools.reteoo.EvaluationTemplate;
+import org.drools.reteoo.IGammaNode;
+import org.drools.reteoo.ImperfectRuleBase;
 import org.drools.reteoo.InitialFactHandle;
 import org.drools.reteoo.InitialFactHandleDummyObject;
 import org.drools.reteoo.LIANodePropagation;
 import org.drools.reteoo.LeftTuple;
+import org.drools.reteoo.ObjectSource;
 import org.drools.reteoo.ObjectTypeConf;
 import org.drools.reteoo.PartitionTaskManager;
 import org.drools.rule.Declaration;
@@ -105,6 +113,7 @@ import org.drools.time.TimerServiceFactory;
 import org.drools.workflow.core.node.EventTrigger;
 import org.drools.workflow.core.node.StartNode;
 import org.drools.workflow.core.node.Trigger;
+import org.joda.time.field.ImpreciseDateTimeField;
 
 /**
  * Implementation of <code>WorkingMemory</code>.
@@ -255,6 +264,7 @@ public abstract class AbstractWorkingMemory
         this.id = id;
         this.config = config;
         this.ruleBase = ruleBase;
+        
         this.handleFactory = handleFactory;
         this.environment = environment;
         
@@ -328,6 +338,7 @@ public abstract class AbstractWorkingMemory
         initProcessEventListeners();
         initPartitionManagers();
         initTransient();
+        
     }
     
     public static class GlobalsAdapter implements GlobalResolver {
@@ -1019,6 +1030,9 @@ public abstract class AbstractWorkingMemory
                 addPropertyChangeListener( object );
             }
 
+            
+            
+            
             insert( handle,
                     object,
                     rule,
@@ -1063,11 +1077,28 @@ public abstract class AbstractWorkingMemory
                                                                                   this.agenda.getDormantActivations(),
                                                                                   entryPoint );
 
-        this.entryPointNode.assertObject( handle,
-                                          propagationContext,
-                                          typeConf,
-                                          this );
-
+        //TODO:
+        //System.out.println(this.getClass().toString() + "Hacked to enroute imperfect");
+        
+        
+        if (this.ruleBase instanceof ImperfectRuleBase) {
+        	
+        	IDegreeFactory factory = ((ImperfectRuleBase) this.ruleBase).getDegreeFactory(); 
+        	
+                this.entryPointNode.assertImperfectObject((ImperfectFactHandle) handle,
+                		propagationContext, 
+                		typeConf,
+                		this,
+                		factory);                       
+        	
+        } else {
+        	this.entryPointNode.assertObject( handle,
+        									  propagationContext,
+        									  typeConf,
+        									  this );
+        }
+        
+        
         executeQueuedActions();
 
         this.workingMemoryEventSupport.fireObjectInserted( propagationContext,
@@ -1906,5 +1937,59 @@ public abstract class AbstractWorkingMemory
     public Map<String, WorkingMemoryEntryPoint> getEntryPoints() {
         return this.entryPoints;
     }
+    
+    
+    
+    
+    
+    
+    
+    
+    public void inject(String ruleName, Object object, ConstraintKey key, IDegree degree) {
+    	Object factHandle = this.getObjectStore().getHandleForObject(object);
+    	    	
+    	IGammaNode node = this.ruleBase.getRete().getNode(key);
+    	
+    	if (factHandle == null) {
+    		//Object does not exist, YET
+    		//Prepare eval to be collected...    	
+    		if (node != null)
+    			node.storeEvaluation(object, prepareEval(ruleName,object,key,degree,node));
+    	} else {
+    		if (factHandle instanceof ImperfectFactHandle) {
+    			
+    			ImperfectFactHandle ifHandle = (ImperfectFactHandle) factHandle;
+    			
+    			Evaluation eval = ifHandle.getPropertyDegree(key);
+    			
+    			if (eval == null && node != null) {    				    				
+    				// Object exsits, but its prop hasn't been evaluated yet
+    				// Prepare eval to be collected at the node...
+    				node.storeEvaluation(object,prepareEval(ruleName,object,key,degree,node));
+    				    				    				
+    			} else {
+    				// Object exists and has already been eval'ed
+    				// Add new degree to evaluation
+    				//TODO: 1 should be confidence!
+    				eval.addDegree(ruleName, degree,1);
+    				//Notification is implicit in the record...
+    			}
+    			
+    		} else {
+    			throw new RuntimeException("Tried to inject a crisp fact!!");
+    		}    		
+    	}
+		
+		return;
+	}
+
+	private Evaluation prepareEval(String ruleName, Object object, ConstraintKey key,
+			IDegree degree, IGammaNode node) {
+				
+		EvaluationTemplate templ = node.getEvaluationTemplate(key);
+		
+		return templ.spawn(ruleName,degree);
+		
+	}
 
 }

@@ -27,9 +27,11 @@ import org.drools.FactHandle;
 import org.drools.RuleBaseConfiguration;
 import org.drools.RuntimeDroolsException;
 import org.drools.common.BetaConstraints;
+import org.drools.common.ImperfectFactHandle;
 import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.common.PropagationContextImpl;
+import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.reteoo.builder.BuildContext;
 import org.drools.rule.Accumulate;
 import org.drools.rule.Behavior;
@@ -671,4 +673,21 @@ public class AccumulateNode extends BetaNode {
         }
 
     }
+
+	public void assertObject(ImperfectFactHandle factHandle,
+			PropagationContext propagationContext,
+			InternalWorkingMemory workingMemory, IDegreeFactory factory,
+			EvalRecord record) {
+		//TODO Add imperfeect
+		throw new UnsupportedOperationException("Imperfect Accumulate will be supported soon ");
+		
+	}
+
+	public void assertLeftTuple(ImperfectLeftTuple leftTuple,
+			PropagationContext context, InternalWorkingMemory workingMemory,
+			IDegreeFactory factory) {
+		// TODO Add imperfect
+		throw new UnsupportedOperationException("Imperfect Accumulate will be supported soon ");
+		
+	}
 }

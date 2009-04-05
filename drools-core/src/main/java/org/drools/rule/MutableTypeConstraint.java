@@ -22,7 +22,13 @@ import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.util.Map;
+import java.util.Set;
 
+import org.drools.degrees.factory.IDegreeFactory;
+import org.drools.reteoo.ConstraintKey;
+import org.drools.reteoo.EvaluationTemplate;
+import org.drools.reteoo.SingleEvaluationTemplate;
 import org.drools.spi.AlphaNodeFieldConstraint;
 import org.drools.spi.BetaNodeFieldConstraint;
 import org.drools.spi.Constraint;
@@ -39,6 +45,8 @@ public abstract class MutableTypeConstraint
     Externalizable {
 
     private Constraint.ConstraintType type = Constraint.ConstraintType.UNKNOWN;
+    
+    private EvaluationTemplate template;
 
     public void setType( ConstraintType type ) {
         this.type = type;
@@ -56,4 +64,30 @@ public abstract class MutableTypeConstraint
         out.writeObject(type);
     }
     public abstract Object clone();
+    
+    
+    public EvaluationTemplate buildEvaluationTemplate(int id, Map<ConstraintKey, Set<String>> dependencies, IDegreeFactory factory) {
+    	setTemplate(new SingleEvaluationTemplate(id,this.getConstraintKey(),dependencies.get(this.getConstraintKey()),factory.getMergeStrategy(),factory.getNullHandlingStrategy()));
+    	return getTemplate();
+    }
+    
+    public EvaluationTemplate getTemplate() {
+    	return this.template;
+    }
+    
+    public void setTemplate(EvaluationTemplate newTemplate) {
+    	this.template = newTemplate;
+    }
+    
+    
+    public EvaluationTemplate getEvalTemplate(ConstraintKey key) {
+		if (this.template.getConstraintKey().equals(key)) {
+			return this.template;
+		} else {
+			return null;
+		}	
+	}
+    
+    
+    
 }

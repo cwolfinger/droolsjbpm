@@ -28,6 +28,7 @@ import org.drools.common.RuleBasePartitionId;
 import org.drools.common.TruthMaintenanceSystem;
 import org.drools.common.WorkingMemoryAction;
 import org.drools.concurrent.ExecutorService;
+import org.drools.degrees.IDegree;
 import org.drools.event.AgendaEventListener;
 import org.drools.event.AgendaEventSupport;
 import org.drools.event.RuleBaseEventListener;
@@ -40,6 +41,7 @@ import org.drools.process.instance.ProcessInstanceManager;
 import org.drools.process.instance.WorkItemManager;
 import org.drools.process.instance.event.SignalManager;
 import org.drools.process.instance.timer.TimerManager;
+import org.drools.reteoo.ConstraintKey;
 import org.drools.reteoo.LIANodePropagation;
 import org.drools.reteoo.PartitionTaskManager;
 import org.drools.rule.Rule;
@@ -540,5 +542,12 @@ public class MockWorkingMemory implements InternalWorkingMemory {
         // TODO Auto-generated method stub
         
     }
+
+
+	public void inject(String premise, Object object,
+			ConstraintKey key, IDegree degree) {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

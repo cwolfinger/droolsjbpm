@@ -5,9 +5,11 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
 import org.drools.common.BaseNode;
+import org.drools.common.ImperfectFactHandle;
 import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.common.RuleBasePartitionId;
+import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.spi.PropagationContext;
 
 public class EmptyObjectSinkAdapter extends AbstractObjectSinkAdapter {
@@ -70,5 +72,11 @@ public class EmptyObjectSinkAdapter extends AbstractObjectSinkAdapter {
     public boolean equals(Object obj) {
         return obj instanceof EmptyObjectSinkAdapter;
     }
+
+	public void propagateAssertObject(ImperfectFactHandle factHandle,
+			PropagationContext context, InternalWorkingMemory workingMemory,
+			IDegreeFactory factory, EvalRecord record) {
+		
+	}
 
 }

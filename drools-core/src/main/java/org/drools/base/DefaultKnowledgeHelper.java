@@ -25,7 +25,10 @@ import java.util.Map;
 
 import org.drools.FactException;
 import org.drools.common.InternalWorkingMemoryActions;
+import org.drools.degrees.IDegree;
 import org.drools.impl.StatefulKnowledgeSessionImpl;
+import org.drools.reteoo.ConstraintKey;
+import org.drools.reteoo.Evaluation;
 import org.drools.reteoo.ReteooStatefulSession;
 import org.drools.reteoo.ReteooWorkingMemory;
 import org.drools.rule.Declaration;
@@ -41,6 +44,8 @@ import org.drools.spi.Activation;
 import org.drools.spi.KnowledgeHelper;
 import org.drools.spi.Tuple;
 
+import org.drools.degrees.IDegree;
+
 public class DefaultKnowledgeHelper
     implements
     KnowledgeHelper,
@@ -53,6 +58,8 @@ public class DefaultKnowledgeHelper
     private Activation                   activation;
     private Tuple                        tuple;
     private InternalWorkingMemoryActions workingMemory;
+    
+    private IDegree						 consequenceDegree;
 
     public DefaultKnowledgeHelper() {
 
@@ -91,6 +98,7 @@ public class DefaultKnowledgeHelper
         this.subrule = null;
         this.activation = null;
         this.tuple = null;
+        this.consequenceDegree = null;
     }
 
     public void insert(final Object object) throws FactException {
@@ -272,4 +280,23 @@ public class DefaultKnowledgeHelper
     public Map<String, ExitPoint> getExitPoints() {
         return Collections.unmodifiableMap( this.workingMemory.getExitPoints() );
     }
+    
+    
+    
+    
+   
+    public void setConsequenceDegree(IDegree deg) {
+    	this.consequenceDegree = deg;
+    }
+    
+    public void inject(Object object, String field, String op, String value) {
+    	System.out.println(this.getClass()+" : KH injects a rule for degree "+getConsequenceDegree());
+    	workingMemory.inject(this.getRule().getName(), object, new ConstraintKey(field,op,value),getConsequenceDegree());    	
+    }
+    
+    public IDegree getConsequenceDegree() {
+    	return consequenceDegree;    
+    }
+    
+    
 }

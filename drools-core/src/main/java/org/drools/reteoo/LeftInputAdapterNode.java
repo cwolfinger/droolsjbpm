@@ -22,11 +22,13 @@ import java.io.ObjectOutput;
 
 import org.drools.RuleBaseConfiguration;
 import org.drools.common.BaseNode;
+import org.drools.common.ImperfectFactHandle;
 import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.common.NodeMemory;
 import org.drools.common.PropagationContextImpl;
 import org.drools.common.RuleBasePartitionId;
+import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.reteoo.builder.BuildContext;
 import org.drools.spi.PropagationContext;
 import org.drools.util.RightTupleList;
@@ -148,6 +150,27 @@ public class LeftInputAdapterNode extends LeftTupleSource
         }
     }
 
+    
+    public void assertObject(ImperfectFactHandle factHandle,
+			PropagationContext context,
+			InternalWorkingMemory workingMemory, IDegreeFactory factory,
+			EvalRecord record) {
+    	
+    	if ( !workingMemory.isSequential() ) {
+    		this.sink.createAndPropagateAssertLeftTuple( factHandle,
+                context,
+                workingMemory, 
+                factory,
+                record,
+                this.leftTupleMemoryEnabled );
+    	} else {
+    		throw new UnsupportedOperationException("Sequential mode not supported");    		
+    	}
+
+		
+	}
+
+    
     public void updateSink(final LeftTupleSink sink,
                            final PropagationContext context,
                            final InternalWorkingMemory workingMemory) {
@@ -261,6 +284,20 @@ public class LeftInputAdapterNode extends LeftTupleSource
                                        context,
                                        workingMemory );
         }
+        
+        public void assertObject(ImperfectFactHandle factHandle,
+				PropagationContext context,
+				InternalWorkingMemory workingMemory, IDegreeFactory factory,
+				EvalRecord record) {
+        	final ImperfectLeftTuple tuple = new ImperfectLeftTuple( factHandle,
+                    this.sink,
+                    this.leftTupleMemoryEnabled, record );
+        	this.sink.assertLeftTuple( tuple,
+        			context,        			
+        			workingMemory,
+        			factory);
+			
+		}
 
         public void retractRightTuple(final RightTuple rightTuple,
                                       final PropagationContext context,
@@ -285,6 +322,9 @@ public class LeftInputAdapterNode extends LeftTupleSource
             // this is a short living adapter class used only during an update operation, and
             // as so, no need for serialization code
         }
+
+		
     }
 
+	
 }

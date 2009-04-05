@@ -19,6 +19,7 @@ package org.drools.reteoo;
 import java.io.Externalizable;
 
 import org.drools.common.InternalWorkingMemory;
+import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.spi.PropagationContext;
 
 /**
@@ -50,6 +51,13 @@ public interface LeftTupleSink
     void assertLeftTuple(LeftTuple leftTuple,
                          PropagationContext context,
                          InternalWorkingMemory workingMemory);
+
+    
+    void assertLeftTuple(ImperfectLeftTuple leftTuple,
+            PropagationContext context,            
+            InternalWorkingMemory workingMemory,
+            IDegreeFactory factory
+            );
 
     void retractLeftTuple(LeftTuple leftTuple,
                           PropagationContext context,

@@ -20,6 +20,8 @@ import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.drools.RuleBaseConfiguration;
 import org.drools.base.ClassObjectType;
@@ -27,10 +29,12 @@ import org.drools.common.AbstractRuleBase;
 import org.drools.common.BaseNode;
 import org.drools.common.DroolsObjectInputStream;
 import org.drools.common.EventFactHandle;
+import org.drools.common.ImperfectFactHandle;
 import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.common.NodeMemory;
 import org.drools.common.PropagationContextImpl;
+import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.reteoo.ReteooWorkingMemory.WorkingMemoryReteExpireAction;
 import org.drools.reteoo.builder.BuildContext;
 import org.drools.rule.Declaration;
@@ -93,6 +97,9 @@ public class ObjectTypeNode extends ObjectSource
     private long                expirationOffset = -1;
 
     private transient ExpireJob job              = new ExpireJob();
+    
+    private EvaluationTemplate  template; 
+
 
     public ObjectTypeNode() {
 
@@ -118,6 +125,13 @@ public class ObjectTypeNode extends ObjectSource
                context.getRuleBase().getConfiguration().getAlphaNodeHashingThreshold() );
         this.objectType = objectType;
         setObjectMemoryEnabled( context.isObjectTypeNodeMemoryEnabled() );
+        
+        //TODO: 
+        //System.out.println(this.getClass()+" Hacked to add class constraint evaluation");
+        if (context.getRuleBase() instanceof ImperfectRuleBase) {
+        	IDegreeFactory factory = ((ImperfectRuleBase) context.getRuleBase()).getDegreeFactory();
+        	this.template = new SingleEvaluationTemplate(this.getId(),this.getConstraintKey(),new HashSet<String>(),factory.getMergeStrategy(),factory.getNullHandlingStrategy());
+        }
     }
 
     public void readExternal(ObjectInput in) throws IOException,
@@ -494,4 +508,48 @@ public class ObjectTypeNode extends ObjectSource
         }
 
     }
+
+    
+    
+    
+    
+    protected ConstraintKey getConstraintKey() {
+    	return new ConstraintKey("class","==",((ClassObjectType) this.objectType).getClassName() );
+    }
+    
+    
+	public void assertObject(ImperfectFactHandle factHandle,
+			PropagationContext context,
+			InternalWorkingMemory workingMemory, IDegreeFactory factory,
+			EvalRecord record) {
+		
+		
+		if ( context.getType() == PropagationContext.MODIFICATION && this.skipOnModify && context.getDormantActivations() == 0 ) {
+            // we do this after the shadowproxy update, just so that its up to date for the future
+            return;
+        }
+
+		//TODO Test for class membership...
+		ConstraintKey key = getConstraintKey();
+		
+		Evaluation eval = factHandle.getPropertyDegree(key); 
+		if (eval == null) {
+			eval = this.template.spawn(factory.True()); 				
+			factHandle.addPropertyDegree(eval);
+		}						
+		record.addEvaluation(eval);
+		
+        if ( this.objectMemoryEnabled ) {
+            final ObjectHashSet memory = (ObjectHashSet) workingMemory.getNodeMemory( this );
+            memory.add( factHandle,
+                        false );
+        }
+        this.sink.propagateAssertObject( factHandle,
+                                         context,
+                                         workingMemory,
+                                         factory,
+                                         record);
+
+        
+	}
 }

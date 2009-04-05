@@ -24,11 +24,13 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import org.drools.WorkingMemory;
 import org.drools.base.EnabledBoolean;
 import org.drools.base.SalienceInteger;
 import org.drools.io.Resource;
+import org.drools.reteoo.ConstraintKey;
 import org.drools.spi.AgendaGroup;
 import org.drools.spi.CompiledInvoker;
 import org.drools.spi.Consequence;
@@ -123,6 +125,8 @@ public class Rule
     private Enabled           enabled;
     
     private Resource          resource;
+
+	private Map<ConstraintKey, Set<String>> dependencies;
 
     public void writeExternal(ObjectOutput out) throws IOException {
         out.writeObject(pkg);
@@ -699,5 +703,17 @@ public class Rule
 	}
 	public Rule getParent() {
 		return parent;
+	}
+
+	
+	
+	public Map<ConstraintKey, Set<String>> getDependencies() {
+		return dependencies;
+	}
+
+	
+	
+	public void setDependencies(Map<ConstraintKey, Set<String>> dependencies) {
+		this.dependencies = dependencies;
 	}
 }

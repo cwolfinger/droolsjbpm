@@ -16,8 +16,16 @@ package org.drools.spi;
  * limitations under the License.
  */
 
+import java.util.Map;
+import java.util.Set;
+
 import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
+import org.drools.degrees.IDegree;
+import org.drools.degrees.factory.IDegreeFactory;
+import org.drools.reteoo.ConstraintKey;
+import org.drools.reteoo.Evaluation;
+import org.drools.reteoo.EvaluationTemplate;
 import org.drools.rule.ContextEntry;
 
 public interface AlphaNodeFieldConstraint
@@ -29,4 +37,11 @@ public interface AlphaNodeFieldConstraint
     public boolean isAllowed(InternalFactHandle handle,
                              InternalWorkingMemory workingMemory,
                              ContextEntry context);
+    
+    public Evaluation isSatisfied(InternalFactHandle handle,
+            InternalWorkingMemory workingMemory,
+            ContextEntry context,
+            IDegreeFactory factory);
+    
+    public EvaluationTemplate buildEvaluationTemplate(int id, Map<ConstraintKey, Set<String>> dependencies, IDegreeFactory factory);
 }

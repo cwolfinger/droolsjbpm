@@ -85,6 +85,11 @@ public class RuleBuilder {
 
             context.getDialect().getConsequenceBuilder().build( context );
         }
+        
+        //TODO:
+        //System.out.println(this.getClass()+"HACKED TO ADD DEPsss"); 
+        
+        context.getRule().setDependencies(context.getRuleDescr().getDependencies());
 
     }
 
