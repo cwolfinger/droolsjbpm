@@ -16,6 +16,10 @@ package org.drools.reteoo;
  * limitations under the License.
  */
 
+import java.util.Collection;
+import java.util.Observable;
+import java.util.Observer;
+
 import org.drools.common.BetaConstraints;
 import org.drools.common.ImperfectFactHandle;
 import org.drools.common.InternalFactHandle;
@@ -54,7 +58,7 @@ import org.drools.util.Iterator;
  * @author <a href="mailto:bob@werken.com">Bob McWhirter</a>
  *
  */
-public class JoinNode extends BetaNode {
+public class JoinNode extends BetaNode implements IGammaNode, Observer {
     // ------------------------------------------------------------
     // Instance methods
     // ------------------------------------------------------------    
@@ -64,6 +68,12 @@ public class JoinNode extends BetaNode {
      */
     private static final long serialVersionUID = 400L;    
 
+    
+    private GammaMemory 		gammaMemory;
+    
+    
+    
+    
     public JoinNode() {
 
     }
@@ -83,12 +93,23 @@ public class JoinNode extends BetaNode {
                behaviors );
         tupleMemoryEnabled = context.isTupleMemoryEnabled();
         
+        this.gammaMemory = new GammaMemory();
+        
         InternalRuleBase ruleBase = context.getRuleBase();
         if (ruleBase instanceof ImperfectRuleBase) {
         	IDegreeFactory factory = ((ImperfectRuleBase) ruleBase).getDegreeFactory();
         	this.filterStrat = factory.getDefaultStrategy();
+        	
+        	this.constraints.buildEvaluationTemplates(this.id,context.getRule().getDependencies(), factory);
+        	
+        	Collection<ConstraintKey> keys = this.constraints.getAllConstraintKeys();
+        	for (ConstraintKey key : keys)
+        		context.getRuleBase().getRete().indexGammaNode(key,this);
         }
         System.out.println(this.getClass().getName() + "(id "+id+") constructor hacked to add filter strategy");
+        
+             
+        
 
     }
 
@@ -152,38 +173,102 @@ public class JoinNode extends BetaNode {
                                           workingMemory,
                                           leftTuple );
         for ( ImperfectRightTuple rightTuple = (ImperfectRightTuple) memory.getRightTupleMemory().getFirst( leftTuple ); rightTuple != null; rightTuple = (ImperfectRightTuple) rightTuple.getNext() ) {
-            final InternalFactHandle handle = rightTuple.getFactHandle();
             
-            //TODO : Imperfect beta constraint
-            IDegree ans = this.constraints.isSatisfiedCachedLeft( memory.getContext(), handle,factory );
-            
-            EvalRecord record = new EvalRecord();
-            ConstraintKey key = this.constraints.getConstraintKey();
-            Evaluation eval = new Evaluation(this.getId(),ans,key,factory.getMergeStrategy(),factory.getNullHandlingStrategy());
-            record.addEvaluation(eval);
-            	record.addEvaluations(leftTuple.getRecord());
-            	record.addEvaluations(rightTuple.getRecord());
-            
-            
-            switch (this.filterStrat.doTry(record.getMainEval())) {
-    		case IFilterStrategy.DROP : return;
+        	final ImperfectFactHandle factHandle = (ImperfectFactHandle) rightTuple.getFactHandle();
+        	EvalRecord record = rightTuple.getRecord();
+                       
+            EvalRecord mainRecord = leftTuple.getRecord().clone();
+        	
+        	
+        	Collection<Evaluation> storedEvals = this.gammaMemory.retrieve(new ArgList(leftTuple.toObjectArray(),factHandle.getObject()));
+    		if (storedEvals != null) {
+    			record.addEvaluations(storedEvals);
+    			factHandle.addPropertyDegrees(storedEvals);
+    		}
+    		
+    		
+        	
+        	
+        	//Call internal evaluator, if not done before
+    		ConstraintKey[] keys = this.constraints.getConstraintKeys();
+    		if (keys != null) {
+		    		Evaluation evalTest = factHandle.getPropertyDegree(keys[0]);
+		    		if (evalTest == null) {
+		    			Evaluation[] evals = this.constraints.isSatisfiedCachedRight( memory.getContext(),
+		                        													  leftTuple, 
+		                        													  factory );
+		    			//B-constraints are 0 to N
+		    			//Each is evaluated and, if it is the first time, added to the object's handle
+		    			if (evals != null) {
+		    				for (Evaluation eval : evals) {
+		    					for (Evaluation subEval : eval.getEvalTree()) {
+		    						factHandle.addPropertyDegree(subEval);
+		    					}
+		    					record.addEvaluation(eval);
+		    				}
+		    			}
+		    				    			    			
+		    		} else {
+		    			
+		    			if (evalTest.getDegreeBit(Evaluation.EVAL) == null) {
+		    			
+		    				//B-constraints are 0 to N
+		        			//As above, in case EVAL hasn't been called yet, but no need to add to the handle
+		    				Evaluation[] evals = this.constraints.isSatisfiedCachedRight( memory.getContext(),
+									  leftTuple, 
+									  factory );
 		
-    		case IFilterStrategy.HOLD : //TODO: HOLD
-    			break;
-		
-    		case IFilterStrategy.PASS : 
-    			this.sink.propagateAssertLeftTuple( leftTuple,
-                        rightTuple,
-                        context,
-                        workingMemory,
-                        factory,
-                        record,
-                        this.tupleMemoryEnabled  );
+		    				if (evals != null) {
+		    					for (Evaluation eval : evals) {
+		    						record.addEvaluation(eval);
+		    					}
+		    				}
+		    				
+		    			}			
+		    		}   
+    		} else {
+    			//EMPTY BETA CONSTRAINT!
+    		}
+ 
+        	//KEY MOVE, AND-ING THE PATTERN EVALS
+    		mainRecord.addEvaluation(record);
+        	
+        	
+        	System.out.println("Situation at join eval"+mainRecord.expand());        		        		        		        	
+	        		        	        		        		        		        	
+        		
+        	switch (this.filterStrat.doTry(mainRecord)) {
+        		case IFilterStrategy.DROP : return;
+			
+        		case IFilterStrategy.HOLD : //TODO: HOLD
+        			System.out.println("HOLD RULES @JOIN NODE"+this.getId());
+        			System.out.println("Situation is "+mainRecord.expand());
+        			
+        				mainRecord.setLeftTuple(leftTuple);
+        				mainRecord.setRightTuple(rightTuple);
+        				mainRecord.setFactory(factory);
+        				mainRecord.setPropagationContext(context);
+        				mainRecord.setWorkingMemory(workingMemory);
+					mainRecord.addObserver(this);	
+        			
+        			break;
+			
+        		case IFilterStrategy.PASS : 
+        			this.sink.propagateAssertLeftTuple( leftTuple,
+                            rightTuple,
+                            context,
+                            workingMemory,
+                            factory,
+                            mainRecord,
+                            this.tupleMemoryEnabled  );
 
-    			break;
-    		default : return;			
-    	}
-            
+        			break;
+        		default : return;			
+        	}
+        	
+        			
+        
+                                                          
         }
 
         this.constraints.resetTuple( memory.getContext() );
@@ -280,21 +365,82 @@ public class JoinNode extends BetaNode {
                                                factHandle );
         int i = 0;
         for ( ImperfectLeftTuple leftTuple = (ImperfectLeftTuple) memory.getLeftTupleMemory().getFirst( rightTuple ); leftTuple != null; leftTuple = (ImperfectLeftTuple) leftTuple.getNext() ) {
-        	IDegree ans = this.constraints.isSatisfiedCachedRight( memory.getContext(),
-                                                        leftTuple, factory );
-        	ConstraintKey key = this.constraints.getConstraintKey();
-        	
-        	EvalRecord clonedRecord = record.clone();        	
-        	Evaluation eval = new Evaluation(this.getId(),ans,key,factory.getMergeStrategy(),factory.getNullHandlingStrategy());
-        	clonedRecord.addEvaluation(eval);
-        		clonedRecord.addEvaluations(leftTuple.getRecord());
         	
         	
         	
-        	switch (this.filterStrat.doTry(record.getMainEval())) {
+        	EvalRecord mainRecord = leftTuple.getRecord().clone();
+        	
+        	
+        	Collection<Evaluation> storedEvals = this.getGammaMemory().retrieve(new ArgList(leftTuple.toObjectArray(),factHandle.getObject()));
+    		if (storedEvals != null) {
+    			record.addEvaluations(storedEvals);
+    			factHandle.addPropertyDegrees(storedEvals);
+    		}
+    		
+    		
+        	
+        	
+        	//Call internal evaluator, if not done before
+    		ConstraintKey[] keys = this.constraints.getConstraintKeys();
+    		if (keys != null) {
+		    		Evaluation evalTest = factHandle.getPropertyDegree(keys[0]);
+		    		if (evalTest == null) {
+		    			Evaluation[] evals = this.constraints.isSatisfiedCachedRight( memory.getContext(),
+		                        													  leftTuple, 
+		                        													  factory );
+		    			//B-constraints are 0 to N
+		    			//Each is evaluated and, if it is the first time, added to the object's handle
+		    			if (evals != null) {
+		    				for (Evaluation eval : evals) {
+		    					for (Evaluation subEval : eval.getEvalTree()) {
+		    						factHandle.addPropertyDegree(subEval);
+		    					}
+		    					record.addEvaluation(eval);
+		    				}
+		    			}
+		    				    			    			
+		    		} else {
+		    			
+		    			if (evalTest.getDegreeBit(Evaluation.EVAL) == null) {
+		    			
+		    				//B-constraints are 0 to N
+		        			//As above, in case EVAL hasn't been called yet, but no need to add to the handle
+		    				Evaluation[] evals = this.constraints.isSatisfiedCachedRight( memory.getContext(),
+									  leftTuple, 
+									  factory );
+		
+		    				if (evals != null) {
+		    					for (Evaluation eval : evals) {
+		    						record.addEvaluation(eval);
+		    					}
+		    				}
+		    				
+		    			}			
+		    		}   
+    		} else {
+    			//EMPTY BETA CONSTRAINT!
+    		}
+ 
+        	//KEY MOVE, AND-ING THE PATTERN EVALS
+    		mainRecord.addEvaluation(record);
+        	
+        	
+        	System.out.println("Situation at join eval"+mainRecord.expand());        		        		        		        	
+        		
+        	switch (this.filterStrat.doTry(mainRecord)) {
         		case IFilterStrategy.DROP : return;
 			
         		case IFilterStrategy.HOLD : //TODO: HOLD
+        			System.out.println("HOLD RULES @JOIN NODE"+this.getId());
+        			System.out.println("Situation is "+mainRecord.expand());
+        			
+        				mainRecord.setLeftTuple(leftTuple);
+        				mainRecord.setRightTuple(rightTuple);
+        				mainRecord.setFactory(factory);
+        				mainRecord.setPropagationContext(context);
+        				mainRecord.setWorkingMemory(workingMemory);
+        			mainRecord.addObserver(this);	
+        			
         			break;
 			
         		case IFilterStrategy.PASS : 
@@ -303,7 +449,7 @@ public class JoinNode extends BetaNode {
                             context,
                             workingMemory,
                             factory,
-                            clonedRecord,
+                            mainRecord,
                             this.tupleMemoryEnabled  );
 
         			break;
@@ -317,6 +463,59 @@ public class JoinNode extends BetaNode {
 		
 	}
     
+    
+    
+    
+    
+    
+    
+    
+	public void update(Observable watcher, Object info) {
+		EvalRecord record = (EvalRecord) watcher;
+		System.out.println("**************************************************************UPDATE @JOIN NODE");
+		switch (this.filterStrat.doTry(record)) {
+		case IFilterStrategy.DROP : 
+			record.deleteObserver(this);
+			return;
+		
+		case IFilterStrategy.HOLD : 
+			//do nothing
+			return;
+		
+		case IFilterStrategy.PASS :
+			//go on
+			record.deleteObserver(this);
+			//throw new RuntimeException("Awakened objeect");
+			//TODO
+			if (record.getRightTuple() != null)
+				this.sink.propagateAssertLeftTuple( record.getLeftTuple(),
+						record.getRightTuple(),
+						record.getPropagationContext(),
+						record.getWorkingMemory(),
+						record.getFactory(),
+						record,
+						this.tupleMemoryEnabled  );
+			else
+				this.sink.propagateAssertLeftTuple( record.getLeftTuple(),						
+						record.getPropagationContext(),
+						record.getWorkingMemory(),
+						record.getFactory(),
+						record,
+						this.tupleMemoryEnabled  );
+			//break;
+		default : return;	
+		
+		}
+		
+		
+		// propagate
+	}
+    
+    
+	protected GammaMemory getGammaMemory() {
+		return this.gammaMemory;
+	}
+
     
     
     /**
@@ -412,6 +611,22 @@ public class JoinNode extends BetaNode {
 
         return "[JoinNode(" + this.getId() + ") - " + ((ObjectTypeNode) source).getObjectType() + "]";
     }
+
+    
+    
+    
+    public EvaluationTemplate getEvaluationTemplate(ConstraintKey key) {
+		return this.constraints.getEvalTemplate(key);
+	}
+
+
+	public Collection<Evaluation> getStoredEvals(ArgList args) {
+		return getGammaMemory().retrieve(args);
+	}
+
+	public void storeEvaluation(ArgList args, Evaluation prepareEval) {
+		getGammaMemory().store(args, prepareEval);
+	}
 
 	
 

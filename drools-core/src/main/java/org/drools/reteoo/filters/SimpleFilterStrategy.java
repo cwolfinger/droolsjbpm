@@ -14,7 +14,7 @@ public class SimpleFilterStrategy extends ImperfectFilterStrategy {
 	}
 	
 	
-	protected SimpleFilterStrategy() { }
+	public SimpleFilterStrategy() { }
 	
 	@Override
 	public int doTry(Evaluation eval) {

@@ -22,4 +22,11 @@ public class SimpleEquiv implements IDegreeCombiner {
 		return null;
 	}
 
+
+	public String getName() {
+		return "distEquiv";
+	}
+	
+	
+
 }

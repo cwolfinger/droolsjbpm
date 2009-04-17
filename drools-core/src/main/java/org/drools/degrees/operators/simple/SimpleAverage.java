@@ -39,6 +39,10 @@ public final class SimpleAverage implements IDegreeCombiner {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	public String getName() {
+		return "avg";
+	}
 	
 	
 	

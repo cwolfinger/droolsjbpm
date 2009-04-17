@@ -236,6 +236,12 @@ public class DrlParser {
                 parser.enableEditorInterface();
             }
             DroolsTree resultTree = (DroolsTree) parser.compilation_unit().getTree();
+            
+            System.out.println(this.getClass().toString() + " HACKED TO GET DROOLSTREE");
+           //System.out.println((((DroolsTree) resultTree.getChild(9)).toIndentedStringTree()));
+//            
+            
+            
             editorSentences = parser.getEditorInterface();
             makeErrorList( parser );
             if ( isEditor || !this.hasErrors() ) {

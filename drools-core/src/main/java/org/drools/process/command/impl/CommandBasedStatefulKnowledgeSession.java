@@ -50,6 +50,7 @@ import org.drools.process.command.SignalEventCommand;
 import org.drools.process.command.StartProcessCommand;
 import org.drools.process.command.UnregisterExitPointCommand;
 import org.drools.process.command.UpdateCommand;
+import org.drools.reteoo.ArgList;
 import org.drools.reteoo.ConstraintKey;
 import org.drools.reteoo.Evaluation;
 import org.drools.reteoo.ReteooWorkingMemory;
@@ -390,7 +391,7 @@ public class CommandBasedStatefulKnowledgeSession
 
 	
 
-	public void inject(String premise, Object object, ConstraintKey key,
+	public void inject(String premise, ArgList args, ConstraintKey key,
 			IDegree degree) {
 		// TODO Auto-generated method stub
 		

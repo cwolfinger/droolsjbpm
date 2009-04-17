@@ -20,8 +20,13 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.drools.RuleBaseConfiguration;
 import org.drools.base.evaluators.Operator;
@@ -29,9 +34,12 @@ import org.drools.degrees.IDegree;
 import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.reteoo.BetaMemory;
 import org.drools.reteoo.ConstraintKey;
+import org.drools.reteoo.Evaluation;
+import org.drools.reteoo.EvaluationTemplate;
 import org.drools.reteoo.LeftTuple;
 import org.drools.reteoo.LeftTupleMemory;
 import org.drools.reteoo.RightTupleMemory;
+import org.drools.reteoo.SingleEvaluationTemplate;
 import org.drools.rule.ContextEntry;
 import org.drools.rule.VariableConstraint;
 import org.drools.spi.BetaNodeFieldConstraint;
@@ -57,6 +65,8 @@ public class DefaultBetaConstraints
     private LinkedList  constraints;
 
     private int               indexed;
+    
+    private EvaluationTemplate[] 	template;
 
     public DefaultBetaConstraints() {
 
@@ -192,22 +202,23 @@ public class DefaultBetaConstraints
         return true;
     }
 
-    public IDegree isSatisfiedCachedLeft(ContextEntry[] context,
+    public Evaluation[] isSatisfiedCachedLeft(ContextEntry[] context,
 			InternalFactHandle handle, IDegreeFactory factory) {
     	// skip the indexed constraints
         LinkedListEntry entry = (LinkedListEntry) findNode( this.indexed+1 );
-        java.util.LinkedList<IDegree> degs = new java.util.LinkedList<IDegree>();
+                
+        Evaluation[] ans = new Evaluation[constraints.size()];
         
-        int i = 1;
+        int i = 0;
         while ( entry != null ) {
-            IDegree deg = ((BetaNodeFieldConstraint) entry.getObject()).isSatisfiedCachedLeft( context[this.indexed + i],
-                                                                                     handle, factory );
-            degs.add(deg);
+            ans[i] = ((BetaNodeFieldConstraint) entry.getObject()).isSatisfiedCachedLeft( context[this.indexed + i],
+                                                                                     handle, factory );            
             entry = (LinkedListEntry) entry.getNext();
             i++;
         }
         
-        return factory.getAndOperator().eval(degs);
+                
+        return ans;
         
 	}
 	
@@ -232,23 +243,26 @@ public class DefaultBetaConstraints
         return true;
     }
     
-    public IDegree isSatisfiedCachedRight(ContextEntry[] context,
+    public Evaluation[] isSatisfiedCachedRight(ContextEntry[] context,
 			LeftTuple tuple, IDegreeFactory factory) {
+    	
     	LinkedListEntry entry = (LinkedListEntry) findNode( this.indexed+1 );
-        java.util.LinkedList<IDegree> degs = new java.util.LinkedList<IDegree>();
         
-        int i = 1;
+        Evaluation[] ans = new Evaluation[constraints.size()];
+        
+        int i = 0;
         while ( entry != null ) {
-            IDegree deg = ((BetaNodeFieldConstraint) entry.getObject()).isSatisfiedCachedRight(tuple, 
-            																		 context[this.indexed + i],
-                                                                                     factory );
-            degs.add(deg);
+            ans[i] = ((BetaNodeFieldConstraint) entry.getObject()).isSatisfiedCachedRight(tuple, 
+					 context[this.indexed + i],
+                     factory );            
             entry = (LinkedListEntry) entry.getNext();
             i++;
         }
         
-        return factory.getAndOperator().eval(degs);
-	}
+                
+        return ans;        
+    	
+   	}
 
     public boolean isIndexed() {
         // false if -1
@@ -348,10 +362,10 @@ public class DefaultBetaConstraints
     }
     
     
-    private ConstraintKey singletonKey = null;
+    private ConstraintKey[] singletonKeys = null;
     
-	public ConstraintKey getConstraintKey() {
-		if (singletonKey == null) {
+	public ConstraintKey[] getConstraintKeys() {
+		if (singletonKeys == null) {
 			int N = this.constraints.size();			
 			ConstraintKey[] cks = new ConstraintKey[N];
 			LinkedListEntry entry = (LinkedListEntry) this.constraints.getFirst();
@@ -360,9 +374,45 @@ public class DefaultBetaConstraints
 				cks[j++] = ((BetaNodeFieldConstraint) entry.getObject()).getConstraintKey();
 			}
 							
-			singletonKey = new ConstraintKey("and",cks);
+			singletonKeys = cks;
 		}
-		return singletonKey;
+		return singletonKeys;
+	}
+	
+	public EvaluationTemplate[] buildEvaluationTemplates(int id, Map<ConstraintKey, Set<String>> dependencies, IDegreeFactory factory) {		 
+		 int N = this.constraints.size();
+		 org.drools.util.Iterator iter = this.constraints.iterator();
+		 template = new EvaluationTemplate[N];
+		 
+		 for (int j = 0; j < N; j++) {			 			 				
+			 template[j] = ((BetaNodeFieldConstraint) iter.next()).buildEvaluationTemplate(id, dependencies, factory);							 	
+		 }
+	   	return template;
+	}
+	
+	
+	public Collection<ConstraintKey> getAllConstraintKeys() {
+		Collection<ConstraintKey> ans = new HashSet<ConstraintKey>();
+		
+		org.drools.util.Iterator iter = this.constraints.iterator();
+		for (int j = 0; j < this.constraints.size(); j++) {
+			ans.addAll(((BetaConstraints) iter.next()).getAllConstraintKeys());
+		}
+		
+		return ans;
+	}
+
+	public EvaluationTemplate getEvalTemplate(ConstraintKey key) {
+		EvaluationTemplate ans;
+		
+		org.drools.util.Iterator iter = this.constraints.iterator();
+		for (int j = 0; j < this.constraints.size(); j++) {
+			ans = ((BetaConstraints) iter.next()).getEvalTemplate(key);
+			if (ans != null)
+				return ans;
+		}
+		
+		return null;
 	}
 	
 	

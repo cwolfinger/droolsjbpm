@@ -51,6 +51,7 @@ import org.drools.event.rule.impl.BeforeActivationFiredEventImpl;
 import org.drools.event.rule.impl.ObjectInsertedEventImpl;
 import org.drools.event.rule.impl.ObjectRetractedEventImpl;
 import org.drools.event.rule.impl.ObjectUpdatedEventImpl;
+import org.drools.reteoo.ArgList;
 import org.drools.reteoo.ConstraintKey;
 import org.drools.reteoo.Evaluation;
 import org.drools.reteoo.ReteooWorkingMemory;
@@ -666,7 +667,7 @@ public class StatefulKnowledgeSessionImpl
     
     
     
-	public void inject(String rule, Object object, ConstraintKey key,
+	public void inject(String rule, ArgList args, ConstraintKey key,
 			IDegree degree) {
 		// TODO Auto-generated method stub
 		

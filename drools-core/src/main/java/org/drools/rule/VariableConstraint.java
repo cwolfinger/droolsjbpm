@@ -134,18 +134,18 @@ public class VariableConstraint extends MutableTypeConstraint
     	return getTemplate().spawn(deg);
 	}
 
-	public IDegree isSatisfiedCachedLeft(ContextEntry context,
+	public Evaluation isSatisfiedCachedLeft(ContextEntry context,
 			InternalFactHandle handle, IDegreeFactory factory) {
-		return this.restriction.isSatisfiedCachedLeft( context,
+		return this.getTemplate().spawn(this.restriction.isSatisfiedCachedLeft( context,
                 handle,
-                factory);
+                factory));
 	}
 
-	public IDegree isSatisfiedCachedRight(LeftTuple tuple,
+	public Evaluation isSatisfiedCachedRight(LeftTuple tuple,
 			ContextEntry context, IDegreeFactory factory) {
-		return this.restriction.isSatisfiedCachedRight( tuple,
+		return this.getTemplate().spawn(this.restriction.isSatisfiedCachedRight( tuple,
                 context, 
-                factory);
+                factory));
 	}
     
     

@@ -41,6 +41,7 @@ import org.drools.process.instance.ProcessInstanceManager;
 import org.drools.process.instance.WorkItemManager;
 import org.drools.process.instance.event.SignalManager;
 import org.drools.process.instance.timer.TimerManager;
+import org.drools.reteoo.ArgList;
 import org.drools.reteoo.ConstraintKey;
 import org.drools.reteoo.LIANodePropagation;
 import org.drools.reteoo.PartitionTaskManager;
@@ -544,7 +545,7 @@ public class MockWorkingMemory implements InternalWorkingMemory {
     }
 
 
-	public void inject(String premise, Object object,
+	public void inject(String premise, ArgList args,
 			ConstraintKey key, IDegree degree) {
 		// TODO Auto-generated method stub
 		

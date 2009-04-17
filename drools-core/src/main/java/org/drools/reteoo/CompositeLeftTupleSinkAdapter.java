@@ -94,8 +94,11 @@ public class CompositeLeftTupleSinkAdapter extends AbstractLeftTupleSinkAdapter 
 			boolean leftTupleMemoryEnabled) {
 
     	for( LeftTupleSinkNode sink = this.sinks.getFirst(); sink != null; sink = sink.getNextLeftTupleSinkNode() ) {
+    		
+    		EvalRecord masterRecord = new EvalRecord(-1,factory.getAndOperator(),factory.getMergeStrategy(),factory.getNullHandlingStrategy()); 
+        		masterRecord.addEvaluation(record);
             doPropagateAssertLeftTuple( context, workingMemory, factory, sink,
-                                        new ImperfectLeftTuple( factHandle, sink, leftTupleMemoryEnabled, record ) );
+                                        new ImperfectLeftTuple( factHandle, sink, leftTupleMemoryEnabled, masterRecord ) );
         }
 		
 	}

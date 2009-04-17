@@ -103,7 +103,8 @@ public final class RuleTerminalNode extends BaseNode
                             final LeftTupleSource source,
                             final Rule rule,
                             final GroupElement subrule,
-                            final BuildContext context) {
+                            final BuildContext context
+                            ) {
         super( id,
                context.getPartitionId(),
                context.getRuleBase().getConfiguration().isMultithreadEvaluation() );
@@ -177,10 +178,12 @@ public final class RuleTerminalNode extends BaseNode
 			IDegreeFactory factory) {
     	
     	EvalRecord record = tuple.getRecord();
-    	System.out.println(this.rule);
-    	System.out.println(""+this.hashCode() + record);
+    	record.setNodeId(this.getId());
     	
-    	IDegree degree = record.getOverallDegree();
+    	System.out.println(this.rule);
+    	System.out.println(""+this.hashCode() + record.expand());
+    	
+    	IDegree degree = record.getDegree();
     	
     	 // @FIXME
         final LeftTuple cloned = tuple;//new LeftTuple( tuple );

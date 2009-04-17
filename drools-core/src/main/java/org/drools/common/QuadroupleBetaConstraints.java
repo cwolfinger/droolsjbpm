@@ -20,7 +20,12 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.drools.RuleBaseConfiguration;
 import org.drools.base.evaluators.Operator;
@@ -28,9 +33,12 @@ import org.drools.degrees.IDegree;
 import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.reteoo.BetaMemory;
 import org.drools.reteoo.ConstraintKey;
+import org.drools.reteoo.Evaluation;
+import org.drools.reteoo.EvaluationTemplate;
 import org.drools.reteoo.LeftTuple;
 import org.drools.reteoo.LeftTupleMemory;
 import org.drools.reteoo.RightTupleMemory;
+import org.drools.reteoo.SingleEvaluationTemplate;
 import org.drools.rule.ContextEntry;
 import org.drools.rule.VariableConstraint;
 import org.drools.spi.BetaNodeFieldConstraint;
@@ -60,6 +68,8 @@ public class QuadroupleBetaConstraints
     private boolean                       indexed1;
     private boolean                       indexed2;
     private boolean                       indexed3;
+    
+    private EvaluationTemplate[] 	template;
 
     public QuadroupleBetaConstraints() {
     }
@@ -414,36 +424,76 @@ public class QuadroupleBetaConstraints
         return new ContextEntry[]{this.constraint0.createContextEntry(), this.constraint1.createContextEntry(), this.constraint2.createContextEntry(), this.constraint3.createContextEntry()};
     }
 
-	public IDegree isSatisfiedCachedLeft(ContextEntry[] context,
+    public Evaluation[] isSatisfiedCachedLeft(ContextEntry[] context,
 			InternalFactHandle handle, IDegreeFactory factory) {
-		IDegree[] degs = new IDegree[4];
-		degs[0] = this.constraint0.isSatisfiedCachedLeft(context[0], handle, factory);
-    	degs[1] = this.constraint1.isSatisfiedCachedLeft(context[1], handle, factory);
-    	degs[2] = this.constraint1.isSatisfiedCachedLeft(context[2], handle, factory);
-    	degs[3] = this.constraint1.isSatisfiedCachedLeft(context[3], handle, factory);
-    	
-    	return factory.getAndOperator().eval(degs);
+		
+		return new Evaluation[] {
+				this.constraint0.isSatisfiedCachedLeft(context[0], handle, factory),
+				this.constraint1.isSatisfiedCachedLeft(context[1], handle, factory),
+				this.constraint2.isSatisfiedCachedLeft(context[2], handle, factory),
+				this.constraint3.isSatisfiedCachedLeft(context[3], handle, factory)
+		};
 	}
 
-	public IDegree isSatisfiedCachedRight(ContextEntry[] context,
+	public Evaluation[] isSatisfiedCachedRight(ContextEntry[] context,
 			LeftTuple tuple, IDegreeFactory factory) {
 		
-		IDegree[] degs = new IDegree[4];
-		degs[0] = this.constraint0.isSatisfiedCachedRight(tuple, context[0], factory);
-		degs[1] = this.constraint0.isSatisfiedCachedRight(tuple, context[1], factory);
-		degs[2] = this.constraint0.isSatisfiedCachedRight(tuple, context[2], factory);
-		degs[3] = this.constraint0.isSatisfiedCachedRight(tuple, context[3], factory);
-    	
-    	return factory.getAndOperator().eval(degs);
+		return new Evaluation[] {
+				this.constraint0.isSatisfiedCachedRight(tuple, context[0], factory),
+				this.constraint1.isSatisfiedCachedRight(tuple, context[1], factory),
+				this.constraint2.isSatisfiedCachedRight(tuple, context[2], factory),
+				this.constraint3.isSatisfiedCachedRight(tuple, context[3], factory)
+		};
+	}
+	
+	
+	
+	
+	private ConstraintKey[] singletonKeys = null;
+    
+	public ConstraintKey[] getConstraintKeys() {
+		if (singletonKeys == null) {				
+			singletonKeys = new ConstraintKey[4]; 
+			singletonKeys[0] = constraint0.getConstraintKey();
+			singletonKeys[1] = constraint1.getConstraintKey();
+			singletonKeys[2] = constraint2.getConstraintKey();
+			singletonKeys[3] = constraint3.getConstraintKey();
+					
+		}
+		return singletonKeys;
+	}
+	
+	public EvaluationTemplate[] buildEvaluationTemplates(int id, Map<ConstraintKey, Set<String>> dependencies, IDegreeFactory factory) {
+		template = new EvaluationTemplate[4];
+ 		
+	 	template[0] = constraint0.buildEvaluationTemplate(id, dependencies, factory);
+	 	template[1] = constraint1.buildEvaluationTemplate(id, dependencies, factory);
+	 	template[2] = constraint2.buildEvaluationTemplate(id, dependencies, factory);
+	 	template[3] = constraint3.buildEvaluationTemplate(id, dependencies, factory);
+			 		 
+	 	return template;
 	}
 
-	private ConstraintKey singletonKey = null;
-    
-	public ConstraintKey getConstraintKey() {
-		if (singletonKey == null) {				
-			singletonKey = new ConstraintKey("and",new ConstraintKey[] {constraint0.getConstraintKey(),constraint1.getConstraintKey(),constraint2.getConstraintKey(),constraint3.getConstraintKey()});
-		}
-		return singletonKey;
+	public Collection<ConstraintKey> getAllConstraintKeys() {
+		Collection<ConstraintKey> ans = new HashSet<ConstraintKey>();
+			ans.addAll(constraint0.getAllConstraintKeys());
+			ans.addAll(constraint1.getAllConstraintKeys());
+			ans.addAll(constraint2.getAllConstraintKeys());
+			ans.addAll(constraint3.getAllConstraintKeys());
+		return ans;
 	}
+
+	public EvaluationTemplate getEvalTemplate(ConstraintKey key) {
+		EvaluationTemplate ans;
+			ans = constraint0.getEvalTemplate(key);
+			if (ans == null)
+				ans = constraint1.getEvalTemplate(key);
+			if (ans == null)
+				ans = constraint2.getEvalTemplate(key);
+			if (ans == null)
+				ans = constraint3.getEvalTemplate(key);
+		return ans;
+	}
+	
 	
 }

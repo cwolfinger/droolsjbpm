@@ -13,7 +13,7 @@ public class FuzzyFilterStrategy extends ImperfectFilterStrategy {
 		return singleton;
 	}
 	
-	protected FuzzyFilterStrategy() {
+	public FuzzyFilterStrategy() {
 		
 	}
 

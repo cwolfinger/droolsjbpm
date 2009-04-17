@@ -18,6 +18,10 @@ package org.drools.common;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
 
 import org.drools.RuleBaseConfiguration;
 import org.drools.base.evaluators.Operator;
@@ -25,9 +29,12 @@ import org.drools.degrees.IDegree;
 import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.reteoo.BetaMemory;
 import org.drools.reteoo.ConstraintKey;
+import org.drools.reteoo.Evaluation;
+import org.drools.reteoo.EvaluationTemplate;
 import org.drools.reteoo.LeftTuple;
 import org.drools.reteoo.LeftTupleMemory;
 import org.drools.reteoo.RightTupleMemory;
+import org.drools.reteoo.SingleEvaluationTemplate;
 import org.drools.rule.ContextEntry;
 import org.drools.rule.VariableConstraint;
 import org.drools.spi.BetaNodeFieldConstraint;
@@ -48,11 +55,13 @@ public class SingleBetaConstraints
      */
     private static final long             serialVersionUID = 400L;
 
-    private BetaNodeFieldConstraint constraint;
+    private BetaNodeFieldConstraint 	  constraint;
 
     private boolean                       indexed;
 
     private RuleBaseConfiguration         conf;
+    
+    private EvaluationTemplate[]		  template;
 
     public SingleBetaConstraints() {
 
@@ -239,26 +248,45 @@ public class SingleBetaConstraints
         context[0].resetTuple();
     }
 
-	public IDegree isSatisfiedCachedLeft(ContextEntry[] context,
+	public Evaluation[] isSatisfiedCachedLeft(ContextEntry[] context,
 			InternalFactHandle handle, IDegreeFactory factory) {
-		return this.constraint.isSatisfiedCachedLeft( context[0],
-                handle, factory );
+		
+		return new Evaluation[] { this.constraint.isSatisfiedCachedLeft( context[0],
+                handle, factory ) };		
 	}
 
-	public IDegree isSatisfiedCachedRight(ContextEntry[] context,
+	public Evaluation[] isSatisfiedCachedRight(ContextEntry[] context,
 			LeftTuple tuple, IDegreeFactory factory) {
-		return this.constraint.isSatisfiedCachedRight(tuple, context[0], factory);
+		return new Evaluation[] { this.constraint.isSatisfiedCachedRight(tuple, context[0], factory) };		
 	}
 
 	
-	private ConstraintKey singletonKey = null;
+	private ConstraintKey[] singletonKeys = null;
     
-	public ConstraintKey getConstraintKey() {
-		if (singletonKey == null) {				
-			singletonKey = new ConstraintKey("and",new ConstraintKey[] {constraint.getConstraintKey()});
+	public ConstraintKey[] getConstraintKeys() {
+		if (singletonKeys == null) {				
+			singletonKeys = new ConstraintKey[1]; 
+			singletonKeys[0] = constraint.getConstraintKey();		
+					
 		}
-		return singletonKey;
+		return singletonKeys;
 	}
 	
+	
+	public EvaluationTemplate[] buildEvaluationTemplates(int id, Map<ConstraintKey, Set<String>> dependencies, IDegreeFactory factory) {
+		template = new EvaluationTemplate[1];
+		 
+	   	template[0] = this.constraint.buildEvaluationTemplate(id, dependencies, factory);
+	   	
+	   	return template;
+	}
+
+	public Collection<ConstraintKey> getAllConstraintKeys() {
+		return this.constraint.getAllConstraintKeys();
+	}
+
+	public EvaluationTemplate getEvalTemplate(ConstraintKey key) {
+		return this.constraint.getEvalTemplate(key);
+	}
 	
 }

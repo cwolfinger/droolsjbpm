@@ -13,6 +13,7 @@ import org.drools.RuntimeDroolsException;
 import org.drools.WorkingMemoryEntryPoint;
 import org.drools.RuleBaseConfiguration.AssertBehaviour;
 import org.drools.degrees.IDegree;
+import org.drools.reteoo.ArgList;
 import org.drools.reteoo.ConstraintKey;
 import org.drools.reteoo.EntryPointNode;
 import org.drools.reteoo.Evaluation;
@@ -487,7 +488,7 @@ public class NamedEntryPoint
     }
 
 	
-	public void inject(String premise, Object object,
+	public void inject(String premise, ArgList args,
 			ConstraintKey key, IDegree degree) {
 		// TODO Auto-generated method stub
 		

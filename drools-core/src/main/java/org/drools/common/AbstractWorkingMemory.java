@@ -74,6 +74,7 @@ import org.drools.process.instance.WorkItemManager;
 import org.drools.process.instance.context.variable.VariableScopeInstance;
 import org.drools.process.instance.event.SignalManager;
 import org.drools.process.instance.timer.TimerManager;
+import org.drools.reteoo.ArgList;
 import org.drools.reteoo.ConstraintKey;
 import org.drools.reteoo.EntryPointNode;
 import org.drools.reteoo.Evaluation;
@@ -1945,8 +1946,8 @@ public abstract class AbstractWorkingMemory
     
     
     
-    public void inject(String ruleName, Object object, ConstraintKey key, IDegree degree) {
-    	Object factHandle = this.getObjectStore().getHandleForObject(object);
+    public void inject(String ruleName, ArgList args, ConstraintKey key, IDegree degree) {
+    	Object factHandle = this.getObjectStore().getHandleForObject(args.getObject());
     	    	
     	IGammaNode node = this.ruleBase.getRete().getNode(key);
     	
@@ -1954,7 +1955,7 @@ public abstract class AbstractWorkingMemory
     		//Object does not exist, YET
     		//Prepare eval to be collected...    	
     		if (node != null)
-    			node.storeEvaluation(object, prepareEval(ruleName,object,key,degree,node));
+    			node.storeEvaluation(args, prepareEval(ruleName,args,key,degree,node));
     	} else {
     		if (factHandle instanceof ImperfectFactHandle) {
     			
@@ -1965,18 +1966,21 @@ public abstract class AbstractWorkingMemory
     			if (eval == null && node != null) {    				    				
     				// Object exsits, but its prop hasn't been evaluated yet
     				// Prepare eval to be collected at the node...
-    				node.storeEvaluation(object,prepareEval(ruleName,object,key,degree,node));
+    				node.storeEvaluation(args,prepareEval(ruleName,args,key,degree,node));
     				    				    				
-    			} else {
+    			} else if (eval != null) {
     				// Object exists and has already been eval'ed
     				// Add new degree to evaluation
-    				//TODO: 1 should be confidence!
+    				//TODO: 1 should be confidence!    				
     				eval.addDegree(ruleName, degree,1);
     				//Notification is implicit in the record...
+    			} else if (node == null) {
+    				System.out.println("Warning - injected USELESS eval");
+    				//throw new RuntimeDroolsException("Injected useless fact - check the key "+key);
     			}
     			
     		} else {
-    			throw new RuntimeException("Tried to inject a crisp fact!!");
+    			throw new RuntimeDroolsException("Tried to inject a crisp fact!!");
     		}    		
     	}
 		

@@ -6,9 +6,9 @@ public interface IGammaNode {
 
 	EvaluationTemplate getEvaluationTemplate(ConstraintKey key);
 
-	void storeEvaluation(Object object, Evaluation prepareEval);
+	void storeEvaluation(ArgList args, Evaluation prepareEval);
 	
 	
-	public Collection<Evaluation> getStoredEvals(Object o);
+	public Collection<Evaluation> getStoredEvals(ArgList args);
 
 }

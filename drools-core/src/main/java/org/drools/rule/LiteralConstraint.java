@@ -193,15 +193,16 @@ public class LiteralConstraint
 	
 	
 	
-	 public EvaluationTemplate buildEvaluationTemplate(int id, Map<ConstraintKey, Set<String>> dependencies, IDegreeFactory factory) {
+	public EvaluationTemplate buildEvaluationTemplate(int id, Map<ConstraintKey, Set<String>> dependencies, IDegreeFactory factory) {
 		 Set<String> deps;
 		 if (dependencies == null)
 			 deps = Collections.emptySet();
 		 else 
 			 deps = dependencies.get(this.getConstraintKey());
-	    	this.template = new SingleEvaluationTemplate(id,this.getConstraintKey(),deps,factory.getMergeStrategy(),factory.getNullHandlingStrategy());
-	    	return template;
-	    }
+		 
+	   	this.template = new SingleEvaluationTemplate(id,this.getConstraintKey(),deps,factory.getMergeStrategy(),factory.getNullHandlingStrategy());
+	   	return template;
+	}
 
 	public EvaluationTemplate getEvalTemplate(ConstraintKey key) {
 		if (this.template.getConstraintKey().equals(key))

@@ -23,6 +23,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import org.drools.base.ClassFieldAccessor;
+import org.drools.base.ClassFieldReader;
 import org.drools.base.ValueType;
 import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
@@ -635,8 +637,10 @@ public class VariableRestriction
     private ConstraintKey singletonKey = null;
     
 	public ConstraintKey getConstraintKey() {
-		if (singletonKey == null)
-			singletonKey = new ConstraintKey(readAccessor.toString(),evaluator.toString(),declaration.toString());
+		if (singletonKey == null) {
+			ClassFieldReader cfa = (ClassFieldReader) readAccessor;
+			singletonKey = new ConstraintKey(cfa.getClassName()+"."+cfa.getFieldName(),evaluator.toString(),declaration.getIdentifier());
+		}
 		return singletonKey;
 	}
 	

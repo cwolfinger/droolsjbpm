@@ -23,6 +23,7 @@ import org.drools.FactException;
 import org.drools.common.InternalWorkingMemoryActions;
 import org.drools.degrees.IDegree;
 import org.drools.impl.StatefulKnowledgeSessionImpl;
+import org.drools.reteoo.ArgList;
 import org.drools.reteoo.ConstraintKey;
 import org.drools.reteoo.Evaluation;
 import org.drools.reteoo.ReteooStatefulSession;
@@ -211,7 +212,7 @@ public class SequentialKnowledgeHelper
     
     
     
-	public void inject(Object object, String field, String op, String value) {
+	public void inject(ArgList args, String field, String op, String value) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -222,6 +223,25 @@ public class SequentialKnowledgeHelper
 	}
 
 	public void setConsequenceDegree(IDegree deg) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void inject(Object arg, String field, String op, String value) {
+		this.inject(new ArgList(arg), field, op, value);
+	}
+
+	public void inject(Object[] args, String field, String op, String value) {
+		this.inject(new ArgList(args), field, op, value);
+		
+	}
+
+	public void inject(Object arg, String key) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void inject(Object[] args, String key) {
 		// TODO Auto-generated method stub
 		
 	}

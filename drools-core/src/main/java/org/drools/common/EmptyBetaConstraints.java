@@ -19,13 +19,20 @@ package org.drools.common;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
 
 import org.drools.RuleBaseConfiguration;
 import org.drools.degrees.IDegree;
 import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.reteoo.BetaMemory;
 import org.drools.reteoo.ConstraintKey;
+import org.drools.reteoo.Evaluation;
+import org.drools.reteoo.EvaluationTemplate;
 import org.drools.reteoo.LeftTuple;
+import org.drools.reteoo.SingleEvaluationTemplate;
 import org.drools.rule.ContextEntry;
 import org.drools.util.LeftTupleList;
 import org.drools.util.LinkedList;
@@ -146,23 +153,33 @@ public class EmptyBetaConstraints
         return EMPTY;
     }
 
-	public IDegree isSatisfiedCachedLeft(ContextEntry[] context,
+	public Evaluation[] isSatisfiedCachedLeft(ContextEntry[] context,
 			InternalFactHandle handle, IDegreeFactory factory) {
-		return factory.True();
+		return null;
 	}
 
-	public IDegree isSatisfiedCachedRight(ContextEntry[] context,
+	public Evaluation[] isSatisfiedCachedRight(ContextEntry[] context,
 			LeftTuple tuple, IDegreeFactory factory) { 
-		return factory.True();
+		return null;
 	}
 	
-	private ConstraintKey singletonKey = null;
+	private ConstraintKey[] singletonKeys = null;
     
-	public ConstraintKey getConstraintKey() {
-		if (singletonKey == null) {				
-			singletonKey = new ConstraintKey("and",new ConstraintKey[] {});
-		}
-		return singletonKey;
+	public ConstraintKey[] getConstraintKeys() {
+		return singletonKeys;
 	}
 
+	public EvaluationTemplate[] buildEvaluationTemplates(int id, Map<ConstraintKey, Set<String>> dependencies, IDegreeFactory factory) {
+		 
+	   	return null;
+	}
+
+	public Collection<ConstraintKey> getAllConstraintKeys() {		
+		return Collections.emptySet();
+	}
+
+	public EvaluationTemplate getEvalTemplate(ConstraintKey key) {
+		return null;
+	}
+	
 }

@@ -204,7 +204,7 @@ public class AlphaNode extends ObjectSource
 		System.out.println("--------------     Passing by alpha" + id);
 
 		//Collect any provided info
-		Collection<Evaluation> storedEvals = this.gammaMemory.retrieve(factHandle.getObject());
+		Collection<Evaluation> storedEvals = this.gammaMemory.retrieve(new ArgList(factHandle.getObject()));
 		if (storedEvals != null) {
 			record.addEvaluations(storedEvals);
 			factHandle.addPropertyDegrees(storedEvals);
@@ -220,12 +220,13 @@ public class AlphaNode extends ObjectSource
 					memory.context,
 					factory
                 	);	
-			Collection<Evaluation> useless = eval.getEvalTree(); 
+			 
+			
 			for (Evaluation subEval : eval.getEvalTree()) {
 				factHandle.addPropertyDegree(subEval);
-				record.addEvaluation(subEval);
 			}
-				
+			record.addEvaluation(eval);	
+			
 			
 		} else {
 			if (eval.getDegreeBit(Evaluation.EVAL) == null) {
@@ -238,17 +239,18 @@ public class AlphaNode extends ObjectSource
 			}			
 		}   
 		 
-		//IMPORTANT: LAST ADDITION IS MAIN NOW
+		System.out.println("Alpha evaluation trial "+record.expand());
 		
-		System.out.println("Answer is given by " + record.getMainEval().toString()+ " info : " +record.getMainEval().getInfoRate());
 		//Merge is automatical, so now we decide what to do
-		switch (this.filterStrat.doTry(record.getMainEval())) {
+		switch (this.filterStrat.doTry(record)) {
 			case IFilterStrategy.DROP : 
 				//time to die
+				System.out.println("Alpha FAIL : DROP record");
 				return;
 			
 			case IFilterStrategy.HOLD : 
-				System.out.println("WARNING::::::::::::::::::::::::::: OBJECT HELD AT NODE "+this.constraint.getConstraintKey());
+				System.out.println("WARNING::::::::::::::::::::::::::: OBJECT HELD AT ALPHA NODE "+this.constraint.getConstraintKey());
+				System.out.println("Situation is "+record.expand());
 					record.setFactHandle(factHandle);
 					record.setFactory(factory);
 					record.setPropagationContext(propagationContext);
@@ -273,8 +275,8 @@ public class AlphaNode extends ObjectSource
 	
 	public void update(Observable watcher, Object info) {
 		EvalRecord record = (EvalRecord) watcher;
-System.out.println("**************************************************************UPDATE");
-		switch (this.filterStrat.doTry(record.getMainEval())) {
+System.out.println("**************************************************************UPDATE @ALPHA NODE");
+		switch (this.filterStrat.doTry(record)) {
 		case IFilterStrategy.DROP : 
 			record.deleteObserver(this);
 			return;
@@ -564,13 +566,12 @@ System.out.println("************************************************************
 	
 	
 
-	public Collection<Evaluation> getStoredEvals(Object o) {
-		// TODO Auto-generated method stub
-		return null;
+	public Collection<Evaluation> getStoredEvals(ArgList args) {
+		return this.gammaMemory.retrieve(args);
 	}
 
-	public void storeEvaluation(Object object, Evaluation prepareEval) {
-		this.gammaMemory.store(object, prepareEval);
+	public void storeEvaluation(ArgList args, Evaluation prepareEval) {
+		this.gammaMemory.store(args, prepareEval);
 	}
 
 	

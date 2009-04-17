@@ -108,7 +108,7 @@ public class AndConstraint extends AbstractCompositeConstraint {
         return true;
     }
 
-    public IDegree isSatisfiedCachedLeft(ContextEntry context,
+    public Evaluation isSatisfiedCachedLeft(ContextEntry context,
 			InternalFactHandle handle, IDegreeFactory factory) {
     	
     	int N1 = this.alphaConstraints.length;
@@ -123,15 +123,12 @@ public class AndConstraint extends AbstractCompositeConstraint {
                                                       	factory);
     	for ( int i = 0; i < N2; i++ )
     		//TODO: Extend BetaConstraints as well..
-    		evals[N1+i] = new Evaluation(0, 
-    			this.betaConstraints[i].isSatisfiedCachedLeft(
+    		evals[N1+i] = this.betaConstraints[i].isSatisfiedCachedLeft(
     				((MultiFieldConstraintContextEntry) context).betas[i],
     				handle, 
-    				factory),
-    				null,factory.getMergeStrategy(),factory.getNullHandlingStrategy());
+    				factory);
     				
-
-    	return getTemplate().spawn(evals).getDegree();
+    	return getTemplate().spawn(evals);
     	
 	}
     
@@ -158,7 +155,7 @@ public class AndConstraint extends AbstractCompositeConstraint {
     }
     
     
-    public IDegree isSatisfiedCachedRight(LeftTuple tuple,
+    public Evaluation isSatisfiedCachedRight(LeftTuple tuple,
 			ContextEntry context, IDegreeFactory factory) {
 		
     	int N1 = this.alphaConstraints.length;
@@ -173,16 +170,13 @@ public class AndConstraint extends AbstractCompositeConstraint {
                                                       	factory);
     	for ( int i = 0; i < N2; i++ )
     		//TODO: Extend Beta as well
-    		evals[N1+i] = new Evaluation(0,     			
+    		evals[N1+i] =  			
     			this.betaConstraints[i].isSatisfiedCachedRight(
     				tuple,
     				((MultiFieldConstraintContextEntry) context).betas[i],    				
-    				factory),
-    				
-    				null,factory.getMergeStrategy(),factory.getNullHandlingStrategy());
-    				
+    				factory);    				
 
-    	return getTemplate().spawn(evals).getDegree();
+    	return getTemplate().spawn(evals);
     	
 	}
     

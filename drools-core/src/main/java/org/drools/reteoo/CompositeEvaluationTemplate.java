@@ -49,7 +49,12 @@ public class CompositeEvaluationTemplate extends EvaluationTemplate {
 	}
 	
 	public Evaluation spawn() {
-		return new CompositeEvaluation(id,key,deps,children,operator,mergeStrat,nullStrat);
+		return new CompositeEvaluation(id,key,deps,children.values().toArray(new Evaluation[children.values().size()]),operator,mergeStrat,nullStrat);
+	}
+	
+	
+	protected IDegreeCombiner getOperator() {
+		return operator;
 	}
 	
 	

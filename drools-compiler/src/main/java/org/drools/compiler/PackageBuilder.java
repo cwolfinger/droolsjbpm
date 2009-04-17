@@ -1564,19 +1564,28 @@ public class PackageBuilder {
     		
     		int idx = cons.indexOf("inject");
     		while (idx != -1) {
+    			
     			int endIdx = cons.indexOf(';', idx);
-    			
-    			StringTokenizer tok = new StringTokenizer(cons.substring(idx,endIdx),",)");
-    			tok.nextToken();
-    			ConstraintKey ck = new ConstraintKey(tok.nextToken().replaceAll("\"", ""),tok.nextToken().replaceAll("\"", ""),tok.nextToken().replaceAll("\"", ""));    			
-    			
-    			Set<String> deps = ans.get(ck);
-    			if (deps == null) {
-    				deps = new HashSet<String>();
-    				ans.put(ck,deps);
-    			}
-    			deps.add(r.getName());
+    			if (idx < 10 || (cons.charAt(idx-8) != '/' && cons.charAt(idx-9) != '/')) {
     				
+    			
+    				StringTokenizer tok = new StringTokenizer(cons.substring(idx,endIdx),",)");
+    				tok.nextToken();
+    				ConstraintKey ck = null;
+    				if (tok.countTokens() >= 3)
+    					 ck = new ConstraintKey(tok.nextToken().replaceAll("\"", ""),
+    							tok.nextToken().replaceAll("\"", ""),
+    							tok.nextToken().replaceAll("\"", ""));
+    				else 
+    					ck = new ConstraintKey(tok.nextToken().replaceAll("\"", ""));
+    			
+    				Set<String> deps = ans.get(ck);
+    				if (deps == null) {
+    					deps = new HashSet<String>();
+    					ans.put(ck,deps);
+    				}
+    					deps.add(r.getName());
+    			}
     		
     			idx = cons.indexOf("inject",endIdx);
     		}

@@ -20,16 +20,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.drools.InitialFact;
+import org.drools.RuleBase;
 import org.drools.RuleIntegrationException;
 import org.drools.RuleBaseConfiguration.EventProcessingMode;
 import org.drools.base.ClassObjectType;
 import org.drools.common.BaseNode;
+import org.drools.common.EmptyBetaConstraints;
 import org.drools.common.InternalRuleBase;
+import org.drools.degrees.IDegree;
+import org.drools.degrees.factory.IDegreeFactory;
+import org.drools.reteoo.ImperfectRuleBase;
+import org.drools.reteoo.ModusPonensNode;
 import org.drools.reteoo.QueryTerminalNode;
 import org.drools.reteoo.ReteooBuilder;
 import org.drools.reteoo.RuleTerminalNode;
 import org.drools.reteoo.TerminalNode;
 import org.drools.rule.Accumulate;
+import org.drools.rule.Behavior;
 import org.drools.rule.Collect;
 import org.drools.rule.EntryPoint;
 import org.drools.rule.EvalCondition;
@@ -155,26 +162,56 @@ public class ReteooRuleBuilder {
                        subrule );
 
         TerminalNode terminal = null;
+        ModusPonensNode mpNode = null;
 
         if ( !(rule instanceof Query) ) {
-            terminal = new RuleTerminalNode( context.getNextId(),
-                                             context.getTupleSource(),
-                                             rule,
-                                             subrule,
-                                             context );
-        } else {
+        	
+            
+            RuleBase ruleBase = context.getRuleBase();
+        	if (ruleBase instanceof ImperfectRuleBase) {
+        		IDegreeFactory factory = ((ImperfectRuleBase) ruleBase).getDegreeFactory();
+        		
+        		
+        		mpNode = new ModusPonensNode(context.getNextId(),
+        				context.getTupleSource(),
+        				context.getBehaviors().toArray(new Behavior[context.getBehaviors().size()]),
+        				factory,        		
+        				context);
+        	}
+        	
+        	context.setTupleSource((ModusPonensNode) this.utils.attachNode(context, mpNode));
+            
+        	
+        	
+        	terminal = new RuleTerminalNode( context.getNextId(),
+                    context.getTupleSource(),
+                    rule,
+                    subrule,
+                    context );
+
+        } else {        	        	
+        	
             terminal = new QueryTerminalNode( context.getNextId(),
                                               context.getTupleSource(),
                                               rule,
                                               subrule,
                                               context );
         }
+        
+        
         if ( context.getWorkingMemories().length == 0 ) {
+        	        	
             ((BaseNode) terminal).attach();
+            
         } else {
+        	        	
             ((BaseNode) terminal).attach( context.getWorkingMemories() );
+            
         }
 
+        
+        
+        
         ((BaseNode) terminal).networkUpdated();
         
         // adds the terminal no to the list of nodes created/added by this sub-rule

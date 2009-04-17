@@ -25,4 +25,8 @@ public class SimpleDotAnd implements IDegreeCombiner {
 		return null;
 	}
 
+	public String getName() {
+		return "dotAnd";
+	}
+
 }

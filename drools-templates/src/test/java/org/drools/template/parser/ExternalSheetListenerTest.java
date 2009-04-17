@@ -35,6 +35,7 @@ import org.drools.spi.AsyncExceptionHandler;
 import org.drools.spi.GlobalResolver;
 import org.drools.time.SessionClock;
 import org.drools.degrees.IDegree;
+import org.drools.reteoo.ArgList;
 
 public class ExternalSheetListenerTest extends TestCase {
 
@@ -442,7 +443,7 @@ public class ExternalSheetListenerTest extends TestCase {
 
 				
 
-				public void inject(String rule, Object object, ConstraintKey key, IDegree degree) {
+				public void inject(String rule, ArgList args, ConstraintKey key, IDegree degree) {
 					// TODO Auto-generated method stub
 					
 				}

@@ -115,8 +115,17 @@ public class SingleLeftTupleSinkAdapter extends AbstractLeftTupleSinkAdapter {
 			InternalWorkingMemory workingMemory, IDegreeFactory factory,
 			EvalRecord record, boolean leftTupleMemoryEnabled) {
     	
-    	doPropagateAssertLeftTuple( context, workingMemory, factory, record,
-                new ImperfectLeftTuple( factHandle, this.sink, leftTupleMemoryEnabled, record ) );
+    	EvalRecord masterRecord = new EvalRecord(-1,factory.getAndOperator(),factory.getMergeStrategy(),factory.getNullHandlingStrategy());
+    		masterRecord.addEvaluation(record);
+    		
+//    		System.out.println("--------------------------------------");
+//    		System.out.println(record.expand());
+//    		System.out.println("--------------------------------------");
+//    		System.out.println(masterRecord.expand());
+//    		System.out.println("--------------------------------------");
+//    		if (1 == 1) throw new RuntimeException();
+    	doPropagateAssertLeftTuple( context, workingMemory, factory, masterRecord,
+                new ImperfectLeftTuple( factHandle, this.sink, leftTupleMemoryEnabled, masterRecord ) );
 		
 	}
 

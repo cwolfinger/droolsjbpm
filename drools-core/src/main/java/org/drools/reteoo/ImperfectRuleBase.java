@@ -70,27 +70,45 @@ public class ImperfectRuleBase extends ReteooRuleBase {
                           final RuleBaseConfiguration config,
                           final FactHandleFactory factHandleFactory
                           ) {
-        this( id,
-               config,
-               factHandleFactory,
-               new SimpleFuzzyDegreeFactory());               
-    }
-    
-    /**
-     * Construct.
-     *
-     * @param id
-     *            The rete network.
-     */
-    public ImperfectRuleBase(final String id,
-                          final RuleBaseConfiguration config,
-                          final FactHandleFactory factHandleFactory,
-                          final IDegreeFactory degreeFactory) {
         super( id,
                config,
-               factHandleFactory );       
-        this.degreeFactory = degreeFactory;
+               factHandleFactory
+               );               
+        
+        String factoryName = config.getProperty("drools.imperfect.factory");        
+        IDegreeFactory factory = null;
+        try {
+			factory = (IDegreeFactory) Class.forName(factoryName).newInstance();
+			System.out.println("Created instance of "+factoryName);
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        
+        setDegreeFactory(factory);
     }
+    
+//    /**
+//     * Construct.
+//     *
+//     * @param id
+//     *            The rete network.
+//     */
+//    public ImperfectRuleBase(final String id,
+//                          final RuleBaseConfiguration config,
+//                          final FactHandleFactory factHandleFactory,
+//                          final IDegreeFactory degreeFactory) {
+//        super( id,
+//               config,
+//               factHandleFactory );       
+//        this.degreeFactory = degreeFactory;
+//    }
 
 	/**
 	 * @param degreeFactory the degreeFactory to set

@@ -205,7 +205,7 @@ public class OrConstraint extends AbstractCompositeConstraint {
         return getTemplate().spawn(evals);
 	}
 
-	 public IDegree isSatisfiedCachedLeft(ContextEntry context,
+	 public Evaluation isSatisfiedCachedLeft(ContextEntry context,
 				InternalFactHandle handle, IDegreeFactory factory) {
 	    	
 	    	int N1 = this.alphaConstraints.length;
@@ -220,19 +220,18 @@ public class OrConstraint extends AbstractCompositeConstraint {
 	                                                      	factory);
 	    	for ( int i = 0; i < N2; i++ )
 	    		//TODO : beta...
-	    		evals[N1+i] = new Evaluation(0, 
+	    		evals[N1+i] =  
 	    			this.betaConstraints[i].isSatisfiedCachedLeft(
 	    				((MultiFieldConstraintContextEntry) context).betas[i],
 	    				handle, 
-	    				factory)
-	    				, null,factory.getMergeStrategy(),factory.getNullHandlingStrategy());
+	    				factory);
 	    				
 
-	    	return getTemplate().spawn(evals).getDegree();
+	    	return getTemplate().spawn(evals);
 	    	
 		}
 
-	 public IDegree isSatisfiedCachedRight(LeftTuple tuple,
+	 public Evaluation isSatisfiedCachedRight(LeftTuple tuple,
 				ContextEntry context, IDegreeFactory factory) {
 			
 	    	int N1 = this.alphaConstraints.length;
@@ -247,15 +246,14 @@ public class OrConstraint extends AbstractCompositeConstraint {
 	                                                      	factory);
 	    	for ( int i = 0; i < N2; i++ )
 	    		//TODO: beta...
-	    		evals[N1+i] = new Evaluation(0, 
+	    		evals[N1+i] =  
 	    			this.betaConstraints[i].isSatisfiedCachedRight(
 	    				tuple,
 	    				((MultiFieldConstraintContextEntry) context).betas[i],    				
-	    				factory),
-	    				null,factory.getMergeStrategy(),factory.getNullHandlingStrategy());
+	    				factory);
 	    				
 
-	    	return getTemplate().spawn(evals).getDegree();
+	    	return getTemplate().spawn(evals);
 	    	
 		}
 	 

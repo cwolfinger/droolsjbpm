@@ -20,6 +20,7 @@ import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.util.Collections;
 
 import org.drools.RuleBaseConfiguration;
 import org.drools.common.BaseNode;
@@ -72,6 +73,8 @@ public class EvalConditionNode extends LeftTupleSource
 
     private LeftTupleSinkNode previousTupleSinkNode;
     private LeftTupleSinkNode nextTupleSinkNode;
+    
+    private EvaluationTemplate	template;
 
     // ------------------------------------------------------------
     // Constructors
@@ -99,6 +102,7 @@ public class EvalConditionNode extends LeftTupleSource
         this.condition = eval;
         this.tupleSource = tupleSource;
         this.tupleMemoryEnabled = context.isTupleMemoryEnabled();
+                
     }
 
     public void readExternal(ObjectInput in) throws IOException,
@@ -197,7 +201,8 @@ public class EvalConditionNode extends LeftTupleSource
     
     
     
-    
+    //TODO: Do for good
+    //@FIXME : Not Implemented
     public void assertLeftTuple(ImperfectLeftTuple leftTuple,
 			PropagationContext context, InternalWorkingMemory workingMemory,
 			IDegreeFactory factory) {
@@ -211,7 +216,9 @@ public class EvalConditionNode extends LeftTupleSource
 
         EvalRecord record = leftTuple.getRecord();
         ConstraintKey key = new ConstraintKey("eval",this.condition.getEvalExpression().toString());
-        Evaluation eval = new Evaluation(this.getId(),ans,key,factory.getMergeStrategy(),factory.getNullHandlingStrategy());
+        EvaluationTemplate templ = new SingleEvaluationTemplate(this.getId(),key,Collections.EMPTY_SET,factory.getMergeStrategy(),factory.getNullHandlingStrategy());
+        
+        Evaluation eval = templ.spawn(ans);
         record.addEvaluation(eval);
         
         //TODO: Imperfect strategy here!
@@ -228,7 +235,7 @@ public class EvalConditionNode extends LeftTupleSource
                                                 this.tupleMemoryEnabled );
         //}
 
-		
+    	 
 	}
 
     public void retractLeftTuple(final LeftTuple leftTuple,

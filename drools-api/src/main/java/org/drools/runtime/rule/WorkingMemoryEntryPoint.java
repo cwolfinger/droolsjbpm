@@ -2,6 +2,7 @@ package org.drools.runtime.rule;
 
 import org.drools.degrees.IDegree;
 import org.drools.reteoo.ConstraintKey;
+import org.drools.reteoo.ArgList;
 
 
 /**
@@ -63,7 +64,7 @@ public interface WorkingMemoryEntryPoint {
     
     
     
-    void inject(String ruleName, Object object, ConstraintKey key, IDegree degree);
+    void inject(String ruleName, ArgList args, ConstraintKey key, IDegree degree);
     
     
 

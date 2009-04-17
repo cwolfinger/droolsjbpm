@@ -133,6 +133,8 @@ public class RuleBaseConfiguration
     private String                         executorService;
     private String                         consequenceExceptionHandler;
     private String                         ruleBaseUpdateHandler;
+    
+    
 
     private EventProcessingMode            eventProcessingMode;
 
@@ -151,6 +153,8 @@ public class RuleBaseConfiguration
     private ProcessInstanceFactoryRegistry processInstanceFactoryRegistry;
     private NodeInstanceFactoryRegistry    processNodeInstanceFactoryRegistry;
 
+    private String						   imperfectFactoryName;
+    
     private transient ClassLoader          classLoader;
 
     public void writeExternal(ObjectOutput out) throws IOException {
@@ -177,6 +181,7 @@ public class RuleBaseConfiguration
         out.writeBoolean( multithread );
         out.writeInt( maxThreads );
         out.writeObject( eventProcessingMode );
+        out.writeObject(imperfectFactoryName);
     }
 
     public void readExternal(ObjectInput in) throws IOException,
@@ -204,6 +209,7 @@ public class RuleBaseConfiguration
         multithread = in.readBoolean();
         maxThreads = in.readInt();
         eventProcessingMode = (EventProcessingMode) in.readObject();
+        imperfectFactoryName = (String) in.readObject();
     }
 
     /**
@@ -342,12 +348,22 @@ public class RuleBaseConfiguration
             return Integer.toString( getMaxThreads() );
         } else if ( name.equals( "drools.eventProcessingMode" ) ) {
             return getEventProcessingMode().toExternalForm();
+        } else if ( name.equals( "drools.imperfect.factory" ) ) {
+            return getFactoryName();
         }
 
         return null;
     }
 
-    /**
+    private String getFactoryName() {
+		return imperfectFactoryName;
+	}
+    
+    private void setFactoryName(String fName) {
+		imperfectFactoryName = fName;
+	}
+
+	/**
      * A constructor that sets the classloader to be used as the parent classloader
      * of this rule base classloaders, and the properties to be used
      * as base configuration options
@@ -435,6 +451,8 @@ public class RuleBaseConfiguration
                                                                              "-1" ) ) );
         setEventProcessingMode( EventProcessingMode.determineAssertBehaviour( this.chainedProperties.getProperty( "drools.eventProcessingMode",
                                                                                                                   "cloud" ) ) );
+        
+        setFactoryName(this.chainedProperties.getProperty("drools.imperfect.factory", "org.drools.degrees.factory.SimpleDegreeFactory"));
     }
 
     /**

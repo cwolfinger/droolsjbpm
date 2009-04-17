@@ -27,6 +27,7 @@ import org.drools.FactException;
 import org.drools.common.InternalWorkingMemoryActions;
 import org.drools.degrees.IDegree;
 import org.drools.impl.StatefulKnowledgeSessionImpl;
+import org.drools.reteoo.ArgList;
 import org.drools.reteoo.ConstraintKey;
 import org.drools.reteoo.Evaluation;
 import org.drools.reteoo.ReteooStatefulSession;
@@ -289,14 +290,43 @@ public class DefaultKnowledgeHelper
     	this.consequenceDegree = deg;
     }
     
-    public void inject(Object object, String field, String op, String value) {
+    public void inject(ArgList args, String field, String op, String value) {
     	System.out.println(this.getClass()+" : KH injects a rule for degree "+getConsequenceDegree());
-    	workingMemory.inject(this.getRule().getName(), object, new ConstraintKey(field,op,value),getConsequenceDegree());    	
+    	workingMemory.inject(this.getRule().getName(), 
+    					     args,
+    					     new ConstraintKey(field,op,value),
+    					     getConsequenceDegree());    	
     }
+    
+    
     
     public IDegree getConsequenceDegree() {
     	return consequenceDegree;    
     }
+
+	public void inject(Object arg, String field, String op, String value) {
+		this.inject(new ArgList(arg), field, op, value);
+	}
+
+	public void inject(Object[] args, String field, String op, String value) {
+		this.inject(new ArgList(args), field, op, value);
+		
+	}
+
+	public void inject(Object arg, String key) {
+		workingMemory.inject(this.getRule().getName(), 
+							 new ArgList(arg), 
+							 new ConstraintKey(key),
+							 getConsequenceDegree());
+		
+	}
+
+	public void inject(Object[] args, String key) {
+		workingMemory.inject(this.getRule().getName(), 
+				 new ArgList(args), 
+				 new ConstraintKey(key),
+				 getConsequenceDegree());		
+	}
     
     
 }

@@ -100,4 +100,40 @@ public class DroolsTree extends CommonTree {
 	public void setEditorElementType(DroolsEditorType editorElementType) {
 		this.editorElementType = editorElementType;
 	}
+	
+	
+	
+	public String toIndentedStringTree() {
+		String ts = new String(this.toStringTree());
+		
+//		System.out.println(this.toStringTree().hashCode());
+//		System.out.println(ts.hashCode());
+//		System.out.println(ts == this.toStringTree());
+		
+		ts = ts.substring(0, ts.indexOf("then"));
+		StringBuilder sb = new StringBuilder();
+		int dep = 0;
+		for (int j = 0; j < ts.length(); j++) {			
+			if (ts.charAt(j) == '(') {
+				dep++;
+				
+				sb.append("\n");
+				for (int k = 0; k < dep; k++)
+					sb.append("\t");
+				sb.append(ts.charAt(j));
+				
+			} else
+			if (ts.charAt(j) == ')') {				
+				sb.append("\n");
+				for (int k = 0; k < dep; k++)
+					sb.append("\t");
+				sb.append(ts.charAt(j));
+				dep--;				
+			} else {
+				sb.append(ts.charAt(j));
+			}
+		}
+	
+		return sb.toString();
+	}
 }

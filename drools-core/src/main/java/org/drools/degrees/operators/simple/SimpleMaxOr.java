@@ -25,4 +25,8 @@ public class SimpleMaxOr implements IDegreeCombiner {
 		return null;
 	}
 
+	public String getName() {
+		return "maxOr";
+	}
+
 }

@@ -30,4 +30,6 @@ public interface IDegreeCombiner {
  
     public IDegree eval(Collection<? extends IDegree> args);
     
+    public String getName();
+    
 }

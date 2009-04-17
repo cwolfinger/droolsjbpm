@@ -31,4 +31,8 @@ public class SimpleMergeStrategy implements IMergeStrategy {
 		return null;
 	}
 
+	public String getName() {
+		return "max";
+	}
+
 }

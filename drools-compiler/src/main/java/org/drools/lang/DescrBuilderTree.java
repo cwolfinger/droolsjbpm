@@ -385,6 +385,8 @@ public class DescrBuilderTree extends TreeParser {
     // $ANTLR start "statement"
     // src/main/resources/org/drools/lang/DescrBuilderTree.g:66:1: statement : (a= rule_attribute | fi= function_import_statement | is= import_statement | gl= global | fn= function | tp= template | rl= rule | qr= query | td= type_declaration );
     public final void statement() throws RecognitionException {
+    	    	
+    	
         AttributeDescr a = null;
 
         FunctionImportDescr fi = null;
@@ -548,7 +550,12 @@ public class DescrBuilderTree extends TreeParser {
                     // src/main/resources/org/drools/lang/DescrBuilderTree.g:79:4: rl= rule
                     {
                     pushFollow(FOLLOW_rule_in_statement185);
+                    
+                    System.out.println(this.getClass()+" HACKED statement() calls rule ");
                     rl=rule();
+                    
+                    
+                    System.out.println(this.getClass()+".statement() "+rl.ruleDescr.toString());
 
                     state._fsp--;
 

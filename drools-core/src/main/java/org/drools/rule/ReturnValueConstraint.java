@@ -180,16 +180,16 @@ public class ReturnValueConstraint extends MutableTypeConstraint
         }
     }
     
-    public IDegree isSatisfiedCachedLeft(ContextEntry context,
+    public Evaluation isSatisfiedCachedLeft(ContextEntry context,
 			InternalFactHandle handle, IDegreeFactory factory) {
     	 try {
              final ReturnValueContextEntry ctx = (ReturnValueContextEntry) context;
-             return this.restriction.isSatisfied( this.readAccessor,
+             return getTemplate().spawn(this.restriction.isSatisfied( this.readAccessor,
                                                 handle,
                                                 ctx.getTuple(),
                                                 ctx.getWorkingMemory(),
                                                 ctx,
-                                                factory);
+                                                factory));
          } catch ( final Exception e ) {
              throw new RuntimeDroolsException( "Exception executing ReturnValue constraint " + this.restriction + " : " + e.getMessage(),
                                                e );
@@ -213,16 +213,16 @@ public class ReturnValueConstraint extends MutableTypeConstraint
     }
 
 
-	public IDegree isSatisfiedCachedRight(LeftTuple tuple,
+	public Evaluation isSatisfiedCachedRight(LeftTuple tuple,
 			ContextEntry context, IDegreeFactory factory) {
         try {
             final ReturnValueContextEntry ctx = (ReturnValueContextEntry) context;
-            return this.restriction.isSatisfied( this.readAccessor,
+            return this.getTemplate().spawn(this.restriction.isSatisfied( this.readAccessor,
                                                ctx.getHandle(),
                                                tuple,
                                                ctx.getWorkingMemory(),
                                                ctx,
-                                               factory);
+                                               factory));
         } catch ( final Exception e ) {
             throw new RuntimeDroolsException( "Exception executing ReturnValue constraint " + this.restriction + " : " + e.getMessage(),
                                               e );

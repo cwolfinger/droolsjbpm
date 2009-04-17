@@ -24,4 +24,8 @@ public class SimpleMinAnd implements IDegreeCombiner {
 		return null;
 	}
 
+	public String getName() {
+		return "minAnd";		
+	}
+
 }

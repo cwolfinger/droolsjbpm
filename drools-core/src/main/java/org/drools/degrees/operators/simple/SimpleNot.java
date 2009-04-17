@@ -17,4 +17,8 @@ public class SimpleNot implements IDegreeCombiner {
 
 	}
 
+	public String getName() {
+		return "not";
+	}
+
 }

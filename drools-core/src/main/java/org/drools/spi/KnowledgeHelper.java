@@ -23,6 +23,7 @@ import org.drools.FactException;
 import org.drools.FactHandle;
 import org.drools.WorkingMemory;
 import org.drools.degrees.IDegree;
+import org.drools.reteoo.ArgList;
 import org.drools.reteoo.Evaluation;
 import org.drools.rule.Declaration;
 import org.drools.rule.Rule;
@@ -132,7 +133,13 @@ public interface KnowledgeHelper
     
     public IDegree getConsequenceDegree();
     
-    public void inject(Object object, String field, String op, String value);
+    public void inject(Object arg, String field, String op, String value);
+    
+    public void inject(Object[] args, String field, String op, String value);
+    
+    public void inject(Object arg, String key);
+    
+    public void inject(Object[] args, String key);
 
     public void setConsequenceDegree(IDegree deg);
     

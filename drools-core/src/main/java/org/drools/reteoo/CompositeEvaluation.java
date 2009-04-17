@@ -15,17 +15,19 @@ import org.drools.degrees.operators.INullHandlingStrategy;
 public class CompositeEvaluation extends Evaluation implements Observer {
 
 	private IDegreeCombiner operator;
-	private Evaluation[] operands;
+	protected Evaluation[] operands;
 	private float opRate;
 	
 	public CompositeEvaluation(int id, ConstraintKey key, Set<String> deps,
 			Evaluation[] evalDegrees, IDegreeCombiner operator, IMergeStrategy mergeStrat, INullHandlingStrategy nullStrat) {		
 		super(id,key,deps,mergeStrat,nullStrat);
 		
-		this.operands = new Evaluation[evalDegrees.length];
-			for (int j = 0; j < evalDegrees.length; j++) {
-				setOperand(j,evalDegrees[j]);
-			}
+		if (evalDegrees != null) {
+			this.operands = new Evaluation[evalDegrees.length];
+				for (int j = 0; j < evalDegrees.length; j++) {
+					setOperand(j,evalDegrees[j]);
+				}
+		}
 	
 		this.operator = operator;
 		
@@ -34,26 +36,29 @@ public class CompositeEvaluation extends Evaluation implements Observer {
 	
 
 
-	public CompositeEvaluation(int id, ConstraintKey key, Set<String> deps,
-			Map<ConstraintKey, EvaluationTemplate> children,
-			IDegreeCombiner operator, IMergeStrategy mergeStrat,
-			INullHandlingStrategy nullStrat) {
-		
-		super(id,key,deps,mergeStrat,nullStrat);
-		
-		this.operands = new Evaluation[children.size()];
-			int j = 0;
-			for (EvaluationTemplate temp : children.values()) {
-				setOperand(j++,temp.spawn());
-			}
-	
-		this.operator = operator;
-		
-		this.combine();
-		
-	}
+//	public CompositeEvaluation(int id, ConstraintKey key, Set<String> deps,
+//			Map<ConstraintKey, EvaluationTemplate> children,
+//			IDegreeCombiner operator, IMergeStrategy mergeStrat,
+//			INullHandlingStrategy nullStrat) {
+//		
+//		super(id,key,deps,mergeStrat,nullStrat);
+//		
+//		this.operands = new Evaluation[children.size()];
+//			int j = 0;
+//			for (EvaluationTemplate temp : children.values()) {
+//				setOperand(j++,temp.spawn());
+//			}
+//	
+//		this.operator = operator;
+//		
+//		this.combine();
+//		
+//	}
 
 	protected void combine() {
+		if (operands == null)
+			return;
+		
 		int N = operands.length;
 		IDegree[] args = new IDegree[N];
 		
@@ -130,9 +135,29 @@ public class CompositeEvaluation extends Evaluation implements Observer {
 		combine();		
 	}
 	
-	
+	protected IDegreeCombiner getOperator() {
+		return operator;
+	}
 	
 	
 	
 
+	
+	public String toStringTree(int depth) {
+		StringBuilder sb = new StringBuilder();
+		
+//		if (depth > 0)
+//			sb.append(this.toString());
+		if (getOperands() != null) {
+			for (Evaluation eval : getOperands()) {
+				for (int j = 0; j <= depth; j++)
+					sb.append("\t");
+				sb.append(eval.toString()+"\n");
+				if (eval instanceof CompositeEvaluation)
+					sb.append(((CompositeEvaluation) eval).toStringTree(depth+1));			
+			}
+		}
+		return sb.toString();
+	}
+	
 }

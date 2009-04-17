@@ -49,8 +49,7 @@ import org.drools.spi.Wireable;
  * @author etirelli
  */
 public class PredicateConstraint extends MutableTypeConstraint
-    implements
-    Restriction,
+    implements    
     Wireable,
     Externalizable {
 
@@ -326,9 +325,9 @@ public class PredicateConstraint extends MutableTypeConstraint
         }
     }
     
-    public IDegree isSatisfiedCachedLeft(ContextEntry context,
+    public Evaluation isSatisfiedCachedLeft(ContextEntry context,
 			InternalFactHandle handle, IDegreeFactory factory) {
-		return factory.fromBoolean(this.isAllowedCachedLeft(context, handle));
+		return this.getTemplate().spawn(factory.fromBoolean(this.isAllowedCachedLeft(context, handle)));
 	}
 
 
@@ -348,9 +347,9 @@ public class PredicateConstraint extends MutableTypeConstraint
         }
     }
     
-    public IDegree isSatisfiedCachedRight(LeftTuple tuple,
+    public Evaluation isSatisfiedCachedRight(LeftTuple tuple,
 			ContextEntry context, IDegreeFactory factory) {
-		return factory.fromBoolean(this.isAllowedCachedRight(tuple, context));
+		return getTemplate().spawn(factory.fromBoolean(this.isAllowedCachedRight(tuple, context)));
 	}
 
     public Object clone() {

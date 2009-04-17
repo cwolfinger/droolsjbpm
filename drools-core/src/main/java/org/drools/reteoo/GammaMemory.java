@@ -7,17 +7,24 @@ import java.util.Map;
 
 public class GammaMemory {
 
-	private Map<Object, Collection<Evaluation>> store;
+	private Map<ArgList, Collection<Evaluation>> store;
 	
 	public GammaMemory() {
-		store = new HashMap<Object, Collection<Evaluation>>();
+		store = new HashMap<ArgList, Collection<Evaluation>>();
 	}
 	
-	public Collection<Evaluation> retrieve(Object o) {
-		return this.store.remove(o);		
+	public Collection<Evaluation> retrieve(ArgList o) {
+		if (o.isPersistent())
+			return this.store.get(o);
+		else
+			return this.store.remove(o);		
 	}
 	
-	public void store(Object o, Evaluation eval) {
+	public Collection<ArgList> getKeys() {
+		return store.keySet();
+	}
+	
+	public void store(ArgList o, Evaluation eval) {
 		Collection<Evaluation> coll = store.get(o);
 		if (coll == null) {
 			coll = new LinkedList<Evaluation>();

@@ -67,19 +67,19 @@ public class Evaluation extends Observable {
 	}
 	
 	
-	/**
-	 * TODO : remove it and its dependencies
-	 * @param id
-	 * @param evalDeg
-	 * @param key
-	 * 
-	 * @deprecated
-	 */	
-	public Evaluation(int id, IDegree evalDeg, ConstraintKey key, IMergeStrategy mergeStrat, INullHandlingStrategy nullStrat) {
-		this(id,key, new HashSet<String>(),mergeStrat,nullStrat);
-		
-		this.addDegree(Evaluation.EVAL,evalDeg,1);
-	}
+//	/**
+//	 * TODO : remove it and its dependencies
+//	 * @param id
+//	 * @param evalDeg
+//	 * @param key
+//	 * 
+//	 * @deprecated
+//	 */	
+//	public Evaluation(int id, IDegree evalDeg, ConstraintKey key, IMergeStrategy mergeStrat, INullHandlingStrategy nullStrat) {
+//		this(id,key, new HashSet<String>(),mergeStrat,nullStrat);
+//		
+//		this.addDegree(Evaluation.EVAL,evalDeg,1);
+//	}
 	
 	
 
@@ -98,12 +98,9 @@ public class Evaluation extends Observable {
 		boolean newContrib = false;
 		
 		for (String source : moreDegrees.keySet()) {
-			System.out.println("Added degrees for source "+ source + "+1");
+			System.out.println("Trying to merge degrees for source "+ source + "+1");
 			IDegree evalDeg = moreDegrees.get(source);
-			if (evalDeg == null) {
-				newContrib = newContrib || clearDegree(source);			
-			} else {
-			
+			if (evalDeg != null) {						
 							
 				confidence.put(source, conf.get(source));
 				
@@ -207,9 +204,12 @@ public class Evaluation extends Observable {
 	
 	
 	public String toString() {
-		return "("+this.nodeId + ")" + this.key+ " : " + this.aggDegree.toString();
+		return "("+this.nodeId + ")" + this.key+ " : " + this.aggDegree +" "+ this.getBitS();
 	}
 	
+	
+	
+
 	
 
 
@@ -273,13 +273,19 @@ public class Evaluation extends Observable {
 		StringBuilder sb = new StringBuilder("[");
 		for (String s : degrees.keySet()) {
 			if (degrees.get(s) != null)
-				sb.append(s+",");
+				sb.append(s+" " + this.degrees.get(s) +",");
 		}
 		return sb.append("]").toString();
 	}
 
 	
 	
+	protected IMergeStrategy getMergeStrat() {
+		return mergeStrat;
+	}
+	protected INullHandlingStrategy getNullHandlingStrat() {
+		return nullStrat;
+	}
 	
 
 }

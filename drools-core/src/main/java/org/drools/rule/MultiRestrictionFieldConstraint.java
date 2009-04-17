@@ -133,10 +133,10 @@ public class MultiRestrictionFieldConstraint extends MutableTypeConstraint
                                                       handle );
     }
 
-    public IDegree isSatisfiedCachedLeft(ContextEntry context,
+    public Evaluation isSatisfiedCachedLeft(ContextEntry context,
 			InternalFactHandle handle, IDegreeFactory factory) {
-    	return this.restrictions.isSatisfiedCachedLeft( context,
-                handle, factory );
+    	return this.getTemplate().spawn(this.restrictions.isSatisfiedCachedLeft( context,
+                handle, factory ));
 	}
     
     public boolean isAllowedCachedRight(final LeftTuple tuple,
@@ -145,10 +145,10 @@ public class MultiRestrictionFieldConstraint extends MutableTypeConstraint
                                                        context );
     }
     
-    public IDegree isSatisfiedCachedRight(LeftTuple tuple,
+    public Evaluation isSatisfiedCachedRight(LeftTuple tuple,
 			ContextEntry context, IDegreeFactory factory) {
-    	return this.restrictions.isSatisfiedCachedRight( tuple,
-                context, factory );
+    	return this.getTemplate().spawn(this.restrictions.isSatisfiedCachedRight( tuple,
+                context, factory ));
 	}
 
     public Object clone() {

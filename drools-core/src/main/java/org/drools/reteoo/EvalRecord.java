@@ -1,6 +1,7 @@
 package org.drools.reteoo;
 
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -8,26 +9,33 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Set;
+import java.util.Vector;
 
 
 import org.drools.common.ImperfectFactHandle;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.degrees.IDegree;
 import org.drools.degrees.factory.IDegreeFactory;
+import org.drools.degrees.operators.IDegreeCombiner;
+import org.drools.degrees.operators.IMergeStrategy;
+import org.drools.degrees.operators.INullHandlingStrategy;
 import org.drools.spi.PropagationContext;
 
-public class EvalRecord extends Observable implements Observer {
+public class EvalRecord extends CompositeEvaluation implements Observer {
 	
 	
 	private Map<ConstraintKey, Evaluation> 		evalMap;
-	private ConstraintKey 						mainKey;
+	//private ConstraintKey 						mainKey;
 	
-	private IDegree 							overallDegree;
+	// private IDegree 							overallDegree;
 	
 	
 	
 	
 	private ImperfectFactHandle 				factHandle;
+	private ImperfectLeftTuple					leftTuple;
+	private ImperfectRightTuple					rightTuple;
     private PropagationContext					propagationContext;
     private InternalWorkingMemory 				workingMemory;
     private IDegreeFactory						factory;
@@ -35,11 +43,16 @@ public class EvalRecord extends Observable implements Observer {
 	
 	
 	
-	
+//    public EvalRecord() {			
+//		mainKey = null;
+//		evalMap = new HashMap<ConstraintKey, Evaluation>();
+//	}
 	
 		
-	public EvalRecord() {
-		mainKey = null;
+	public EvalRecord(int id,IDegreeCombiner operator,IMergeStrategy mergeStrat,INullHandlingStrategy nullStrat) {
+		super(id,new DynamicConstraintKey(operator.getName()),null,null,operator,mergeStrat,nullStrat);
+		
+		//mainKey = null;
 		evalMap = new HashMap<ConstraintKey, Evaluation>();
 	}
 	
@@ -75,27 +88,56 @@ public class EvalRecord extends Observable implements Observer {
 		return prevEval;
 	}
 	
+	
+	
+	
+	
+	
+	
 	public void addEvaluation(Evaluation eval) {
 		
+		boolean newEval = ! this.evalMap.containsKey(eval.getKey());
 		
-		Evaluation addedEval = insert(eval);							
+		Evaluation addedEval = insert(eval);		
 		
-		
-		if (mainKey != null && mainKey.equals(addedEval.getKey()) /*&& ! prevEval.getDegree().equals(overallDegree)*/) {
-			mainKey = addedEval.getKey();
-			overallDegree = addedEval.getDegree();
-			this.setChanged();
-			this.notifyObservers(null);
-		} else {
-			mainKey = addedEval.getKey();
-			overallDegree = addedEval.getDegree();
+		if (newEval) {
+			if (operands == null) {
+				operands = new Evaluation[1];
+				operands[0] = addedEval;
+			} else {
+				int N = operands.length;
+				Evaluation[] temp = new Evaluation[N+1]; 
+				for (int j = 0; j < N; j++)
+					temp[j] = operands[j];
+				
+				operands = temp;
+				
+				operands[N] = addedEval;
+			}
 		}
+		
+		((DynamicConstraintKey) this.getKey()).addArg(eval.getKey());
+		
+		combine();
+		this.setChanged();
+		this.notifyObservers(null);
+		
+//		if (mainKey != null && mainKey.equals(addedEval.getKey()) /*&& ! prevEval.getDegree().equals(overallDegree)*/) {
+//			mainKey = addedEval.getKey();
+//			overallDegree = addedEval.getDegree();
+//			this.setChanged();
+//			this.notifyObservers(null);
+//		} else {
+//			mainKey = addedEval.getKey();
+//			overallDegree = addedEval.getDegree();
+//		}
 				
 	}
 	
 	
 	public void addEvaluations(EvalRecord other) {				
-		for (Evaluation eval : other.getEvaluations())
+		//for (Evaluation eval : other.getEvaluations())
+		for (Evaluation eval : other.getOperands())
 			this.addEvaluation(eval);
 	}
 	
@@ -105,34 +147,33 @@ public class EvalRecord extends Observable implements Observer {
 	}
 	
 	
-	public IDegree getOverallDegree() {
-		//return getMainEval().getDegree();
-		return overallDegree;
-	}
+	
 	
 	public EvalRecord clone() {
 		
-		EvalRecord ans = new EvalRecord();
-		ans.addEvaluations(this.getEvaluations());
+		EvalRecord ans = new EvalRecord(this.getNodeId(),this.getOperator(),this.getMergeStrat(),this.getNullHandlingStrat());
+		ans.addEvaluations(this);
 		
 		return ans;
 	}
 	
 	
-	public Evaluation getMainEval() {
-		return evalMap.get(mainKey);
-	}
+	
+//	public Evaluation getMainEval() {
+//		//return evalMap.get(mainKey);
+//		return this;
+//	}
 
 	
 	
-	public void update(Observable obsEval, Object newDeg) {
-		Evaluation eval = (Evaluation) obsEval;
-		if (eval.getKey().equals(mainKey)) {
-			overallDegree = eval.getDegree();
-			this.setChanged();
-			this.notifyObservers(null);
-		}		
-	}
+//	public void update(Observable obsEval, Object newDeg) {
+//		Evaluation eval = (Evaluation) obsEval;
+//		if (eval.getKey().equals(mainKey)) {
+//			overallDegree = eval.getDegree();
+//			this.setChanged();
+//			this.notifyObservers(null);
+//		}		
+//	}
 	
 	
 	
@@ -141,14 +182,24 @@ public class EvalRecord extends Observable implements Observer {
 	
 	
 	
-	public String toString() {
-		StringBuilder sb = new StringBuilder("Eval Record: \n");
-		for (Evaluation ev : getEvaluations())
-			sb.append(ev.toString()+"\n");
-		sb.append("\n");
+	public String expand() {
+		StringBuilder sb = new StringBuilder("Eval Record :"+this.getInfoRate()+"\n");
+//		
+		
+		sb.append("AND{\n");
+		if (getOperands() != null)
+			for (Evaluation ev : getOperands())
+				sb.append(ev.toString()+"\n");
+		sb.append("}\n\n");
+		
+		sb.append(toString()+"\n");
+		sb.append(toStringTree(0));
+		
 		return sb.toString();
+		
 	}
 
+	
 	
 	
 	
@@ -209,5 +260,35 @@ public class EvalRecord extends Observable implements Observer {
 		return factory;
 	}
 
+	/**
+	 * @param leftTuple the leftTuple to set
+	 */
+	public void setLeftTuple(ImperfectLeftTuple leftTuple) {
+		this.leftTuple = leftTuple;
+	}
+
+	/**
+	 * @return the leftTuple
+	 */
+	public ImperfectLeftTuple getLeftTuple() {
+		return leftTuple;
+	}
+
+	/**
+	 * @param rightTuple the rightTuple to set
+	 */
+	public void setRightTuple(ImperfectRightTuple rightTuple) {
+		this.rightTuple = rightTuple;
+	}
+
+	/**
+	 * @return the rightTuple
+	 */
+	public ImperfectRightTuple getRightTuple() {
+		return rightTuple;
+	}
+
+	
+	
 	
 }

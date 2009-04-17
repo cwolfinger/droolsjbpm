@@ -36,7 +36,19 @@ public class BaseDescr
     private int               endLine          = -1;
     private int               endColumn        = -1;
     private String            text             = "";
-
+    private int				  id			   = -1;
+    
+    
+  
+    
+    public int getId() {
+    	return id;
+    }
+    
+    public void setId(int newId) {
+    	id = newId;
+    }
+    
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         startCharacter  = in.readInt();
         endCharacter  = in.readInt();

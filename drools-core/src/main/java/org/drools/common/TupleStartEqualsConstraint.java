@@ -21,12 +21,16 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Map;
+import java.util.Set;
 
 import org.drools.degrees.IDegree;
 import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.reteoo.ConstraintKey;
+import org.drools.reteoo.Evaluation;
 import org.drools.reteoo.EvaluationTemplate;
 import org.drools.reteoo.LeftTuple;
+import org.drools.reteoo.SingleEvaluationTemplate;
 import org.drools.rule.ContextEntry;
 import org.drools.rule.Declaration;
 import org.drools.spi.BetaNodeFieldConstraint;
@@ -102,9 +106,9 @@ public class TupleStartEqualsConstraint
         return ((TupleStartEqualsConstraintContextEntry) context).left.equals( tuple );
     }
     
-    public IDegree isSatisfiedCachedLeft(ContextEntry context,
+    public Evaluation isSatisfiedCachedLeft(ContextEntry context,
 			InternalFactHandle handle, IDegreeFactory factory) {
-		return factory.fromBoolean(isAllowedCachedLeft(context, handle));
+		return template.spawn(factory.fromBoolean(isAllowedCachedLeft(context, handle)));
 	}
     
 
@@ -113,9 +117,9 @@ public class TupleStartEqualsConstraint
         return tuple.equals( ((TupleStartEqualsConstraintContextEntry) context).right.getSubTuple( tuple.size() ) );
     }
 
-    public IDegree isSatisfiedCachedRight(LeftTuple tuple,
+    public Evaluation isSatisfiedCachedRight(LeftTuple tuple,
 			ContextEntry context, IDegreeFactory factory) {
-		return factory.fromBoolean(isAllowedCachedRight(tuple, context));
+		return template.spawn(factory.fromBoolean(isAllowedCachedRight(tuple, context)));
 	}
     
     public String toString() {
@@ -203,6 +207,8 @@ public class TupleStartEqualsConstraint
     }
 
     private ConstraintKey singletonKey = null;
+
+	private EvaluationTemplate template;
     
 	public ConstraintKey getConstraintKey() {
 		if (singletonKey == null)
@@ -217,8 +223,19 @@ public class TupleStartEqualsConstraint
 	}
 	
 	public EvaluationTemplate getEvalTemplate(ConstraintKey key) {
-		// TODO Auto-generated method stub
+		if (this.template.getConstraintKey().equals(key))
+			return template;
 		return null;
+	}
+
+	public EvaluationTemplate buildEvaluationTemplate(int id,
+			Map<ConstraintKey, Set<String>> dependencies, IDegreeFactory factory) {
+		template = new SingleEvaluationTemplate(id,
+												this.getConstraintKey(),
+												dependencies.get(this.getConstraintKey()),
+												factory.getMergeStrategy(),
+												factory.getNullHandlingStrategy());
+		return template;
 	}
 
 	
