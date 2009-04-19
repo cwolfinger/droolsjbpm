@@ -1,0 +1,36 @@
+package org.drools.examples.chance
+ 
+
+import org.drools.examples.chance.TestGEB.Message;
+import java.io.FileWriter;
+
+
+global FileWriter writer;
+
+rule "TestGEB"	
+	when
+		(Message(status == 0)	
+		
+			
+		and
+		
+		Message(status == 1))
+		
+		
+		or
+		
+		(Message(status == 2)
+		
+		and
+		
+		Message(status == 3))
+		
+		
+		Message(status == 4)
+		
+	then
+	
+	System.out.println("CE Builder RULE");		
+end
+
+

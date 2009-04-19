@@ -50,7 +50,7 @@ public class ImperfectReteooRuleBuilder extends ReteooRuleBuilder {
         this.getUtils().addBuilder( Accumulate.class,
                                new AccumulateBuilder() );
         this.getUtils().addBuilder( Forall.class,
-                               new ForallBuilder() );
+                               new ImperfectForallBuilder() );
         this.getUtils().addBuilder( EntryPoint.class,
                                new EntryPointBuilder() );
     }

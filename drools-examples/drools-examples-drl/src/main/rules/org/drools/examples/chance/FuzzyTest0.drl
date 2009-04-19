@@ -1,0 +1,42 @@
+package org.drools.examples.chance
+ 
+ 
+ 
+import org.drools.examples.chance.Room;
+import java.io.FileWriter;
+
+
+global FileWriter writer;
+
+rule "Hot v1"
+	when 
+		$r : Room( temperature hot[] 0 )		
+	then
+		//System.out.println("Room is hot in degree "+drools.getConsequenceDegree());
+		//System.out.println("Evaluator is called directly");
+		writer.write("\n\n");
+		writer.write("Room is hot in degree "+drools.getConsequenceDegree()+"\n");
+		writer.write("Evaluator is called directly\n");
+end
+
+rule "Hot v2"
+	when 
+		$r : Room( temperature seems[] hot )		
+	then
+		//System.out.println("Room is hot in degree "+drools.getConsequenceDegree());
+		//System.out.println("Evaluator from temp domain, requires a method in Room");
+		writer.write("\n\n");			             
+		writer.write("Room is hot in degree "+drools.getConsequenceDegree()+"\n");
+		writer.write("Evaluator from temp domain, requires a method in Room\n");
+end
+
+rule "Hot v3"
+	when 
+		$r : Room( temperature seems[] "cold" )		
+	then
+		//System.out.println("Room is hot in degree "+drools.getConsequenceDegree());
+		//System.out.println("Evaluator from temp domain, runtime call (no method in room)");
+		writer.write("\n\n");
+		writer.write("Room is hot in degree "+drools.getConsequenceDegree()+"\n");
+		writer.write("Evaluator from temp domain, runtime call (no method in room)\n");
+end
