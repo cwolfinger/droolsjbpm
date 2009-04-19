@@ -238,7 +238,9 @@ public class JoinNode extends BetaNode implements IGammaNode, Observer {
 	        		        	        		        		        		        	
         		
         	switch (this.filterStrat.doTry(mainRecord)) {
-        		case IFilterStrategy.DROP : return;
+        		case IFilterStrategy.DROP : 
+        			System.out.println("Beta FAIL at assertTuple: DROP record");
+        			return;
 			
         		case IFilterStrategy.HOLD : //TODO: HOLD
         			System.out.println("HOLD RULES @JOIN NODE"+this.getId());
@@ -254,6 +256,7 @@ public class JoinNode extends BetaNode implements IGammaNode, Observer {
         			break;
 			
         		case IFilterStrategy.PASS : 
+        			System.out.println("Beta PASS at assertTuple: propagate record");
         			this.sink.propagateAssertLeftTuple( leftTuple,
                             rightTuple,
                             context,
@@ -428,7 +431,9 @@ public class JoinNode extends BetaNode implements IGammaNode, Observer {
         	System.out.println("Situation at join eval"+mainRecord.expand());        		        		        		        	
         		
         	switch (this.filterStrat.doTry(mainRecord)) {
-        		case IFilterStrategy.DROP : return;
+        		case IFilterStrategy.DROP :
+        			System.out.println("Beta DROP at assertobject");
+        			return;
 			
         		case IFilterStrategy.HOLD : //TODO: HOLD
         			System.out.println("HOLD RULES @JOIN NODE"+this.getId());
@@ -444,6 +449,7 @@ public class JoinNode extends BetaNode implements IGammaNode, Observer {
         			break;
 			
         		case IFilterStrategy.PASS : 
+        			System.out.println("Beta PASS at assertObjecf: propagate record");
         			this.sink.propagateAssertLeftTuple( leftTuple,
                             rightTuple,
                             context,

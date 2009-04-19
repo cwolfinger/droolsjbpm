@@ -22,6 +22,7 @@ import java.util.List;
 import org.drools.InitialFact;
 import org.drools.RuleBase;
 import org.drools.RuleIntegrationException;
+import org.drools.RuntimeDroolsException;
 import org.drools.RuleBaseConfiguration.EventProcessingMode;
 import org.drools.base.ClassObjectType;
 import org.drools.common.BaseNode;
@@ -58,23 +59,23 @@ public class ReteooRuleBuilder {
     private BuildUtils utils;
 
     public ReteooRuleBuilder() {
-        this.utils = new BuildUtils();
+        this.setUtils(new BuildUtils());
 
-        this.utils.addBuilder( GroupElement.class,
+        this.getUtils().addBuilder( GroupElement.class,
                                new GroupElementBuilder() );
-        this.utils.addBuilder( Pattern.class,
+        this.getUtils().addBuilder( Pattern.class,
                                new PatternBuilder() );
-        this.utils.addBuilder( EvalCondition.class,
+        this.getUtils().addBuilder( EvalCondition.class,
                                new EvalBuilder() );
-        this.utils.addBuilder( From.class,
+        this.getUtils().addBuilder( From.class,
                                new FromBuilder() );
-        this.utils.addBuilder( Collect.class,
+        this.getUtils().addBuilder( Collect.class,
                                new CollectBuilder() );
-        this.utils.addBuilder( Accumulate.class,
+        this.getUtils().addBuilder( Accumulate.class,
                                new AccumulateBuilder() );
-        this.utils.addBuilder( Forall.class,
+        this.getUtils().addBuilder( Forall.class,
                                new ForallBuilder() );
-        this.utils.addBuilder( EntryPoint.class,
+        this.getUtils().addBuilder( EntryPoint.class,
                                new EntryPointBuilder() );
     }
 
@@ -98,6 +99,8 @@ public class ReteooRuleBuilder {
                         final InternalRuleBase rulebase,
                         final ReteooBuilder.IdGenerator idGenerator) throws InvalidPatternException {
 
+    	
+    	
         // the list of terminal nodes
         final List<TerminalNode> nodes = new ArrayList<TerminalNode>();
 
@@ -113,7 +116,7 @@ public class ReteooRuleBuilder {
             
             // if running in STREAM mode, calculate temporal distance for events
             if( EventProcessingMode.STREAM.equals( rulebase.getConfiguration().getEventProcessingMode() ) ) {
-                TemporalDependencyMatrix temporal = this.utils.calculateTemporalDistance( subrules[i] );
+                TemporalDependencyMatrix temporal = this.getUtils().calculateTemporalDistance( subrules[i] );
                 context.setTemporalDistance( temporal );
             }
            
@@ -142,14 +145,14 @@ public class ReteooRuleBuilder {
         return nodes;
     }
 
-    private TerminalNode addSubRule(final BuildContext context,
+    protected TerminalNode addSubRule(final BuildContext context,
                                     final GroupElement subrule,
                                     final Rule rule) throws InvalidPatternException {
         // gets the appropriate builder
-        final ReteooComponentBuilder builder = this.utils.getBuilderFor( subrule );
+        final ReteooComponentBuilder builder = this.getUtils().getBuilderFor( subrule );
 
         // checks if an initial-fact is needed
-        if ( builder.requiresLeftActivation( this.utils,
+        if ( builder.requiresLeftActivation( this.getUtils(),
                                              subrule ) ) {
             this.addInitialFactPattern( context,
                                         subrule,
@@ -158,7 +161,7 @@ public class ReteooRuleBuilder {
 
         // builds and attach
         builder.build( context,
-                       this.utils,
+                       this.getUtils(),
                        subrule );
 
         TerminalNode terminal = null;
@@ -179,7 +182,7 @@ public class ReteooRuleBuilder {
         				context);
         	}
         	
-        	context.setTupleSource((ModusPonensNode) this.utils.attachNode(context, mpNode));
+        	context.setTupleSource((ModusPonensNode) this.getUtils().attachNode(context, mpNode));
             
         	
         	
@@ -230,7 +233,7 @@ public class ReteooRuleBuilder {
      * @param subrule
      * @param rule
      */
-    private void addInitialFactPattern(final BuildContext context,
+    protected void addInitialFactPattern(final BuildContext context,
                                        final GroupElement subrule,
                                        final Rule rule) {
         
@@ -242,5 +245,19 @@ public class ReteooRuleBuilder {
         subrule.addChild( 0,
                           pattern );
     }
+
+	/**
+	 * @param utils the utils to set
+	 */
+	public void setUtils(BuildUtils utils) {
+		this.utils = utils;
+	}
+
+	/**
+	 * @return the utils
+	 */
+	public BuildUtils getUtils() {
+		return utils;
+	}
 
 }

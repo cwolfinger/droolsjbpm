@@ -144,10 +144,10 @@ public class ReteooRuleBase extends AbstractRuleBase {
         super( id,
                config,
                factHandleFactory );
-        setupRete();        
+        this.setupRete();        
     }
 
-    private void setupRete() {
+    protected void setupRete() {
         this.rete = new Rete( this );
         this.reteooBuilder = new ReteooBuilder( this );
 
@@ -483,4 +483,12 @@ public class ReteooRuleBase extends AbstractRuleBase {
             this.reteooBuilder.setOrdered( false );
         }
     }
+    
+    protected void setReteooBuilder(ReteooBuilder reteooBuilder) {
+		this.reteooBuilder = reteooBuilder;		
+	}
+
+	protected void setRete(Rete rete) {
+		this.rete = rete;
+	}
 }

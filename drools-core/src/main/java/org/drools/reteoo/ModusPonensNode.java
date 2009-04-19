@@ -94,7 +94,7 @@ public class ModusPonensNode extends JoinNode {
     		
     		
         	EvalRecord mpRecord = new EvalRecord(this.id,factory.getModusPonensOp(),factory.getMergeStrategy(),factory.getNullHandlingStrategy());
-        	mpRecord.addEvaluation(premiseRecord);
+        	mpRecord.addEvaluation(premiseRecord.getOperands()[0]);
         	mpRecord.addEvaluation(implEval);
         	
         	

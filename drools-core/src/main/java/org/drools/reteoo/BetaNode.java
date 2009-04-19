@@ -60,7 +60,8 @@ public abstract class BetaNode extends LeftTupleSource
     LeftTupleSinkNode,
     ObjectSinkNode,
     RightTupleSink,
-    NodeMemory, IFilteringNode {
+    NodeMemory, 
+    IFilteringNode {
     
     // ------------------------------------------------------------
     // Instance members

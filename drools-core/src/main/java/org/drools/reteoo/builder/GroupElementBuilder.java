@@ -36,6 +36,7 @@ import org.drools.reteoo.RightInputAdapterNode;
 import org.drools.rule.Behavior;
 import org.drools.rule.GroupElement;
 import org.drools.rule.RuleConditionElement;
+import org.drools.rule.GroupElement.Type;
 
 /**
  * @author etirelli
@@ -45,16 +46,16 @@ public class GroupElementBuilder
     implements
     ReteooComponentBuilder {
 
-    private final Map geBuilders = new HashMap();
+    private final Map<Type, ReteooComponentBuilder> geBuilders = new HashMap<Type, ReteooComponentBuilder>();
 
     public GroupElementBuilder() {
-        this.geBuilders.put( GroupElement.AND,
+        this.getGeBuilders().put( GroupElement.AND,
                              new AndBuilder() );
-        this.geBuilders.put( GroupElement.OR,
+        this.getGeBuilders().put( GroupElement.OR,
                              new OrBuilder() );
-        this.geBuilders.put( GroupElement.NOT,
+        this.getGeBuilders().put( GroupElement.NOT,
                              new NotBuilder() );
-        this.geBuilders.put( GroupElement.EXISTS,
+        this.getGeBuilders().put( GroupElement.EXISTS,
                              new ExistsBuilder() );
     }
 
@@ -66,7 +67,7 @@ public class GroupElementBuilder
                       final RuleConditionElement rce) {
         final GroupElement ge = (GroupElement) rce;
 
-        final ReteooComponentBuilder builder = (ReteooComponentBuilder) this.geBuilders.get( ge.getType() );
+        final ReteooComponentBuilder builder = (ReteooComponentBuilder) this.getGeBuilders().get( ge.getType() );
         
         context.push( ge );
 
@@ -84,13 +85,13 @@ public class GroupElementBuilder
                                           final RuleConditionElement rce) {
         final GroupElement ge = (GroupElement) rce;
 
-        final ReteooComponentBuilder builder = (ReteooComponentBuilder) this.geBuilders.get( ge.getType() );
+        final ReteooComponentBuilder builder = (ReteooComponentBuilder) this.getGeBuilders().get( ge.getType() );
 
         return builder.requiresLeftActivation( utils,
                                                rce );
     }
     
-    private static Behavior[] createBehaviorArray(final BuildContext context) {
+    protected static Behavior[] createBehaviorArray(final BuildContext context) {
         Behavior[] behaviors = Behavior.EMPTY_BEHAVIOR_LIST;
         if( ! context.getBehaviors().isEmpty() ) {
             behaviors = (Behavior[]) context.getBehaviors().toArray( new Behavior[ context.getBehaviors().size() ]);
@@ -99,7 +100,14 @@ public class GroupElementBuilder
         return behaviors;
     }
 
-    private static class AndBuilder
+    /**
+	 * @return the geBuilders
+	 */
+	public Map<Type, ReteooComponentBuilder> getGeBuilders() {
+		return geBuilders;
+	}
+
+	private static class AndBuilder
         implements
         ReteooComponentBuilder {
 

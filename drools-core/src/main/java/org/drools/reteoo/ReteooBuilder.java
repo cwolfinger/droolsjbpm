@@ -90,12 +90,12 @@ public class ReteooBuilder
      * network.
      */
     ReteooBuilder(final InternalRuleBase ruleBase) {
-        this.ruleBase = ruleBase;
-        this.rules = new HashMap<Rule, BaseNode[]>();
+        this.setRuleBase(ruleBase);
+        this.setRules(new HashMap<Rule, BaseNode[]>());
 
         //Set to 1 as Rete node is set to 0
-        this.idGenerator = new IdGenerator( 1 );
-        this.ruleBuilder = new ReteooRuleBuilder();
+        this.setIdGenerator(new IdGenerator( 1 ));
+        this.setRuleBuilder(new ReteooRuleBuilder());
     }
 
     // ------------------------------------------------------------
@@ -114,11 +114,11 @@ public class ReteooBuilder
      * @throws InvalidPatternException
      */
     void addRule(final Rule rule) throws InvalidPatternException {
-        final List<TerminalNode> terminals = this.ruleBuilder.addRule( rule,
-                                                                       this.ruleBase,
-                                                                       this.idGenerator );
+        final List<TerminalNode> terminals = this.getRuleBuilder().addRule( rule,
+                                                                       this.getRuleBase(),
+                                                                       this.getIdGenerator() );
 
-        this.rules.put( rule,
+        this.getRules().put( rule,
                         terminals.toArray( new BaseNode[terminals.size()] ) );
     }
 
@@ -137,7 +137,7 @@ public class ReteooBuilder
         }
         Map map = new HashMap();
 
-        for ( Iterator it = this.rules.values().iterator(); it.hasNext(); ) {
+        for ( Iterator it = this.getRules().values().iterator(); it.hasNext(); ) {
             BaseNode[] nodes = (BaseNode[]) it.next();
             for ( int i = 0; i < nodes.length; i++ ) {
                 if ( nodes[i] instanceof RuleTerminalNode ) {
@@ -170,7 +170,7 @@ public class ReteooBuilder
                 node.setSequence( i++ );
             }
 
-            ruleBase.getAgendaGroupRuleTotals().put( agendaGroup,
+            getRuleBase().getAgendaGroupRuleTotals().put( agendaGroup,
                                                      new Integer( i ) );
         }
         ordered = true;
@@ -221,14 +221,14 @@ public class ReteooBuilder
     }
 
     public BaseNode[] getTerminalNodes(final Rule rule) {
-        return (BaseNode[]) this.rules.get( rule );
+        return (BaseNode[]) this.getRules().get( rule );
     }
 
     public void removeRule(final Rule rule) {
         // reset working memories for potential propagation
-        InternalWorkingMemory[] workingMemories = this.ruleBase.getWorkingMemories();
+        InternalWorkingMemory[] workingMemories = this.getRuleBase().getWorkingMemories();
 
-        final Object object = this.rules.remove( rule );
+        final Object object = this.getRules().remove( rule );
 
         final BaseNode[] nodes = (BaseNode[]) object;
         final RuleRemovalContext context = new RuleRemovalContext();
@@ -301,8 +301,8 @@ public class ReteooBuilder
             bytes = new ByteArrayOutputStream();
             droolsStream = new DroolsObjectOutputStream( bytes );
         }
-        droolsStream.writeObject( rules );
-        droolsStream.writeObject( idGenerator );
+        droolsStream.writeObject( getRules() );
+        droolsStream.writeObject( getIdGenerator() );
         droolsStream.writeBoolean( ordered );
         if ( !isDrools ) {
             bytes.close();
@@ -323,15 +323,64 @@ public class ReteooBuilder
             bytes = new ByteArrayInputStream( (byte[]) in.readObject() );
             droolsStream = new DroolsObjectInputStream( bytes );
         }
-        this.rules = (Map<Rule, BaseNode[]>) in.readObject();
-        this.idGenerator = (IdGenerator) in.readObject();
+        this.setRules((Map<Rule, BaseNode[]>) in.readObject());
+        this.setIdGenerator((IdGenerator) in.readObject());
         this.ordered = in.readBoolean();
-        this.ruleBase = droolsStream.getRuleBase();
+        this.setRuleBase(droolsStream.getRuleBase());
         if ( !isDrools ) {
             bytes.close();
         }
 
-        this.ruleBuilder = new ReteooRuleBuilder();
+        this.setRuleBuilder(new ReteooRuleBuilder());
     }
+
+	/**
+	 * @param idGenerator the idGenerator to set
+	 */
+	public void setIdGenerator(IdGenerator idGenerator) {
+		this.idGenerator = idGenerator;
+	}
+
+	/**
+	 * @param ruleBuilder the ruleBuilder to set
+	 */
+	public void setRuleBuilder(ReteooRuleBuilder ruleBuilder) {
+		this.ruleBuilder = ruleBuilder;
+	}
+
+	/**
+	 * @return the ruleBuilder
+	 */
+	public ReteooRuleBuilder getRuleBuilder() {
+		return ruleBuilder;
+	}
+
+	/**
+	 * @param ruleBase the ruleBase to set
+	 */
+	public void setRuleBase(InternalRuleBase ruleBase) {
+		this.ruleBase = ruleBase;
+	}
+
+	/**
+	 * @return the ruleBase
+	 */
+	public InternalRuleBase getRuleBase() {
+		return ruleBase;
+	}
+
+	/**
+	 * @param rules the rules to set
+	 */
+	public void setRules(Map<Rule, BaseNode[]> rules) {
+		this.rules = rules;
+	}
+
+	/**
+	 * @return the rules
+	 */
+	public Map<Rule, BaseNode[]> getRules() {
+		return rules;
+	}
 
 }

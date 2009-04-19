@@ -1,9 +1,11 @@
 package org.drools.reteoo;
 
 import org.drools.RuleBaseConfiguration;
+import org.drools.common.RuleBasePartitionId;
 import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.degrees.factory.SimpleDegreeFactory;
 import org.drools.degrees.factory.SimpleFuzzyDegreeFactory;
+import org.drools.rule.EntryPoint;
 import org.drools.spi.FactHandleFactory;
 
 public class ImperfectRuleBase extends ReteooRuleBase {
@@ -94,21 +96,20 @@ public class ImperfectRuleBase extends ReteooRuleBase {
         setDegreeFactory(factory);
     }
     
-//    /**
-//     * Construct.
-//     *
-//     * @param id
-//     *            The rete network.
-//     */
-//    public ImperfectRuleBase(final String id,
-//                          final RuleBaseConfiguration config,
-//                          final FactHandleFactory factHandleFactory,
-//                          final IDegreeFactory degreeFactory) {
-//        super( id,
-//               config,
-//               factHandleFactory );       
-//        this.degreeFactory = degreeFactory;
-//    }
+    
+    protected void setupRete() {
+    	setRete(new Rete( this ));
+    	setReteooBuilder(new ImperfectReteooBuilder( this ));
+
+    	// 	always add the default entry point
+    	EntryPointNode epn = new EntryPointNode( this.getReteooBuilder().getIdGenerator().getNextId(),
+    			RuleBasePartitionId.MAIN_PARTITION,
+    			this.config.isMultithreadEvaluation(),
+    			this.getRete(),
+    			EntryPoint.DEFAULT );
+    	epn.attach();
+    }
+	
 
 	/**
 	 * @param degreeFactory the degreeFactory to set

@@ -288,6 +288,42 @@ public class EvalRecord extends CompositeEvaluation implements Observer {
 		return rightTuple;
 	}
 
+	public void replace(CompositeEvaluation operator, int N) {
+		
+		int M = this.getOperands().length;
+		for (int j = M-N; j < M; j++) {
+			Evaluation operand = getOperands()[j];
+			operand.deleteObserver(this);
+			operator.setOperand(j+N-M, operand);
+			((DynamicConstraintKey) operator.getKey()).addArg(operand.getKey());
+		}
+		
+		
+		
+		Evaluation[] locOperands = new Evaluation[M-N+1];
+		((DynamicConstraintKey) this.getKey()).reset();
+		for (int j = 0; j < M-N; j++) {
+			locOperands[j] = operands[j];
+			((DynamicConstraintKey) this.getKey()).addArg(operands[j].getKey());
+		}
+		locOperands[M-N] = operator;
+		((DynamicConstraintKey) this.getKey()).addArg(operator.getKey());
+			
+		operands = locOperands;
+		
+		operator.combine();
+		
+		
+		evalMap.put(operator.getKey(),operator);	
+		operator.addObserver(this);
+		
+		this.combine();
+		this.setChanged();
+		this.notifyObservers(null);
+	}
+
+	
+	
 	
 	
 	

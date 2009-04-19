@@ -34,6 +34,18 @@ public class CompositeEvaluation extends Evaluation implements Observer {
 		this.combine();
 	}
 	
+	public CompositeEvaluation(int id, ConstraintKey key, Set<String> deps,
+			int arity, IDegreeCombiner operator, IMergeStrategy mergeStrat, INullHandlingStrategy nullStrat) {		
+		super(id,key,deps,mergeStrat,nullStrat);
+				
+		this.operands = new Evaluation[arity];
+		
+	
+		this.operator = operator;
+		//Don't do combine as operands are not set!
+		//this.combine();
+	}
+	
 
 
 //	public CompositeEvaluation(int id, ConstraintKey key, Set<String> deps,
@@ -137,6 +149,11 @@ public class CompositeEvaluation extends Evaluation implements Observer {
 	
 	protected IDegreeCombiner getOperator() {
 		return operator;
+	}
+	
+	protected void setOperator(IDegreeCombiner newOp) {
+		this.operator = newOp;
+		//combine();
 	}
 	
 	

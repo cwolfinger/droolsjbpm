@@ -22,10 +22,13 @@ public class ConstraintKey {
 	}
 	
 	
-	
+
+	protected String buildKey(String op, String arg) {
+		return op+"("+arg+")";
+	}
 
 	public ConstraintKey(String op, String arg) {
-		this.key = op+"("+arg+")";
+		this.key = buildKey(op, arg); 
 	}
 
 	public ConstraintKey(String key) {

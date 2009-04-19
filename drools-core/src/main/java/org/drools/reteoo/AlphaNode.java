@@ -256,11 +256,12 @@ public class AlphaNode extends ObjectSource
 					record.setPropagationContext(propagationContext);
 					record.setWorkingMemory(workingMemory);
 				record.addObserver(this);				
-				//wait for more
+				//wait for more1
 				return;
 			
 			case IFilterStrategy.PASS :
 				//go on
+				System.out.println("Alpha PASS ");
 				this.sink.propagateAssertObject(factHandle,
 		            propagationContext,
 		            workingMemory,

@@ -2,10 +2,17 @@ package org.drools.reteoo;
 
 public class DynamicConstraintKey extends ConstraintKey {
 
+	private String op;
+	
 	public DynamicConstraintKey(String op) {
 		super(op, "");
+		this.op = op;
 	}
 
+	
+	public void reset() {
+		this.key = buildKey(op, "");
+	}
 	
 	public void addArg(ConstraintKey arg) {
 		
