@@ -282,6 +282,11 @@ public class Rete extends ObjectSource
 	public IGammaNode getNode(ConstraintKey key) {
 		return this.constraintIndex.get(key);
 	}
+
+	
+	public ConstraintKey getConstraintKey() {
+		return new ConstraintKey("RETE");
+	}
 	
 	
 }

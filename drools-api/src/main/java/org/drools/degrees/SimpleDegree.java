@@ -37,7 +37,7 @@ public class SimpleDegree extends Degree {
 	}
 	
 	public static IDegree UNKNOWN() {
-		return null;
+		return FALSE();
 	}
 	
 	

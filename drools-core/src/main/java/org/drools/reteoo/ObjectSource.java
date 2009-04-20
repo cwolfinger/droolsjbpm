@@ -192,4 +192,7 @@ public abstract class ObjectSource extends BaseNode
     public boolean isInUse() {
         return this.sink.size() > 0;
     }
+    
+    
+    public abstract ConstraintKey getConstraintKey();
 }

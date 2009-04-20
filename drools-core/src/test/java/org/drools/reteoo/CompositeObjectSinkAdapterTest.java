@@ -9,6 +9,7 @@ import junit.framework.TestCase;
 
 import org.drools.Cheese;
 import org.drools.RuleBaseFactory;
+import org.drools.RuntimeDroolsException;
 import org.drools.base.ClassFieldAccessorCache;
 import org.drools.base.ClassFieldAccessorStore;
 import org.drools.base.ValueType;
@@ -620,6 +621,16 @@ public class CompositeObjectSinkAdapterTest extends TestCase {
 				) {
 			// TODO Auto-generated method stub
 			
+		}
+		
+		public ConstraintKey getConstraintKey() {
+			return new ConstraintKey("MOCK");
+			
+		}
+
+		@Override
+		public ConstraintKey[] getConstraintKeys() {
+			return new ConstraintKey[] {new ConstraintKey("MOCK")};
 		}
     }
 }

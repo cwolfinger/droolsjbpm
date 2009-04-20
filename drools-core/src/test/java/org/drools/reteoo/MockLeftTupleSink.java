@@ -182,6 +182,13 @@ public class MockLeftTupleSink extends LeftTupleSource
     }
 
 	
+	public ConstraintKey[] getConstraintKeys() {
+		return new ConstraintKey[] {new ConstraintKey("MOCK")};
+	}
+
+	public LeftTupleSource getParentSource() {
+		return null;
+    }
 
 	
 

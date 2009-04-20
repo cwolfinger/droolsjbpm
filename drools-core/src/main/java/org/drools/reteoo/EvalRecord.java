@@ -25,6 +25,8 @@ import org.drools.spi.PropagationContext;
 public class EvalRecord extends CompositeEvaluation implements Observer {
 	
 	
+	public static final int INITIAL_ID = -99;
+
 	private Map<ConstraintKey, Evaluation> 		evalMap;
 	//private ConstraintKey 						mainKey;
 	
@@ -67,9 +69,9 @@ public class EvalRecord extends CompositeEvaluation implements Observer {
 		//pre-order visit!
 		if (eval instanceof CompositeEvaluation) {
 			CompositeEvaluation combo = (CompositeEvaluation) eval;
-			Evaluation[] operands = combo.getOperands();
-			for (int j = 0; j < operands.length; j++) {
-				Evaluation newOp = insert(operands[j]);
+			Vector<Evaluation> operands = (Vector<Evaluation>) combo.getOperands();
+			for (int j = 0; j < operands.size(); j++) {
+				Evaluation newOp = insert(operands.get(j));
 				combo.setOperand(j,newOp);
 			}			
 		}
@@ -79,7 +81,7 @@ public class EvalRecord extends CompositeEvaluation implements Observer {
 			System.out.println(this.getClass()+" insert "+eval.toString());
 			evalMap.put(eval.getKey(),eval);	
 			prevEval = eval;
-			eval.addObserver(this);
+			//eval.addObserver(this);
 		} else {
 			System.out.println(this.getClass()+" merge "+eval.toString());
 			prevEval.merge(eval);
@@ -102,19 +104,27 @@ public class EvalRecord extends CompositeEvaluation implements Observer {
 		
 		if (newEval) {
 			if (operands == null) {
-				operands = new Evaluation[1];
-				operands[0] = addedEval;
+				operands = new Vector<Evaluation>(1);
+				
+				operands.add(addedEval);
 			} else {
-				int N = operands.length;
-				Evaluation[] temp = new Evaluation[N+1]; 
+				/*
+				int N = operands.size();
+				Vector<Evaluation> temp = new Vector<Evaluation>(N+1);
+				temp.setSize(N+1);
 				for (int j = 0; j < N; j++)
-					temp[j] = operands[j];
+					temp.set(j,operands.get(j));
 				
 				operands = temp;
 				
-				operands[N] = addedEval;
+				operands.set(N,addedEval);
+				*/
+				operands.add(addedEval);
 			}
 		}
+		
+			addedEval.deleteObserver(this);
+			addedEval.addObserver(this);
 		
 		((DynamicConstraintKey) this.getKey()).addArg(eval.getKey());
 		
@@ -290,16 +300,18 @@ public class EvalRecord extends CompositeEvaluation implements Observer {
 
 	public void replace(CompositeEvaluation operator, int N) {
 		
-		int M = this.getOperands().length;
+		
+		int M = this.getOperands().size();
 		for (int j = M-N; j < M; j++) {
-			Evaluation operand = getOperands()[j];
+			Evaluation operand = ((Vector<Evaluation>) getOperands()).get(j);
+			
 			operand.deleteObserver(this);
 			operator.setOperand(j+N-M, operand);
 			((DynamicConstraintKey) operator.getKey()).addArg(operand.getKey());
 		}
 		
 		
-		
+		/*
 		Evaluation[] locOperands = new Evaluation[M-N+1];
 		((DynamicConstraintKey) this.getKey()).reset();
 		for (int j = 0; j < M-N; j++) {
@@ -310,16 +322,33 @@ public class EvalRecord extends CompositeEvaluation implements Observer {
 		((DynamicConstraintKey) this.getKey()).addArg(operator.getKey());
 			
 		operands = locOperands;
+		*/
 		
-		operator.combine();
+		
+		Vector<Evaluation> locOperands = (Vector<Evaluation>) getOperands();
 		
 		
-		evalMap.put(operator.getKey(),operator);	
-		operator.addObserver(this);
+		((DynamicConstraintKey) this.getKey()).reset();
+		for (int j = 0; j < M-N; j++) {			
+			((DynamicConstraintKey) this.getKey()).addArg(locOperands.get(j).getKey());
+		}				
+		((DynamicConstraintKey) this.getKey()).addArg(operator.getKey());
+		
+		for (int j = 0; j < N; j++) {			
+			locOperands.remove(locOperands.size()-1);
+		}
+		locOperands.add(operator);
+		
+				
+			operator.combine();				
+			evalMap.put(operator.getKey(),operator);	
+			operator.addObserver(this);
 		
 		this.combine();
 		this.setChanged();
 		this.notifyObservers(null);
+		
+		
 	}
 
 	

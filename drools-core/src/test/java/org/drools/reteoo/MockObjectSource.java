@@ -103,4 +103,9 @@ public class MockObjectSource extends ObjectSource {
 
     }
 
+	
+	public ConstraintKey getConstraintKey() {
+		return new ConstraintKey("MOCK");
+	}
+
 }

@@ -6,6 +6,7 @@ import java.io.ObjectOutput;
 import java.io.Serializable;
 
 import org.drools.RuleBaseConfiguration;
+import org.drools.RuntimeDroolsException;
 import org.drools.common.BaseNode;
 import org.drools.common.BetaConstraints;
 import org.drools.common.EmptyBetaConstraints;
@@ -340,5 +341,14 @@ public class FromNode extends LeftTupleSource
         }
     }
 
+    public ConstraintKey[] getConstraintKeys() {
+		throw new RuntimeDroolsException("CRISP FROM should not be asked for CK");
+		
+	}
+    
+    public LeftTupleSource getParentSource() {
+    	return this.tupleSource;
+    }
+    
 	
 }

@@ -26,7 +26,7 @@ package org.drools.common;
  */
 public interface NodeMemories {
 
-    public Object getNodeMemory( NodeMemory node );
+    public Object getNodeMemory( NodeMemory node );    
 
     public void clearNodeMemory( NodeMemory node );
 

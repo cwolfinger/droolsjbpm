@@ -10,6 +10,9 @@ public class SimpleMinAnd implements IDegreeCombiner {
 
 	
 	public IDegree eval(IDegree[] args) {
+		if (args == null || args.length == 0)
+			return SimpleDegree.UNKNOWN();
+		
 		float ans = 1;
 		for (IDegree deg : args) {
 			SimpleDegree d = deg.getDegree();				

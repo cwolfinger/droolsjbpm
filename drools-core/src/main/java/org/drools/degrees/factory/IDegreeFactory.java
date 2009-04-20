@@ -42,6 +42,14 @@ public interface IDegreeFactory {
 	
 	public IDegreeCombiner getModusPonensOp();
 	
+	
+	public IDegreeCombiner getExistsOperator();
+	
+	public IDegreeCombiner getForallOperator();
+	
+	public IDegreeCombiner getForAnyOperator();
+	
+	
 //	public IDegreeCombiner getEquivModusPonensOp();
 	
 	

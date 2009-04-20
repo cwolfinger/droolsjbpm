@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.drools.RuleBaseConfiguration;
+import org.drools.RuntimeDroolsException;
 import org.drools.common.BetaConstraints;
 import org.drools.common.ImperfectFactHandle;
 import org.drools.common.InternalFactHandle;
@@ -577,6 +578,11 @@ public class CollectNode extends BetaNode
 			IDegreeFactory factory) {
 		// TODO Auto-generated method stub
 		throw new UnsupportedOperationException("Imperfect collect will be supported soon");
+		
+	}
+	
+	public ConstraintKey[] getConstraintKeys() {
+		throw new RuntimeDroolsException("CRISP Collect should not be asked for CK");
 		
 	}
 

@@ -303,6 +303,10 @@ public class LinkedList
             return node;
         }
 
+        public boolean hasNext() {
+        	return this.current != null;
+        }
+        
         public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
             list    = (LinkedList)in.readObject();
             current = (LinkedListNode)in.readObject();

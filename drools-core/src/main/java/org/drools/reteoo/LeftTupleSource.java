@@ -157,4 +157,8 @@ public abstract class LeftTupleSource extends BaseNode
     public boolean isInUse() {
         return this.sink.size() > 0;
     }
+    
+    public abstract ConstraintKey[] getConstraintKeys();
+    
+    public abstract LeftTupleSource getParentSource();
 }

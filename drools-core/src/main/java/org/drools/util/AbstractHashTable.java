@@ -306,6 +306,20 @@ public abstract class AbstractHashTable
 
             return this.entry;
         }
+        
+        public boolean hasNext() {
+			if (this.entry != null && this.entry.getNext() != null)
+				return true;
+			
+			int row = this.row;			
+			    while ( this.table[++row] == null ) {                    
+                    if ( this.row == this.length ) {
+                        return false;
+                    }                    
+                    
+                }
+            return true;          
+		}
 
         //        /* (non-Javadoc)
         //         * @see org.drools.util.Iterator#next()

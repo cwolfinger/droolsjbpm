@@ -432,5 +432,8 @@ public abstract class BetaNode extends LeftTupleSource
 		return this.filterStrat;
 	}
     
+    public LeftTupleSource getParentSource() {
+    	return this.leftInput;
+    }
     
 }

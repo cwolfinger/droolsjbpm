@@ -342,6 +342,19 @@ public class RightInputAdapterNode extends ObjectSource
     }
 
 	
+    
+    
+    
+	public ConstraintKey[] getConstraintKeys() {
+		return tupleSource.getConstraintKeys();
+	}
+
+
+	public ConstraintKey getConstraintKey() {		
+		return getConstraintKeys()[0];
+	}
+
+	
 
 	
 }

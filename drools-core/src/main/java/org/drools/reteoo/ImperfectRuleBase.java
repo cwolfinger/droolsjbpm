@@ -1,12 +1,18 @@
 package org.drools.reteoo;
 
+import org.drools.FactException;
+import org.drools.FactHandle;
 import org.drools.RuleBaseConfiguration;
+import org.drools.common.DefaultFactHandle;
+import org.drools.common.ImperfectFactHandle;
+import org.drools.common.InternalWorkingMemory;
 import org.drools.common.RuleBasePartitionId;
 import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.degrees.factory.SimpleDegreeFactory;
 import org.drools.degrees.factory.SimpleFuzzyDegreeFactory;
 import org.drools.rule.EntryPoint;
 import org.drools.spi.FactHandleFactory;
+import org.drools.spi.PropagationContext;
 
 public class ImperfectRuleBase extends ReteooRuleBase {
 
@@ -123,6 +129,26 @@ public class ImperfectRuleBase extends ReteooRuleBase {
 	 */
 	public IDegreeFactory getDegreeFactory() {
 		return degreeFactory;
+	}
+	
+	
+	
+	public void assertObject(final FactHandle handle,
+            final Object object,
+            final PropagationContext context,
+            final InternalWorkingMemory workingMemory) throws FactException {
+			
+				IDegreeFactory factory = this.getDegreeFactory();
+				EvalRecord record = new EvalRecord(EvalRecord.INITIAL_ID,
+						getDegreeFactory().getAndOperator(),
+						getDegreeFactory().getMergeStrategy(),
+						getDegreeFactory().getNullHandlingStrategy());
+		
+				getRete().assertObject( (ImperfectFactHandle) handle,
+						context,
+						workingMemory, 
+						factory, 
+						record);
 	}
 
 }

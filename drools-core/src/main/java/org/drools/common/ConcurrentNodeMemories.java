@@ -77,6 +77,7 @@ public class ConcurrentNodeMemories implements NodeMemories {
 
         return memory;
     }
+        
 
 
     /**
@@ -130,5 +131,7 @@ public class ConcurrentNodeMemories implements NodeMemories {
     public void setRuleBaseReference( InternalRuleBase ruleBase ) {
         this.rulebase = ruleBase;
     }
+
+	
 
 }

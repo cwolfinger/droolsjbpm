@@ -16,6 +16,7 @@
 
 package org.drools.reteoo;
 
+import org.drools.RuntimeDroolsException;
 import org.drools.common.BetaConstraints;
 import org.drools.common.ImperfectFactHandle;
 import org.drools.common.InternalFactHandle;
@@ -398,21 +399,32 @@ public class ExistsNode extends BetaNode {
         return NodeTypeEnums.ExistsNode;
     }
 
+    
+    
+    
+	public void assertLeftTuple(ImperfectLeftTuple leftTuple,
+			PropagationContext context, InternalWorkingMemory workingMemory,
+			IDegreeFactory factory) {
+		throw new RuntimeDroolsException("Imperfect Exists is handled by specific subclass");		
+	}
+
 	public void assertObject(ImperfectFactHandle factHandle,
 			PropagationContext propagationContext,
 			InternalWorkingMemory workingMemory, IDegreeFactory factory,
 			EvalRecord record) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Imperfect exist will be supported soon");
+		throw new RuntimeDroolsException("Imperfect Exists is handled by specific subclass");		
 	}
 
+    
+    
+	public ConstraintKey[] getConstraintKeys() {
+		throw new RuntimeDroolsException("CRISP Exist should not be asked for CK");
+		
+	}
+    
+  
 	
-
-	public void assertLeftTuple(ImperfectLeftTuple leftTuple,
-			PropagationContext context, InternalWorkingMemory workingMemory,
-			IDegreeFactory factory) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Imperfect exist will be supported soon");
-	}   
+	
+	
 
 }

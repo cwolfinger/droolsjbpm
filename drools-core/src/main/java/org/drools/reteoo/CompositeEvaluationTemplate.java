@@ -56,6 +56,10 @@ public class CompositeEvaluationTemplate extends EvaluationTemplate {
 		return new CompositeEvaluation(id,key,deps,N,operator,mergeStrat,nullStrat);
 	}
 	
+	public Evaluation spawn(IOperandSet args) {
+		return new SetCompositeEvaluation(id,key,deps,operator,args,mergeStrat,nullStrat);
+	}
+	
 	
 	protected IDegreeCombiner getOperator() {
 		return operator;

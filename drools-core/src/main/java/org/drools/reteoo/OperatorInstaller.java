@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Vector;
 
 
 import org.drools.RuntimeDroolsException;
@@ -39,15 +42,16 @@ public abstract class OperatorInstaller
 	}
 	
 	public EvaluationTemplate buildEvaluationTemplate(IDegreeCombiner operator, IMergeStrategy mergeStrat, INullHandlingStrategy nullStrat) {
+						
 		template = new CompositeEvaluationTemplate( this.getId(),
-													new DynamicConstraintKey(operator.getName()),
+													new DynamicConstraintKey(operator.getName()),													
 													null,
 													getArity(),
 													operator,
 													mergeStrat,
 													nullStrat
 													);
-			
+					
 		return template;
 	}
 	
@@ -136,11 +140,12 @@ public abstract class OperatorInstaller
 			PropagationContext context, InternalWorkingMemory workingMemory,
 			IDegreeFactory factory) {
 		EvalRecord record = leftTuple.getRecord();
-		int M = record.getOperands().length;
+		int M = record.getOperands().size();
 		int N = getArity();
 						
 		record.replace((CompositeEvaluation) getTemplate().spawn(N),N);
 		
+				
 		
 		this.getSinkPropagator().propagateAssertLeftTuple(
 				leftTuple, 
@@ -177,5 +182,12 @@ public abstract class OperatorInstaller
 	}
 
 	
+	public ConstraintKey[] getConstraintKeys() {
+		return new ConstraintKey[] {template.getConstraintKey()};
+	}
+	
+	public LeftTupleSource getParentSource() {
+    	return this.source;
+    }
 	
 }

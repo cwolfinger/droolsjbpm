@@ -24,12 +24,18 @@ rule "Warm"
 		drools.inject(new Fan(),"org.drools.examples.chance.Fan.speed","seems","stop");
 end
 
+
+
 rule "Hot"
 	when
 		$r : Room( temperature hot[] 0)
 	then
 		drools.inject(new Fan(),"org.drools.examples.chance.Fan.speed","seems","fast");
 end
+
+
+
+
 
 
 
@@ -43,6 +49,7 @@ rule "Fan1"
 		writer.write("\n\n ********** Set speed to fast ****** \n\n" + drools.getConsequenceDegree());
 end
 
+
 rule "Fan2" 
 	when 
 		$f : Fan( speed seems[] "slow")
@@ -50,6 +57,8 @@ rule "Fan2"
 		$f.setSpeed("slow",drools.getConsequenceDegree());
 		writer.write("\n\n ********** Set speed to slow ****** \n\n" + drools.getConsequenceDegree());
 end
+
+
 
 rule "Fan3" 
 	when 

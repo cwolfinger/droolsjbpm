@@ -326,5 +326,13 @@ public class LeftInputAdapterNode extends LeftTupleSource
 		
     }
 
+	@Override
+	public ConstraintKey[] getConstraintKeys() {
+		return new ConstraintKey[] {this.objectSource.getConstraintKey()};
+	}
+
+	public LeftTupleSource getParentSource() {
+    	return null;
+    }
 	
 }

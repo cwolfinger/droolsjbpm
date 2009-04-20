@@ -33,6 +33,7 @@ import org.drools.reteoo.Evaluation;
 import org.drools.reteoo.EvaluationTemplate;
 import org.drools.reteoo.LeftTuple;
 import org.drools.reteoo.LeftTupleMemory;
+import org.drools.reteoo.ObservableRightTupleMemoryWrapper;
 import org.drools.reteoo.RightTupleMemory;
 import org.drools.reteoo.SingleEvaluationTemplate;
 import org.drools.rule.ContextEntry;
@@ -187,11 +188,14 @@ public class SingleBetaConstraints
             }
 
             RightTupleMemory factHandleMemory;
-            if ( this.conf.isIndexRightBetaMemory() ) {
-                factHandleMemory = new RightTupleIndexHashTable( new FieldIndex[]{index} );
-            } else {
-                factHandleMemory = new RightTupleList();
-            }
+               	if ( this.conf.isIndexRightBetaMemory() ) {
+            		factHandleMemory = new RightTupleIndexHashTable( new FieldIndex[]{index} );
+            	} else {
+                	factHandleMemory = new RightTupleList();
+            	}
+            
+           
+               	
             memory = new BetaMemory( config.isSequential() ? null : tupleMemory,
                                      factHandleMemory,
                                      this.createContext() );

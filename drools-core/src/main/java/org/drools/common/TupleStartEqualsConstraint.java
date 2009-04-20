@@ -211,8 +211,11 @@ public class TupleStartEqualsConstraint
 	private EvaluationTemplate template;
     
 	public ConstraintKey getConstraintKey() {
-		if (singletonKey == null)
+		if (singletonKey == null) {
+			
+			
 			singletonKey = new ConstraintKey("tuple","starts","...");
+		}
 		return singletonKey;
 	}
 

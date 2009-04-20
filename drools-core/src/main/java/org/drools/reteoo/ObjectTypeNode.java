@@ -513,7 +513,7 @@ public class ObjectTypeNode extends ObjectSource
     
     
     
-    protected ConstraintKey getConstraintKey() {
+    public ConstraintKey getConstraintKey() {
     	return new ConstraintKey("class","==",((ClassObjectType) this.objectType).getClassName() );
     }
     
@@ -552,4 +552,6 @@ public class ObjectTypeNode extends ObjectSource
 
         
 	}
+
+	
 }

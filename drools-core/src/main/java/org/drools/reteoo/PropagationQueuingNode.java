@@ -408,4 +408,15 @@ public class PropagationQueuingNode extends ObjectSource implements ObjectSinkNo
     }
 
 	
+    
+    
+    
+    
+    
+    
+	public ConstraintKey getConstraintKey() {
+		return new ConstraintKey("PROPQUEUE");
+	}
+
+	
 }

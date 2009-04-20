@@ -6,7 +6,11 @@ package org.drools.util;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.util.Collection;
+import java.util.LinkedList;
 
+import org.drools.reteoo.Evaluation;
+import org.drools.reteoo.ImperfectRightTuple;
 import org.drools.reteoo.LeftTuple;
 import org.drools.reteoo.RightTuple;
 import org.drools.reteoo.RightTupleMemory;
@@ -37,7 +41,7 @@ public class RightTupleIndexHashTable extends AbstractHashTable
               index );
     }
 
-    public RightTupleIndexHashTable(final int capacity,
+    public RightTupleIndexHashTable(final int capacity, 
                                     final float loadFactor,
                                     final FieldIndex[] index) {
         super( capacity,
@@ -174,6 +178,20 @@ public class RightTupleIndexHashTable extends AbstractHashTable
             this.row = -1;
             this.entry = null;
         }
+
+        public boolean hasNext() {
+			if (this.entry != null && this.entry.getNext() != null)
+				return true;
+			
+			int row = this.row;			
+			    while ( this.table[++row] == null ) {                    
+                    if ( this.row == this.length ) {
+                        return false;
+                    }                    
+                    
+                }
+            return true;          
+		}
     }
 
     public Entry[] toArray() {
@@ -354,4 +372,17 @@ public class RightTupleIndexHashTable extends AbstractHashTable
 
         return builder.toString();
     }
+
+    
+    
+    public Collection<Evaluation> getArgs() {
+		LinkedList<Evaluation> ans = new LinkedList<Evaluation>();
+		Iterator iter = this.iterator();
+		while (iter.hasNext()) {
+			RightTuple rt = (RightTuple) iter.next();
+			if (rt instanceof ImperfectRightTuple)
+				ans.add(((ImperfectRightTuple) rt).getRecord());
+		}
+		return ans;
+	}
 }

@@ -70,5 +70,13 @@ public class MockTupleSource extends LeftTupleSource {
         // TODO Auto-generated method stub
         
     }
+    
+    public ConstraintKey[] getConstraintKeys() {
+		return new ConstraintKey[] {new ConstraintKey("MOCK")};
+	}
+    
+    public LeftTupleSource getParentSource() {
+    	return null;
+    }
 
 }

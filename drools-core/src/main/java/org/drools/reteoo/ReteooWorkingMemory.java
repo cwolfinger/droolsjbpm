@@ -283,10 +283,13 @@ public class ReteooWorkingMemory extends AbstractWorkingMemory {
                                                                            this.leftTuple,
                                                                            this.factHandle );
             ReteooRuleBase ruleBase = (ReteooRuleBase) workingMemory.getRuleBase();
-            ruleBase.assertObject( this.factHandle,
+            
+           
+            	ruleBase.assertObject( this.factHandle,
                                    this.factHandle.getObject(),
                                    context,
                                    workingMemory );
+           
         }
     }
 

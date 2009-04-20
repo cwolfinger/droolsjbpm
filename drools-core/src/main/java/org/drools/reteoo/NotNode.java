@@ -16,6 +16,7 @@ package org.drools.reteoo;
  * limitations under the License.
  */
 
+import org.drools.RuntimeDroolsException;
 import org.drools.common.BetaConstraints;
 import org.drools.common.ImperfectFactHandle;
 import org.drools.common.InternalFactHandle;
@@ -329,5 +330,10 @@ public class NotNode extends BetaNode {
 			IDegreeFactory factory) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	
+	public ConstraintKey[] getConstraintKeys() {
+		throw new RuntimeDroolsException("Crisp NOT should not be asked for CKs");
 	}
 }

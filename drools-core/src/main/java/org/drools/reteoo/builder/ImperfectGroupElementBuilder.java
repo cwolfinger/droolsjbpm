@@ -9,11 +9,13 @@ import java.util.Map;
 
 import org.drools.RuntimeDroolsException;
 import org.drools.common.BetaConstraints;
+import org.drools.common.EmptyBetaConstraints;
 import org.drools.common.TupleStartEqualsConstraint;
 import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.degrees.operators.IDegreeCombiner;
 import org.drools.reteoo.AndOperatorInstaller;
 import org.drools.reteoo.ExistsNode;
+import org.drools.reteoo.ImperfectExistsNode;
 import org.drools.reteoo.ImperfectRuleBase;
 import org.drools.reteoo.JoinNode;
 import org.drools.reteoo.LeftInputAdapterNode;
@@ -379,7 +381,7 @@ public class ImperfectGroupElementBuilder extends GroupElementBuilder implements
             }
 
             final BetaConstraints betaConstraints = utils.createBetaNodeConstraint( context,
-                                                                                    context.getBetaconstraints(),
+                                                                                    context.getBetaconstraints(),            																		
                                                                                     false );
 
             Behavior[] behaviors = createBehaviorArray( context );
@@ -388,7 +390,7 @@ public class ImperfectGroupElementBuilder extends GroupElementBuilder implements
             // or as subnetwork join node as the context was set appropriatelly
             // in each case
             context.setTupleSource( (LeftTupleSource) utils.attachNode( context,
-                                                                        new ExistsNode( context.getNextId(),
+                                                                        new ImperfectExistsNode( context.getNextId(),
                                                                                         context.getTupleSource(),
                                                                                         context.getObjectSource(),
                                                                                         betaConstraints,

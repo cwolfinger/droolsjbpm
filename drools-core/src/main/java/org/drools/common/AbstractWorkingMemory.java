@@ -1079,7 +1079,7 @@ public abstract class AbstractWorkingMemory
                                                                                   entryPoint );
 
         //TODO:
-        //System.out.println(this.getClass().toString() + "Hacked to enroute imperfect");
+        System.out.println(this.getClass().toString() + "Hacked to enroute imperfect");
         
         
         if (this.ruleBase instanceof ImperfectRuleBase) {
@@ -1537,6 +1537,7 @@ public abstract class AbstractWorkingMemory
     public void clearNodeMemory(final NodeMemory node) {
         this.nodeMemories.clearNodeMemory( node );
     }
+        
 
     public WorkingMemoryEventSupport getWorkingMemoryEventSupport() {
         return this.workingMemoryEventSupport;
@@ -1972,7 +1973,7 @@ public abstract class AbstractWorkingMemory
     				// Object exists and has already been eval'ed
     				// Add new degree to evaluation
     				//TODO: 1 should be confidence!    				
-    				eval.addDegree(ruleName, degree,1);
+    				eval.addDegree(ruleName, degree,1,true);
     				//Notification is implicit in the record...
     			} else if (node == null) {
     				System.out.println("Warning - injected USELESS eval");

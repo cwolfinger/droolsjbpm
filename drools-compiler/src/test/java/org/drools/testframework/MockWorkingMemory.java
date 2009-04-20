@@ -551,4 +551,9 @@ public class MockWorkingMemory implements InternalWorkingMemory {
 		
 	}
 
+	public Object setNodeMemory(NodeMemory node, Object memory) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

@@ -1,6 +1,7 @@
 package org.drools.reteoo;
 
 import org.drools.common.DefaultFactHandle;
+import org.drools.common.ImperfectFactHandle;
 import org.drools.common.InternalFactHandle;
 
 /*
@@ -19,7 +20,7 @@ import org.drools.common.InternalFactHandle;
  * limitations under the License.
  */
 
-public class InitialFactHandle extends DefaultFactHandle {
+public class InitialFactHandle extends ImperfectFactHandle {
     /**
      *
      */

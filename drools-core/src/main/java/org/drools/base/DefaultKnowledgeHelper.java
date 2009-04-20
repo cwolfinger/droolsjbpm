@@ -291,7 +291,7 @@ public class DefaultKnowledgeHelper
     }
     
     public void inject(ArgList args, String field, String op, String value) {
-    	System.out.println(this.getClass()+" : KH injects a rule for degree "+getConsequenceDegree());
+    	System.out.println("\n"+this.getClass()+" : KH injects a rule for degree "+getConsequenceDegree());
     	workingMemory.inject(this.getRule().getName(), 
     					     args,
     					     new ConstraintKey(field,op,value),

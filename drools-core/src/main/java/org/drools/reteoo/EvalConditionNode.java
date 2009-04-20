@@ -23,6 +23,7 @@ import java.io.ObjectOutput;
 import java.util.Collections;
 
 import org.drools.RuleBaseConfiguration;
+import org.drools.RuntimeDroolsException;
 import org.drools.common.BaseNode;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.common.NodeMemory;
@@ -412,6 +413,18 @@ public class EvalConditionNode extends LeftTupleSource
         }
     }
 
+    
+    
+    
+    public ConstraintKey[] getConstraintKeys() {
+		throw new RuntimeDroolsException("Imperfect eval will be supported soon");
+		
+	}
+
+	
+	public LeftTupleSource getParentSource() {
+		return this.tupleSource;
+	}
 	
 
 	

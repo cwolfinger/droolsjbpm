@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
+import org.drools.reteoo.LeftTupleSource;
 import org.drools.reteoo.ReteooBuilder;
 import org.drools.reteoo.RuleRemovalContext;
 
@@ -145,4 +146,7 @@ public abstract class BaseNode
     public void setPartitionId( final RuleBasePartitionId partitionId ) {
         this.partitionId = partitionId;
     }
+    
+    
+
 }

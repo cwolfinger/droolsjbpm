@@ -16,7 +16,7 @@ rule "Trigger"
 		Trigger();		
 	then
 		writer.write("\n A Message with status = HELLO will hold the message Hello!");
-		drools.inject(new Message(Message.HELLO),"org.drools.examples.Test$Message.message","String ==","Hello!");
+		drools.inject(new Message(Message.HELLO),"org.drools.examples.chance.Test$Message.message","String ==","Hello!");
 end
 
 
@@ -35,7 +35,7 @@ rule "Synch"
 		
 		//FIXME Until lexical analysis is done properly, args must be defined in two steps
 		Object[] args = new Object[] { p , b }; 
-		drools.inject(args,"org.drools.examples.Test$Book.owner","Object ==","$p");
+		drools.inject(args,"org.drools.examples.chance.Test$Book.owner","Object ==","$p");
 end
 
 

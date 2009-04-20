@@ -139,6 +139,10 @@ public class LeftTupleList
                 return null;
             }
         }
+        
+        public boolean hasNext() {
+        	return this.current != null;
+        }
 
         public void remove() {
             // do nothing

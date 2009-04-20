@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.Observable;
 import java.util.Observer;
 
+import org.drools.RuntimeDroolsException;
 import org.drools.common.BetaConstraints;
 import org.drools.common.ImperfectFactHandle;
 import org.drools.common.InternalFactHandle;
@@ -636,7 +637,10 @@ public class JoinNode extends BetaNode implements IGammaNode, Observer {
 
 	
 
-	
+	public ConstraintKey[] getConstraintKeys() {
+		return this.constraints.getConstraintKeys();
+		
+	}
 
 	
 }

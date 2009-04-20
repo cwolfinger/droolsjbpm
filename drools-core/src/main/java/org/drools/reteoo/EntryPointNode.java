@@ -340,4 +340,9 @@ public class EntryPointNode extends ObjectSource
 			}
 	}
 
+	@Override
+	public ConstraintKey getConstraintKey() {
+		return new ConstraintKey("ENTRYPOINT");
+	}
+
 }

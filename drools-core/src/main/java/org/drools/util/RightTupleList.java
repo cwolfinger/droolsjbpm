@@ -3,7 +3,12 @@
  */
 package org.drools.util;
 
+import java.util.Collection;
+import java.util.LinkedList;
+
 import org.drools.common.InternalFactHandle;
+import org.drools.reteoo.Evaluation;
+import org.drools.reteoo.ImperfectRightTuple;
 import org.drools.reteoo.LeftTuple;
 import org.drools.reteoo.RightTuple;
 import org.drools.reteoo.RightTupleMemory;
@@ -150,6 +155,10 @@ public class RightTupleList
                 return null;
             }
         }
+        
+        public boolean hasNext() {
+        	return this.current != null;
+        }
 
         public void remove() {
             // do nothing
@@ -206,4 +215,15 @@ public class RightTupleList
 
         return builder.toString();
     }
+
+	public Collection<Evaluation> getArgs() {
+		LinkedList<Evaluation> ans = new LinkedList<Evaluation>();
+		Iterator iter = this.iterator();
+		while (iter.hasNext()) {
+			RightTuple rt = (RightTuple) iter.next();
+			if (rt instanceof ImperfectRightTuple)
+				ans.add(((ImperfectRightTuple) rt).getRecord());
+		}
+		return ans;
+	}
 }

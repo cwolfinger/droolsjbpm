@@ -576,6 +576,11 @@ System.out.println("************************************************************
 	}
 
 	
+	public ConstraintKey getConstraintKey() {
+		return this.getConstraint().getConstraintKey();
+	}
+
+	
 
 	
 }

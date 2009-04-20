@@ -690,4 +690,9 @@ public class AccumulateNode extends BetaNode {
 		throw new UnsupportedOperationException("Imperfect Accumulate will be supported soon ");
 		
 	}
+
+	public ConstraintKey[] getConstraintKeys() {
+		throw new RuntimeDroolsException("CRISP Accumulate should not be asked for CK");
+		
+	}
 }

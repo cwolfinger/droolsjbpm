@@ -6,7 +6,9 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
+import java.util.Vector;
 
+import org.drools.RuntimeDroolsException;
 import org.drools.degrees.IDegree;
 import org.drools.degrees.operators.IDegreeCombiner;
 import org.drools.degrees.operators.IMergeStrategy;
@@ -15,7 +17,7 @@ import org.drools.degrees.operators.INullHandlingStrategy;
 public class CompositeEvaluation extends Evaluation implements Observer {
 
 	private IDegreeCombiner operator;
-	protected Evaluation[] operands;
+	protected Vector<Evaluation> operands;
 	private float opRate;
 	
 	public CompositeEvaluation(int id, ConstraintKey key, Set<String> deps,
@@ -23,10 +25,12 @@ public class CompositeEvaluation extends Evaluation implements Observer {
 		super(id,key,deps,mergeStrat,nullStrat);
 		
 		if (evalDegrees != null) {
-			this.operands = new Evaluation[evalDegrees.length];
+			this.operands = new Vector<Evaluation>(evalDegrees.length);
 				for (int j = 0; j < evalDegrees.length; j++) {
 					setOperand(j,evalDegrees[j]);
 				}
+		} else {
+			this.operands = new Vector<Evaluation>(0);
 		}
 	
 		this.operator = operator;
@@ -34,11 +38,26 @@ public class CompositeEvaluation extends Evaluation implements Observer {
 		this.combine();
 	}
 	
+	
+	
+	protected CompositeEvaluation(int id, ConstraintKey key, Set<String> deps,
+			IMergeStrategy mergeStrat, INullHandlingStrategy nullStrat) {		
+		super(id,key,deps,mergeStrat,nullStrat);
+				
+		this.operands = new Vector<Evaluation>(0);			
+		this.operator = null;
+				
+	}
+	
+	
+	
+	
+	
 	public CompositeEvaluation(int id, ConstraintKey key, Set<String> deps,
 			int arity, IDegreeCombiner operator, IMergeStrategy mergeStrat, INullHandlingStrategy nullStrat) {		
 		super(id,key,deps,mergeStrat,nullStrat);
 				
-		this.operands = new Evaluation[arity];
+		this.operands = new Vector<Evaluation>(arity);
 		
 	
 		this.operator = operator;
@@ -67,47 +86,62 @@ public class CompositeEvaluation extends Evaluation implements Observer {
 //		
 //	}
 
-	protected void combine() {
-		if (operands == null)
-			return;
-		
-		int N = operands.length;
-		IDegree[] args = new IDegree[N];
+	protected boolean combine() {
 		
 		
-		for (int j=0; j < N; j++) {
-			args[j] = operands[j].getDegree();
+		IDegree[] args = null;
 		
-		}
-				
+		if (getOperands() != null) {				
+			int N = getOperands().size();
+			args = new IDegree[N];
+		
+			int j = 0;
+			for (Evaluation eval : getOperands()) {
+				args[j++] = eval.getDegree();		
+			}
+		}		
+		
 		IDegree opDeg = this.operator.eval(args);
 		updateOpRate();
-		this.addDegree(Evaluation.EVAL, opDeg, getOpRate());
+		boolean newContrib = this.addDegree(Evaluation.EVAL, opDeg, getOpRate(),true);
+						
+		return newContrib;
 		
 	}
 	
 	
-	public Evaluation[] getOperands() {
+	public Collection<Evaluation> getOperands() {
 		return operands;
 	}
 	
 	public void setOperand(int position, Evaluation operand) {
 				
-		if (operands[position] != null && operands[position] != operand) {
-			System.out.println("SET OPERAND "+operand.getKey()+ "with " + operand.getBitS());
-			operands[position].deleteObserver(this);
+		if (operands.size() <= position) {
+			// Surely a new operand!
+			operands.setSize(position+1);
+			
 			operand.addObserver(this);
-			operands[position] = operand;
-			combine();
+			//operands.set(position,operand);
 		} else {
-			operand.addObserver(this);
-			operands[position] = operand;
-		}
-													
+			if (operands.get(position) != null && operands.get(position) != operand) {
+				System.out.println("SET OPERAND "+operand.getKey()+ "with " + operand.getBitS());
+				operands.get(position).deleteObserver(this);
+				operand.addObserver(this);
+				//operands.set(position,operand);
+				//combine();
+			} else {
+				// merging with old op
+//				if (operands.get(position) != null)
+//					throw new RuntimeDroolsException("DD");														
+				//operands.set(position,operand);
+			}
+		}		
+		
+		operands.set(position,operand);
 	}
 	
 	public Collection<Evaluation> getEvalTree() {
-		Collection<Evaluation> ans = new ArrayList<Evaluation>(2*operands.length);
+		Collection<Evaluation> ans = new ArrayList<Evaluation>(2*operands.size());
 			for (Evaluation eval : operands)
 				ans.addAll(eval.getEvalTree());
 		ans.add(this);
@@ -133,18 +167,24 @@ public class CompositeEvaluation extends Evaluation implements Observer {
 	}
 	
 	protected void updateOpRate() {
-		float delta = 0;
-		for (Evaluation child : this.operands) {
-			delta += child.getInfoRate();
-		}			
-		opRate = delta / (1.0f*this.operands.length);			
+		if (this.operands.size() == 0) {
+			setOpRate(1);
+		} else {
+			float delta = 0;
+			for (Evaluation child : this.getOperands()) {
+				delta += child.getInfoRate();
+			}			
+			setOpRate(delta / (1.0f*this.operands.size()));
+		}
 	}	
 	
 	
 	public void update(Observable o, Object arg) {
-		System.out.println("UPDATE HAS BEEN CALLED ON COMBOVAL");
-		incInfo("EVAL",-opRate);
-		combine();		
+		System.out.println("\nUPDATE HAS BEEN CALLED ON COMBOVAL by" + o.toString());
+		incInfo("EVAL",-getOpRate());
+		combine();	
+		
+		this.notifyObservers(this);
 	}
 	
 	protected IDegreeCombiner getOperator() {
@@ -175,6 +215,13 @@ public class CompositeEvaluation extends Evaluation implements Observer {
 			}
 		}
 		return sb.toString();
+	}
+
+	/**
+	 * @param opRate the opRate to set
+	 */
+	public void setOpRate(float opRate) {
+		this.opRate = opRate;
 	}
 	
 }

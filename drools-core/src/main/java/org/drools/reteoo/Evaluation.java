@@ -58,12 +58,13 @@ public class Evaluation extends Observable {
 	
 	public Evaluation(int id, ConstraintKey key, Set<String> deps, IDegree evalDeg, IMergeStrategy mergeStrat, INullHandlingStrategy nullStrat) {
 		this(id,key,deps,mergeStrat,nullStrat);
-		this.addDegree(Evaluation.EVAL,evalDeg,1);
+		this.addDegree(Evaluation.EVAL,evalDeg,1,true);
+		
 	}
 	
 	public Evaluation(int id, ConstraintKey key, Set<String> deps, IDegree evalDeg, String source, IMergeStrategy mergeStrat, INullHandlingStrategy nullStrat) {
 		this(id,key,deps,mergeStrat,nullStrat);
-		this.addDegree(source,evalDeg,1);
+		this.addDegree(source,evalDeg,1,true);
 	}
 	
 	
@@ -101,7 +102,8 @@ public class Evaluation extends Observable {
 			System.out.println("Trying to merge degrees for source "+ source + "+1");
 			IDegree evalDeg = moreDegrees.get(source);
 			if (evalDeg != null) {						
-							
+				
+				/*
 				confidence.put(source, conf.get(source));
 				
 				if (getDegreeBit(source) == null) {
@@ -110,36 +112,53 @@ public class Evaluation extends Observable {
 				} else {
 					this.degrees.put(source,evalDeg);
 				}
-			
+				 */
+				newContrib = newContrib || this.addDegree(source, evalDeg, conf.get(source),false);
+				
 				
 				
 			}
 		}
-	    update(newContrib);
+		if (newContrib) {
+			aggDegree = mergeDegrees();
+			this.setChanged();
+			this.notifyObservers();
+		}
+	    
 	
 	}
 	
 		
-	public void addDegree(String source, IDegree evalDeg, float wgt) {
-		
+	public boolean addDegree(String source, IDegree evalDeg, float wgt, boolean immediateUpdate) {
 		boolean newContrib = false;
+		boolean rateIncr = false;
 		
 		if (evalDeg == null) {
-			newContrib = clearDegree(source);			
+			/*
+			newContrib = clearDegree(source);
+			rateIncr = true;
+			*/
 		} else {
 		
 		
+			Float prevConf = confidence.get(source);
+				confidence.put(source, wgt);
+			rateIncr = prevConf == null ? true : prevConf.floatValue() < wgt;
 			
-			confidence.put(source, wgt);
-			
-			if (getDegreeBit(source) == null) {
+			IDegree oldVal = getDegreeBit(source);
+			if (oldVal == null) {
 				System.out.println(this.key+" Added degree for source "+ source + " with wgt "+wgt);
 				this.degrees.put(source,evalDeg);					
 				newContrib = true;
 			} else {
-				System.out.println(this.key+" UPDATED degree for source "+ source + " with wgt "+wgt);				
-					this.degrees.put(source,evalDeg);
-					newContrib = true;
+					if (oldVal.equals(evalDeg)) {
+						System.out.println(this.key+" No news for source "+ source + " with wgt "+wgt);
+						newContrib = false;
+					} else {
+						System.out.println(this.key+" UPDATED degree for source "+ source + " with wgt "+wgt);
+						this.degrees.put(source,evalDeg);
+						newContrib = true;
+					}
 			}
 			
 //			if (getDegreeBit(source) == null) {
@@ -153,8 +172,18 @@ public class Evaluation extends Observable {
 								
 		}
 		
+		System.out.println(this.getKey()+"\n\t\tAdd degree status immUpd = "+immediateUpdate + " , newcontr = "+newContrib+ " , rateincr ="+ rateIncr);
 		
-		update(newContrib);
+		
+		if (immediateUpdate && newContrib)
+			aggDegree = mergeDegrees();
+		
+		if (immediateUpdate && (newContrib || rateIncr)) {
+			this.setChanged();
+			this.notifyObservers();
+		}
+		
+		return (newContrib || rateIncr);
 		
 	}
 	
@@ -163,11 +192,11 @@ public class Evaluation extends Observable {
 	}
 	
 	
-		
-	protected void update(boolean newContrib) {
+	/*	
+	protected void update(boolean rateIncreased) {
 		IDegree newDeg = mergeDegrees();
 		
-		if ((this.countObservers() > 0) &&  ((! newDeg.equals(aggDegree)) || newContrib)) {
+		if ((this.countObservers() > 0) &&  ((! newDeg.equals(aggDegree)) || rateIncreased)) {
 			aggDegree = newDeg;
 			this.setChanged();
 			this.notifyObservers(newDeg);
@@ -176,6 +205,7 @@ public class Evaluation extends Observable {
 		}
 		
 	}
+	*/
 	
 	public boolean clearDegree(String source) {
 		boolean cleared = false;

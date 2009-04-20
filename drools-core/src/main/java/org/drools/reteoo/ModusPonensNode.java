@@ -77,7 +77,7 @@ public class ModusPonensNode extends JoinNode {
         
         	    
         
-            EvalRecord premiseRecord = leftTuple.getRecord().clone();
+            EvalRecord premiseRecord = leftTuple.getRecord();
         	            
             Evaluation implEval = this.constraints.isSatisfiedCachedRight( memory.getContext(),
 					  leftTuple, 
@@ -94,7 +94,9 @@ public class ModusPonensNode extends JoinNode {
     		
     		
         	EvalRecord mpRecord = new EvalRecord(this.id,factory.getModusPonensOp(),factory.getMergeStrategy(),factory.getNullHandlingStrategy());
-        	mpRecord.addEvaluation(premiseRecord.getOperands()[0]);
+        		Evaluation core = premiseRecord.getOperands().iterator().next();
+        		core.deleteObserver(premiseRecord);
+        	mpRecord.addEvaluation(core);        		
         	mpRecord.addEvaluation(implEval);
         	
         	

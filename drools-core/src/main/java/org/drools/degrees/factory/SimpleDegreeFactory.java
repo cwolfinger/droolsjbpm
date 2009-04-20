@@ -8,6 +8,7 @@ import org.drools.degrees.operators.INullHandlingStrategy;
 import org.drools.degrees.operators.simple.SimpleAverage;
 import org.drools.degrees.operators.simple.SimpleDotAnd;
 import org.drools.degrees.operators.simple.SimpleEquiv;
+import org.drools.degrees.operators.simple.SimpleExists;
 import org.drools.degrees.operators.simple.SimpleMaxOr;
 import org.drools.degrees.operators.simple.SimpleMinAnd;
 import org.drools.degrees.operators.simple.SimpleNot;
@@ -108,6 +109,18 @@ public class SimpleDegreeFactory implements IDegreeFactory {
 
 	public INullHandlingStrategy getNullHandlingStrategy() {
 		return new SimpleNullHandlingStrategy();
+	}
+
+	public IDegreeCombiner getExistsOperator() {
+		return new SimpleExists();
+	}
+
+	public IDegreeCombiner getForAnyOperator() {
+		return new SimpleAverage();
+	}
+
+	public IDegreeCombiner getForallOperator() {
+		return this.getAndOperator();
 	}
 
 }

@@ -45,7 +45,7 @@ public interface InternalWorkingMemory
 
     public void setRuleFlowEventSupport(RuleFlowEventSupport ruleFlowEventSupport);
     
-    public Object getNodeMemory(NodeMemory node);
+    public Object getNodeMemory(NodeMemory node);       
 
     public void clearNodeMemory(NodeMemory node);
 

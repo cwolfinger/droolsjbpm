@@ -164,6 +164,22 @@ public class LeftTupleIndexHashTable extends AbstractHashTable
             this.row = -1;
             this.entry = null;
         }
+
+        //TODO: test...
+		public boolean hasNext() {
+			if (this.entry != null && this.entry.getNext() != null)
+				return true;
+			
+			int row = this.row;			
+			    while ( this.table[++row] == null ) {                    
+                    if ( this.row == this.length ) {
+                        return false;
+                    }                    
+                    
+                }
+            return true;          
+		}
+		
     }
 
     public LeftTuple[] toArray() {

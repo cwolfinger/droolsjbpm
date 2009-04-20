@@ -239,8 +239,13 @@ public class DrlParser {
             
             System.out.println(this.getClass().toString() + " HACKED TO GET DROOLSTREE");
             
-            //System.out.println((((DroolsTree) resultTree.getChild(8)).toStringTree()));
-           //System.out.println((((DroolsTree) resultTree.getChild(4)).toIndentedStringTree()));
+
+            int j = 0;            
+            DroolsTree dtree = (DroolsTree) resultTree.getChild(j);
+            while (dtree != null && ! dtree.getToken().getText().equals("rule"))
+            	dtree = (DroolsTree) resultTree.getChild(j++);
+            
+           System.out.println(dtree.toIndentedStringTree());
 //            
             
             

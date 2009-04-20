@@ -191,14 +191,14 @@ public class ImplicationBetaConstraint implements BetaConstraints {
 	public Evaluation[] isSatisfiedCachedLeft(ContextEntry[] context,
 			InternalFactHandle handle, IDegreeFactory factory) {
 		Evaluation eval = template[0].spawn(factory.Unknown());
-			eval.addDegree(Evaluation.PRIOR, this.priorDegree, 1);
+			eval.addDegree(Evaluation.PRIOR, this.priorDegree, 1,true);
 		return new Evaluation[] {eval};
 	}
 
 	public Evaluation[] isSatisfiedCachedRight(ContextEntry[] context,
 			LeftTuple tuple, IDegreeFactory factory) { 
 		Evaluation eval = template[0].spawn(factory.Unknown());
-			eval.addDegree(Evaluation.PRIOR, this.priorDegree, 1);
+			eval.addDegree(Evaluation.PRIOR, this.priorDegree, 1,true);
 		return new Evaluation[] {eval};
 	}
 	
