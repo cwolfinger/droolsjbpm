@@ -1,6 +1,7 @@
 package org.drools.degrees.factory;
 
 import org.drools.degrees.IDegree;
+import org.drools.degrees.IntervalDegree;
 import org.drools.degrees.SimpleDegree;
 import org.drools.degrees.operators.IDegreeCombiner;
 import org.drools.degrees.operators.IMergeStrategy;
@@ -21,21 +22,35 @@ import org.drools.reteoo.filters.SimpleFilterStrategy;
 
 
 public class SimpleDegreeFactory implements IDegreeFactory {
+	
+	public static IDegree FALSE = new SimpleDegree(0);
+	public static IDegree TRUE = new SimpleDegree(1);
+	
+	//BEWARE OF CWA
+	public static IDegree UNKNOWN = new SimpleDegree(0);
+	
+	public IDegree False() {
+		return FALSE;
+	}
 
+	public IDegree True() {
+		return TRUE;
+	}
+
+	public IDegree Unknown() {
+		return UNKNOWN;
+	}
+
+	
+	public IDegree Random() {
+		return new SimpleDegree((float) Math.random());
+	}
 	
 	public IDegree buildDegree(float val) {
 		return new SimpleDegree(val);
 	}
 
-	public IDegree False() {
-		return new SimpleDegree(0);
-	}
-
-
-	public IDegree True() {
-		return new SimpleDegree(1);
-	}
-
+	
 
 	public IDegree fromBoolean(boolean b) {
 		return b ? new SimpleDegree(1) : new SimpleDegree(0);
@@ -59,9 +74,7 @@ public class SimpleDegreeFactory implements IDegreeFactory {
 		return new SimpleMaxOr();
 	}
 
-	public IDegree Unknown() {
-		return False();
-	}
+
 
 
 	public IDegreeCombiner getModusPonensOp() {

@@ -199,7 +199,8 @@ public final class RuleTerminalNode extends BaseNode
                                                 context,
                                                 this.rule,
                                                 this.subrule,
-                                                degree);
+                                                degree,
+                                                record);
 
         item.setSequenence( this.sequence );
 

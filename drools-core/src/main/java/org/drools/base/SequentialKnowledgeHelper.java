@@ -245,4 +245,14 @@ public class SequentialKnowledgeHelper
 		// TODO Auto-generated method stub
 		
 	}
+
+	public Evaluation getEvaluation() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void setEvaluation(Evaluation eval) {
+		// TODO Auto-generated method stub
+		
+	}
 }

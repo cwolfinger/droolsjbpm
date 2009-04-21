@@ -144,4 +144,10 @@ public interface KnowledgeHelper
     public void setConsequenceDegree(IDegree deg);
     
     
+    
+    public Evaluation getEvaluation();
+    
+    public void setEvaluation(Evaluation eval);
+    
+    
 }

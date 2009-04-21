@@ -299,6 +299,8 @@ public class RuleBaseConfiguration
             setMaxThreads( StringUtils.isEmpty( value ) ? -1 : Integer.parseInt( value ) );
         } else if ( name.equals( "drools.eventProcessingMode" ) ) {
             setEventProcessingMode( EventProcessingMode.determineAssertBehaviour( StringUtils.isEmpty( value ) ? "cloud" : value ) );
+        } else if ( name.equals( "drools.imperfect.factory" ) ) {
+            setFactoryName(value);
         }
     }
 

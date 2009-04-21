@@ -13,8 +13,6 @@ public interface IDegreeFactory {
 	
 	
 	
-	
-	
 	public IDegree buildDegree(float val);
 	
 	
@@ -23,6 +21,8 @@ public interface IDegreeFactory {
 	public IDegree False();
 	
 	public IDegree Unknown();
+	
+	public IDegree Random();
 	
 	public IDegree fromBoolean(boolean b);
 	

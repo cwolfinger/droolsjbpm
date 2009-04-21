@@ -61,6 +61,7 @@ public class DefaultKnowledgeHelper
     private InternalWorkingMemoryActions workingMemory;
     
     private IDegree						 consequenceDegree;
+    private Evaluation					 evaluation;
 
     public DefaultKnowledgeHelper() {
 
@@ -326,6 +327,15 @@ public class DefaultKnowledgeHelper
 				 new ArgList(args), 
 				 new ConstraintKey(key),
 				 getConsequenceDegree());		
+	}
+	
+	
+	public Evaluation getEvaluation() {
+		return evaluation;
+	}
+	
+	public void setEvaluation(Evaluation eval) {
+		this.evaluation = eval;
 	}
     
     

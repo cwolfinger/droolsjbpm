@@ -934,8 +934,10 @@ public class DefaultAgenda
         	//TODO:
         	//System.out.println(this.getClass()+"Hacked fireActivation to insert consequence degree");
         	
-        	if (activation instanceof ImperfectAgendaItem)
+        	if (activation instanceof ImperfectAgendaItem) {
         		this.knowledgeHelper.setConsequenceDegree(((ImperfectAgendaItem) activation).getDegree());
+        		this.knowledgeHelper.setEvaluation(((ImperfectAgendaItem) activation).getEvaluation());
+        	}
         	
             this.knowledgeHelper.setActivation( activation );
             activation.getRule().getConsequence().evaluate( this.knowledgeHelper,

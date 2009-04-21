@@ -237,6 +237,9 @@ public class Evaluation extends Observable {
 		return "("+this.nodeId + ")" + this.key+ " : " + this.aggDegree +" "+ this.getBitS();
 	}
 	
+	public String expand() {
+		return toString();
+	}
 	
 	
 

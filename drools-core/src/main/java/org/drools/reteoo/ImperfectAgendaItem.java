@@ -9,12 +9,14 @@ import org.drools.spi.PropagationContext;
 public class ImperfectAgendaItem extends AgendaItem {
 
 	private IDegree degree;
+	private Evaluation eval;
 	
 	public ImperfectAgendaItem(long propagationNumber, LeftTuple cloned,
 			int value, PropagationContext context, Rule rule,
-			GroupElement subrule, IDegree degree) {
+			GroupElement subrule, IDegree degree, Evaluation eval) {
 		super(propagationNumber,cloned,value,context,rule,subrule);
 		this.degree = degree;
+		this.eval = eval;
 	}
 	
 	
@@ -22,4 +24,7 @@ public class ImperfectAgendaItem extends AgendaItem {
 		return degree;
 	}
 
+	public Evaluation getEvaluation() {
+		return eval;
+	}
 }

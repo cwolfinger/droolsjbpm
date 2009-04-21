@@ -16,7 +16,7 @@ import org.drools.spi.InternalReadAccessor;
 
 
 /**
- * BaseUncertainEvaluator implements the uncertain evaluators
+ * BaseImperfectEvaluator implements the imperfect evaluators
  * by calling the crisp ones and then converting the boolean
  * result into the used truth degree
  * 
