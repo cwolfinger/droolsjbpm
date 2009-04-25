@@ -27,9 +27,13 @@ import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.degrees.IDegree;
 import org.drools.degrees.factory.IDegreeFactory;
+import org.drools.reteoo.ArgList;
 import org.drools.reteoo.ConstraintKey;
 import org.drools.reteoo.Evaluation;
+import org.drools.reteoo.ImperfectLeftTuple;
 import org.drools.reteoo.LeftTuple;
+import org.drools.rule.VariableRestriction.ObjectVariableContextEntry;
+import org.drools.rule.VariableRestriction.VariableContextEntry;
 import org.drools.spi.AcceptsReadAccessor;
 import org.drools.spi.Evaluator;
 import org.drools.spi.InternalReadAccessor;
@@ -131,21 +135,33 @@ public class VariableConstraint extends MutableTypeConstraint
                 workingMemory,
                 context,
                 factory);
-    	return getTemplate().spawn(deg);
+    	return getTemplate().spawn(deg,new ArgList(handle.getObject()));
 	}
 
 	public Evaluation isSatisfiedCachedLeft(ContextEntry context,
 			InternalFactHandle handle, IDegreeFactory factory) {
+		
+		//merge to ensure uniqueness
+		ArgList args = ((ImperfectLeftTuple) ((VariableContextEntry) context).getTuple()).getArgList();
+		args.merge(handle.getObject());
+		
 		return this.getTemplate().spawn(this.restriction.isSatisfiedCachedLeft( context,
                 handle,
-                factory));
+                factory),
+                args);
 	}
 
 	public Evaluation isSatisfiedCachedRight(LeftTuple tuple,
 			ContextEntry context, IDegreeFactory factory) {
+		
+		//merge to ensure uniqueness
+		ArgList args = ((ImperfectLeftTuple) tuple).getArgList();
+			args.merge(((VariableContextEntry) context).getObject());
+						
 		return this.getTemplate().spawn(this.restriction.isSatisfiedCachedRight( tuple,
-                context, 
-                factory));
+                										context, 
+                										factory),
+                										args);
 	}
     
     

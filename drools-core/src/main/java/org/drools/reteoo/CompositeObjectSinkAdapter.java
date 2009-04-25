@@ -400,7 +400,8 @@ public class CompositeObjectSinkAdapter extends AbstractObjectSinkAdapter {
         if ( this.otherSinks != null ) {
             // propagate others
             for ( ObjectSinkNode sink = this.otherSinks.getFirst(); sink != null; sink = sink.getNextObjectSinkNode() ) {
-                doPropagateAssertObject( factHandle, context, workingMemory, factory, record.clone(), sink );
+            	EvalRecord newRec = record.clone();
+                doPropagateAssertObject( factHandle, context, workingMemory, factory, newRec, sink );
             }
         }
 		

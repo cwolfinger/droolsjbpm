@@ -6,6 +6,7 @@ package org.drools.util;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import org.drools.FactHandle;
 import org.drools.common.InternalFactHandle;
 import org.drools.reteoo.Evaluation;
 import org.drools.reteoo.ImperfectRightTuple;
@@ -216,7 +217,7 @@ public class RightTupleList
         return builder.toString();
     }
 
-	public Collection<Evaluation> getArgs() {
+	public LinkedList<Evaluation> getEvaluations() {
 		LinkedList<Evaluation> ans = new LinkedList<Evaluation>();
 		Iterator iter = this.iterator();
 		while (iter.hasNext()) {
@@ -226,4 +227,17 @@ public class RightTupleList
 		}
 		return ans;
 	}
+
+	public LinkedList<FactHandle> getHandles() {
+		LinkedList<FactHandle> ans = new LinkedList<FactHandle>();
+		Iterator iter = this.iterator();
+		while (iter.hasNext()) {
+			RightTuple rt = (RightTuple) iter.next();
+			if (rt instanceof ImperfectRightTuple)
+				ans.add(((ImperfectRightTuple) rt).getFactHandle());
+		}
+		return ans;
+	}
+	
+	
 }

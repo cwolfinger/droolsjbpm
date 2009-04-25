@@ -55,4 +55,9 @@ public class ImperfectLeftTuple extends LeftTuple {
 	}
 	
 	
+	public ArgList getArgList() {
+		return new ArgList(this.toObjectArray());
+	}
+	
+	
 }

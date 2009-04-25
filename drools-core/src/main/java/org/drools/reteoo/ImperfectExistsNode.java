@@ -1,7 +1,9 @@
 package org.drools.reteoo;
 
+import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Set;
 
 import org.drools.RuleBaseConfiguration;
 import org.drools.RuntimeDroolsException;
@@ -10,6 +12,9 @@ import org.drools.common.ImperfectFactHandle;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.common.TupleStartEqualsConstraint;
 import org.drools.degrees.factory.IDegreeFactory;
+import org.drools.degrees.operators.IDegreeCombiner;
+import org.drools.degrees.operators.IMergeStrategy;
+import org.drools.degrees.operators.INullHandlingStrategy;
 import org.drools.reteoo.builder.BuildContext;
 import org.drools.reteoo.filters.IFilterStrategy;
 import org.drools.rule.Behavior;
@@ -36,6 +41,8 @@ public class ImperfectExistsNode extends ExistsNode implements Observer {
 		IDegreeFactory factory = ((ImperfectRuleBase) context.getRuleBase()).getDegreeFactory();    	
 			this.filterStrat = factory.getDefaultStrategy();
 			
+		this.constraints.buildEvaluationTemplates(this.id,context.getRule().getDependencies(), factory);
+			
 //		ConstraintKey argKey = null;
 //		if (this.rightInput instanceof RightInputAdapterNode)
 //			argKey = ((RightInputAdapterNode) this.rightInput).getConstraintKeys()[0];
@@ -45,22 +52,37 @@ public class ImperfectExistsNode extends ExistsNode implements Observer {
 //			throw new RuntimeDroolsException("Source of type"+rightInput.getClass()+ " temporarily not supported");
 		
 		//ConstraintKey key = new ConstraintKey(factory.getExistsOperator().getName(),argKey.toString());
-		ConstraintKey key = new DynamicConstraintKey(factory.getExistsOperator().getName());
-		template = new CompositeEvaluationTemplate(this.getId(),
-							key,
-							context.getRule().getDependencies().get(key),
-							1,
-							factory.getExistsOperator(),
-							factory.getMergeStrategy(),
-							factory.getNullHandlingStrategy());
+		
 								        
 	}
 	
 	
+	public EvaluationTemplate buildEvaluationTemplate(IDegreeCombiner operator, Map<ConstraintKey,Set<String>> deps, IMergeStrategy mergeStrat, INullHandlingStrategy nullStrat) {
+		
+		
+		
+		ConstraintKey key = new DynamicConstraintKey(operator.getName());
+		template = new CompositeEvaluationTemplate(this.getId(),
+				key,
+				deps.get(key),
+				1,
+				operator,
+				mergeStrat,
+				nullStrat);
+		
+		return template;
+	
+	} 
+		
+	
+	
+	
 	public Object createMemory(final RuleBaseConfiguration config) {
-		BetaMemory memory = new BetaMemory( new LeftTupleList(),
-									new ObservableRightTupleMemoryWrapper(new RightTupleList()),
-                                    new ContextEntry[0] );
+		BetaMemory memory = (BetaMemory) super.createMemory(config);
+		
+		memory.setRightTupleMemory(
+					new ObservableRightTupleMemoryWrapper(memory.getRightTupleMemory()));
+				
         return memory;
     }
 	
@@ -84,7 +106,16 @@ public class ImperfectExistsNode extends ExistsNode implements Observer {
 		 		return;
 		 	}
 
-		 	memory.getRightTupleMemory().add( rightTuple );		 
+		 	
+		 	this.constraints.updateFromFactHandle( memory.getContext(),
+                    workingMemory,
+                    factHandle );
+		 	
+		 		memory.getRightTupleMemory().add( rightTuple );
+		 	
+		 	this.constraints.resetFactHandle( memory.getContext() );
+		 	
+		 	
 		 	//will call notify on observers!
 		 			 			 			 			 
 		 	if ( !this.tupleMemoryEnabled ) {
@@ -134,26 +165,38 @@ public class ImperfectExistsNode extends ExistsNode implements Observer {
 			IDegreeFactory factory) {
 		
 		final BetaMemory memory = (BetaMemory) workingMemory.getNodeMemory( this );
-		RightTupleMemory rtMem = memory.getRightTupleMemory();
-		ObservableRightTupleMemoryWrapper opSet = (ObservableRightTupleMemoryWrapper) rtMem; 
+		
+		
+		RightTupleMemory rtMem = memory.getRightTupleMemory();		
+		ObservableRightTupleMemoryWrapper wMemory = (ObservableRightTupleMemoryWrapper) rtMem; 
 
+		OperandSet opSet = new OperandSet(leftTuple,wMemory,this.constraints,memory.getContext(),workingMemory,factory);
+		
+		
 		EvalRecord mainRecord = leftTuple.getRecord();
 		
-		SetCompositeEvaluation eval = (SetCompositeEvaluation) template.spawn(opSet);
-			opSet.addObserver( eval);
+				
+		 this.constraints.updateFromTuple( memory.getContext(),
+                 workingMemory,
+                 leftTuple );
+
+		 SetCompositeEvaluation eval = (SetCompositeEvaluation) template.spawn(opSet,this.constraints);
+
+		 this.constraints.resetTuple( memory.getContext() );
+
+		
+										
+		opSet.addObserver( eval);
 			
 		mainRecord.addEvaluation(eval);
-		
-        
-		
-		
+		        				
 		System.out.println("Situation at EXISTS eval"+mainRecord.expand());        		        		        		        	
     	
 		
     	switch (this.filterStrat.doTry(mainRecord)) {
     		case IFilterStrategy.DROP : 
-    			System.out.println("Exist FAIL at assertTuple: DROP record");
-    			return;
+//    			System.out.println("Exist FAIL at assertTuple: DROP record");
+//    			return;
 		
     		case IFilterStrategy.HOLD : //TODO: HOLD
     			System.out.println("HOLD RULES @EXIST NODE"+this.getId());
@@ -197,15 +240,23 @@ public class ImperfectExistsNode extends ExistsNode implements Observer {
 		
 		System.out.println(this.getClass().toString() + " NOTIFIED OF CHANGE");
 		
-		EvalRecord mainRecord = (EvalRecord) o;
+		EvalRecord mainRecord = null;
+		
+		if (arg instanceof EvalRecord)
+			mainRecord = (EvalRecord) arg;
+		
+		if (mainRecord == null) 
+			return;
+		
+		
 		System.out.println("Situation changed at EXISTS eval"+mainRecord.expand());        		        		        		        	
     	
 		
     	switch (this.filterStrat.doTry(mainRecord)) {
     		case IFilterStrategy.DROP : 
-    			System.out.println("Exist FAIL at assertTuple: DROP record");
-    			return;
-		
+//    			System.out.println("Exist FAIL at assertTuple: DROP record");
+//    			return;
+//		
     		case IFilterStrategy.HOLD : //TODO: HOLD
     			System.out.println("HOLD RULES @EXIST NODE"+this.getId());
     			System.out.println("Situation is "+mainRecord.expand());    			    				    			
@@ -225,5 +276,17 @@ public class ImperfectExistsNode extends ExistsNode implements Observer {
 		
     	}		
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	public String toString() {
+        
+        return "[Imp_ExistsNode - " +this.constraints.toString() + "]";
+    }
 
 }

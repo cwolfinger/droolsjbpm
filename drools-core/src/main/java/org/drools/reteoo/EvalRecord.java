@@ -25,9 +25,15 @@ import org.drools.spi.PropagationContext;
 public class EvalRecord extends CompositeEvaluation implements Observer {
 	
 	
+	public static final HashSet<ConstraintKey> 		blackList = new HashSet<ConstraintKey>();
+	{
+		blackList.add(new ConstraintKey("class","==","org.drools.InitialFact"));
+	}
+	
 	public static final int INITIAL_ID = -99;
 
-	private Map<ConstraintKey, Evaluation> 		evalMap;
+	//private Map<ConstraintKey, Evaluation> 		evalMap;
+	private Map<Evaluation,Evaluation>				evalSet;
 	//private ConstraintKey 						mainKey;
 	
 	// private IDegree 							overallDegree;
@@ -51,15 +57,16 @@ public class EvalRecord extends CompositeEvaluation implements Observer {
 //	}
 	
 		
-	public EvalRecord(int id,IDegreeCombiner operator,IMergeStrategy mergeStrat,INullHandlingStrategy nullStrat) {
-		super(id,new DynamicConstraintKey(operator.getName()),null,null,operator,mergeStrat,nullStrat);
+	public EvalRecord(int id,IDegreeCombiner operator,IMergeStrategy mergeStrat,INullHandlingStrategy nullStrat, ArgList args) {
+		super(id,new DynamicConstraintKey(operator.getName()),null,null,operator,mergeStrat,nullStrat, args);
 		
 		//mainKey = null;
-		evalMap = new HashMap<ConstraintKey, Evaluation>();
+		//evalMap = new HashMap<ConstraintKey, Evaluation>();
+		evalSet = new HashMap<Evaluation,Evaluation>();
 	}
 	
 	public Collection<Evaluation> getEvaluations() {
-		return evalMap.values();
+		return evalSet.values();
 	}
 	
 	
@@ -76,10 +83,12 @@ public class EvalRecord extends CompositeEvaluation implements Observer {
 			}			
 		}
 		
-		Evaluation prevEval = evalMap.get(eval.getKey());
+		//Evaluation prevEval = evalMap.get(eval.getKey());
+		Evaluation prevEval = evalSet.get(eval);
 		if (prevEval == null) {
 			System.out.println(this.getClass()+" insert "+eval.toString());
-			evalMap.put(eval.getKey(),eval);	
+			//evalMap.put(eval.getKey(),eval);	
+			evalSet.put(eval,eval);
 			prevEval = eval;
 			//eval.addObserver(this);
 		} else {
@@ -98,15 +107,20 @@ public class EvalRecord extends CompositeEvaluation implements Observer {
 	
 	public void addEvaluation(Evaluation eval) {
 		
-		boolean newEval = ! this.evalMap.containsKey(eval.getKey());
+		if (eval == null || blackList.contains(eval.getKey()))
+			return;
+		
+		//boolean newEval = ! this.evalMap.containsKey(eval.getKey());
+		boolean newEval = ! this.evalSet.containsKey(eval);
 		
 		Evaluation addedEval = insert(eval);		
 		
 		if (newEval) {
 			if (operands == null) {
-				operands = new Vector<Evaluation>(1);
+				//operands = new Vector<Evaluation>(1);
 				
-				operands.add(addedEval);
+				//operands.add(addedEval);
+				setOperand(0, addedEval );
 			} else {
 				/*
 				int N = operands.size();
@@ -119,8 +133,12 @@ public class EvalRecord extends CompositeEvaluation implements Observer {
 				
 				operands.set(N,addedEval);
 				*/
-				operands.add(addedEval);
+				//operands.add(addedEval);
+				setOperand(operands.size(),addedEval);
 			}
+			//this.setArgCode(this.getArgCode()^eval.getArgCode());
+		} else {
+			
 		}
 		
 			addedEval.deleteObserver(this);
@@ -128,9 +146,10 @@ public class EvalRecord extends CompositeEvaluation implements Observer {
 		
 		((DynamicConstraintKey) this.getKey()).addArg(eval.getKey());
 		
+		
 		combine();
-		this.setChanged();
-		this.notifyObservers(null);
+//		this.setChanged();
+//		this.notifyObservers(null);
 		
 //		if (mainKey != null && mainKey.equals(addedEval.getKey()) /*&& ! prevEval.getDegree().equals(overallDegree)*/) {
 //			mainKey = addedEval.getKey();
@@ -147,8 +166,12 @@ public class EvalRecord extends CompositeEvaluation implements Observer {
 	
 	public void addEvaluations(EvalRecord other) {				
 		//for (Evaluation eval : other.getEvaluations())
-		for (Evaluation eval : other.getOperands())
+		for (Evaluation eval : other.getOperands()) {
 			this.addEvaluation(eval);
+			
+			
+			eval.deleteObserver(other);
+		}
 	}
 	
 	public void addEvaluations(Collection<Evaluation> evals) {
@@ -161,7 +184,7 @@ public class EvalRecord extends CompositeEvaluation implements Observer {
 	
 	public EvalRecord clone() {
 		
-		EvalRecord ans = new EvalRecord(this.getNodeId(),this.getOperator(),this.getMergeStrat(),this.getNullHandlingStrat());
+		EvalRecord ans = new EvalRecord(this.getNodeId(),this.getOperator(),this.getMergeStrat(),this.getNullHandlingStrat(), (ArgList) this.getArgs().clone());
 		ans.addEvaluations(this);
 		
 		return ans;
@@ -193,13 +216,15 @@ public class EvalRecord extends CompositeEvaluation implements Observer {
 	
 	
 	public String expand() {
-		StringBuilder sb = new StringBuilder("Eval Record :"+this.getInfoRate()+"\n");
+		StringBuilder sb = new StringBuilder("Eval Record info("+this.getInfoRate()+") for args " + getArgs().toString() + " \n");
 //		
 		
 		sb.append("AND{\n");
 		if (getOperands() != null)
-			for (Evaluation ev : getOperands())
+			for (Evaluation ev : getOperands()) {
+				
 				sb.append(ev.toString()+"\n");
+			}
 		sb.append("}\n\n");
 		
 		sb.append(toString()+"\n");
@@ -341,12 +366,13 @@ public class EvalRecord extends CompositeEvaluation implements Observer {
 		
 				
 			operator.combine();				
-			evalMap.put(operator.getKey(),operator);	
+			//evalMap.put(operator.getKey(),operator);
+			evalSet.put(operator,operator);
 			operator.addObserver(this);
 		
 		this.combine();
-		this.setChanged();
-		this.notifyObservers(null);
+//		this.setChanged();
+//		this.notifyObservers(null);
 		
 		
 	}

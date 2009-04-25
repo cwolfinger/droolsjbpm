@@ -41,6 +41,10 @@ public class Room implements IDynamicEvaluable{
 			return temperature.getEvaluator(opId);
 		}
 		
+		
+		public int hashCode() {
+			return 47;
+		}
 
 
 }

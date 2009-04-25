@@ -406,6 +406,8 @@ public class LeftTuple
 
     public boolean equals(final Object object) {
         // we know the object is never null and always of the  type ReteTuple    
+    	if (object == null || !(object instanceof LeftTuple))
+    		return false;
         return equals( (LeftTuple) object );
     }
 

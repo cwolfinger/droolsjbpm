@@ -12,14 +12,18 @@ import java.util.Vector;
 import org.drools.RuleBaseConfiguration;
 import org.drools.degrees.IDegree;
 import org.drools.degrees.factory.IDegreeFactory;
+import org.drools.reteoo.ArgList;
 import org.drools.reteoo.BetaMemory;
 import org.drools.reteoo.ConstraintKey;
 import org.drools.reteoo.Evaluation;
 import org.drools.reteoo.EvaluationTemplate;
+import org.drools.reteoo.ImperfectLeftTuple;
 import org.drools.reteoo.LeftTuple;
 import org.drools.reteoo.SingleEvaluationTemplate;
+import org.drools.reteoo.ModusPonensNode.MPContextEntry;
 import org.drools.reteoo.builder.BuildContext;
 import org.drools.rule.ContextEntry;
+import org.drools.rule.VariableRestriction.ObjectVariableContextEntry;
 import org.drools.util.LeftTupleList;
 import org.drools.util.LinkedList;
 import org.drools.util.RightTupleList;
@@ -190,14 +194,23 @@ public class ImplicationBetaConstraint implements BetaConstraints {
     
 	public Evaluation[] isSatisfiedCachedLeft(ContextEntry[] context,
 			InternalFactHandle handle, IDegreeFactory factory) {
-		Evaluation eval = template[0].spawn(factory.Unknown());
+		
+		//merge to ensure uniqueness
+		ArgList args = ((MPContextEntry) context[0]).getLeftTuple().getArgList();
+//		args.merge(handle.getObject());
+		
+		Evaluation eval = template[0].spawn(factory.Unknown(),args);
 			eval.addDegree(Evaluation.PRIOR, this.priorDegree, 1,true);
 		return new Evaluation[] {eval};
 	}
 
 	public Evaluation[] isSatisfiedCachedRight(ContextEntry[] context,
-			LeftTuple tuple, IDegreeFactory factory) { 
-		Evaluation eval = template[0].spawn(factory.Unknown());
+			LeftTuple tuple, IDegreeFactory factory) {
+		
+		//ArgList args = ((ImperfectLeftTuple) tuple).getArgList();
+		ArgList args = new ArgList();
+		
+		Evaluation eval = template[0].spawn(factory.Unknown(),args);
 			eval.addDegree(Evaluation.PRIOR, this.priorDegree, 1,true);
 		return new Evaluation[] {eval};
 	}

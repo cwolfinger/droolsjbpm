@@ -13,10 +13,12 @@ import org.drools.common.InternalWorkingMemory;
 import org.drools.degrees.IDegree;
 import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.degrees.operators.IDegreeCombiner;
+import org.drools.reteoo.ArgList;
 import org.drools.reteoo.CompositeEvaluationTemplate;
 import org.drools.reteoo.ConstraintKey;
 import org.drools.reteoo.Evaluation;
 import org.drools.reteoo.EvaluationTemplate;
+import org.drools.reteoo.ImperfectLeftTuple;
 import org.drools.reteoo.LeftTuple;
 import org.drools.reteoo.SingleEvaluationTemplate;
 import org.drools.spi.AcceptsReadAccessor;
@@ -120,7 +122,7 @@ public class MultiRestrictionFieldConstraint extends MutableTypeConstraint
 											 workingMemory, 
 											 context, 
 											 factory);			
-		return getTemplate().spawn(deg);
+		return getTemplate().spawn(deg,new ArgList(handle.getObject()));
 	}
 
     public ContextEntry createContextEntry() {
@@ -136,7 +138,7 @@ public class MultiRestrictionFieldConstraint extends MutableTypeConstraint
     public Evaluation isSatisfiedCachedLeft(ContextEntry context,
 			InternalFactHandle handle, IDegreeFactory factory) {
     	return this.getTemplate().spawn(this.restrictions.isSatisfiedCachedLeft( context,
-                handle, factory ));
+                handle, factory ),new ArgList(handle.getObject()));
 	}
     
     public boolean isAllowedCachedRight(final LeftTuple tuple,
@@ -148,7 +150,8 @@ public class MultiRestrictionFieldConstraint extends MutableTypeConstraint
     public Evaluation isSatisfiedCachedRight(LeftTuple tuple,
 			ContextEntry context, IDegreeFactory factory) {
     	return this.getTemplate().spawn(this.restrictions.isSatisfiedCachedRight( tuple,
-                context, factory ));
+                context, factory ),
+                ((ImperfectLeftTuple) tuple).getArgList());
 	}
 
     public Object clone() {

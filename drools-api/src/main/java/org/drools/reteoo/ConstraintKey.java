@@ -1,5 +1,7 @@
 package org.drools.reteoo;
 
+import com.sun.tools.xjc.model.CNonElement;
+
 
 public class ConstraintKey {
 	
@@ -22,7 +24,7 @@ public class ConstraintKey {
 	}
 	
 	
-
+	
 	protected String buildKey(String op, String arg) {
 		return op+"("+arg+")";
 	}
@@ -33,6 +35,11 @@ public class ConstraintKey {
 
 	public ConstraintKey(String key) {
 		this.key = key;
+	}
+	
+	
+	public ConstraintKey cloneReplace(String oldK, String newK) {
+		return new ConstraintKey(key.replaceFirst(oldK, newK));
 	}
 
 	/**
@@ -46,8 +53,10 @@ public class ConstraintKey {
 	
 	public boolean equals(Object other) {
 		if (other == null) return false;
-		if (other instanceof ConstraintKey)
-			return this.key.equals(((ConstraintKey) other).key);
+		if (other instanceof ConstraintKey) {
+			ConstraintKey otherK = (ConstraintKey) other;
+			return this.key.equals(otherK.key);
+		}
 		else 
 			return false;		
 	}

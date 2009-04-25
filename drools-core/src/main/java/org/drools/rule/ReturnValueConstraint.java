@@ -28,8 +28,10 @@ import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.degrees.IDegree;
 import org.drools.degrees.factory.IDegreeFactory;
+import org.drools.reteoo.ArgList;
 import org.drools.reteoo.ConstraintKey;
 import org.drools.reteoo.Evaluation;
+import org.drools.reteoo.ImperfectLeftTuple;
 import org.drools.reteoo.LeftTuple;
 import org.drools.rule.ReturnValueRestriction.ReturnValueContextEntry;
 import org.drools.runtime.rule.Evaluator;
@@ -157,7 +159,7 @@ public class ReturnValueConstraint extends MutableTypeConstraint
                                                workingMemory,
                                                context,
                                                factory);
-            return getTemplate().spawn(deg);
+            return getTemplate().spawn(deg,new ArgList(handle.getObject()));
         } catch ( final Exception e ) {
             throw new RuntimeDroolsException( "Exception executing ReturnValue constraint " + this.restriction + " : " + e.getMessage(),
                                               e );            
@@ -189,7 +191,8 @@ public class ReturnValueConstraint extends MutableTypeConstraint
                                                 ctx.getTuple(),
                                                 ctx.getWorkingMemory(),
                                                 ctx,
-                                                factory));
+                                                factory),
+                                                new ArgList(handle.getObject()));
          } catch ( final Exception e ) {
              throw new RuntimeDroolsException( "Exception executing ReturnValue constraint " + this.restriction + " : " + e.getMessage(),
                                                e );
@@ -222,7 +225,8 @@ public class ReturnValueConstraint extends MutableTypeConstraint
                                                tuple,
                                                ctx.getWorkingMemory(),
                                                ctx,
-                                               factory));
+                                               factory),
+                                               ((ImperfectLeftTuple) tuple).getArgList());
         } catch ( final Exception e ) {
             throw new RuntimeDroolsException( "Exception executing ReturnValue constraint " + this.restriction + " : " + e.getMessage(),
                                               e );

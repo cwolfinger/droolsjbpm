@@ -155,12 +155,12 @@ public class EmptyBetaConstraints
 
 	public Evaluation[] isSatisfiedCachedLeft(ContextEntry[] context,
 			InternalFactHandle handle, IDegreeFactory factory) {
-		return null;
+		return new Evaluation[0];
 	}
 
 	public Evaluation[] isSatisfiedCachedRight(ContextEntry[] context,
 			LeftTuple tuple, IDegreeFactory factory) { 
-		return null;
+		return new Evaluation[0];
 	}
 	
 	private ConstraintKey[] singletonKeys = null;

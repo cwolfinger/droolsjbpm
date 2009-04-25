@@ -265,7 +265,8 @@ public class LiteralRestriction
     
 	public ConstraintKey getConstraintKey() {
 		if (singletonKey == null) {			
-			singletonKey = new ConstraintKey(((ClassFieldReader) this.readAccessor).getClassName()+"."+((ClassFieldReader) this.readAccessor).getFieldName(),this.getEvaluator().toString(),this.getField().toString());
+			String cName = ((ClassFieldReader) this.readAccessor).getClassName();			
+			singletonKey = new ConstraintKey(cName + "."+((ClassFieldReader) this.readAccessor).getFieldName(),this.getEvaluator().toString(),this.getField().toString());
 		}
 		return singletonKey;
 	}

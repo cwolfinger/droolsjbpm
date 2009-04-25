@@ -142,7 +142,8 @@ public class ImperfectRuleBase extends ReteooRuleBase {
 				EvalRecord record = new EvalRecord(EvalRecord.INITIAL_ID,
 						getDegreeFactory().getAndOperator(),
 						getDegreeFactory().getMergeStrategy(),
-						getDegreeFactory().getNullHandlingStrategy());
+						getDegreeFactory().getNullHandlingStrategy(),
+						new ArgList(object));
 		
 				getRete().assertObject( (ImperfectFactHandle) handle,
 						context,

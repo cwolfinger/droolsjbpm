@@ -2,7 +2,7 @@ package org.drools.reteoo;
 
 import org.drools.util.Iterator;
 
-public interface RightTupleMemory extends IOperandSet {
+public interface RightTupleMemory {
     public RightTuple getFirst(LeftTuple leftTuple);
 
     public RightTuple getLast(LeftTuple leftTuple);

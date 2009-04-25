@@ -5,20 +5,14 @@ import java.util.Collection;
 import org.drools.degrees.IDegree;
 import org.drools.degrees.SimpleDegree;
 import org.drools.degrees.operators.IDegreeCombiner;
+import org.drools.degrees.operators.NegationOperator;
 
-public class SimpleNot implements IDegreeCombiner {
+public class SimpleNot extends NegationOperator {
 
-	public IDegree eval(IDegree[] args) {
-		return new SimpleDegree(1-args[0].getDegree().getValue());
+	protected IDegree negate(IDegree arg) {
+		return new SimpleDegree(1-arg.getDegree().getValue());
 	}
 
-	public IDegree eval(Collection<? extends IDegree> args) {
-		return new SimpleDegree(1-args.iterator().next().getDegree().getValue());
-
-	}
-
-	public String getName() {
-		return "not";
-	}
+	
 
 }

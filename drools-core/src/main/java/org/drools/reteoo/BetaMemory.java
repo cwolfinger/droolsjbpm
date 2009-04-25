@@ -51,6 +51,10 @@ public class BetaMemory
     public RightTupleMemory getRightTupleMemory() {
         return this.rightTupleMemory;
     }
+    
+    public void setRightTupleMemory(RightTupleMemory newMem) {
+    	this.rightTupleMemory = newMem;
+    }
 
     public LeftTupleMemory getLeftTupleMemory() {
         return this.leftTupleMemory;
@@ -77,4 +81,6 @@ public class BetaMemory
     public void setBehaviorContext(Object behaviorContext) {
         this.behaviorContext = behaviorContext;
     }
+    
+    
 }

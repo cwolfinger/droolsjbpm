@@ -29,8 +29,10 @@ import org.drools.common.InstanceNotEqualsConstraint;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.reteoo.AlphaNode;
 import org.drools.reteoo.EntryPointNode;
+import org.drools.reteoo.ImperfectRuleBase;
 import org.drools.reteoo.ObjectSource;
 import org.drools.reteoo.ObjectTypeNode;
+import org.drools.reteoo.PatternNegator;
 import org.drools.reteoo.PropagationQueuingNode;
 import org.drools.rule.Behavior;
 import org.drools.rule.CompositeMaxDuration;
@@ -299,6 +301,23 @@ public class PatternBuilder
                                                                                      context ) ) );
         }
 
+        if (context.isNegated()
+        		
+        		//&&
+        		// Has to be imperfect
+        		//context.getRuleBase() instanceof ImperfectRuleBase
+        		) {
+        	
+        	context.toggleNegated();
+        	
+        	context.setObjectSource( (ObjectSource) utils.attachNode(context,         			
+        															 new PatternNegator(context.getNextId(),
+        																	 context.getObjectSource(),
+        																	 context)));
+        	
+        	
+        }
+        
         // now restore back to original values
         context.setObjectTypeNodeMemoryEnabled( objectMemory );
         context.setAlphaNodeMemoryAllowed( alphaMemory );

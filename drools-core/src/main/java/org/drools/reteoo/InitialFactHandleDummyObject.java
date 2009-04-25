@@ -19,4 +19,12 @@ public class InitialFactHandleDummyObject
 
     public void writeExternal(ObjectOutput out) throws IOException {
     }
+    
+    public int hashCode() {
+    	return -1;
+    }
+    
+    public boolean equals(Object other) {
+    	return other instanceof InitialFactHandleDummyObject;
+    }
 }

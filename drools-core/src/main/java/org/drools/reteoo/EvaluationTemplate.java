@@ -30,16 +30,16 @@ public abstract class EvaluationTemplate {
 
 	
 	
-	public Evaluation spawn(IDegree evalDegree) {		
-		return new Evaluation(id,key,deps,evalDegree,mergeStrat,nullStrat);		
+	public Evaluation spawn(IDegree evalDegree, ArgList args) {		
+		return new Evaluation(id,key,deps,evalDegree,mergeStrat,nullStrat,args);		
 	}
 	
-	public Evaluation spawn(String source, IDegree evalDegree) {		
-		return new Evaluation(id,key,deps,evalDegree,source,mergeStrat,nullStrat);		
+	public Evaluation spawn(String source, IDegree evalDegree, ArgList args) {		
+		return new Evaluation(id,key,deps,evalDegree,source,mergeStrat,nullStrat,args);		
 	}
 		
-	public Evaluation spawn() {
-		return new Evaluation(id,key,deps,null,mergeStrat,nullStrat);
+	public Evaluation spawn(ArgList args) {
+		return new Evaluation(id,key,deps,null,mergeStrat,nullStrat,args);
 	}
 	
 	

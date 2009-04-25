@@ -34,10 +34,12 @@ public class Evaluation extends Observable {
 	
 	private IMergeStrategy 				mergeStrat;
 	private INullHandlingStrategy 		nullStrat;
+	
+	private ArgList args;
 
 	
 	
-	public Evaluation(int id, ConstraintKey key, Set<String> deps, IMergeStrategy mergeStrat, INullHandlingStrategy nullStrat) {
+	public Evaluation(int id, ConstraintKey key, Set<String> deps, IMergeStrategy mergeStrat, INullHandlingStrategy nullStrat, ArgList args) {
 		if (deps == null)
 			deps = Collections.emptySet();
 		this.nodeId = id;
@@ -54,16 +56,18 @@ public class Evaluation extends Observable {
 		this.key = key;
 		this.nullStrat = nullStrat;
 		this.mergeStrat = mergeStrat;
+		
+		this.args = args;
 	}
 	
-	public Evaluation(int id, ConstraintKey key, Set<String> deps, IDegree evalDeg, IMergeStrategy mergeStrat, INullHandlingStrategy nullStrat) {
-		this(id,key,deps,mergeStrat,nullStrat);
+	public Evaluation(int id, ConstraintKey key, Set<String> deps, IDegree evalDeg, IMergeStrategy mergeStrat, INullHandlingStrategy nullStrat, ArgList args) {
+		this(id,key,deps,mergeStrat,nullStrat,args);
 		this.addDegree(Evaluation.EVAL,evalDeg,1,true);
 		
 	}
 	
-	public Evaluation(int id, ConstraintKey key, Set<String> deps, IDegree evalDeg, String source, IMergeStrategy mergeStrat, INullHandlingStrategy nullStrat) {
-		this(id,key,deps,mergeStrat,nullStrat);
+	public Evaluation(int id, ConstraintKey key, Set<String> deps, IDegree evalDeg, String source, IMergeStrategy mergeStrat, INullHandlingStrategy nullStrat, ArgList args) {
+		this(id,key,deps,mergeStrat,nullStrat,args);
 		this.addDegree(source,evalDeg,1,true);
 	}
 	
@@ -120,9 +124,12 @@ public class Evaluation extends Observable {
 			}
 		}
 		if (newContrib) {
+//			IDegree oldVal = aggDegree;
 			aggDegree = mergeDegrees();
-			this.setChanged();
-			this.notifyObservers();
+//			if (! oldVal.equals(aggDegree)) {
+//				this.setChanged();
+//				this.notifyObservers(this);
+//			}
 		}
 	    
 	
@@ -132,6 +139,7 @@ public class Evaluation extends Observable {
 	public boolean addDegree(String source, IDegree evalDeg, float wgt, boolean immediateUpdate) {
 		boolean newContrib = false;
 		boolean rateIncr = false;
+		Float prevConf;
 		
 		if (evalDeg == null) {
 			/*
@@ -141,7 +149,8 @@ public class Evaluation extends Observable {
 		} else {
 		
 		
-			Float prevConf = confidence.get(source);
+			prevConf = confidence.get(source);
+			System.out.println(prevConf);
 				confidence.put(source, wgt);
 			rateIncr = prevConf == null ? true : prevConf.floatValue() < wgt;
 			
@@ -180,14 +189,14 @@ public class Evaluation extends Observable {
 		
 		if (immediateUpdate && (newContrib || rateIncr)) {
 			this.setChanged();
-			this.notifyObservers();
+			this.notifyObservers(this);
 		}
 		
 		return (newContrib || rateIncr);
 		
 	}
 	
-	protected void incInfo(String source, float delta) {
+	protected void setInfoRate(String source, float delta) {
 		confidence.put(source,new Float(delta));
 	}
 	
@@ -211,7 +220,7 @@ public class Evaluation extends Observable {
 		boolean cleared = false;
 		if (getDegreeBit(source) != null) {
 			cleared = true;
-			incInfo(source,-1);
+			setInfoRate(source,0);
 		}
 		this.degrees.put(source,null);
 		return cleared;
@@ -234,7 +243,7 @@ public class Evaluation extends Observable {
 	
 	
 	public String toString() {
-		return "("+this.nodeId + ")" + this.key+ " : " + this.aggDegree +" "+ this.getBitS();
+		return "("+this.args.hashCode()+"@"+this.nodeId + ") : " + this.aggDegree  + " " + this.key +" "+ this.getBitS();
 	}
 	
 	public String expand() {
@@ -320,5 +329,25 @@ public class Evaluation extends Observable {
 		return nullStrat;
 	}
 	
-
+	
+	
+	public int hashCode() {
+		return this.key.hashCode() ^ args.hashCode();
+	}
+	
+	public boolean equals(Object other) {
+		if (other == null) 
+			return false;
+		if (other instanceof Evaluation) {
+			Evaluation otherEv = (Evaluation) other;
+			return this.key.equals(otherEv.key)  && this.args.equals(otherEv.args);
+		}
+		return false;
+	}
+	
+	public ArgList getArgs() {
+		return args;
+	}
+	
+	
 }

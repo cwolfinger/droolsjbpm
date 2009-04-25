@@ -219,7 +219,7 @@ public class EvalConditionNode extends LeftTupleSource
         ConstraintKey key = new ConstraintKey("eval",this.condition.getEvalExpression().toString());
         EvaluationTemplate templ = new SingleEvaluationTemplate(this.getId(),key,Collections.EMPTY_SET,factory.getMergeStrategy(),factory.getNullHandlingStrategy());
         
-        Evaluation eval = templ.spawn(ans);
+        Evaluation eval = templ.spawn(ans,leftTuple.getArgList());
         record.addEvaluation(eval);
         
         //TODO: Imperfect strategy here!

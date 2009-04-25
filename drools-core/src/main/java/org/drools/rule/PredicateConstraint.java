@@ -32,8 +32,10 @@ import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.degrees.IDegree;
 import org.drools.degrees.factory.IDegreeFactory;
+import org.drools.reteoo.ArgList;
 import org.drools.reteoo.ConstraintKey;
 import org.drools.reteoo.Evaluation;
+import org.drools.reteoo.ImperfectLeftTuple;
 import org.drools.reteoo.LeftTuple;
 import org.drools.spi.CompiledInvoker;
 import org.drools.spi.InternalReadAccessor;
@@ -291,7 +293,7 @@ public class PredicateConstraint extends MutableTypeConstraint
             final ContextEntry ctx, IDegreeFactory factory) {
     	
     	IDegree deg = factory.fromBoolean(this.isAllowed(handle, workingMemory, ctx));
-    	return getTemplate().spawn(deg);
+    	return getTemplate().spawn(deg, new ArgList(handle.getObject()));
 	}
         
 
@@ -327,7 +329,7 @@ public class PredicateConstraint extends MutableTypeConstraint
     
     public Evaluation isSatisfiedCachedLeft(ContextEntry context,
 			InternalFactHandle handle, IDegreeFactory factory) {
-		return this.getTemplate().spawn(factory.fromBoolean(this.isAllowedCachedLeft(context, handle)));
+		return this.getTemplate().spawn(factory.fromBoolean(this.isAllowedCachedLeft(context, handle)), new ArgList(handle.getObject()));
 	}
 
 
@@ -349,7 +351,8 @@ public class PredicateConstraint extends MutableTypeConstraint
     
     public Evaluation isSatisfiedCachedRight(LeftTuple tuple,
 			ContextEntry context, IDegreeFactory factory) {
-		return getTemplate().spawn(factory.fromBoolean(this.isAllowedCachedRight(tuple, context)));
+		return getTemplate().spawn(factory.fromBoolean(this.isAllowedCachedRight(tuple, context)),
+				((ImperfectLeftTuple) tuple).getArgList());
 	}
 
     public Object clone() {

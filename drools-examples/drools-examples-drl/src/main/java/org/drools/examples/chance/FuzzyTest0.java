@@ -168,7 +168,7 @@ public class FuzzyTest0 {
 		}
 		
 		public int hashCode() {
-			return this.message.hashCode()+this.status;
+			return 10+this.message.hashCode()+this.status;
 		}
 	}
 

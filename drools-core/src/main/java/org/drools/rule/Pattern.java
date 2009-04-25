@@ -198,6 +198,11 @@ public class Pattern
     public List getConstraints() {
         return Collections.unmodifiableList( this.constraints );
     }
+    
+    public void dropLastConstraint() {    	
+    	if (this.constraints.size() > 0)
+    		this.constraints.remove(this.constraints.size()-1);
+    }
 
     public void addConstraint(final Constraint constraint) {
         if ( this.constraints == Collections.EMPTY_LIST ) {

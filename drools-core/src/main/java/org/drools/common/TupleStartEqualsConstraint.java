@@ -26,9 +26,11 @@ import java.util.Set;
 
 import org.drools.degrees.IDegree;
 import org.drools.degrees.factory.IDegreeFactory;
+import org.drools.reteoo.ArgList;
 import org.drools.reteoo.ConstraintKey;
 import org.drools.reteoo.Evaluation;
 import org.drools.reteoo.EvaluationTemplate;
+import org.drools.reteoo.ImperfectLeftTuple;
 import org.drools.reteoo.LeftTuple;
 import org.drools.reteoo.SingleEvaluationTemplate;
 import org.drools.rule.ContextEntry;
@@ -108,7 +110,7 @@ public class TupleStartEqualsConstraint
     
     public Evaluation isSatisfiedCachedLeft(ContextEntry context,
 			InternalFactHandle handle, IDegreeFactory factory) {
-		return template.spawn(factory.fromBoolean(isAllowedCachedLeft(context, handle)));
+		return template.spawn(factory.fromBoolean(isAllowedCachedLeft(context, handle)), new ArgList(handle.getObject()));
 	}
     
 
@@ -119,7 +121,8 @@ public class TupleStartEqualsConstraint
 
     public Evaluation isSatisfiedCachedRight(LeftTuple tuple,
 			ContextEntry context, IDegreeFactory factory) {
-		return template.spawn(factory.fromBoolean(isAllowedCachedRight(tuple, context)));
+		return template.spawn(factory.fromBoolean(isAllowedCachedRight(tuple, context)), 
+				((ImperfectLeftTuple) tuple).getArgList());
 	}
     
     public String toString() {

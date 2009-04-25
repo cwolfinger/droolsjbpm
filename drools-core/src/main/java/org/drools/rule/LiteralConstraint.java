@@ -30,6 +30,7 @@ import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.degrees.IDegree;
 import org.drools.degrees.factory.IDegreeFactory;
+import org.drools.reteoo.ArgList;
 import org.drools.reteoo.ConstraintKey;
 import org.drools.reteoo.Evaluation;
 import org.drools.reteoo.EvaluationTemplate;
@@ -133,7 +134,7 @@ public class LiteralConstraint
     												workingMemory,
     												context,
     												factory);
-    	return template.spawn(deg);
+    	return template.spawn(deg,new ArgList(handle.getObject()));
 	}
 
     public String toString() {

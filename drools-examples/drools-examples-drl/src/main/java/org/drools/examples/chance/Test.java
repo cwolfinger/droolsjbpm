@@ -238,6 +238,8 @@ public class Test {
 		
 		public boolean equals(Object other) {
 			if (other == null) return false;
+			if (! (other instanceof Person))
+				return false;
 			Person p = (Person) other;
 			if (p == null) return false;
 			return this.name.equals(p.name);
@@ -299,6 +301,7 @@ public class Test {
 		
 		public boolean equals(Object other) {
 			if (other == null) return false;
+			if (! (other instanceof Book)) return false;
 			Book b = (Book) other;
 			if (b == null) return false;
 			return this.title.equals(b.title);

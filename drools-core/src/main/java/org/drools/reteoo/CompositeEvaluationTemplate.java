@@ -5,10 +5,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.drools.common.BetaConstraints;
 import org.drools.degrees.IDegree;
+import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.degrees.operators.IDegreeCombiner;
 import org.drools.degrees.operators.IMergeStrategy;
 import org.drools.degrees.operators.INullHandlingStrategy;
+import org.drools.spi.PropagationContext;
 
 public class CompositeEvaluationTemplate extends EvaluationTemplate {
 
@@ -45,25 +48,29 @@ public class CompositeEvaluationTemplate extends EvaluationTemplate {
 
 	
 	public Evaluation spawn(Evaluation[] evalDegree) {
-		return new CompositeEvaluation(id,key,deps,evalDegree,operator,mergeStrat,nullStrat);
+		return new CompositeEvaluation(id,key,deps,evalDegree,operator,mergeStrat,nullStrat,new ArgList());
 	}
 	
-	public Evaluation spawn() {
-		return new CompositeEvaluation(id,key,deps,children.values().toArray(new Evaluation[children.values().size()]),operator,mergeStrat,nullStrat);
+	public Evaluation spawn(ArgList args) {
+		return new CompositeEvaluation(id,key,deps,children.values().toArray(new Evaluation[children.values().size()]),operator,mergeStrat,nullStrat,args);
 	}
 	
 	public Evaluation spawn(int N) {
-		return new CompositeEvaluation(id,key,deps,N,operator,mergeStrat,nullStrat);
+		return new CompositeEvaluation(id,key,deps,N,operator,mergeStrat,nullStrat,new ArgList());
 	}
 	
-	public Evaluation spawn(IOperandSet args) {
-		return new SetCompositeEvaluation(id,key,deps,operator,args,mergeStrat,nullStrat);
+	public Evaluation spawn(OperandSet args, BetaConstraints joinConstraints) {
+		return new SetCompositeEvaluation(id,key,deps,operator,args,mergeStrat,nullStrat,joinConstraints);
 	}
 	
 	
 	protected IDegreeCombiner getOperator() {
 		return operator;
 	}
+
+	
+	
+	
 	
 	
 	

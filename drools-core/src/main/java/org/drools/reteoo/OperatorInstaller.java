@@ -49,7 +49,7 @@ public abstract class OperatorInstaller
 													getArity(),
 													operator,
 													mergeStrat,
-													nullStrat
+													nullStrat												
 													);
 					
 		return template;

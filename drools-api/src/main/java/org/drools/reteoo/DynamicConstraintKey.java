@@ -8,6 +8,10 @@ public class DynamicConstraintKey extends ConstraintKey {
 		super(op, "");
 		this.op = op;
 	}
+	
+	public ConstraintKey cloneReplace(String oldK, String newK) {
+		return new DynamicConstraintKey(key.replaceFirst(oldK, newK));
+	}
 
 	
 	public void reset() {

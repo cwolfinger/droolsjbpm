@@ -514,7 +514,8 @@ public class ObjectTypeNode extends ObjectSource
     
     
     public ConstraintKey getConstraintKey() {
-    	return new ConstraintKey("class","==",((ClassObjectType) this.objectType).getClassName() );
+    	String cName = ((ClassObjectType) this.objectType).getClassName();
+    	return new ConstraintKey("class","==",cName);
     }
     
     
@@ -534,10 +535,16 @@ public class ObjectTypeNode extends ObjectSource
 		
 		Evaluation eval = factHandle.getPropertyDegree(key); 
 		if (eval == null) {
-			eval = this.template.spawn(factory.True()); 				
+			eval = this.template.spawn(factory.True(),new ArgList(factHandle.getObject())); 				
 			factHandle.addPropertyDegree(eval);
 		}						
 		record.addEvaluation(eval);
+		
+		
+		if (factHandle instanceof InitialFactHandle)
+			record = null;
+		
+		
 		
         if ( this.objectMemoryEnabled ) {
             final ObjectHashSet memory = (ObjectHashSet) workingMemory.getNodeMemory( this );

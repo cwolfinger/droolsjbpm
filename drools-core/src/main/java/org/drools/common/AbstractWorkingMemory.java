@@ -1988,12 +1988,12 @@ public abstract class AbstractWorkingMemory
 		return;
 	}
 
-	private Evaluation prepareEval(String ruleName, Object object, ConstraintKey key,
+	private Evaluation prepareEval(String ruleName, ArgList args, ConstraintKey key,
 			IDegree degree, IGammaNode node) {
 				
 		EvaluationTemplate templ = node.getEvaluationTemplate(key);
 		
-		return templ.spawn(ruleName,degree);
+		return templ.spawn(ruleName,degree, args);
 		
 	}
 

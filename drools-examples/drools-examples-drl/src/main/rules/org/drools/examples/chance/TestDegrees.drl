@@ -9,11 +9,19 @@ global FileWriter writer;
 
 rule "TestOpDegs"	
 	when
-		(Message(status random[] 0 && status random[] 1)
+		
+		(Message( status == 0 && status == 1 )
 		or 
-		Message(status random[] 2))
-		and
-		Message(status random[] 3)
+		Message(status not random[] 2))
+		
+		
+		not (Message(status random[] 3)
+			and
+			Message(status random[] 4)
+			)
+				
+		Message(status random[] 5)
+		
 									
 	then
 	

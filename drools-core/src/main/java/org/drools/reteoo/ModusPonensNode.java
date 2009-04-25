@@ -1,19 +1,25 @@
 package org.drools.reteoo;
 
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Observable;
 
 import org.drools.RuntimeDroolsException;
 import org.drools.common.BetaConstraints;
 import org.drools.common.EmptyBetaConstraints;
 import org.drools.common.ImperfectFactHandle;
 import org.drools.common.ImplicationBetaConstraint;
+import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.degrees.IDegree;
 import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.reteoo.builder.BuildContext;
 import org.drools.reteoo.filters.IFilterStrategy;
 import org.drools.rule.Behavior;
+import org.drools.rule.ContextEntry;
 import org.drools.spi.PropagationContext;
 
 public class ModusPonensNode extends JoinNode {
@@ -79,11 +85,12 @@ public class ModusPonensNode extends JoinNode {
         
             EvalRecord premiseRecord = leftTuple.getRecord();
         	            
-            Evaluation implEval = this.constraints.isSatisfiedCachedRight( memory.getContext(),
+            ContextEntry adHocCtx = new MPContextEntry(leftTuple);
+            Evaluation implEval = this.constraints.isSatisfiedCachedRight( new ContextEntry[] {adHocCtx},
 					  leftTuple, 
 					  factory )[0];
         	
-            ArgList args = new ArgList(leftTuple.toObjectArray());
+            ArgList args = leftTuple.getArgList();
         	Collection<Evaluation> storedEvals = this.getGammaMemory().retrieve(args);
         	    		    		      
     		if (storedEvals != null) {
@@ -93,7 +100,7 @@ public class ModusPonensNode extends JoinNode {
     		
     		
     		
-        	EvalRecord mpRecord = new EvalRecord(this.id,factory.getModusPonensOp(),factory.getMergeStrategy(),factory.getNullHandlingStrategy());
+        	EvalRecord mpRecord = new EvalRecord(this.id,factory.getModusPonensOp(),factory.getMergeStrategy(),factory.getNullHandlingStrategy(),new ArgList());
         		Evaluation core = premiseRecord.getOperands().iterator().next();
         		core.deleteObserver(premiseRecord);
         	mpRecord.addEvaluation(core);        		
@@ -109,15 +116,28 @@ public class ModusPonensNode extends JoinNode {
         			System.out.println("HOLD RULES @MP NODE"+this.getId());
         			System.out.println("Situation is "+mpRecord.expand());
         			
+        			if (mpRecord.getLeftTuple() == null || ! mpRecord.getLeftTuple().equals(leftTuple))
+        				mpRecord.addObserver(this);
+        			
         				mpRecord.setLeftTuple(leftTuple);        				
         				mpRecord.setFactory(factory);
         				mpRecord.setPropagationContext(context);
         				mpRecord.setWorkingMemory(workingMemory);
-					mpRecord.addObserver(this);	
+						
         			
         			break;
 			
         		case IFilterStrategy.PASS : 
+        			//IN CASE, RULES ARE RECALLED ANYWAY!!!
+        			if (mpRecord.getLeftTuple() == null || ! mpRecord.getLeftTuple().equals(leftTuple))
+        				mpRecord.addObserver(this);
+        			
+        				mpRecord.setLeftTuple(leftTuple);        				
+        				mpRecord.setFactory(factory);
+        				mpRecord.setPropagationContext(context);
+        				mpRecord.setWorkingMemory(workingMemory);
+        			
+        			        			
         			this.sink.propagateAssertLeftTuple( leftTuple,                            
                             context,
                             workingMemory,
@@ -141,6 +161,63 @@ public class ModusPonensNode extends JoinNode {
 	
 	
 	
+	public void update(Observable watcher, Object info) {
+		
+		EvalRecord record = null;
+		if (info instanceof EvalRecord)
+			record = (EvalRecord) info;
+		
+		if (record == null) 
+			return;
+		
+		System.out.println("**************************************************************UPDATE @MP NODE");
+		switch (this.filterStrat.doTry(record)) {
+		case IFilterStrategy.DROP : 
+			record.deleteObserver(this);
+			return;
+		
+		case IFilterStrategy.HOLD : 
+			//do nothing
+			return;
+		
+		case IFilterStrategy.PASS :
+			//go on
+			//record.deleteObserver(this);
+			//throw new RuntimeException("Awakened objeect");
+			//TODO
+			if (record.getRightTuple() != null)
+				this.sink.propagateAssertLeftTuple( record.getLeftTuple(),
+						record.getRightTuple(),
+						record.getPropagationContext(),
+						record.getWorkingMemory(),
+						record.getFactory(),
+						record,
+						this.tupleMemoryEnabled  );
+			else
+				this.sink.propagateAssertLeftTuple( record.getLeftTuple(),						
+						record.getPropagationContext(),
+						record.getWorkingMemory(),
+						record.getFactory(),
+						record,
+						this.tupleMemoryEnabled  );
+			//break;
+		default : return;	
+		
+		}
+	
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	public void networkUpdated() {
         //this.rightInput.networkUpdated();
         this.leftInput.networkUpdated();
@@ -148,7 +225,63 @@ public class ModusPonensNode extends JoinNode {
 	
 	
 	
-	
+	public static class MPContextEntry implements ContextEntry {
+		
+		
+		private ImperfectLeftTuple leftTuple;
+		
+		public MPContextEntry(ImperfectLeftTuple lt) {
+			this.leftTuple = lt;
+		}
+		
+		public ImperfectLeftTuple getLeftTuple() {
+			return leftTuple;
+		}
+
+		public ContextEntry getNext() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public void resetFactHandle() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		public void resetTuple() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		public void setNext(ContextEntry entry) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		public void updateFromFactHandle(InternalWorkingMemory workingMemory,
+				InternalFactHandle handle) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		public void updateFromTuple(InternalWorkingMemory workingMemory,
+				LeftTuple tuple) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		public void readExternal(ObjectInput arg0) throws IOException,
+				ClassNotFoundException {
+			// TODO Auto-generated method stub
+			
+		}
+
+		public void writeExternal(ObjectOutput arg0) throws IOException {
+			// TODO Auto-generated method stub
+			
+		}
+		
+	}
 	
 
 }

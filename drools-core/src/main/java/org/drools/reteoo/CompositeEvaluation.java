@@ -21,8 +21,8 @@ public class CompositeEvaluation extends Evaluation implements Observer {
 	private float opRate;
 	
 	public CompositeEvaluation(int id, ConstraintKey key, Set<String> deps,
-			Evaluation[] evalDegrees, IDegreeCombiner operator, IMergeStrategy mergeStrat, INullHandlingStrategy nullStrat) {		
-		super(id,key,deps,mergeStrat,nullStrat);
+			Evaluation[] evalDegrees, IDegreeCombiner operator, IMergeStrategy mergeStrat, INullHandlingStrategy nullStrat, ArgList args) {		
+		super(id,key,deps,mergeStrat,nullStrat, args);
 		
 		if (evalDegrees != null) {
 			this.operands = new Vector<Evaluation>(evalDegrees.length);
@@ -30,7 +30,7 @@ public class CompositeEvaluation extends Evaluation implements Observer {
 					setOperand(j,evalDegrees[j]);
 				}
 		} else {
-			this.operands = new Vector<Evaluation>(0);
+			this.operands = new Vector<Evaluation>(1,1);
 		}
 	
 		this.operator = operator;
@@ -41,10 +41,10 @@ public class CompositeEvaluation extends Evaluation implements Observer {
 	
 	
 	protected CompositeEvaluation(int id, ConstraintKey key, Set<String> deps,
-			IMergeStrategy mergeStrat, INullHandlingStrategy nullStrat) {		
-		super(id,key,deps,mergeStrat,nullStrat);
+			IMergeStrategy mergeStrat, INullHandlingStrategy nullStrat,ArgList args) {		
+		super(id,key,deps,mergeStrat,nullStrat, args);
 				
-		this.operands = new Vector<Evaluation>(0);			
+		this.operands = new Vector<Evaluation>(1,1);			
 		this.operator = null;
 				
 	}
@@ -54,10 +54,10 @@ public class CompositeEvaluation extends Evaluation implements Observer {
 	
 	
 	public CompositeEvaluation(int id, ConstraintKey key, Set<String> deps,
-			int arity, IDegreeCombiner operator, IMergeStrategy mergeStrat, INullHandlingStrategy nullStrat) {		
-		super(id,key,deps,mergeStrat,nullStrat);
+			int arity, IDegreeCombiner operator, IMergeStrategy mergeStrat, INullHandlingStrategy nullStrat, ArgList args) {		
+		super(id,key,deps,mergeStrat,nullStrat, args);
 				
-		this.operands = new Vector<Evaluation>(arity);
+		this.operands = new Vector<Evaluation>(arity,2);
 		
 	
 		this.operator = operator;
@@ -116,16 +116,23 @@ public class CompositeEvaluation extends Evaluation implements Observer {
 	
 	public void setOperand(int position, Evaluation operand) {
 				
+		System.out.println(operand.expand());
+
+		
 		if (operands.size() <= position) {
 			// Surely a new operand!
+			
 			operands.setSize(position+1);
 			
 			operand.addObserver(this);
+			System.out.println(operand.expand());
 			//operands.set(position,operand);
 		} else {
 			if (operands.get(position) != null && operands.get(position) != operand) {
+				
 				System.out.println("SET OPERAND "+operand.getKey()+ "with " + operand.getBitS());
 				operands.get(position).deleteObserver(this);
+				
 				operand.addObserver(this);
 				//operands.set(position,operand);
 				//combine();
@@ -134,10 +141,17 @@ public class CompositeEvaluation extends Evaluation implements Observer {
 //				if (operands.get(position) != null)
 //					throw new RuntimeDroolsException("DD");														
 				//operands.set(position,operand);
+				//this.setArgCode(this.getArgCode()^operands.get(position).getArgCode());
 			}
 		}		
+
 		
+
 		operands.set(position,operand);
+		
+		this.getArgs().merge(operand.getArgs());
+
+		//this.setArgCode(this.getArgCode()^operand.getArgCode());
 	}
 	
 	public Collection<Evaluation> getEvalTree() {
@@ -180,11 +194,21 @@ public class CompositeEvaluation extends Evaluation implements Observer {
 	
 	
 	public void update(Observable o, Object arg) {
-		System.out.println("\nUPDATE HAS BEEN CALLED ON COMBOVAL by" + o.toString());
-		incInfo("EVAL",-getOpRate());
-		combine();	
+		System.out.println("\nUPDATE HAS BEEN CALLED ON COMBOVAL by" + o.toString()+ " " + getOpRate());
+		//incInfo("EVAL",-getOpRate());
 		
-		this.notifyObservers(this);
+		if (arg instanceof ArgList) {
+			int added = this.getArgs().merge((ArgList) arg);
+			if (added > 0) {
+				this.setChanged();
+				this.notifyObservers(arg);
+			}
+		} else {
+			boolean newContrib = combine();
+		}
+		
+		//this.notifyObservers(this);
+		
 	}
 	
 	protected IDegreeCombiner getOperator() {
@@ -209,6 +233,8 @@ public class CompositeEvaluation extends Evaluation implements Observer {
 			for (Evaluation eval : getOperands()) {
 				for (int j = 0; j <= depth; j++)
 					sb.append("\t");
+				if (eval == null)
+					System.out.println("NULL??");
 				sb.append(eval.toString()+"\n");
 				if (eval instanceof CompositeEvaluation)
 					sb.append(((CompositeEvaluation) eval).toStringTree(depth+1));			

@@ -1,8 +1,10 @@
 package org.drools.examples.chance;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -71,45 +73,59 @@ public class TestQuantifiers {
 		final StatefulKnowledgeSession ksession = kbase
 				.newStatefulKnowledgeSession();
 		
+		
+		
 //	
 		FileWriter writer = new FileWriter("testQuant.log");
 		ksession.setGlobal("writer", writer);
 		
+		PrintStream outFile = new PrintStream("testQuant.out"); 
+		System.setOut(outFile);
+		
 		
 		ksession.fireAllRules();
 		
+		System.out.println("\n\n\n\n\n\n no msg in ********************************************************\n\n\n\n\n\n\n");
 		
 		
 		final Message message = new Message();		
-		message.setStatus(0);		
+		message.setStatus(0);
+		message.setMessage("M0");
 			ksession.insert(message);
 			
 		ksession.fireAllRules();
 		
 		
-		System.out.println("\n\n\n\n\n\n **********************************************************\n\n\n\n\n\n\n");
+		System.out.println("\n\n\n\n\n\n rigth msg in **********************************************************\n\n\n\n\n\n\n");
 		
 		Message message1 = new Message();		
-		message1.setStatus(1);		
+		message1.setStatus(1);
+		message1.setMessage("M1");
 			ksession.insert(message1);
 			
-			System.out.println("\n\n\n\n\n\n **********************************************************\n\n\n\n\n\n\n");
-		
+		System.out.println("\n\n\n\n\n\n msg 1 in**********************************************************\n\n\n\n\n\n\n");
+
+		ksession.fireAllRules();
+
+			
+			
 		Message message2 = new Message();		
 		message2.setStatus(2);		
+		message2.setMessage("M2");
 			ksession.insert(message2);
 		
 		ksession.fireAllRules();
 		
-
+		System.out.println("\n\n\n\n\n\n msg 2 in**********************************************************\n\n\n\n\n\n\n");
 		
 		
-	
+//	
 		
 		
 		
 		
 		writer.close();
+		outFile.close();
 //		logger.close();
 
 		ksession.dispose();
@@ -170,7 +186,7 @@ public class TestQuantifiers {
 		
 		public int hashCode() {
 			//return this.message.hashCode()+this.status;
-			return this.status;
+			return this.status*11+3;
 		}
 	}
 

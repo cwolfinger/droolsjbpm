@@ -9,6 +9,7 @@ import java.io.ObjectOutput;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import org.drools.FactHandle;
 import org.drools.reteoo.Evaluation;
 import org.drools.reteoo.ImperfectRightTuple;
 import org.drools.reteoo.LeftTuple;
@@ -375,7 +376,7 @@ public class RightTupleIndexHashTable extends AbstractHashTable
 
     
     
-    public Collection<Evaluation> getArgs() {
+    public LinkedList<Evaluation> getEvaluations() {
 		LinkedList<Evaluation> ans = new LinkedList<Evaluation>();
 		Iterator iter = this.iterator();
 		while (iter.hasNext()) {
@@ -385,4 +386,17 @@ public class RightTupleIndexHashTable extends AbstractHashTable
 		}
 		return ans;
 	}
+    
+    
+    public LinkedList<FactHandle> getHandles() {
+		LinkedList<FactHandle> ans = new LinkedList<FactHandle>();
+		Iterator iter = this.iterator();
+		while (iter.hasNext()) {
+			RightTuple rt = (RightTuple) iter.next();
+			if (rt instanceof ImperfectRightTuple)
+				ans.add(((ImperfectRightTuple) rt).getFactHandle());
+		}
+		return ans;
+	}
+    
 }

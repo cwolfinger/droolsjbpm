@@ -7,15 +7,231 @@ import java.io.FileWriter;
 
 global FileWriter writer;
 
-rule "Test Exist"	
+/*
+//Check that join works properly
+rule "Test Join"	
 	when
-		exists(
-			m: Message(status == 0)
-			
-		)
+		
+			m: Message(status == 0)			
+			n : Message(status == 1)					
 	then
-		writer.write("Existential check "+drools.getConsequenceDegree()+"\n");
+		writer.write("\n\n Tested couple "+m.getMessage() + " " + n.getMessage() +"\n");
+		writer.write("Simple Join check "+drools.getConsequenceDegree()+"\n");
 		System.out.println("Existential check "+drools.getConsequenceDegree()+"\n");	
 end
+*/
+
+
+
+/*
+//check also GE joins with bindings
+rule "Test Join 2"	
+	when
+		
+					m : Message( status == 1)
+					and			
+					p : Message( this == m, status == 1)						
+		
+	then
+		writer.write(m.getMessage() + "  " + p.getMessage());
+		writer.write("Self-Join check "+drools.getConsequenceDegree()+"\n"+drools.getEvaluation().expand()+"\n\n");
+		System.out.println("Existential check "+drools.getConsequenceDegree());
+		System.out.println(m.getMessage() + "  " + p.getMessage());	
+end
+*/
+
+
+/*
+//check also GE joins with bindings
+rule "Test Join 2bis"	
+	when
+		
+					m : Message()								
+					p : Message( this == m, status > -1)
+				 	q : Message( this == m, status < 2)						
+		
+	then
+		writer.write(m.getMessage() + "  " + p.getMessage() + q.getMessage() + "\n");
+		writer.write("Self-Join check "+drools.getConsequenceDegree()+"\n"+drools.getEvaluation().expand()+"\n\n");
+		System.out.println("Existential check "+drools.getConsequenceDegree());
+		System.out.println(m.getMessage() + "  " + p.getMessage());	
+end
+*/
+
+
+
+/*
+//Test exist quantifier
+rule "Test Exist 3"	
+	when
+		exists (				   
+				   Message( status == 1)							
+		)
+	then
+		
+		writer.write("Existential check "+drools.getConsequenceDegree()+"\n"+drools.getEvaluation().expand()+"\n\n");
+		System.out.println("Existential check "+drools.getConsequenceDegree());
+			
+end
+*/
+
+
+/*
+// Test quantifier with GEs
+rule "Test Exist 4"	
+	when
+		exists (
+				   Message( status == 0 )
+				   and 
+				   Message( status == 1)							
+		)
+	then
+		
+		writer.write("Existential check "+drools.getConsequenceDegree()+"\n"+drools.getEvaluation().expand()+"\n\n");
+		System.out.println("Existential check "+drools.getConsequenceDegree());			
+end
+
+*/
+
+
+
+
+/*
+// Test external variable binding
+rule "Test Exist 5"	
+	when
+		$m : Message($s : status == 0)
+		exists ( Message(status > $s) )
+	then
+		writer.write("\n\n Conditional join with existence\n");
+		writer.write("\t Rule triggered for " + $m.getMessage() + "\n");
+		
+		writer.write("Existential check "+drools.getConsequenceDegree()+"\n"+drools.getEvaluation().expand()+"\n\n");
+		System.out.println("Existential check "+drools.getConsequenceDegree());
+			
+end
+*/
+
+
+
+/*
+//Test simple forall using exist
+rule "Test Exist 6"	
+	when
+		not ( 
+			exists (
+				   	not ( Message( status random[] 0 )
+				   							
+		) ) )
+	then
+		
+		writer.write("Existential check "+drools.getConsequenceDegree()+"\n"+drools.getEvaluation().expand()+"\n\n");
+		System.out.println("Existential check "+drools.getConsequenceDegree());
+			
+end
+*/
+
+
+
+
+
+/*
+rule "Test Exist 7"	
+	when
+		forall (
+					Message( status < 1 )					
+		)
+	then
+		
+		writer.write("Existential check "+drools.getConsequenceDegree()+"\n"+drools.getEvaluation().expand()+"\n\n");
+		System.out.println("Existential check "+drools.getConsequenceDegree());
+			
+end
+*/
+
+
+/*
+rule "Test Exist 7bis"	
+	when
+		Message( status == 2 )
+		forall (
+					Message( status < 3 )					
+		)
+	then
+		
+		writer.write("Existential check "+drools.getConsequenceDegree()+"\n"+drools.getEvaluation().expand()+"\n\n");
+		System.out.println("Existential check "+drools.getConsequenceDegree());
+			
+end
+*/
+
+
+
+
+rule "Test Exist 8"	
+	when
+		Message( status == 1)
+		forall (
+					m : Message()
+					Message( this == m , status <= 1)
+					Message( this == m , status > -1)					
+		)
+	then
+		
+		writer.write("Existential check "+drools.getConsequenceDegree()+"\n"+drools.getEvaluation().expand()+"\n\n");
+		System.out.println("Existential check "+drools.getConsequenceDegree());
+			
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+//Complex nesting and conversion
+rule "Test Exist 8"	
+	when
+		not ( exists (
+						m : Message()
+						and
+						not (
+							exists (
+								Message( this == m , status <= 1)	
+								and
+								Message( this == m , status > -2)							
+							)
+						)
+					)					
+		)
+	then
+		
+		writer.write("Existential check "+drools.getConsequenceDegree()+"\n"+drools.getEvaluation().expand()+"\n\n");
+		System.out.println("Existential check "+drools.getConsequenceDegree());
+			
+end
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

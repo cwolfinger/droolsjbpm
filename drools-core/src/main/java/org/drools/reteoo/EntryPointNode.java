@@ -331,7 +331,7 @@ public class EntryPointNode extends ObjectSource
 		
 			for ( int i = 0, length = cachedNodes.length; i < length; i++ ) {
 				System.out.println(this.getClass() + " dispatching obj to node "+i);
-				EvalRecord record = new EvalRecord(this.getId(),factory.getAndOperator(),factory.getMergeStrategy(),factory.getNullHandlingStrategy());				
+				EvalRecord record = new EvalRecord(this.getId(),factory.getAndOperator(),factory.getMergeStrategy(),factory.getNullHandlingStrategy(),new ArgList());				
 				cachedNodes[i].assertObject(handle,
 		                        context,
 		                        workingMemory,

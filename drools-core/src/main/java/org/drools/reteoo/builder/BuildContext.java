@@ -100,6 +100,8 @@ public class BuildContext {
     /** the calculate temporal distance matrix */
     private TemporalDependencyMatrix         temporal;
     
+    private boolean							 negated;
+    
     
     
     
@@ -135,6 +137,8 @@ public class BuildContext {
         this.nodes = new LinkedList<BaseNode>();
 
         this.partitionId = null;
+        
+        this.negated = false;
     }
 
     /**
@@ -445,6 +449,20 @@ public class BuildContext {
         this.rule = rule;
     }
 
+    
+    
+    public boolean isNegated() {
+    	return negated;
+    }
+    
+    /**
+     * Changes negation state
+     * @return 	the new state
+     */
+    public boolean toggleNegated() {
+    	this.negated = ! this.negated;
+    	return this.negated;
+    }
     
     
     

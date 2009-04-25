@@ -176,7 +176,7 @@ public class JoinNode extends BetaNode implements IGammaNode, Observer {
         for ( ImperfectRightTuple rightTuple = (ImperfectRightTuple) memory.getRightTupleMemory().getFirst( leftTuple ); rightTuple != null; rightTuple = (ImperfectRightTuple) rightTuple.getNext() ) {
             
         	final ImperfectFactHandle factHandle = (ImperfectFactHandle) rightTuple.getFactHandle();
-        	EvalRecord record = rightTuple.getRecord();
+        	EvalRecord record = rightTuple.getRecord().clone();
                        
             EvalRecord mainRecord = leftTuple.getRecord().clone();
         	
@@ -193,8 +193,8 @@ public class JoinNode extends BetaNode implements IGammaNode, Observer {
         	//Call internal evaluator, if not done before
     		ConstraintKey[] keys = this.constraints.getConstraintKeys();
     		if (keys != null) {
-		    		Evaluation evalTest = factHandle.getPropertyDegree(keys[0]);
-		    		if (evalTest == null) {
+//		    		Evaluation evalTest = factHandle.getPropertyDegree(keys[0]);
+//		    		if (evalTest == null) {
 		    			Evaluation[] evals = this.constraints.isSatisfiedCachedRight( memory.getContext(),
 		                        													  leftTuple, 
 		                        													  factory );
@@ -207,25 +207,25 @@ public class JoinNode extends BetaNode implements IGammaNode, Observer {
 		    					}
 		    					record.addEvaluation(eval);
 		    				}
-		    			}
-		    				    			    			
-		    		} else {
-		    			
-		    			if (evalTest.getDegreeBit(Evaluation.EVAL) == null) {
-		    			
-		    				//B-constraints are 0 to N
-		        			//As above, in case EVAL hasn't been called yet, but no need to add to the handle
-		    				Evaluation[] evals = this.constraints.isSatisfiedCachedRight( memory.getContext(),
-									  leftTuple, 
-									  factory );
-		
-		    				if (evals != null) {
-		    					for (Evaluation eval : evals) {
-		    						record.addEvaluation(eval);
-		    					}
-		    				}
-		    				
-		    			}			
+//		    			}
+//		    				    			    			
+//		    		} else {
+//		    			
+////		    			if (evalTest.getDegreeBit(Evaluation.EVAL) == null) {
+//		    			
+//		    				//B-constraints are 0 to N
+//		        			//As above, in case EVAL hasn't been called yet, but no need to add to the handle
+//		    				Evaluation[] evals = this.constraints.isSatisfiedCachedRight( memory.getContext(),
+//									  leftTuple, 
+//									  factory );
+//		
+//		    				if (evals != null) {
+//		    					for (Evaluation eval : evals) {
+//		    						record.addEvaluation(eval);
+//		    					}
+//		    				}
+//		    				
+////		    			}			
 		    		}   
     		} else {
     			//EMPTY BETA CONSTRAINT!
@@ -233,6 +233,8 @@ public class JoinNode extends BetaNode implements IGammaNode, Observer {
  
         	//KEY MOVE, AND-ING THE PATTERN EVALS
     		mainRecord.addEvaluation(record);
+    		
+    		ImperfectRightTuple propRightTuple = new ImperfectRightTuple(factHandle,this,record);
         	
         	
         	System.out.println("Situation at join eval"+mainRecord.expand());        		        		        		        	
@@ -248,7 +250,7 @@ public class JoinNode extends BetaNode implements IGammaNode, Observer {
         			System.out.println("Situation is "+mainRecord.expand());
         			
         				mainRecord.setLeftTuple(leftTuple);
-        				mainRecord.setRightTuple(rightTuple);
+        				mainRecord.setRightTuple(propRightTuple);
         				mainRecord.setFactory(factory);
         				mainRecord.setPropagationContext(context);
         				mainRecord.setWorkingMemory(workingMemory);
@@ -259,7 +261,7 @@ public class JoinNode extends BetaNode implements IGammaNode, Observer {
         		case IFilterStrategy.PASS : 
         			System.out.println("Beta PASS at assertTuple: propagate record");
         			this.sink.propagateAssertLeftTuple( leftTuple,
-                            rightTuple,
+                            propRightTuple,
                             context,
                             workingMemory,
                             factory,
@@ -343,12 +345,13 @@ public class JoinNode extends BetaNode implements IGammaNode, Observer {
     public void assertObject(ImperfectFactHandle factHandle,
 			PropagationContext context,
 			InternalWorkingMemory workingMemory, IDegreeFactory factory,
-			EvalRecord record) {
+			EvalRecord initialRecord) {
     	
         final BetaMemory memory = (BetaMemory) workingMemory.getNodeMemory( this );
 
+        
         ImperfectRightTuple rightTuple = new ImperfectRightTuple( factHandle,
-                                                this, record );
+                                                this, initialRecord );
 
         if ( !behavior.assertRightTuple( memory.getBehaviorContext(),
                                          rightTuple,
@@ -373,6 +376,8 @@ public class JoinNode extends BetaNode implements IGammaNode, Observer {
         	
         	
         	EvalRecord mainRecord = leftTuple.getRecord().clone();
+        	EvalRecord record = initialRecord.clone();
+        	
         	
         	
         	Collection<Evaluation> storedEvals = this.getGammaMemory().retrieve(new ArgList(leftTuple.toObjectArray(),factHandle.getObject()));
@@ -386,10 +391,11 @@ public class JoinNode extends BetaNode implements IGammaNode, Observer {
         	
         	//Call internal evaluator, if not done before
     		ConstraintKey[] keys = this.constraints.getConstraintKeys();
+    		Evaluation[] evals = null;
     		if (keys != null) {
-		    		Evaluation evalTest = factHandle.getPropertyDegree(keys[0]);
-		    		if (evalTest == null) {
-		    			Evaluation[] evals = this.constraints.isSatisfiedCachedRight( memory.getContext(),
+//		    		Evaluation evalTest = factHandle.getPropertyDegree(keys[0]);
+//		    		if (evalTest == null) {
+		    			evals = this.constraints.isSatisfiedCachedRight( memory.getContext(),
 		                        													  leftTuple, 
 		                        													  factory );
 		    			//B-constraints are 0 to N
@@ -403,30 +409,34 @@ public class JoinNode extends BetaNode implements IGammaNode, Observer {
 		    				}
 		    			}
 		    				    			    			
-		    		} else {
-		    			
-		    			if (evalTest.getDegreeBit(Evaluation.EVAL) == null) {
-		    			
-		    				//B-constraints are 0 to N
-		        			//As above, in case EVAL hasn't been called yet, but no need to add to the handle
-		    				Evaluation[] evals = this.constraints.isSatisfiedCachedRight( memory.getContext(),
-									  leftTuple, 
-									  factory );
-		
-		    				if (evals != null) {
-		    					for (Evaluation eval : evals) {
-		    						record.addEvaluation(eval);
-		    					}
-		    				}
-		    				
-		    			}			
-		    		}   
+////		    		} else {
+//		    			
+//		    			//if (evalTest.getDegreeBit(Evaluation.EVAL) == null) {
+//		    			
+//		    				//B-constraints are 0 to N
+//		        			//As above, in case EVAL hasn't been called yet, but no need to add to the handle
+//		    				Evaluation[] evals = this.constraints.isSatisfiedCachedRight( memory.getContext(),
+//									  leftTuple, 
+//									  factory );
+//		
+//		    				if (evals != null) {
+//		    					for (Evaluation eval : evals) {
+//		    						record.addEvaluation(eval);
+//		    					}
+//		    				}
+//		    				
+//		    			//} 
+//		    			
+//		    			
+//		    		}   
     		} else {
     			//EMPTY BETA CONSTRAINT!
     		}
  
         	//KEY MOVE, AND-ING THE PATTERN EVALS
     		mainRecord.addEvaluation(record);
+    		
+    		ImperfectRightTuple propRightTuple = new ImperfectRightTuple(factHandle,this,record);
         	
         	
         	System.out.println("Situation at join eval"+mainRecord.expand());        		        		        		        	
@@ -441,7 +451,7 @@ public class JoinNode extends BetaNode implements IGammaNode, Observer {
         			System.out.println("Situation is "+mainRecord.expand());
         			
         				mainRecord.setLeftTuple(leftTuple);
-        				mainRecord.setRightTuple(rightTuple);
+        				mainRecord.setRightTuple(propRightTuple);
         				mainRecord.setFactory(factory);
         				mainRecord.setPropagationContext(context);
         				mainRecord.setWorkingMemory(workingMemory);
@@ -452,7 +462,7 @@ public class JoinNode extends BetaNode implements IGammaNode, Observer {
         		case IFilterStrategy.PASS : 
         			System.out.println("Beta PASS at assertObjecf: propagate record");
         			this.sink.propagateAssertLeftTuple( leftTuple,
-                            rightTuple,
+                            propRightTuple,
                             context,
                             workingMemory,
                             factory,
@@ -478,7 +488,14 @@ public class JoinNode extends BetaNode implements IGammaNode, Observer {
     
     
 	public void update(Observable watcher, Object info) {
-		EvalRecord record = (EvalRecord) watcher;
+		
+		EvalRecord record = null;
+		if (info instanceof EvalRecord)
+			record = (EvalRecord) info;
+		
+		if (record == null) 
+			return;
+		
 		System.out.println("**************************************************************UPDATE @JOIN NODE");
 		switch (this.filterStrat.doTry(record)) {
 		case IFilterStrategy.DROP : 
