@@ -616,6 +616,9 @@ public class ObjectTypeNode extends ObjectSource
                         false );
         }
 		
+
+		if (template == null)
+			return;
 		
 		if (factHandle instanceof InitialFactHandle) {			
 			this.sink.propagateAssertObject(factHandle,
@@ -636,7 +639,7 @@ public class ObjectTypeNode extends ObjectSource
 				storedEvals = this.gamma.retrieve(new ArgList(factHandle.getObject()));
 
 		Evaluation eval = factHandle.getPropertyDegree(key); 
-		if (eval == null) {
+		if (eval == null) {			
 			eval = this.template.spawn(storedEvals == null ? factory.True() : factory.False(),new ArgList(factHandle.getObject())); 				
 			factHandle.addPropertyDegree(eval);
 		}
