@@ -631,7 +631,9 @@ public class ObjectTypeNode extends ObjectSource
 		ConstraintKey key = getConstraintKey();
 		
 
-		Collection<Evaluation> storedEvals = this.gamma.retrieve(new ArgList(factHandle.getObject()));
+		Collection<Evaluation> storedEvals = null;
+			if (this.gamma != null)
+				storedEvals = this.gamma.retrieve(new ArgList(factHandle.getObject()));
 
 		Evaluation eval = factHandle.getPropertyDegree(key); 
 		if (eval == null) {
