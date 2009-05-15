@@ -58,6 +58,8 @@ public class LeftInputAdapterNode extends LeftTupleSource
     private ObjectSinkNode nextRightTupleSinkNode;
     
     private boolean leftTupleMemoryEnabled;
+    
+    private boolean	isCutter = false;
 
     public LeftInputAdapterNode() {
 
@@ -80,6 +82,10 @@ public class LeftInputAdapterNode extends LeftTupleSource
                context.getRuleBase().getConfiguration().isMultithreadEvaluation() );
         this.objectSource = source;
         this.leftTupleMemoryEnabled = context.isTupleMemoryEnabled();
+        if (context.isCutter()) {
+        	this.isCutter = true;
+        	context.setCutter(false);
+        }
     }
 
     public void readExternal(ObjectInput in) throws IOException,
@@ -157,6 +163,9 @@ public class LeftInputAdapterNode extends LeftTupleSource
 			EvalRecord record) {
     	
     	if ( !workingMemory.isSequential() ) {
+    		if (isCutter && record.getDegree().equals(factory.False())) 
+    			return;
+    		
     		this.sink.createAndPropagateAssertLeftTuple( factHandle,
                 context,
                 workingMemory, 
@@ -250,7 +259,7 @@ public class LeftInputAdapterNode extends LeftTupleSource
 
         final LeftInputAdapterNode other = (LeftInputAdapterNode) object;
 
-        return this.objectSource.equals( other.objectSource );
+        return this.objectSource.equals( other.objectSource ) && (this.isCutter == other.isCutter);
     }
 
     public Object createMemory(final RuleBaseConfiguration config) {

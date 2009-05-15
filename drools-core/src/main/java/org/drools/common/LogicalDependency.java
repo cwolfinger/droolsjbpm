@@ -56,10 +56,13 @@ public class LogicalDependency extends AbstractBaseLinkedListNode {
         }
 
         final LogicalDependency other = (LogicalDependency) object;
-        return (this.getJustifier() == other.getJustifier() && this.getFactHandle() == other.getFactHandle());
+        	boolean just = this.getJustifier().equals(other.getJustifier());
+        	boolean hand = this.getFactHandle().equals(other.getFactHandle()); 
+        return ( just && hand );
     }
 
     public int hashCode() {
+//    	System.out.println("Logical dep hashcode "+this.justifier.hashCode());
         return this.justifier.hashCode();
     }
 }

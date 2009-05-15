@@ -138,7 +138,7 @@ public class InstanceEqualsConstraint
         }
 
         final InstanceEqualsConstraint other = (InstanceEqualsConstraint) object;
-        return this.otherPattern.equals( other.otherPattern );
+        return this.otherPattern.equals( other.otherPattern ) && (this.isCutter() == other.isCutter());
     }
 
     public static class InstanceEqualsConstraintContextEntry
@@ -208,6 +208,8 @@ public class InstanceEqualsConstraint
     private ConstraintKey singletonKey = null;
     
     private EvaluationTemplate template;
+
+	private boolean cutter;
     
 	public ConstraintKey getConstraintKey() {
 		if (singletonKey == null) {				
@@ -236,6 +238,14 @@ public class InstanceEqualsConstraint
 												factory.getMergeStrategy(),
 												factory.getNullHandlingStrategy());
 		return template;
+	}
+	
+	public boolean isCutter() {
+		return cutter;
+	}
+	
+	public void setCutter(boolean cut) {
+		cutter = cut;
 	}
 
 }

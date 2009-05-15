@@ -84,6 +84,14 @@ public interface Constraint
     
     public EvaluationTemplate getEvalTemplate(ConstraintKey key);
     
+    
+    
+    public boolean isCutter();
+    
+    public void setCutter(boolean cutter);
+    
+    
+    
     /**
      * An enum for Constraint Types
      */

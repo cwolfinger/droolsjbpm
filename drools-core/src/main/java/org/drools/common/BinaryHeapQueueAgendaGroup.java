@@ -98,7 +98,7 @@ public class BinaryHeapQueueAgendaGroup
     }
 
     public void add(final Activation activation) {
-        this.queue.enqueue( (Queueable) activation );
+        this.queue.enqueue( (Queueable) activation );        
     }
 
     public Activation getNext() {

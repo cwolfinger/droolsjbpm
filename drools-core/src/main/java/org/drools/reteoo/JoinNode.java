@@ -72,6 +72,8 @@ public class JoinNode extends BetaNode implements IGammaNode, Observer {
     
     private GammaMemory 		gammaMemory;
     
+    private boolean				isCutter;
+    
     
     
     
@@ -106,6 +108,12 @@ public class JoinNode extends BetaNode implements IGammaNode, Observer {
         	Collection<ConstraintKey> keys = this.constraints.getAllConstraintKeys();
         	for (ConstraintKey key : keys)
         		context.getRuleBase().getRete().indexGammaNode(key,this);
+        	
+        	if (context.isCutter()) {
+        		this.isCutter = true;
+        		context.setCutter(false);
+        	}
+        	this.isCutter = this.isCutter || this.constraints.isCutter();
         }
         System.out.println(this.getClass().getName() + "(id "+id+") constructor hacked to add filter strategy");
         
@@ -114,6 +122,12 @@ public class JoinNode extends BetaNode implements IGammaNode, Observer {
 
     }
 
+    
+    public boolean equals(final Object object) {
+        return super.equals(object) &&
+        	(this.isCutter == ((JoinNode) object).isCutter);
+    }
+    
     /**
      * Assert a new <code>ReteTuple</code>. The right input of
      * <code>FactHandleInput</code>'s is iterated and joins attemped, via the
@@ -195,9 +209,12 @@ public class JoinNode extends BetaNode implements IGammaNode, Observer {
     		if (keys != null) {
 //		    		Evaluation evalTest = factHandle.getPropertyDegree(keys[0]);
 //		    		if (evalTest == null) {
-		    			Evaluation[] evals = this.constraints.isSatisfiedCachedRight( memory.getContext(),
-		                        													  leftTuple, 
-		                        													  factory );
+//		    			Evaluation[] evals = this.constraints.isSatisfiedCachedRight( memory.getContext(),
+//		                        													  leftTuple, 
+//		                        													  factory );
+		    			
+		    			Evaluation[] evals = this.constraints.isSatisfiedCachedLeft(memory.getContext(), factHandle, factory);
+		    			
 		    			//B-constraints are 0 to N
 		    			//Each is evaluated and, if it is the first time, added to the object's handle
 		    			if (evals != null) {
@@ -239,11 +256,19 @@ public class JoinNode extends BetaNode implements IGammaNode, Observer {
         	
         	System.out.println("Situation at join eval"+mainRecord.expand());        		        		        		        	
 	        		        	        		        		        		        	
-        		
-        	switch (this.filterStrat.doTry(mainRecord)) {
+        	
+        	int verdict;
+        	
+        	if (this.isCutter && mainRecord.getDegree().equals(factory.False()))
+        		verdict = IFilterStrategy.DROP;
+        	else 
+        		verdict = this.filterStrat.doTry(mainRecord); 
+        	
+        	
+        	switch (verdict) {
         		case IFilterStrategy.DROP : 
         			System.out.println("Beta FAIL at assertTuple: DROP record");
-        			return;
+        			continue;
 			
         		case IFilterStrategy.HOLD : //TODO: HOLD
         			System.out.println("HOLD RULES @JOIN NODE"+this.getId());
@@ -255,8 +280,8 @@ public class JoinNode extends BetaNode implements IGammaNode, Observer {
         				mainRecord.setPropagationContext(context);
         				mainRecord.setWorkingMemory(workingMemory);
 					mainRecord.addObserver(this);	
-        			
-        			break;
+        			continue;
+        			//break;
 			
         		case IFilterStrategy.PASS : 
         			System.out.println("Beta PASS at assertTuple: propagate record");
@@ -268,8 +293,8 @@ public class JoinNode extends BetaNode implements IGammaNode, Observer {
                             mainRecord,
                             this.tupleMemoryEnabled  );
 
-        			break;
-        		default : return;			
+        			//break;
+        		default : continue;			
         	}
         	
         			
@@ -441,7 +466,15 @@ public class JoinNode extends BetaNode implements IGammaNode, Observer {
         	
         	System.out.println("Situation at join eval"+mainRecord.expand());        		        		        		        	
         		
-        	switch (this.filterStrat.doTry(mainRecord)) {
+        	int verdict;
+        	
+        	if (this.isCutter && mainRecord.getDegree().equals(factory.False()))
+        		verdict = IFilterStrategy.DROP;
+        	else 
+        		verdict = this.filterStrat.doTry(mainRecord); 
+        	
+        	
+        	switch (verdict) {
         		case IFilterStrategy.DROP :
         			System.out.println("Beta DROP at assertobject");
         			return;
@@ -497,7 +530,16 @@ public class JoinNode extends BetaNode implements IGammaNode, Observer {
 			return;
 		
 		System.out.println("**************************************************************UPDATE @JOIN NODE");
-		switch (this.filterStrat.doTry(record)) {
+		
+		int verdict;
+    	
+    	if (this.isCutter && record.getDegree().equals(record.getFactory().False()))
+    		verdict = IFilterStrategy.DROP;
+    	else 
+    		verdict = this.filterStrat.doTry(record); 
+    	
+    	
+    	switch (verdict) {
 		case IFilterStrategy.DROP : 
 			record.deleteObserver(this);
 			return;
@@ -560,8 +602,15 @@ public class JoinNode extends BetaNode implements IGammaNode, Observer {
         behavior.retractRightTuple( memory.getBehaviorContext(),
                                     rightTuple,
                                     workingMemory );
-        memory.getRightTupleMemory().remove( rightTuple );
+        RightTupleMemory rtMem = memory.getRightTupleMemory();
+        	if (! rtMem.contains(rightTuple))
+        		return;
+        		
+        rtMem.remove( rightTuple );
 
+        if (rightTuple instanceof ImperfectRightTuple) {
+        	((ImperfectRightTuple) rightTuple).getRecord().deleteObserver(this);
+        }
         if ( rightTuple.getBetaChildren() != null ) {
             this.sink.propagateRetractRightTuple( rightTuple,
                                                   context,
@@ -586,6 +635,11 @@ public class JoinNode extends BetaNode implements IGammaNode, Observer {
                                  final InternalWorkingMemory workingMemory) {
         final BetaMemory memory = (BetaMemory) workingMemory.getNodeMemory( this );
         memory.getLeftTupleMemory().remove( leftTuple );
+        
+        if (leftTuple instanceof ImperfectLeftTuple) {
+        	((ImperfectLeftTuple) leftTuple).getRecord().deleteObserver(this);
+        }
+        
         if ( leftTuple.getBetaChildren() != null ) {
             this.sink.propagateRetractLeftTuple( leftTuple,
                                                  context,

@@ -22,6 +22,7 @@ import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
@@ -47,6 +48,10 @@ public abstract class MutableTypeConstraint
     private Constraint.ConstraintType type = Constraint.ConstraintType.UNKNOWN;
     
     private EvaluationTemplate template;
+    
+    private String params;
+    
+
 
     public void setType( ConstraintType type ) {
         this.type = type;
@@ -66,10 +71,7 @@ public abstract class MutableTypeConstraint
     public abstract Object clone();
     
     
-    public EvaluationTemplate buildEvaluationTemplate(int id, Map<ConstraintKey, Set<String>> dependencies, IDegreeFactory factory) {
-    	setTemplate(new SingleEvaluationTemplate(id,this.getConstraintKey(),dependencies.get(this.getConstraintKey()),factory.getMergeStrategy(),factory.getNullHandlingStrategy()));
-    	return getTemplate();
-    }
+    
     
     public EvaluationTemplate getTemplate() {
     	return this.template;
@@ -87,6 +89,66 @@ public abstract class MutableTypeConstraint
 			return null;
 		}	
 	}
+
+	/**
+	 * @param params the params to set
+	 */
+	public void setParams(String params) {
+		this.params = params;
+	}
+
+	/**
+	 * @return the params
+	 */
+	public String getParams() {
+		return params;
+	}
+
+	/**
+	 * @param label the label to set
+	 */
+	public abstract void setLabel(String label);
+	/**
+	 * @return the label
+	 */
+	public abstract String getLabel();
+    
+	
+	public EvaluationTemplate buildEvaluationTemplate(int id, Map<ConstraintKey, Set<String>> dependencies, IDegreeFactory factory) {
+		 Set<String> deps;
+		 
+		 String label = this.getLabel();		 
+		 Set<String> aliasedDeps = null;
+		 	if (dependencies != null && label != null) {
+		 		ConstraintKey tester = new ConstraintKey();
+		 			tester.setAlias(label);
+		 		aliasedDeps = dependencies.remove(tester);
+		 		
+		 		if (aliasedDeps != null) {
+		 			ConstraintKey properKey = this.getConstraintKey();		 						 				
+		 			Set<String> previousDeps = dependencies.remove(properKey);
+		 			
+		 			if (previousDeps != null)
+		 				aliasedDeps.addAll(previousDeps);
+		 			
+		 			properKey.setAlias(label);
+		 			
+		 			dependencies.put(properKey, aliasedDeps);		 		
+		 		}
+		 	}
+		 	
+		 
+		 if (dependencies == null)
+			 deps = Collections.emptySet();
+		 else 
+			 deps = dependencies.get(this.getConstraintKey());
+		 
+		
+		 
+	   	this.template = new SingleEvaluationTemplate(id,this.getConstraintKey(),deps,factory.getMergeStrategy(),factory.getNullHandlingStrategy());
+	   	return template;
+	}
+    
     
     
     

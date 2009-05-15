@@ -53,6 +53,8 @@ public class VariableRestriction
     private Evaluator      evaluator;
 
     private InternalReadAccessor readAccessor;
+    
+    private boolean		   cutter;
 
     public VariableRestriction() {
     }
@@ -153,6 +155,7 @@ public class VariableRestriction
     
     public IDegree isSatisfiedCachedRight(LeftTuple tuple, ContextEntry context,
 			IDegreeFactory factory) {
+    	Object o = tuple.get( this.declaration ) ;
     	return this.evaluator.evaluateCachedRight(
     			((VariableContextEntry) context).workingMemory,
                 (VariableContextEntry) context,
@@ -635,6 +638,8 @@ public class VariableRestriction
 
     
     private ConstraintKey singletonKey = null;
+
+	private String label;
     
 	public ConstraintKey getConstraintKey() {
 		if (singletonKey == null) {
@@ -649,5 +654,28 @@ public class VariableRestriction
 			ans.add(getConstraintKey());
 	return ans;
 	}
+	
+	/**
+	 * @param isCutter the isCutter to set
+	 */
+	public void setCutter(boolean isCutter) {
+		this.cutter = isCutter;
+	}
+
+	/**
+	 * @return the isCutter
+	 */
+	public boolean isCutter() {
+		return cutter;
+	}
+	
+	public void setLabel(String label) {
+		this.label = label;
+	}
+	
+	public String getLabel() {
+		return label;
+	}
+	
 
 }

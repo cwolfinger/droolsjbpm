@@ -126,7 +126,7 @@ public class ReturnValueConstraint extends MutableTypeConstraint
 
         final ReturnValueConstraint other = (ReturnValueConstraint) object;
 
-        return this.readAccessor.equals( other.readAccessor ) && this.restriction.equals( other.restriction );
+        return this.readAccessor.equals( other.readAccessor ) && this.restriction.equals( other.restriction ) && (this.isCutter() == other.isCutter());
     }
 
     public ContextEntry createContextEntry() {
@@ -250,9 +250,23 @@ public class ReturnValueConstraint extends MutableTypeConstraint
 			ans.add(getConstraintKey());
 	return ans;
 	}
+
+	public boolean isCutter() {
+		return this.restriction.isCutter();
+	}
+
+	public void setCutter(boolean cutter) {
+		this.restriction.setCutter(cutter);		
+	}
 	
     
-    
+	public String getLabel() {
+		return this.restriction.getLabel();
+	}
+
+	public void setLabel(String label) {
+		this.restriction.setLabel(label);
+	}
 
 	
 

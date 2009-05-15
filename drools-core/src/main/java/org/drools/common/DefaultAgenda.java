@@ -353,6 +353,7 @@ public class DefaultAgenda
             }
 
             agendaGroup.add( activation );
+            
         } else {
             // There is a RuleFlowNode so add it there, instead of the Agenda
             InternalRuleFlowGroup rfg = (InternalRuleFlowGroup) this.getRuleFlowGroup( activation.getRule().getRuleFlowGroup() );
@@ -398,6 +399,82 @@ public class DefaultAgenda
         return true;
 
     }
+    
+    
+    
+    public boolean addActivation(final ImperfectAgendaItem activation) {
+        // set the focus if rule autoFocus is true
+        if ( activation.getRule().getAutoFocus() ) {
+            this.setFocus( activation.getRule().getAgendaGroup() );
+        }
+
+        // adds item to activation group if appropriate
+        addItemToActivationGroup( activation );
+
+        InternalAgendaGroup agendaGroup = (InternalAgendaGroup) this.getAgendaGroup( activation.getRule().getAgendaGroup() );
+        activation.setAgendaGroup( agendaGroup );
+
+        if ( activation.getRule().getRuleFlowGroup() == null ) {
+            // No RuleFlowNode so add it directly to the Agenda
+
+            // do not add the activation if the rule is "lock-on-active" and the
+            // AgendaGroup is active
+            // we must check the context to determine if its a new tuple or an
+            // exist re-activated tuple as part of the retract
+            if ( activation.getPropagationContext().getType() == PropagationContext.MODIFICATION ) {
+            	
+                if ( activation.getRule().isLockOnActive() && agendaGroup.isActive() ) {
+                    Activation justifier = activation.getPropagationContext().removeRetractedTuple( activation.getRule(),
+                                                                                                    (LeftTuple) activation.getTuple() );
+
+                    if ( justifier == null ) {
+                        // This rule is locked and active, do not allow new
+                        // tuples to activate
+                        return false;
+                    } else if ( activation.getRule().hasLogicalDependency() ) {
+                        copyLogicalDependencies( activation.getPropagationContext(),
+                                                 workingMemory,
+                                                 activation,
+                                                 justifier );
+                    }
+                } else if ( activation.getRule().hasLogicalDependency() ) {
+                    Activation justifier = activation.getPropagationContext().removeRetractedTuple( activation.getRule(),
+                                                                                                    (LeftTuple) activation.getTuple() );
+                    copyLogicalDependencies( activation.getPropagationContext(),
+                                             workingMemory,
+                                             activation,
+                                             justifier );
+                }
+                
+            } else if ( activation.getRule().isLockOnActive() && agendaGroup.isActive() ) {
+                return false;
+            }
+
+            agendaGroup.add( activation );
+            
+        } 
+        
+        // making sure we re-evaluate agenda in case we are waiting for activations
+        synchronized ( this.halt ) {
+            this.halt.notifyAll();
+        }
+        return true;
+
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
     private void copyLogicalDependencies(final PropagationContext context,
                                          final InternalWorkingMemory workingMemory,
@@ -932,7 +1009,7 @@ public class DefaultAgenda
 
         try {
         	//TODO:
-        	//System.out.println(this.getClass()+"Hacked fireActivation to insert consequence degree");
+        	System.out.println(this.getClass()+"Hacked fireActivation to insert consequence degree");
         	
         	if (activation instanceof ImperfectAgendaItem) {
         		this.knowledgeHelper.setConsequenceDegree(((ImperfectAgendaItem) activation).getDegree());

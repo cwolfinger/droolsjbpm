@@ -516,6 +516,10 @@ public class ReturnValueRestriction
 
     
 	private ConstraintKey singletonKey = null;
+
+	private boolean cutter;
+
+	private String label;
     
 	public ConstraintKey getConstraintKey() {
 		if (singletonKey == null)
@@ -528,4 +532,21 @@ public class ReturnValueRestriction
 			ans.add(getConstraintKey());
 	return ans;
 	}
+
+	public boolean isCutter() {
+		return cutter;
+	}
+
+	public void setCutter(boolean cut) {
+		this.cutter = cut;		
+	}
+	
+	public void setLabel(String label) {
+		this.label = label;
+	}
+	
+	public String getLabel() {
+		return label;
+	}
+	
 }

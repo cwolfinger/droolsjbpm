@@ -24,15 +24,25 @@ import org.drools.spi.PropagationContext;
 import org.drools.spi.Tuple;
 import org.drools.util.Iterator;
 
-public abstract class OperatorInstaller 
-	extends LeftTupleSource 
-	implements LeftTupleSink {
+public class OperatorInstaller 
+	extends LeftTupleSource	
+	implements LeftTupleSinkNode {
 	
 	protected LeftTupleSource source;
 	
 	protected int arity;
 	
 	private CompositeEvaluationTemplate template;
+	
+	
+    private LeftTupleSinkNode previousTupleSinkNode;
+    private LeftTupleSinkNode nextTupleSinkNode;
+
+    private ObjectSinkNode    previousObjectSinkNode;
+    private ObjectSinkNode    nextObjectSinkNode;
+
+    
+    
 
 	public OperatorInstaller(LeftTupleSource source, int arity, int id, RuleBasePartitionId partitionId, boolean isPartitionEnabled) {
 		super(id, partitionId, isPartitionEnabled);
@@ -153,7 +163,7 @@ public abstract class OperatorInstaller
 				workingMemory, 
 				factory,
 				record,
-				false);
+				true);
 	}
 
 	
@@ -171,9 +181,8 @@ public abstract class OperatorInstaller
 	}
 			
 	public void retractLeftTuple(LeftTuple leftTuple,
-			PropagationContext context, InternalWorkingMemory workingMemory) {
-		//TODO
-		//Nothing to do yet
+			PropagationContext context, InternalWorkingMemory workingMemory) {	       
+	            this.sink.propagateRetractLeftTuple(leftTuple, context, workingMemory);
 	}
 
 	public void setLeftTupleMemoryEnabled(boolean tupleMemoryEnabled) {
@@ -189,5 +198,57 @@ public abstract class OperatorInstaller
 	public LeftTupleSource getParentSource() {
     	return this.source;
     }
+
+	
+	
+	
+	
+	
+	
+	
+	
+    /**
+     * Returns the next node
+     * @return
+     *      The next TupleSinkNode
+     */
+    public LeftTupleSinkNode getNextLeftTupleSinkNode() {
+        return this.nextTupleSinkNode;
+    }
+
+    /**
+     * Sets the next node
+     * @param next
+     *      The next TupleSinkNode
+     */
+    public void setNextLeftTupleSinkNode(final LeftTupleSinkNode next) {
+        this.nextTupleSinkNode = next;
+    }
+
+    /**
+     * Returns the previous node
+     * @return
+     *      The previous TupleSinkNode
+     */
+    public LeftTupleSinkNode getPreviousLeftTupleSinkNode() {
+        return this.previousTupleSinkNode;
+    }
+
+    /**
+     * Sets the previous node
+     * @param previous
+     *      The previous TupleSinkNode
+     */
+    public void setPreviousLeftTupleSinkNode(final LeftTupleSinkNode previous) {
+        this.previousTupleSinkNode = previous;
+    }
+	
+	
+	
+	
+	
+	
+	
+	
 	
 }

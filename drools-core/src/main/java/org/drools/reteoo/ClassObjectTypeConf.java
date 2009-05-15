@@ -75,6 +75,12 @@ public class ClassObjectTypeConf
             BuildContext context = new BuildContext( ruleBase,
                                                      ((ReteooRuleBase) ruleBase.getRete().getRuleBase()).getReteooBuilder().getIdGenerator() );
             context.setCurrentEntryPoint( entryPoint );
+            if (ruleBase instanceof ImperfectRuleBase) {
+            	context.setDependencies(((ImperfectRuleBase) ruleBase).getDependencies());
+            }
+            
+            
+            
             if ( DroolsQuery.class == clazz ) {
                 context.setTupleMemoryEnabled( false );
                 context.setObjectTypeNodeMemoryEnabled( false );

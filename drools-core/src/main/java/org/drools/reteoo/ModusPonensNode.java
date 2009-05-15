@@ -16,16 +16,22 @@ import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.degrees.IDegree;
 import org.drools.degrees.factory.IDegreeFactory;
+import org.drools.degrees.operators.IDegreeCombiner;
 import org.drools.reteoo.builder.BuildContext;
 import org.drools.reteoo.filters.IFilterStrategy;
 import org.drools.rule.Behavior;
 import org.drools.rule.ContextEntry;
+import org.drools.rule.Rule;
 import org.drools.spi.PropagationContext;
 
 public class ModusPonensNode extends JoinNode {
 
 		
 	
+	private IDegreeCombiner mPOperator;
+
+
+
 	public ModusPonensNode(final int id,
             final LeftTupleSource leftInput,                
             final Behavior[] behaviors,
@@ -39,13 +45,15 @@ public class ModusPonensNode extends JoinNode {
 			  behaviors,
 			  context);
 		
-		Map<String,String> ruleDetails = context.getRule().getMetaAttributes();
+//		Map<String,String> ruleDetails = context.getRule().getMetaAttributes();
 		
-		String dstr = ruleDetails.get("degree");
-			if (dstr != null)
-				((ImplicationBetaConstraint) this.constraints).setPriorDegree(factory.buildDegree(Float.parseFloat(dstr)));
+		Rule rule = context.getRule();
+		
+		String priorStr = rule.getPriorDescription();		
+			if (priorStr != null)
+				((ImplicationBetaConstraint) this.constraints).setPriorDegree(factory.buildDegree(priorStr));
 																		
-		String fstr = ruleDetails.get("filterStrat");
+		String fstr = rule.getFilterStrategy();
 		try {
 			if (fstr != null) {
 				IFilterStrategy overrideStrat = (IFilterStrategy) Class.forName(fstr).newInstance();
@@ -56,6 +64,7 @@ public class ModusPonensNode extends JoinNode {
 			throw new RuntimeDroolsException(e);
 		}
 				
+		setMPOperator(factory.getModusPonensOperator(rule.getEntailMode()));
 		
 	}
 	
@@ -86,9 +95,15 @@ public class ModusPonensNode extends JoinNode {
             EvalRecord premiseRecord = leftTuple.getRecord();
         	            
             ContextEntry adHocCtx = new MPContextEntry(leftTuple);
-            Evaluation implEval = this.constraints.isSatisfiedCachedRight( new ContextEntry[] {adHocCtx},
-					  leftTuple, 
-					  factory )[0];
+//            Evaluation implEval = this.constraints.isSatisfiedCachedRight( new ContextEntry[] {adHocCtx},
+//					  leftTuple, 
+//					  factory )[0];
+
+            ImperfectFactHandle handle = new ImperfectFactHandle();
+            ImperfectRightTuple dummyRT = new ImperfectRightTuple(handle,this,null);
+            
+            Evaluation implEval = this.constraints.isSatisfiedCachedLeft( new ContextEntry[] {adHocCtx}, handle, factory)[0];
+
         	
             ArgList args = leftTuple.getArgList();
         	Collection<Evaluation> storedEvals = this.getGammaMemory().retrieve(args);
@@ -100,7 +115,7 @@ public class ModusPonensNode extends JoinNode {
     		
     		
     		
-        	EvalRecord mpRecord = new EvalRecord(this.id,factory.getModusPonensOp(),factory.getMergeStrategy(),factory.getNullHandlingStrategy(),new ArgList());
+        	EvalRecord mpRecord = new EvalRecord(this.id,getMPOperator(),factory.getMergeStrategy(),factory.getNullHandlingStrategy(),new ArgList());
         		Evaluation core = premiseRecord.getOperands().iterator().next();
         		core.deleteObserver(premiseRecord);
         	mpRecord.addEvaluation(core);        		
@@ -138,7 +153,8 @@ public class ModusPonensNode extends JoinNode {
         				mpRecord.setWorkingMemory(workingMemory);
         			
         			        			
-        			this.sink.propagateAssertLeftTuple( leftTuple,                            
+        			this.sink.propagateAssertLeftTuple( leftTuple,  
+        					dummyRT,
                             context,
                             workingMemory,
                             factory,
@@ -161,6 +177,16 @@ public class ModusPonensNode extends JoinNode {
 	
 	
 	
+	protected IDegreeCombiner getMPOperator() {
+		return mPOperator;
+	}
+	
+	protected void setMPOperator(IDegreeCombiner op) {
+		mPOperator = op;
+	}
+	
+	
+
 	public void update(Observable watcher, Object info) {
 		
 		EvalRecord record = null;
@@ -173,7 +199,7 @@ public class ModusPonensNode extends JoinNode {
 		System.out.println("**************************************************************UPDATE @MP NODE");
 		switch (this.filterStrat.doTry(record)) {
 		case IFilterStrategy.DROP : 
-			record.deleteObserver(this);
+			//record.deleteObserver(this);
 			return;
 		
 		case IFilterStrategy.HOLD : 
@@ -194,7 +220,8 @@ public class ModusPonensNode extends JoinNode {
 						record,
 						this.tupleMemoryEnabled  );
 			else
-				this.sink.propagateAssertLeftTuple( record.getLeftTuple(),						
+				this.sink.propagateAssertLeftTuple( record.getLeftTuple(),			
+						new ImperfectRightTuple(new ImperfectFactHandle(),this,null),
 						record.getPropagationContext(),
 						record.getWorkingMemory(),
 						record.getFactory(),
@@ -209,6 +236,25 @@ public class ModusPonensNode extends JoinNode {
 	
 	
 	
+	public void retractLeftTuple(final LeftTuple leftTuple,
+            final PropagationContext context,
+            final InternalWorkingMemory workingMemory) {
+		
+		
+/* The child of leftTuple is observed by MP */		
+//		if (leftTuple instanceof ImperfectLeftTuple) {
+//        	System.out.println(this.getClass() + "HACKED TO DETACH RECORD OBSERVER");
+//        	((ImperfectLeftTuple) leftTuple).getRecord().deleteObserver(this);
+//        }
+		
+		final BetaMemory memory = (BetaMemory) workingMemory.getNodeMemory( this );
+		memory.getLeftTupleMemory().remove( leftTuple );
+		if ( leftTuple.getBetaChildren() != null ) {
+			this.sink.propagateRetractLeftTuple( leftTuple,
+					context,
+					workingMemory );
+		}
+	}
 	
 	
 	

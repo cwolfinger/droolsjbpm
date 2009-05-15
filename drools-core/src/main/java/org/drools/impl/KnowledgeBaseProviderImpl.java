@@ -32,15 +32,17 @@ public class KnowledgeBaseProviderImpl implements KnowledgeBaseProvider {
     
     
     
-	public KnowledgeBase newKnowledgeBase() {		
-		System.out.println("WARNING "+this.getClass().getName()+ " HACKED METHOD TO ACTIVATE IMPERFECTION");
-		return new KnowledgeBaseImpl( RuleBaseFactory.newRuleBase(RuleBase.IMPERFECT_RETEOO) );
-		//return new KnowledgeBaseImpl( RuleBaseFactory.newRuleBase(RuleBase.RETEOO) );
+	public KnowledgeBase newKnowledgeBase() {				
+		//return new KnowledgeBaseImpl( RuleBaseFactory.newRuleBase(RuleBase.IMPERFECT_RETEOO) );
+		return new KnowledgeBaseImpl( RuleBaseFactory.newRuleBase(RuleBase.RETEOO) );
 	}	
 	
     public KnowledgeBase newKnowledgeBase(KnowledgeBaseConfiguration conf) {
-    	System.out.println("WARNING "+this.getClass().getName()+ " HACKED METHOD TO ACTIVATE IMPERFECTION");		
-        return new KnowledgeBaseImpl( RuleBaseFactory.newRuleBase(RuleBase.IMPERFECT_RETEOO, ( RuleBaseConfiguration ) conf ) );
+    	System.out.println("WARNING "+this.getClass().getName()+ " HACKED METHOD TO ACTIVATE IMPERFECTION");
+    	if (conf.isImperfect()) {
+    		return new KnowledgeBaseImpl( RuleBaseFactory.newRuleBase(RuleBase.IMPERFECT_RETEOO, ( RuleBaseConfiguration ) conf ) );	
+    	} else
+    		return new KnowledgeBaseImpl( RuleBaseFactory.newRuleBase(RuleBase.RETEOO, ( RuleBaseConfiguration ) conf ) );
     }
 
 	public Environment newEnvironment() {

@@ -50,6 +50,9 @@ public class Pattern
     private int               index;
     private PatternSource     source;
     private List<Behavior>    behaviors;
+    
+    private boolean			  isCutter = false;
+    private String			  label = null;
 
     // this is the offset of the related fact inside a tuple. i.e:
     // the position of the related fact inside the tuple;
@@ -377,4 +380,32 @@ public class Pattern
         }
         this.behaviors.add( behavior );
     }
+
+	/**
+	 * @param isCutter the isCutter to set
+	 */
+	public void setCutter(boolean isCutter) {
+		this.isCutter = isCutter;
+	}
+
+	/**
+	 * @return the isCutter
+	 */
+	public boolean isCutter() {
+		return isCutter;
+	}
+
+	/**
+	 * @param label the label to set
+	 */
+	public void setLabel(String label) {
+		this.label = label;
+	}
+
+	/**
+	 * @return the label
+	 */
+	public String getLabel() {
+		return label;
+	}
 }

@@ -146,4 +146,8 @@ public class Forall extends ConditionalElement {
         return true;
     }
 
+    public boolean isCutter() {
+    	return false;
+    }
+    
 }

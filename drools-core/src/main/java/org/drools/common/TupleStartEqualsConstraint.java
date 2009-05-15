@@ -134,8 +134,10 @@ public class TupleStartEqualsConstraint
     }
 
     public boolean equals(final Object object) {
-        if ( object instanceof TupleStartEqualsConstraint ) {
-            return true;
+        if ( object instanceof TupleStartEqualsConstraint) {
+        	TupleStartEqualsConstraint other = (TupleStartEqualsConstraint) object;
+        	
+            return this.isCutter() == other.isCutter();
         }
         return false;
     }
@@ -212,6 +214,8 @@ public class TupleStartEqualsConstraint
     private ConstraintKey singletonKey = null;
 
 	private EvaluationTemplate template;
+
+	private boolean cutter;
     
 	public ConstraintKey getConstraintKey() {
 		if (singletonKey == null) {
@@ -244,5 +248,13 @@ public class TupleStartEqualsConstraint
 		return template;
 	}
 
+	
+	public boolean isCutter() {
+		return cutter;
+	}
+	
+	public void setCutter(boolean cut) {
+		cutter = cut;
+	}
 	
 }

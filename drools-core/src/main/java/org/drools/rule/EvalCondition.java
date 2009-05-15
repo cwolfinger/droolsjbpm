@@ -210,4 +210,8 @@ public class EvalCondition extends ConditionalElement
         }
     }
 
+    public boolean isCutter() {
+    	return false;
+    }
+    
 };

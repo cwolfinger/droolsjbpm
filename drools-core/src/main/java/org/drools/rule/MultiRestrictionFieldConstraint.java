@@ -102,7 +102,7 @@ public class MultiRestrictionFieldConstraint extends MutableTypeConstraint
         }
         final MultiRestrictionFieldConstraint other = (MultiRestrictionFieldConstraint) object;
 
-        return this.readAccessor.equals( other.readAccessor ) && this.restrictions.equals( other.restrictions );
+        return this.readAccessor.equals( other.readAccessor ) && this.restrictions.equals( other.restrictions ) && (this.isCutter() == other.isCutter());
     }
 
     public boolean isAllowed(final InternalFactHandle handle,
@@ -192,8 +192,25 @@ public class MultiRestrictionFieldConstraint extends MutableTypeConstraint
 				return this.getTemplate();
 			else return null;
 	}
+
+	public boolean isCutter() {
+		return restrictions.isCutter();
+	}
+
+	public void setCutter(boolean cutter) {
+		this.restrictions.setCutter(cutter);
+		
+		
+	}
 	
-	 
+	public String getLabel() {
+		return this.restrictions.getLabel();
+	}
+
+	public void setLabel(String label) {
+		this.restrictions.setLabel(label);
+	} 
+	
 	 
 	 
 	 /*

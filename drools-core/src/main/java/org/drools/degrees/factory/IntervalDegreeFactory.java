@@ -7,6 +7,8 @@ import org.drools.degrees.operators.IMergeStrategy;
 import org.drools.degrees.operators.INullHandlingStrategy;
 import org.drools.degrees.operators.intervals.DefaultIntervalMergeStrategy;
 import org.drools.degrees.operators.intervals.DefaultIntervalNullHandlingStrategy;
+import org.drools.degrees.operators.intervals.IntervalDiscountOperator;
+import org.drools.degrees.operators.intervals.IntervalDoubleMPOperator;
 import org.drools.degrees.operators.intervals.IntervalEquivOperator;
 import org.drools.degrees.operators.intervals.IntervalExistsOperator;
 import org.drools.degrees.operators.intervals.IntervalForAnyOperator;
@@ -18,6 +20,8 @@ import org.drools.degrees.operators.intervals.IntervalMaxOrOperator;
 import org.drools.degrees.operators.intervals.IntervalMinAndOperator;
 import org.drools.degrees.operators.intervals.IntervalModusPonensOperator;
 import org.drools.degrees.operators.intervals.IntervalNegationOperator;
+import org.drools.degrees.operators.intervals.IntervalXorOperator;
+import org.drools.reteoo.DoubleMPOperatorInstaller;
 import org.drools.reteoo.filters.DefaultIntervalFilterStrategy;
 import org.drools.reteoo.filters.IFilterStrategy;
 
@@ -70,6 +74,11 @@ public class IntervalDegreeFactory implements IDegreeFactory {
 	public IDegreeCombiner getEquivOperator() {
 		return new IntervalEquivOperator();
 	}
+	
+	
+	public IDegreeCombiner getXorOperator() {
+		return new IntervalXorOperator();
+	}
 
 	public IDegreeCombiner getExistsOperator() {
 		return new IntervalExistsOperator();
@@ -109,6 +118,74 @@ public class IntervalDegreeFactory implements IDegreeFactory {
 
 	public IDegreeCombiner getOrOperator() {
 		return new IntervalLukasOrOperator();
+	}
+
+	public IDegreeCombiner getDiscountOperator() {
+		return new IntervalDiscountOperator();
+	}
+
+	public IDegreeCombiner getDoubleMPOperator() {
+		return new IntervalDoubleMPOperator();
+	}
+	
+	
+	
+	
+
+	public IDegreeCombiner getAndOperator(String params) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public IDegreeCombiner getDiscountOperator(String params) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public IDegreeCombiner getDoubleMPOperator(String params) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public IDegreeCombiner getEquivOperator(String params) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public IDegreeCombiner getOrOperator(String params) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public IDegreeCombiner getXorOperator(String params) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public IDegreeCombiner getHedgeOperator() {
+		throw new UnsupportedOperationException("Not yet...");
+	}
+
+	public IDegreeCombiner getHedgeOperator(String params) {
+		throw new UnsupportedOperationException("Not yet...");
+	}
+
+	public IDegree buildDegree(String priorStr) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Not yet...");
+	}
+
+	public IDegreeCombiner getModusPonensOperator(String params) {
+		if (params == null)
+			return getModusPonensOp();
+		
+		if (params.equals("implication")) {
+			return getModusPonensOp();
+		} else if (params.equals("equivalence")) {
+			return getDoubleMPOperator();			
+		} else
+			return getModusPonensOp();
+		
 	}
 
 }

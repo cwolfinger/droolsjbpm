@@ -20,7 +20,13 @@ import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.Set;
 
 import org.drools.RuleBaseConfiguration;
@@ -37,6 +43,7 @@ import org.drools.common.PropagationContextImpl;
 import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.reteoo.ReteooWorkingMemory.WorkingMemoryReteExpireAction;
 import org.drools.reteoo.builder.BuildContext;
+import org.drools.reteoo.filters.IFilterStrategy;
 import org.drools.rule.Declaration;
 import org.drools.rule.EntryPoint;
 import org.drools.rule.EvalCondition;
@@ -75,7 +82,9 @@ public class ObjectTypeNode extends ObjectSource
     implements
     ObjectSink,
     Externalizable,
-    NodeMemory
+    NodeMemory,
+    IGammaNode,
+    Observer
 
 {
     // ------------------------------------------------------------
@@ -98,7 +107,15 @@ public class ObjectTypeNode extends ObjectSource
 
     private transient ExpireJob job              = new ExpireJob();
     
-    private EvaluationTemplate  template; 
+    private EvaluationTemplate  template;
+
+	private GammaMemory gamma; 
+	
+	private String		label;
+
+	private IFilterStrategy 	filterStrat;
+
+	private ConstraintKey singletonKey;
 
 
     public ObjectTypeNode() {
@@ -126,15 +143,67 @@ public class ObjectTypeNode extends ObjectSource
         this.objectType = objectType;
         setObjectMemoryEnabled( context.isObjectTypeNodeMemoryEnabled() );
         
-        //TODO: 
+        
+    }
+    
+    
+    public void setImperfectStructures(final BuildContext context) {
+    	//TODO: 
         //System.out.println(this.getClass()+" Hacked to add class constraint evaluation");
         if (context.getRuleBase() instanceof ImperfectRuleBase) {
         	IDegreeFactory factory = ((ImperfectRuleBase) context.getRuleBase()).getDegreeFactory();
-        	this.template = new SingleEvaluationTemplate(this.getId(),this.getConstraintKey(),new HashSet<String>(),factory.getMergeStrategy(),factory.getNullHandlingStrategy());
+        	this.filterStrat = factory.getDefaultStrategy();
+        	
+        	ConstraintKey key = this.getConstraintKey();
+        	
+        	
+        	this.template = buildEvaluationTemplate(context.getDependencies(),factory); 
+        	this.gamma = new GammaMemory();
+        		context.getRuleBase().getRete().indexGammaNode(key,this);
         }
     }
 
-    public void readExternal(ObjectInput in) throws IOException,
+    public EvaluationTemplate buildEvaluationTemplate(Map<ConstraintKey,Set<String>> dependencies, IDegreeFactory factory) {
+    	    	    	    	
+    	Set<String> deps;
+		 
+		 String label = this.getLabel();		 
+		 Set<String> aliasedDeps = null;
+		 	if (dependencies != null && label != null) {
+		 		ConstraintKey tester = new ConstraintKey();
+		 			tester.setAlias(label);
+		 		aliasedDeps = dependencies.remove(tester);
+		 		
+		 		if (aliasedDeps != null) {
+		 			ConstraintKey properKey = this.getConstraintKey();		 						 				
+		 			Set<String> previousDeps = dependencies.remove(properKey);
+		 			
+		 			if (previousDeps != null)
+		 				aliasedDeps.addAll(previousDeps);
+		 			
+		 			properKey.setAlias(label);
+		 			
+		 			dependencies.put(properKey, aliasedDeps);		 		
+		 		}
+		 	}
+		 	
+		 
+		 if (dependencies == null)
+			 deps = Collections.emptySet();
+		 else 
+			 deps = dependencies.get(this.getConstraintKey());
+    	
+    	        
+    	EvaluationTemplate templ = new SingleEvaluationTemplate(
+    										this.getId(),
+    										getConstraintKey(),
+    										deps,
+    										factory.getMergeStrategy(),
+    										factory.getNullHandlingStrategy());
+		return templ;
+	}
+
+	public void readExternal(ObjectInput in) throws IOException,
                                             ClassNotFoundException {
         super.readExternal( in );
         objectType = (ObjectType) in.readObject();
@@ -514,9 +583,20 @@ public class ObjectTypeNode extends ObjectSource
     
     
     public ConstraintKey getConstraintKey() {
-    	String cName = ((ClassObjectType) this.objectType).getClassName();
-    	return new ConstraintKey("class","==",cName);
+    	if (singletonKey == null) {
+    		String cName = ((ClassObjectType) this.objectType).getClassName();
+    		singletonKey = new ConstraintKey("class","==",cName);
+    	}
+    	return singletonKey;
     }
+    
+    
+    
+    
+    
+    
+    
+    
     
     
 	public void assertObject(ImperfectFactHandle factHandle,
@@ -529,36 +609,188 @@ public class ObjectTypeNode extends ObjectSource
             // we do this after the shadowproxy update, just so that its up to date for the future
             return;
         }
-
-		//TODO Test for class membership...
-		ConstraintKey key = getConstraintKey();
 		
-		Evaluation eval = factHandle.getPropertyDegree(key); 
-		if (eval == null) {
-			eval = this.template.spawn(factory.True(),new ArgList(factHandle.getObject())); 				
-			factHandle.addPropertyDegree(eval);
-		}						
-		record.addEvaluation(eval);
-		
-		
-		if (factHandle instanceof InitialFactHandle)
-			record = null;
-		
-		
-		
-        if ( this.objectMemoryEnabled ) {
+		if ( this.objectMemoryEnabled ) {
             final ObjectHashSet memory = (ObjectHashSet) workingMemory.getNodeMemory( this );
             memory.add( factHandle,
                         false );
         }
-        this.sink.propagateAssertObject( factHandle,
-                                         context,
-                                         workingMemory,
-                                         factory,
-                                         record);
+		
+		
+		if (factHandle instanceof InitialFactHandle) {			
+			this.sink.propagateAssertObject(factHandle,
+					context,
+					workingMemory,
+					factory,
+					null);
+			return;
+		}
+		
 
+		//TODO Test for class membership...
+		ConstraintKey key = getConstraintKey();
+		
+
+		Collection<Evaluation> storedEvals = this.gamma.retrieve(new ArgList(factHandle.getObject()));
+
+		Evaluation eval = factHandle.getPropertyDegree(key); 
+		if (eval == null) {
+			eval = this.template.spawn(storedEvals == null ? factory.True() : factory.False(),new ArgList(factHandle.getObject())); 				
+			factHandle.addPropertyDegree(eval);
+		}
+		
+		record.addEvaluation(eval);
+		
+		if (storedEvals != null) {
+			record.addEvaluations(storedEvals);
+			factHandle.addPropertyDegrees(storedEvals);
+		}
+		
+												
+		
+		
+		
+		
+	
+		
+		
+		
+		
+		System.out.println("Type evaluation trial "+record.expand());
+		
+		int verdict;
+    	
+    	if (record.getDegree().equals(factory.False())) {
+    		//TypeNode is implicitly cutter
+    		verdict = IFilterStrategy.DROP;    		
+    	} else if (record == null) {
+    		//InitialFact is passed
+    		verdict = IFilterStrategy.PASS;
+    	} else {
+    		//Normal test
+    		verdict = this.filterStrat.doTry(record); 
+    	}
+    	
+    	switch (verdict) {
+			case IFilterStrategy.DROP : 
+				//time to die
+				System.out.println("Type FAIL : DROP record");
+				return;
+			
+			case IFilterStrategy.HOLD : 
+				System.out.println("WARNING::::::::::::::::::::::::::: OBJECT HELD AT TYPE NODE "+this.getConstraintKey());
+				System.out.println("Situation is "+record.expand());
+					record.setFactHandle(factHandle);
+					record.setFactory(factory);
+					record.setPropagationContext(context);
+					record.setWorkingMemory(workingMemory);
+				record.addObserver(this);				
+				//wait for more1
+				return;
+			
+			case IFilterStrategy.PASS :
+				//go on
+				System.out.println("Alpha PASS ");
+				this.sink.propagateAssertObject(factHandle,
+		            context,
+		            workingMemory,
+		            factory,
+		            record);
+				break;
+			default : return;			
+		}
+		        
         
 	}
 
+	
+
+	public void update(Observable watcher, Object arg) {
+		EvalRecord record = (EvalRecord) watcher;
+		System.out.println("**************************************************************UPDATE @ALPHA NODE");
+				
+				int verdict;
+
+				if (record.getDegree().equals(record.getFactory().False()))
+					verdict = IFilterStrategy.DROP;
+				else 
+					verdict = this.filterStrat.doTry(record); 
+
+
+				switch (verdict) {
+				case IFilterStrategy.DROP : 
+					record.deleteObserver(this);
+					return;
+				
+				case IFilterStrategy.HOLD : 
+					//do nothing
+					return;
+				
+				case IFilterStrategy.PASS :
+					//go on
+					record.deleteObserver(this);
+					//throw new RuntimeException("Awakened objeect");
+					//TODO
+					this.sink.propagateAssertObject(record.getFactHandle(),
+			            record.getPropagationContext(),
+			            record.getWorkingMemory(),
+			            record.getFactory(),
+			            record);
+					//break;
+				default : return;	
+				
+				}
+		
+	}
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	public EvaluationTemplate getEvaluationTemplate(ConstraintKey key) {
+		return template;
+	}
+
+	public Collection<Evaluation> getStoredEvals(ArgList args) {
+		return getGammaMemory().retrieve(args);
+	}
+
+	private GammaMemory getGammaMemory() {
+		return gamma;
+	}
+
+	public void storeEvaluation(ArgList args, Evaluation prepareEval) {
+		getGammaMemory().store(args, prepareEval);
+	}
+
+	/**
+	 * @param label the label to set
+	 */
+	public void setLabel(String label) {
+		this.label = label;
+			this.getConstraintKey().setAlias(label);
+		System.err.println(this.getClass()+" set label "+ label);	
+	}
+
+	/**
+	 * @return the label
+	 */
+	public String getLabel() {
+		return label;
+	}
+	
+	
 	
 }

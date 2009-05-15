@@ -51,6 +51,10 @@ public class LiteralRestriction
     private InternalReadAccessor       readAccessor;
 
     private static final Declaration[] requiredDeclarations = new Declaration[0];
+    
+    private boolean					   isCutter;
+    
+    private String					   label;
 
     public LiteralRestriction() {
         this( null,
@@ -104,7 +108,7 @@ public class LiteralRestriction
     public IDegree isSatisfied(InternalReadAccessor extractor,
 			InternalFactHandle handle, InternalWorkingMemory workingMemory,
 			ContextEntry context, IDegreeFactory factory) {
-    	return this.evaluator.evaluate( null,
+    	return this.evaluator.evaluate( workingMemory,
     			factory,
                 this.readAccessor,
                 handle.getObject(),
@@ -277,7 +281,29 @@ public class LiteralRestriction
 		ans.add(this.getConstraintKey());
 		return ans;
 	}
+
+	/**
+	 * @param isCutter the isCutter to set
+	 */
+	public void setCutter(boolean isCutter) {
+		this.isCutter = isCutter;
+	}
+
+	/**
+	 * @return the isCutter
+	 */
+	public boolean isCutter() {
+		return isCutter;
+	}
 	
+	
+	public void setLabel(String label) {
+		this.label = label;
+	}
+	
+	public String getLabel() {
+		return label;
+	}
 	
 
 }

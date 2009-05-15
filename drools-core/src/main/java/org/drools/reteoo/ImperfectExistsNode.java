@@ -11,6 +11,7 @@ import org.drools.common.BetaConstraints;
 import org.drools.common.ImperfectFactHandle;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.common.TupleStartEqualsConstraint;
+import org.drools.degrees.SimpleDegree;
 import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.degrees.operators.IDegreeCombiner;
 import org.drools.degrees.operators.IMergeStrategy;
@@ -93,6 +94,9 @@ public class ImperfectExistsNode extends ExistsNode implements Observer {
 			PropagationContext propagationContext,
 			InternalWorkingMemory workingMemory, IDegreeFactory factory,
 			EvalRecord record) {
+							
+			
+		
 		
 		 final RightTuple rightTuple = new ImperfectRightTuple( factHandle,
                  this, record );
@@ -168,12 +172,12 @@ public class ImperfectExistsNode extends ExistsNode implements Observer {
 		
 		
 		RightTupleMemory rtMem = memory.getRightTupleMemory();		
-		ObservableRightTupleMemoryWrapper wMemory = (ObservableRightTupleMemoryWrapper) rtMem; 
+		ObservableRightTupleMemoryWrapper wrappedMemory = (ObservableRightTupleMemoryWrapper) rtMem; 
 
-		OperandSet opSet = new OperandSet(leftTuple,wMemory,this.constraints,memory.getContext(),workingMemory,factory);
+		OperandSet opSet = new OperandSet(leftTuple,wrappedMemory,this.constraints,memory.getContext(),workingMemory,factory, sink, this, context);
 		
 		
-		EvalRecord mainRecord = leftTuple.getRecord();
+		EvalRecord mainRecord = leftTuple.getRecord().clone();
 		
 				
 		 this.constraints.updateFromTuple( memory.getContext(),
@@ -187,8 +191,13 @@ public class ImperfectExistsNode extends ExistsNode implements Observer {
 		
 										
 		opSet.addObserver( eval);
+	
 			
 		mainRecord.addEvaluation(eval);
+		
+			
+		
+			
 		        				
 		System.out.println("Situation at EXISTS eval"+mainRecord.expand());        		        		        		        	
     	
@@ -197,6 +206,8 @@ public class ImperfectExistsNode extends ExistsNode implements Observer {
     		case IFilterStrategy.DROP : 
 //    			System.out.println("Exist FAIL at assertTuple: DROP record");
 //    			return;
+    			    					  
+    			
 		
     		case IFilterStrategy.HOLD : //TODO: HOLD
     			System.out.println("HOLD RULES @EXIST NODE"+this.getId());
@@ -212,6 +223,14 @@ public class ImperfectExistsNode extends ExistsNode implements Observer {
 		
     		case IFilterStrategy.PASS : 
     			System.out.println("Exist PASS at assertTuple: propagate record");
+    			mainRecord.setLeftTuple(leftTuple);
+    			mainRecord.setFactory(factory);
+				mainRecord.setPropagationContext(context);
+				mainRecord.setWorkingMemory(workingMemory);
+				
+				mainRecord.deleteObserver(this);	
+
+    			
     			this.sink.propagateAssertLeftTuple( leftTuple,                        
                         context,
                         workingMemory,
@@ -256,14 +275,23 @@ public class ImperfectExistsNode extends ExistsNode implements Observer {
     		case IFilterStrategy.DROP : 
 //    			System.out.println("Exist FAIL at assertTuple: DROP record");
 //    			return;
+    			
+    			
 //		
     		case IFilterStrategy.HOLD : //TODO: HOLD
     			System.out.println("HOLD RULES @EXIST NODE"+this.getId());
-    			System.out.println("Situation is "+mainRecord.expand());    			    				    			
+    			System.out.println("Situation is "+mainRecord.expand());    	
+    			
+    			
+    			mainRecord.addObserver(this);
+    			
     			break;
 		
     		case IFilterStrategy.PASS : 
     			System.out.println("Exist PASS at assertTuple: propagate record");
+    			
+    			mainRecord.deleteObserver(this);
+    			
     			this.sink.propagateAssertLeftTuple( mainRecord.getLeftTuple(),                        
                         mainRecord.getPropagationContext(),
                         mainRecord.getWorkingMemory(),
@@ -279,6 +307,21 @@ public class ImperfectExistsNode extends ExistsNode implements Observer {
 	
 	
 	
+	
+	
+	public void retractRightTuple(final RightTuple rightTuple,
+            final PropagationContext context,
+            final InternalWorkingMemory workingMemory) {
+
+
+		final BetaMemory memory = (BetaMemory) workingMemory.getNodeMemory( this );
+//		behavior.retractRightTuple( memory.getBehaviorContext(),
+//				rightTuple,
+//				workingMemory );
+		ObservableRightTupleMemoryWrapper wrapper = ((ObservableRightTupleMemoryWrapper) memory.getRightTupleMemory());		
+			wrapper.remove( rightTuple, context);
+		       
+	}
 	
 	
 	

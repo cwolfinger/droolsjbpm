@@ -19,9 +19,12 @@ package org.drools.common;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.Timer;
 
 import org.drools.FactException;
 import org.drools.marshalling.impl.MarshallerReaderContext;
@@ -268,6 +271,8 @@ public class TruthMaintenanceSystem {
                 this.tms.getJustifiedMap().remove( handle.getId() );
                 // this needs to be scheduled so we don't upset the current
                 // working memory operation
+				System.out.println("Retracting "+handle.toString()+"at" + Calendar.getInstance().getTimeInMillis());
+
                 workingMemory.retract( this.handle,
                                        false,
                                        true,
@@ -325,6 +330,12 @@ public class TruthMaintenanceSystem {
             set = new HashSet();
             this.justifiedMap.put( handle.getId(),
                                    set );
+        }
+        System.out.println("Adding a dep NOde "+node.hashCode() + " set contains "+set.contains(node));
+        for (Object o : set) {
+        	LogicalDependency l = (LogicalDependency) o;
+        	System.out.println("Set contains "+l + " code : " +l.hashCode());
+        	System.out.println(l.equals(node));
         }
         set.add( node );
     }

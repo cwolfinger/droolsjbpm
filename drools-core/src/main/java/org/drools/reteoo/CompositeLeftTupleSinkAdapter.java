@@ -112,6 +112,11 @@ public class CompositeLeftTupleSinkAdapter extends AbstractLeftTupleSinkAdapter 
             doPropagateRetractLeftTuple( context, workingMemory, child, child.getLeftTupleSink() );
             child.unlinkFromRightParent();
             child.unlinkFromLeftParent();
+            
+            System.out.println(this.getClass() + "HACKED TO DETACH RECORD OBSERVER");
+            if (child instanceof ImperfectLeftTuple)
+            	((ImperfectLeftTuple) child).getRecord().deleteObservers();
+            
             child = temp;
         }
     }

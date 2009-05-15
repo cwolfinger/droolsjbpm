@@ -69,5 +69,13 @@ public interface Restriction
     public ConstraintKey getConstraintKey();
     
     public Collection<ConstraintKey> getAllConstraintKeys();
+    
+    public boolean isCutter();
+    
+    public void setCutter(boolean cut);
+    
+    public void setLabel(String label);
+    
+    public String getLabel();
 
 }

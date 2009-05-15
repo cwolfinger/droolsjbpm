@@ -20,6 +20,10 @@ public abstract class AbstractCompositeRestriction
 
     protected Restriction[]         restrictions;
 
+    private boolean					isCutter;
+    
+    private String 					label;
+    
     public AbstractCompositeRestriction() {
     }
 
@@ -180,5 +184,28 @@ public abstract class AbstractCompositeRestriction
         }
 
     }
+    
+    /**
+	 * @param isCutter the isCutter to set
+	 */
+	public void setCutter(boolean isCutter) {
+		this.isCutter = isCutter;
+	}
+
+	/**
+	 * @return the isCutter
+	 */
+	public boolean isCutter() {
+		return isCutter;
+	}
+	
+	public void setLabel(String label) {
+		this.label = label;
+	}
+	
+	public String getLabel() {
+		return label;
+	}
+	
 
 }

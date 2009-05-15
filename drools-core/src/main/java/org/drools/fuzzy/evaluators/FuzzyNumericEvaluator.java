@@ -1,17 +1,14 @@
 package org.drools.fuzzy.evaluators;
 
 
-import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.lang.reflect.InvocationTargetException;
-import java.rmi.server.Skeleton;
 import java.util.StringTokenizer;
 
 
 import org.drools.RuntimeDroolsException;
-import org.drools.WorkingMemory;
 import org.drools.base.BaseImperfectEvaluator;
 import org.drools.base.ValueType;
 import org.drools.base.evaluators.Operator;
@@ -20,7 +17,6 @@ import org.drools.degrees.IDegree;
 import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.fuzzy.evaluators.membership.INumericSetMembershipFunction;
 import org.drools.fuzzy.evaluators.membership.SkepticNumericMembershipFunction;
-import org.drools.reteoo.ImperfectRuleBase;
 import org.drools.rule.VariableRestriction.VariableContextEntry;
 import org.drools.spi.FieldValue;
 

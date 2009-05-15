@@ -181,5 +181,9 @@ public class EmptyBetaConstraints
 	public EvaluationTemplate getEvalTemplate(ConstraintKey key) {
 		return null;
 	}
+
+	public boolean isCutter() {		
+		return false;
+	}
 	
 }

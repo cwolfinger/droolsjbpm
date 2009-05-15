@@ -131,6 +131,12 @@ public class PatternBuilder
             }
         }
 
+        
+        if (pattern.isCutter()) {
+        	
+        	//throw new RuntimeDroolsException("A CuTTING Pattern has been created NOW");
+        }
+        	
         // last thing to do is increment the offset, since if the pattern has a source,
         // offset must be overriden
         context.incrementCurrentPatternOffset();
@@ -273,6 +279,8 @@ public class PatternBuilder
                                                  (EntryPointNode) context.getObjectSource(),
                                                  objectType,
                                                  context );
+        
+        
         if( objectType.isEvent() && EventProcessingMode.STREAM.equals( context.getRuleBase().getConfiguration().getEventProcessingMode() ) ) {
             long expirationOffset = 0;
             for( TypeDeclaration type : context.getRuleBase().getTypeDeclarations() ) {
@@ -288,8 +296,17 @@ public class PatternBuilder
             }
         }
 
-        context.setObjectSource( (ObjectSource) utils.attachNode( context,
-                                                                  otn ) );
+        ObjectTypeNode returnedOtn = (ObjectTypeNode) utils.attachNode( context, otn ); 
+        context.setObjectSource( returnedOtn  );
+        
+        //Notice that == is called on purpose
+        if (returnedOtn == otn) {
+        	if (pattern.getLabel() != null)
+        		otn.setLabel(pattern.getLabel());
+        	otn.setImperfectStructures(context);
+        }
+        
+        
 
         for ( final Iterator<Constraint> it = alphaConstraints.iterator(); it.hasNext(); ) {
             final AlphaNodeFieldConstraint constraint = (AlphaNodeFieldConstraint) it.next();

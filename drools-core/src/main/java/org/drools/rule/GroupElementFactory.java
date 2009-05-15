@@ -42,4 +42,84 @@ public class GroupElementFactory {
         return new GroupElement( GroupElement.EXISTS );
     }
 
+//	public static GroupElement newForAnyInstance() {
+//		return new GroupElement( GroupElement.FORANY );
+//	}
+	
+	public static GroupElement newXorInstance() {
+        return new GroupElement( GroupElement.XOR );
+    }
+	
+	public static GroupElement newEqvInstance() {
+        return new GroupElement( GroupElement.EQV );
+    }
+
+	public static GroupElement newDiscountInstance() {
+		return new GroupElement( GroupElement.DISC );
+	}
+
+	public static GroupElement newAvgInstance() {
+		return new GroupElement( GroupElement.AVG );
+	}
+
+	public static GroupElement newDblMPInstance() {
+		return new GroupElement( GroupElement.DMP );
+	}
+	
+	
+	public static GroupElement newHedgeInstance() {
+		return new GroupElement( GroupElement.HEDGE );
+	}
+	
+	
+	
+	
+	
+	public static GroupElement newAndInstance(String params) {
+        return new GroupElement( GroupElement.AND, params );
+    }
+
+    public static GroupElement newOrInstance(String params) {
+        return new GroupElement( GroupElement.OR, params );
+    }
+
+    public static GroupElement newNotInstance(String params) {
+        return new GroupElement( GroupElement.NOT, params );
+    }
+
+    public static GroupElement newExistsInstance(String params) {
+        return new GroupElement( GroupElement.EXISTS, params );
+    }
+
+//	public static GroupElement newForAnyInstance() {
+//		return new GroupElement( GroupElement.FORANY );
+//	}
+	
+	public static GroupElement newXorInstance(String params) {
+        return new GroupElement( GroupElement.XOR, params );
+    }
+	
+	public static GroupElement newEqvInstance(String params) {
+        return new GroupElement( GroupElement.EQV, params );
+    }
+
+	public static GroupElement newDiscountInstance(String params) {
+		return new GroupElement( GroupElement.DISC, params );
+	}
+
+	public static GroupElement newAvgInstance(String params) {
+		return new GroupElement( GroupElement.AVG, params );
+	}
+
+	public static GroupElement newDblMPInstance(String params) {
+		return new GroupElement( GroupElement.DMP , params);
+	}
+	
+	public static GroupElement newHedgeInstance(String params) {
+		return new GroupElement( GroupElement.HEDGE , params);
+	}
+	
+	
+	
+
 }

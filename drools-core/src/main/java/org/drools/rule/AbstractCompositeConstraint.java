@@ -26,6 +26,7 @@ import org.drools.RuntimeDroolsException;
 import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.degrees.factory.IDegreeFactory;
+import org.drools.degrees.operators.IDegreeCombiner;
 import org.drools.reteoo.CompositeEvaluationTemplate;
 import org.drools.reteoo.ConstraintKey;
 import org.drools.reteoo.EvaluationTemplate;
@@ -45,6 +46,8 @@ public abstract class AbstractCompositeConstraint extends MutableTypeConstraint 
     protected AlphaNodeFieldConstraint[] alphaConstraints     = new AlphaNodeFieldConstraint[0];
     protected BetaNodeFieldConstraint[]  betaConstraints      = new BetaNodeFieldConstraint[0];
     protected Declaration[]              requiredDeclarations = new Declaration[0];
+    
+    private IDegreeCombiner operator;
 
     public AbstractCompositeConstraint() {
         super();
@@ -233,6 +236,9 @@ public abstract class AbstractCompositeConstraint extends MutableTypeConstraint 
         }
         final AbstractCompositeConstraint other = (AbstractCompositeConstraint) object;
 
+        if (this.isCutter() != other.isCutter())
+        	return false;
+        
         return Arrays.equals( this.alphaConstraints,
                               other.alphaConstraints ) && Arrays.equals( this.betaConstraints,
                                                                          other.betaConstraints ) && Arrays.equals( this.requiredDeclarations,
@@ -385,6 +391,38 @@ public abstract class AbstractCompositeConstraint extends MutableTypeConstraint 
 //		}	
 //	}
     
+	 public boolean isCutter() {
+		 
+		 //SHOULD NOT BE CALLED??
+		 for (int j = 0; j < alphaConstraints.length; j++)
+			 if (alphaConstraints[j].isCutter())
+				 return true;
+		 
+		 for (int j = 0; j < betaConstraints.length; j++)
+			 if (betaConstraints[j].isCutter())
+				 return true;
+		 
+		 return false;
+	 }
+	 
+	 
+	 public void setCutter(boolean cut) {
+		 //throw new RuntimeDroolsException("Composite constraint cut is set at constraint level, not at restriction level");
+	 }
+
+	/**
+	 * @param operator the operator to set
+	 */
+	public void setOperator(IDegreeCombiner operator) {
+		this.operator = operator;
+	}
+
+	/**
+	 * @return the operator
+	 */
+	public IDegreeCombiner getOperator() {
+		return operator;
+	}
     
     
 

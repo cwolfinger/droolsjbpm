@@ -229,6 +229,7 @@ public class AndConstraint extends AbstractCompositeConstraint {
 
     
     private ConstraintKey singletonKey = null;
+	private String label;
     
 	public ConstraintKey getConstraintKey() {
 		if (singletonKey == null) {
@@ -239,7 +240,8 @@ public class AndConstraint extends AbstractCompositeConstraint {
 				cks[j] = this.alphaConstraints[j].getConstraintKey();
 			for (int j = 0; j < Nb; j++)
 				cks[Na+j] = this.betaConstraints[j].getConstraintKey();
-			singletonKey = new ConstraintKey("and",cks);
+			String opStr = this.getOperator().getName();
+			singletonKey = new ConstraintKey( opStr , cks);
 		}
 		return singletonKey;
 	}
@@ -264,7 +266,15 @@ public class AndConstraint extends AbstractCompositeConstraint {
     public EvaluationTemplate buildEvaluationTemplate(int id, Map<ConstraintKey, Set<String>> dependencies, IDegreeFactory factory) {
 		//BUILD A COMPOSITE TEMPLATE
     	int N = this.getAlphaConstraints().length + this.getBetaConstraints().length;
-    	CompositeEvaluationTemplate temp = new CompositeEvaluationTemplate(id,this.getConstraintKey(),dependencies.get(this.getConstraintKey()),N,factory.getAndOperator(),factory.getMergeStrategy(),factory.getNullHandlingStrategy());
+    	this.setOperator(factory.getAndOperator(this.getParams()));
+    	CompositeEvaluationTemplate temp = new CompositeEvaluationTemplate(
+    			id,
+    			this.getConstraintKey(),
+    			dependencies.get(this.getConstraintKey()),
+    			N,
+    			this.getOperator(),
+    			factory.getMergeStrategy(),
+    			factory.getNullHandlingStrategy());
 
     	int Na = this.alphaConstraints.length;
 		int Nb = this.betaConstraints.length;		
@@ -284,6 +294,15 @@ public class AndConstraint extends AbstractCompositeConstraint {
 //    	setTemplate(new EvaluationTemplate(id,this.getConstraintKey(),dependencies.get(this.getConstraintKey()),N,factory.getAndOperator(),factory.getMergeStrategy(),factory.getNullHandlingStrategy()));
 //    }
 
+    
+    
+    public String getLabel() {
+		return this.label;
+	}
+
+	public void setLabel(String label) {
+		this.label = label;
+	}
 	
 
 	

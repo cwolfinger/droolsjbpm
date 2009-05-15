@@ -102,6 +102,8 @@ public class BuildContext {
     
     private boolean							 negated;
     
+    private boolean							 cutter = false;
+    
     
     
     
@@ -479,6 +481,20 @@ public class BuildContext {
 	 */
 	public Map<ConstraintKey,Set<String>> getDependencies() {
 		return dependencies;
+	}
+
+	/**
+	 * @param cutter the cutter to set
+	 */
+	public void setCutter(boolean cutter) {
+		this.cutter = cutter;
+	}
+
+	/**
+	 * @return the cutter
+	 */
+	public boolean isCutter() {
+		return cutter;
 	}
 
 }

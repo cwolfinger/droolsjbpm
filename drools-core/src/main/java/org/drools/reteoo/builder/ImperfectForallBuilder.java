@@ -68,21 +68,20 @@ public class ImperfectForallBuilder extends ForallBuilder implements
          } else if ( forall.getRemainingPatterns().size() > 1 ) {
         	
         	
-        	and.addChild(base);
-        	
-        	
-             for ( final Iterator it = forall.getRemainingPatterns().iterator(); it.hasNext(); ) {
-                 andInner.addChild( (Pattern) it.next() );
-             }             
-             
-             		existsInner.addChild( andInner );
-          		notInner.addChild(existsInner);
-          	and.addChild(notInner);
-          	
-          	exists.addChild(and);
+//        	and.addChild(base);
+//        	
+//        	
+//             for ( final Iterator it = forall.getRemainingPatterns().iterator(); it.hasNext(); ) {
+//                 andInner.addChild( (Pattern) it.next() );
+//             }             
+//             
+//             		existsInner.addChild( andInner );
+//          		notInner.addChild(existsInner);
+//          	and.addChild(notInner);
+//          	
+//          	exists.addChild(and);
           	
         	 
-        	 /*
         	 and.addChild(base);
         	 for ( final Iterator it = forall.getRemainingPatterns().iterator(); it.hasNext(); ) {
                  and.addChild( (Pattern) it.next() );
@@ -90,7 +89,7 @@ public class ImperfectForallBuilder extends ForallBuilder implements
         	 
         	 notInner.addChild(and);
         	 exists.addChild(notInner);
-        	 */
+        	 
          }
     	
     	

@@ -83,35 +83,56 @@ public class SetCompositeEvaluation extends CompositeEvaluation {
 	
 
 
-	public void update(Observable o, Object arg) {
-		System.out.println("UPDATE HAS BEEN CALLED ON SETVAL by "+ o.toString());
+	public void update(Observable source, Object arg) {
+		System.out.println("UPDATE HAS BEEN CALLED ON SETVAL by "+ source.toString());
 		
-		if (arg instanceof EvalRecord) {
+		
+		if (arg instanceof EvalRecord && source instanceof OperandSet) {
+			
+			OperandSet wrapper = (OperandSet) source;
 			Evaluation eval = (Evaluation) arg;
 			
-			System.out.println(eval.expand());
-			
-			
-			if (! this.operands.contains(eval)) {
-				//this.operands.add(impRT.getRecord());
+			if (wrapper.isAdding()) {					
 					
-				setOperand(this.operands.size(), eval);
-				System.out.println(eval.expand());
+					System.out.println(eval.expand());
+					
+					
+					if (! this.operands.contains(eval)) {
+						//this.operands.add(impRT.getRecord());
+							
+						setOperand(this.operands.size(), eval);
+						System.out.println(eval.expand());
+						
+						//Just to notify the new arg...
+						//setChanged();
+						//this.notifyObservers(eval.getArgs());
+					}
+					
+					//
+					
+					
+					System.out.println(eval.expand());
+					combine();
+					
+					System.out.println();	
+//					setChanged();
+//					this.notifyObservers();
+					
+			} else if (wrapper.isRemoving()) {
+
+				int idx = this.operands.indexOf(eval);
+				removeOperand(idx);
+				combine();
+					
+//				setChanged();
+//				this.notifyObservers(eval);
 				
-				//Just to notify the new arg...
-				setChanged();
-				this.notifyObservers(eval.getArgs());
 			}
 			
-			//
-			
-			
-			System.out.println(eval.expand());
-			combine();
-//			setChanged();
-//			this.notifyObservers();			
 		} else if (arg instanceof ArgList) {
+			
 			this.getArgs().merge((ArgList) arg);
+			
 		} else {
 			throw new RuntimeDroolsException("Only Records & Args accepted by quantifiers, so far. received "+arg.getClass());
 					
@@ -121,8 +142,32 @@ public class SetCompositeEvaluation extends CompositeEvaluation {
 	}
 	
 	
+	public int hashCode() {
+		return this.getKey().hashCode();
+	}
 	
-	
+	public boolean equals(Object other) {
+		if (other == null) 
+			return false;
+		else if (other == this)
+			return true;
+		else if (other instanceof SetCompositeEvaluation) {
+			SetCompositeEvaluation sce = (SetCompositeEvaluation) other;
+			boolean ans = true;
+			ans = ans && this.getKey().equals(sce.getKey());
+			if (this.operands.size() > 0 && sce.operands.size() > 0) {
+				Evaluation ev1 = this.operands.get(0);
+				Evaluation ev2 = sce.operands.get(0);
+					if (ev1 == null || ev2 == null)
+						return false;
+				
+				return ans && ev1.getKey().equals(ev2.getKey());				
+			} else {
+				return false;
+			}
+		} else
+			return false;
+	}
 	
 	
 		

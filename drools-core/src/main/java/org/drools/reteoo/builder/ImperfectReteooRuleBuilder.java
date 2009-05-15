@@ -21,6 +21,7 @@ import org.drools.rule.Collect;
 import org.drools.rule.EntryPoint;
 import org.drools.rule.EvalCondition;
 import org.drools.rule.Forall;
+import org.drools.rule.Forany;
 import org.drools.rule.From;
 import org.drools.rule.GroupElement;
 import org.drools.rule.InvalidPatternException;
@@ -51,6 +52,8 @@ public class ImperfectReteooRuleBuilder extends ReteooRuleBuilder {
                                new AccumulateBuilder() );
         this.getUtils().addBuilder( Forall.class,
                                new ImperfectForallBuilder() );
+        this.getUtils().addBuilder( Forany.class,
+                			   new ImperfectForAnyBuilder() );
         this.getUtils().addBuilder( EntryPoint.class,
                                new EntryPointBuilder() );
     }
@@ -75,6 +78,8 @@ public class ImperfectReteooRuleBuilder extends ReteooRuleBuilder {
 			final BuildContext context = new BuildContext( rulebase,
 					idGenerator );
 				context.setRule( rule );
+				context.setDependencies(rule.getDependencies());
+				
 
 				// if running in STREAM mode, calculate temporal distance for events
 				if( EventProcessingMode.STREAM.equals( rulebase.getConfiguration().getEventProcessingMode() ) ) {

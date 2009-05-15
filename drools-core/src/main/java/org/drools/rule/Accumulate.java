@@ -279,4 +279,8 @@ public class Accumulate extends ConditionalElement
         return true;
     }
 
+	public boolean isCutter() { 
+		return false;
+	}
+
 }

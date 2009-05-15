@@ -158,4 +158,10 @@ public class EntryPoint extends ConditionalElement
     public boolean isPatternScopeDelimiter() {
         return true;
     }
+    
+    
+	public boolean isCutter() {
+		
+		return false;
+	}
 }

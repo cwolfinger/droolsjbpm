@@ -7,6 +7,7 @@ import java.util.Vector;
 
 import org.drools.FactHandle;
 import org.drools.degrees.factory.IDegreeFactory;
+import org.drools.spi.PropagationContext;
 import org.drools.util.Iterator;
 
 public class ObservableRightTupleMemoryWrapper extends Observable 
@@ -14,6 +15,19 @@ public class ObservableRightTupleMemoryWrapper extends Observable
 	
 	
 	private RightTupleMemory memory;
+	private boolean adding;
+	private boolean removing;
+	private PropagationContext propContext;
+	
+	
+	public boolean isAdding() {
+		return adding;
+	}
+	
+	public boolean isRemoving() {
+		return removing;
+	}
+	
 	
 	public ObservableRightTupleMemoryWrapper(RightTupleMemory wrapped) {
 		this.memory = wrapped;	
@@ -51,9 +65,11 @@ public class ObservableRightTupleMemoryWrapper extends Observable
 	
 	
 	public void add(RightTuple rightTuple) {
+		this.adding = true;
 		memory.add(rightTuple);
-		this.setChanged();
-		this.notifyObservers(rightTuple);
+			this.setChanged();
+			this.notifyObservers(rightTuple);
+		this.adding = false;
 	}
 
 	public boolean contains(RightTuple rightTuple) {
@@ -77,11 +93,21 @@ public class ObservableRightTupleMemoryWrapper extends Observable
 		
 	}
 
-	public void remove(RightTuple rightTuple) {
+
+	public void remove(RightTuple rightTuple, PropagationContext context) {
+		this.removing = true;
+		this.setPropContext(context);
 		memory.remove(rightTuple);
-		this.setChanged();
-		this.notifyObservers(rightTuple);
+			this.setChanged();
+			this.notifyObservers(rightTuple);
+		this.removing = false;
+		this.setPropContext(null);
 	}
+	
+	public void remove(RightTuple rightTuple) {
+		this.remove(rightTuple, null);
+	}
+	
 
 	public int size() {
 		return memory.size();
@@ -89,6 +115,22 @@ public class ObservableRightTupleMemoryWrapper extends Observable
 	
 	
 	
+	/**
+	 * @param propContext the propContext to set
+	 */
+	public void setPropContext(PropagationContext propContext) {
+		this.propContext = propContext;
+	}
+
+	/**
+	 * @return the propContext
+	 */
+	public PropagationContext getPropContext() {
+		return propContext;
+	}
+
+
+
 	class HandleIterator implements java.util.Iterator<FactHandle> {
 
 		private Iterator iterator;

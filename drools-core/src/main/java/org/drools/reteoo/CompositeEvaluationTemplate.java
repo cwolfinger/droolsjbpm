@@ -48,24 +48,28 @@ public class CompositeEvaluationTemplate extends EvaluationTemplate {
 
 	
 	public Evaluation spawn(Evaluation[] evalDegree) {
-		return new CompositeEvaluation(id,key,deps,evalDegree,operator,mergeStrat,nullStrat,new ArgList());
+		return new CompositeEvaluation(id,key.clone(),deps,evalDegree,operator,mergeStrat,nullStrat,new ArgList());
 	}
 	
 	public Evaluation spawn(ArgList args) {
-		return new CompositeEvaluation(id,key,deps,children.values().toArray(new Evaluation[children.values().size()]),operator,mergeStrat,nullStrat,args);
+		return new CompositeEvaluation(id,key.clone(),deps,children.values().toArray(new Evaluation[children.values().size()]),operator,mergeStrat,nullStrat,args);
 	}
 	
 	public Evaluation spawn(int N) {
-		return new CompositeEvaluation(id,key,deps,N,operator,mergeStrat,nullStrat,new ArgList());
+		return new CompositeEvaluation(id,key.clone(),deps,N,operator,mergeStrat,nullStrat,new ArgList());
 	}
 	
 	public Evaluation spawn(OperandSet args, BetaConstraints joinConstraints) {
-		return new SetCompositeEvaluation(id,key,deps,operator,args,mergeStrat,nullStrat,joinConstraints);
+		return new SetCompositeEvaluation(id,key.clone(),deps,operator,args,mergeStrat,nullStrat,joinConstraints);
 	}
 	
 	
 	protected IDegreeCombiner getOperator() {
 		return operator;
+	}
+	
+	public String getOperatorName() {
+		return operator.getName();
 	}
 
 	

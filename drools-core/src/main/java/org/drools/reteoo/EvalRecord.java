@@ -144,7 +144,8 @@ public class EvalRecord extends CompositeEvaluation implements Observer {
 			addedEval.deleteObserver(this);
 			addedEval.addObserver(this);
 		
-		((DynamicConstraintKey) this.getKey()).addArg(eval.getKey());
+		if (newEval)
+			((DynamicConstraintKey) this.getKey()).addArg(eval.getKey());
 		
 		
 		combine();

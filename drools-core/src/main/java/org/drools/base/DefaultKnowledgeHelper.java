@@ -291,7 +291,7 @@ public class DefaultKnowledgeHelper
     	this.consequenceDegree = deg;
     }
     
-    public void inject(ArgList args, String field, String op, String value) {
+    public void injectKey(ArgList args, String field, String op, String value) {
     	System.out.println("\n"+this.getClass()+" : KH injects a rule for degree "+getConsequenceDegree());
     	workingMemory.inject(this.getRule().getName(), 
     					     args,
@@ -305,16 +305,16 @@ public class DefaultKnowledgeHelper
     	return consequenceDegree;    
     }
 
-	public void inject(Object arg, String field, String op, String value) {
-		this.inject(new ArgList(arg), field, op, value);
+	public void injectKey(Object arg, String field, String op, String value) {
+		this.injectKey(new ArgList(arg), field, op, value);
 	}
 
-	public void inject(Object[] args, String field, String op, String value) {
-		this.inject(new ArgList(args), field, op, value);
+	public void injectKey(Object[] args, String field, String op, String value) {
+		this.injectKey(new ArgList(args), field, op, value);
 		
 	}
 
-	public void inject(Object arg, String key) {
+	public void injectKey(Object arg, String key) {
 		workingMemory.inject(this.getRule().getName(), 
 							 new ArgList(arg), 
 							 new ConstraintKey(key),
@@ -322,7 +322,7 @@ public class DefaultKnowledgeHelper
 		
 	}
 
-	public void inject(Object[] args, String key) {
+	public void injectKey(Object[] args, String key) {
 		workingMemory.inject(this.getRule().getName(), 
 				 new ArgList(args), 
 				 new ConstraintKey(key),
@@ -336,6 +336,41 @@ public class DefaultKnowledgeHelper
 	
 	public void setEvaluation(Evaluation eval) {
 		this.evaluation = eval;
+	}
+
+	
+	
+	public void injectId(Object arg, String id) {
+		ConstraintKey key = workingMemory.retrieveKeyForId(id);
+		workingMemory.inject(this.getRule().getName(), 
+				 new ArgList(arg), 
+				 key,
+				 getConsequenceDegree());	
+	}
+
+	public void injectId(Object[] args, String id) {
+		ConstraintKey key = workingMemory.retrieveKeyForId(id);
+		workingMemory.inject(this.getRule().getName(), 
+				 new ArgList(args), 
+				 key,
+				 getConsequenceDegree());	
+	}
+
+	public void inject(Object arg, String field, String op, String value) {
+		injectKey(arg,field,op,value);
+		
+	}
+
+	public void inject(Object[] args, String field, String op, String value) {
+		injectKey(args,field,op,value);
+	}
+
+	public void inject(Object arg, String key) {
+		injectKey(arg,key);
+	}
+
+	public void inject(Object[] args, String key) {
+		injectKey(args,key);
 	}
     
     

@@ -415,5 +415,12 @@ public class DefaultBetaConstraints
 		return null;
 	}
 	
-	
+	public boolean isCutter() {
+		org.drools.util.Iterator iter = this.constraints.iterator();
+		for (int j = 0; j < this.constraints.size(); j++) {
+			if ( ((BetaConstraints) iter.next()).isCutter() )
+				return true;
+		}
+		return false;
+	}
 }

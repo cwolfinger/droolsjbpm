@@ -133,7 +133,7 @@ public class InstanceNotEqualsConstraint
         }
 
         final InstanceNotEqualsConstraint other = (InstanceNotEqualsConstraint) object;
-        return this.otherPattern.equals( other.otherPattern );
+        return this.otherPattern.equals( other.otherPattern ) && (this.isCutter() == other.isCutter());
     }
 
     public Object clone() {
@@ -208,6 +208,8 @@ public class InstanceNotEqualsConstraint
     private ConstraintKey singletonKey = null;
 
 	private EvaluationTemplate template;
+
+	private boolean cutter;
     
 	public ConstraintKey getConstraintKey() {
 		if (singletonKey == null) {			
@@ -241,6 +243,14 @@ public class InstanceNotEqualsConstraint
 												factory.getMergeStrategy(),
 												factory.getNullHandlingStrategy());
 		return template;
+	}
+	
+	public boolean isCutter() {
+		return cutter;
+	}
+	
+	public void setCutter(boolean cut) {
+		cutter = cut;
 	}
 
 	

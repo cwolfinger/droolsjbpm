@@ -125,6 +125,13 @@ public class Rule
     private Enabled           enabled;
     
     private Resource          resource;
+    
+    private	String			  entailMode;
+    
+    private String			  priorDescription;
+    
+    private String			  filterStrategy;
+    
 
 	private Map<ConstraintKey, Set<String>> dependencies;
 
@@ -715,5 +722,47 @@ public class Rule
 	
 	public void setDependencies(Map<ConstraintKey, Set<String>> dependencies) {
 		this.dependencies = dependencies;
+	}
+
+	/**
+	 * @param entailMode the entailMode to set
+	 */
+	public void setEntailMode(String entailMode) {
+		this.entailMode = entailMode;
+	}
+
+	/**
+	 * @return the entailMode
+	 */
+	public String getEntailMode() {
+		return entailMode;
+	}
+
+	/**
+	 * @param priorDescription the priorDescription to set
+	 */
+	public void setPriorDescription(String priorDescription) {
+		this.priorDescription = priorDescription;
+	}
+
+	/**
+	 * @return the priorDescription
+	 */
+	public String getPriorDescription() {
+		return priorDescription;
+	}
+
+	/**
+	 * @param filterStrategy the filterStrategy to set
+	 */
+	public void setFilterStrategy(String filterStrategy) {
+		this.filterStrategy = filterStrategy;
+	}
+
+	/**
+	 * @return the filterStrategy
+	 */
+	public String getFilterStrategy() {
+		return filterStrategy;
 	}
 }

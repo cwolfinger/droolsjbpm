@@ -9,7 +9,26 @@ import org.drools.degrees.operators.IDegreeCombiner;
 public final class SimpleAverage implements IDegreeCombiner {
 
 
+		
+	public IDegree eval(IDegree[] args) {					
+		if (args == null || args.length == 0)
+			return SimpleDegree.UNKNOWN();
+		
+		float ans = 0;
+		int n = 0;
+		for (IDegree deg : args) {
+			SimpleDegree d = deg.getDegree();				
+				ans += d.getValue();
+				n++;
+		}
+		
+		return new SimpleDegree(ans / n);
+	}
+
 	
+	
+	
+	/*
 	public IDegree eval(IDegree[] args) {
 		float acc = 0;
 		float wgts = 0;
@@ -34,6 +53,7 @@ public final class SimpleAverage implements IDegreeCombiner {
 										
 		return new SimpleDegree(acc);
 	}
+*/
 
 	public IDegree eval(Collection<? extends IDegree> args) {
 		// TODO Auto-generated method stub

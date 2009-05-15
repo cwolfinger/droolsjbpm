@@ -122,6 +122,7 @@ public class AlphaNode extends ObjectSource
         	for (ConstraintKey key : keys)
         		context.getRuleBase().getRete().indexGammaNode(key,this);
         	
+        	
 		        
 		        
         }        
@@ -241,8 +242,15 @@ public class AlphaNode extends ObjectSource
 		 
 		System.out.println("Alpha evaluation trial "+record.expand());
 		
-		//Merge is automatical, so now we decide what to do
-		switch (this.filterStrat.doTry(record)) {
+		int verdict;
+    	
+    	if (this.constraint.isCutter() && record.getDegree().equals(factory.False()))
+    		verdict = IFilterStrategy.DROP;
+    	else 
+    		verdict = this.filterStrat.doTry(record); 
+    	
+    	
+    	switch (verdict) {
 			case IFilterStrategy.DROP : 
 				//time to die
 				System.out.println("Alpha FAIL : DROP record");
@@ -277,7 +285,16 @@ public class AlphaNode extends ObjectSource
 	public void update(Observable watcher, Object info) {
 		EvalRecord record = (EvalRecord) watcher;
 System.out.println("**************************************************************UPDATE @ALPHA NODE");
-		switch (this.filterStrat.doTry(record)) {
+		
+		int verdict;
+
+		if (this.constraint.isCutter() && record.getDegree().equals(record.getFactory().False()))
+			verdict = IFilterStrategy.DROP;
+		else 
+			verdict = this.filterStrat.doTry(record); 
+
+
+		switch (verdict) {
 		case IFilterStrategy.DROP : 
 			record.deleteObserver(this);
 			return;

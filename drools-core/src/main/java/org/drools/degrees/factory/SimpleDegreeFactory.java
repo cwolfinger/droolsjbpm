@@ -8,13 +8,20 @@ import org.drools.degrees.operators.IMergeStrategy;
 import org.drools.degrees.operators.INullHandlingStrategy;
 import org.drools.degrees.operators.simple.SimpleAverage;
 import org.drools.degrees.operators.simple.SimpleDotAnd;
+import org.drools.degrees.operators.simple.SimpleDoubleMPOperator;
 import org.drools.degrees.operators.simple.SimpleEquiv;
 import org.drools.degrees.operators.simple.SimpleExists;
+import org.drools.degrees.operators.simple.SimpleIdentityOperator;
+import org.drools.degrees.operators.simple.SimpleLukasAnd;
+import org.drools.degrees.operators.simple.SimpleLukasOr;
 import org.drools.degrees.operators.simple.SimpleMaxOr;
 import org.drools.degrees.operators.simple.SimpleMinAnd;
 import org.drools.degrees.operators.simple.SimpleNot;
 import org.drools.degrees.operators.simple.SimpleMergeStrategy;
 import org.drools.degrees.operators.simple.SimpleNullHandlingStrategy;
+import org.drools.degrees.operators.simple.SimpleProbSumOr;
+import org.drools.degrees.operators.simple.SimpleVeryModifier;
+import org.drools.degrees.operators.simple.SimpleXor;
 
 import org.drools.reteoo.filters.IFilterStrategy;
 import org.drools.reteoo.filters.SimpleFilterStrategy;
@@ -68,6 +75,10 @@ public class SimpleDegreeFactory implements IDegreeFactory {
 	
 	public IDegreeCombiner getEquivOperator() {
 		return new SimpleEquiv();
+	}
+	
+	public IDegreeCombiner getXorOperator() {
+		return new SimpleXor();
 	}
 
 	public IDegreeCombiner getAggregator() {
@@ -129,11 +140,97 @@ public class SimpleDegreeFactory implements IDegreeFactory {
 	}
 
 	public IDegreeCombiner getForAnyOperator() {
-		return new SimpleAverage();
+		return new SimpleAverage();		
+		//return new SimpleExists();
 	}
 
 	public IDegreeCombiner getForallOperator() {
 		return this.getAndOperator();
 	}
 
+	public IDegreeCombiner getDiscountOperator() {
+		return new SimpleIdentityOperator();
+	}
+
+	public IDegreeCombiner getDoubleMPOperator() {
+		return new SimpleDoubleMPOperator();
+	}
+
+	
+	
+	
+	
+	public IDegreeCombiner getAndOperator(String params) {
+		if (params == null)
+			return getAndOperator();
+		if (params.equals("Lukas"))
+			return new SimpleLukasAnd();
+		else if (params.equals("Prod"))
+			return new SimpleDotAnd();
+		else if (params.equals("Min"))
+			return new SimpleMinAnd();
+		else return getAndOperator();
+	}
+
+	public IDegreeCombiner getDiscountOperator(String params) {
+		throw new UnsupportedOperationException("Not yet ready to do this :"+ params);	
+	}
+
+	public IDegreeCombiner getDoubleMPOperator(String params) {
+		throw new UnsupportedOperationException("Not yet ready to do this :"+ params);
+	}
+
+	public IDegreeCombiner getEquivOperator(String params) {
+		throw new UnsupportedOperationException("Not yet ready to do this :"+ params);
+	}
+
+	public IDegreeCombiner getOrOperator(String params) {
+		if (params == null)
+			return getOrOperator();
+		
+		if (params.equals("Lukas"))
+			return new SimpleLukasOr();
+		else if (params.equals("Plus"))
+			return new SimpleProbSumOr();
+		else if (params.equals("Max"))
+			return new SimpleMaxOr();
+		else return getOrOperator();
+	}
+
+	public IDegreeCombiner getXorOperator(String params) {
+		throw new UnsupportedOperationException("Not yet ready to do this :"+ params);
+	}
+
+	
+	
+	public IDegreeCombiner getHedgeOperator() {
+		return new SimpleVeryModifier();
+	}
+
+	public IDegreeCombiner getHedgeOperator(String params) {
+		if (params.equals("very")) {
+			return new SimpleVeryModifier();	
+		} else {
+			return new SimpleVeryModifier();
+		}
+		
+	}
+
+	public IDegree buildDegree(String priorStr) {
+		return new SimpleDegree(Float.parseFloat(priorStr));
+	}
+
+	public IDegreeCombiner getModusPonensOperator(String params) {
+		if (params == null)
+			return getModusPonensOp();
+		
+		if (params.equals("implication")) {
+			return getModusPonensOp();
+		} else if (params.equals("equivalence")) {
+			return getDoubleMPOperator();			
+		} else
+			return getModusPonensOp();
+		
+	}
+	
 }

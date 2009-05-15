@@ -1,5 +1,11 @@
 package org.drools.reteoo;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.drools.FactException;
 import org.drools.FactHandle;
 import org.drools.RuleBaseConfiguration;
@@ -11,6 +17,9 @@ import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.degrees.factory.SimpleDegreeFactory;
 import org.drools.degrees.factory.SimpleFuzzyDegreeFactory;
 import org.drools.rule.EntryPoint;
+import org.drools.rule.InvalidPatternException;
+import org.drools.rule.Package;
+import org.drools.rule.Rule;
 import org.drools.spi.FactHandleFactory;
 import org.drools.spi.PropagationContext;
 
@@ -18,6 +27,7 @@ public class ImperfectRuleBase extends ReteooRuleBase {
 
 	
 	private IDegreeFactory degreeFactory = null;
+	private Map<ConstraintKey,Set<String>> dependencies = new HashMap<ConstraintKey, Set<String>>();
 	
 	/**
      * Default constructor - for Externalizable. This should never be used by a user, as it
@@ -83,7 +93,7 @@ public class ImperfectRuleBase extends ReteooRuleBase {
                factHandleFactory
                );               
         
-        String factoryName = config.getProperty("drools.imperfect.factory");        
+        String factoryName = config.getProperty("org.drools.chance.factory");        
         IDegreeFactory factory = null;
         try {
 			factory = (IDegreeFactory) Class.forName(factoryName).newInstance();
@@ -152,4 +162,18 @@ public class ImperfectRuleBase extends ReteooRuleBase {
 						record);
 	}
 
+	
+	
+	protected synchronized void addRule(final Rule rule) throws InvalidPatternException {
+        // This adds the rule. ReteBuilder has a reference to the WorkingMemories and will propagate any existing facts.
+        super.addRule( rule );
+        for (ConstraintKey key : rule.getDependencies().keySet()) {
+        	this.dependencies.put(key,rule.getDependencies().get(key));
+        }                
+    }
+	
+	public Map<ConstraintKey,Set<String>> getDependencies() {
+		return dependencies;		
+	}
+	
 }

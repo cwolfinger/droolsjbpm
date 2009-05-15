@@ -24,8 +24,16 @@ public class SimpleMaxOr implements IDegreeCombiner {
 	}
 
 	public IDegree eval(Collection<? extends IDegree> args) {
-		// TODO Auto-generated method stub
-		return null;
+		if (args == null || args.size() == 0)
+			return SimpleDegree.UNKNOWN();
+		
+		float ans = 0;
+		for (IDegree deg : args) {
+			SimpleDegree d = deg.getDegree();				
+				ans = Math.max(ans,d.getValue());
+		}
+		
+		return new SimpleDegree(ans);
 	}
 
 	public String getName() {

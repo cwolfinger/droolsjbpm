@@ -174,7 +174,8 @@ public abstract class BaseEvaluator
 			Object left) {
 		return factory.fromBoolean(this.evaluateCachedRight(workingMemory, context, left));
 	}
-    
+   
+	
     
     
 

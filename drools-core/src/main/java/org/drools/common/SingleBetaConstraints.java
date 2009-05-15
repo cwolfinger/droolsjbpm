@@ -292,5 +292,9 @@ public class SingleBetaConstraints
 	public EvaluationTemplate getEvalTemplate(ConstraintKey key) {
 		return this.constraint.getEvalTemplate(key);
 	}
+
+	public boolean isCutter() {
+		return constraint.isCutter();
+	}
 	
 }

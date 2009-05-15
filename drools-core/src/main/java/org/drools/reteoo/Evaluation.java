@@ -103,9 +103,9 @@ public class Evaluation extends Observable {
 		boolean newContrib = false;
 		
 		for (String source : moreDegrees.keySet()) {
-			System.out.println("Trying to merge degrees for source "+ source + "+1");
 			IDegree evalDeg = moreDegrees.get(source);
-			if (evalDeg != null) {						
+			if (evalDeg != null) {
+				System.out.println("Trying to merge degrees for source "+ source + "+1");
 				
 				/*
 				confidence.put(source, conf.get(source));
@@ -338,6 +338,8 @@ public class Evaluation extends Observable {
 	public boolean equals(Object other) {
 		if (other == null) 
 			return false;
+		if (other == this)
+			return true;
 		if (other instanceof Evaluation) {
 			Evaluation otherEv = (Evaluation) other;
 			return this.key.equals(otherEv.key)  && this.args.equals(otherEv.args);

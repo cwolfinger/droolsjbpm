@@ -65,5 +65,7 @@ public interface BetaConstraints
 	public Collection<ConstraintKey> getAllConstraintKeys();
 
 	public EvaluationTemplate getEvalTemplate(ConstraintKey key);
+	
+	public boolean isCutter();
 
 }

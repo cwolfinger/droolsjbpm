@@ -226,6 +226,9 @@ public class PredicateConstraint extends MutableTypeConstraint
 
         final PredicateConstraint other = (PredicateConstraint) object;
 
+        if (this.isCutter() != other.isCutter())
+        	return false;
+        
         if ( this.previousDeclarations.length != other.previousDeclarations.length ) {
             return false;
         }
@@ -447,6 +450,8 @@ public class PredicateConstraint extends MutableTypeConstraint
     
     
     private ConstraintKey singletonKey = null;
+
+	private String label;
     
 	public ConstraintKey getConstraintKey() {
 		if (singletonKey == null)
@@ -459,9 +464,23 @@ public class PredicateConstraint extends MutableTypeConstraint
 			ans.add(getConstraintKey());
 	return ans;
 	}
-	
-	
 
+	public boolean isCutter() {
+		throw new UnsupportedOperationException("NOT DONE YET...");
+	}
+
+	public void setCutter(boolean cutter) {
+		throw new UnsupportedOperationException("NOT DONE YET...");
+	}
+	
+	
+	public String getLabel() {
+		return this.label;
+	}
+
+	public void setLabel(String label) {
+		this.label = label;
+	}
 	
 
 }

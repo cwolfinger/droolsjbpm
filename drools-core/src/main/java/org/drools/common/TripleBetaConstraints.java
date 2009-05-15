@@ -427,5 +427,9 @@ public class TripleBetaConstraints
 				ans = constraint2.getEvalTemplate(key);		
 		return ans;
 	}
+
+	public boolean isCutter() {
+		return constraint0.isCutter() || constraint1.isCutter() || constraint2.isCutter();
+	}
 	
 }

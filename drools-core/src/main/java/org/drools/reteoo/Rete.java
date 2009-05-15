@@ -26,6 +26,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.drools.RuntimeDroolsException;
 import org.drools.common.BaseNode;
 import org.drools.common.DroolsObjectInputStream;
 import org.drools.common.ImperfectFactHandle;
@@ -76,7 +77,10 @@ public class Rete extends ObjectSource
     private transient InternalRuleBase      ruleBase;
     
     
-    private Map<ConstraintKey,IGammaNode>	constraintIndex;
+    private Map<ConstraintKey,IGammaNode>	constraintIndex = new HashMap<ConstraintKey, IGammaNode>();
+    
+    private Map<String, ConstraintKey>		constraintIds = new HashMap<String, ConstraintKey>();
+    
 
     public Rete() {
         this( null );
@@ -90,9 +94,7 @@ public class Rete extends ObjectSource
         super( 0, RuleBasePartitionId.MAIN_PARTITION, ruleBase != null ? ruleBase.getConfiguration().isMultithreadEvaluation() : false );
         this.entryPoints = Collections.synchronizedMap( new HashMap<EntryPoint, EntryPointNode>() );
         this.ruleBase = ruleBase;     
-        
-        this.constraintIndex = new HashMap<ConstraintKey, IGammaNode>();
-        
+                
     }
 
     // ------------------------------------------------------------
@@ -276,7 +278,15 @@ public class Rete extends ObjectSource
 	
 	
 	public void indexGammaNode(ConstraintKey key, IGammaNode node) {
-		this.constraintIndex.put(key, node);
+		if (! constraintIndex.containsKey(key)) {
+			this.constraintIndex.put(key, node);
+			
+			this.constraintIds.put(key.getAlias(), key);
+		}
+		else {
+			if (! node.equals(constraintIndex.get(key)))
+				throw new RuntimeDroolsException("Found duplicate key: this may be a know issue");
+		}
 	}
 	
 	public IGammaNode getNode(ConstraintKey key) {
@@ -286,6 +296,16 @@ public class Rete extends ObjectSource
 	
 	public ConstraintKey getConstraintKey() {
 		return new ConstraintKey("RETE");
+	}
+
+	public ConstraintKey retrieveKeyForId(String id) {
+		return this.constraintIds.get(id);
+	}
+	
+	public void storeKeyId(String id, ConstraintKey key) {
+		if (this.constraintIds.containsKey(id))
+			throw new RuntimeDroolsException("Duplicate identifier found "+id);
+		this.constraintIds.put(id, key);
 	}
 	
 	

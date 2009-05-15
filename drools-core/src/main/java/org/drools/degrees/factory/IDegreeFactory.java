@@ -36,6 +36,8 @@ public interface IDegreeFactory {
 
 	public IDegreeCombiner getEquivOperator();
 	
+	public IDegreeCombiner getXorOperator();
+	
 	
 	public IDegreeCombiner getAggregator();
 	
@@ -66,6 +68,47 @@ public interface IDegreeFactory {
 	public IMergeStrategy getMergeStrategy();
 	
 	public INullHandlingStrategy getNullHandlingStrategy();
+
+
+	public IDegreeCombiner getDoubleMPOperator();
+
+
+	public IDegreeCombiner getDiscountOperator();
+	
+	
+	public IDegreeCombiner getHedgeOperator();
+	
+	
+	
+	
+
+	public IDegreeCombiner getModusPonensOperator(String params);
+
+	public IDegreeCombiner getDoubleMPOperator(String params);
+
+
+	public IDegreeCombiner getDiscountOperator(String params);
+
+
+	public IDegreeCombiner getEquivOperator(String params);
+
+
+	public IDegreeCombiner getXorOperator(String params);
+
+
+	public IDegreeCombiner getOrOperator(String params);
+
+
+	public IDegreeCombiner getAndOperator(String params);
+
+
+
+
+
+	public IDegreeCombiner getHedgeOperator(String params);
+
+
+	public IDegree buildDegree(String priorStr);
 	
 	
 

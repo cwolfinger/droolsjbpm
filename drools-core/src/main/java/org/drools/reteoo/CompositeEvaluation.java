@@ -97,9 +97,11 @@ public class CompositeEvaluation extends Evaluation implements Observer {
 		
 			int j = 0;
 			for (Evaluation eval : getOperands()) {
-				args[j++] = eval.getDegree();		
+				args[j++] = eval == null ? this.getNullHandlingStrat().convertNull() : eval.getDegree();		
 			}
 		}		
+		
+		
 		
 		IDegree opDeg = this.operator.eval(args);
 		updateOpRate();
@@ -154,6 +156,46 @@ public class CompositeEvaluation extends Evaluation implements Observer {
 		//this.setArgCode(this.getArgCode()^operand.getArgCode());
 	}
 	
+	
+	
+	
+	
+	public void removeOperand(int position) {
+		if (position >= 0) {
+			
+		
+			Evaluation operand = operands.get(position);
+		
+			System.out.println("Removing "+operand.expand());
+		
+			operand.deleteObserver(this);
+
+			System.out.println(operands.size());
+			operands.set(position,null);
+			System.out.println(operands.size());
+			
+			this.getArgs().delete(operand.getArgs());
+
+		}
+		
+		int j = operands.size();
+			while (j > 0 && operands.get(j-1) == null)
+				j = j-1;
+				
+				operands.setSize(j);
+		
+			System.out.println(operands.size());
+			System.out.println();
+
+
+		//this.setArgCode(this.getArgCode()^operand.getArgCode());
+	}
+	
+	
+	
+	
+	
+	
 	public Collection<Evaluation> getEvalTree() {
 		Collection<Evaluation> ans = new ArrayList<Evaluation>(2*operands.size());
 			for (Evaluation eval : operands)
@@ -186,7 +228,7 @@ public class CompositeEvaluation extends Evaluation implements Observer {
 		} else {
 			float delta = 0;
 			for (Evaluation child : this.getOperands()) {
-				delta += child.getInfoRate();
+				delta += child == null ? 0 : child.getInfoRate();
 			}			
 			setOpRate(delta / (1.0f*this.operands.size()));
 		}
@@ -204,7 +246,8 @@ public class CompositeEvaluation extends Evaluation implements Observer {
 				this.notifyObservers(arg);
 			}
 		} else {
-			boolean newContrib = combine();
+			//boolean newContrib = 
+				combine();
 		}
 		
 		//this.notifyObservers(this);

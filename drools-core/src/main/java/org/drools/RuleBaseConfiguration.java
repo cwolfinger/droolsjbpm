@@ -31,6 +31,7 @@ import java.util.Map.Entry;
 import org.drools.base.FireAllRulesRuleBaseUpdateListener;
 import org.drools.common.AgendaGroupFactory;
 import org.drools.common.ArrayAgendaGroupFactory;
+import org.drools.common.ImperfectAgendaGroupFactory;
 import org.drools.common.PriorityQueueAgendaGroupFactory;
 import org.drools.concurrent.DefaultExecutorService;
 import org.drools.conf.AlphaThresholdOption;
@@ -133,7 +134,7 @@ public class RuleBaseConfiguration
     private String                         executorService;
     private String                         consequenceExceptionHandler;
     private String                         ruleBaseUpdateHandler;
-    
+    private boolean 					   imperfect;    
     
 
     private EventProcessingMode            eventProcessingMode;
@@ -156,6 +157,8 @@ public class RuleBaseConfiguration
     private String						   imperfectFactoryName;
     
     private transient ClassLoader          classLoader;
+
+	
 
     public void writeExternal(ObjectOutput out) throws IOException {
         out.writeObject( chainedProperties );
@@ -299,8 +302,10 @@ public class RuleBaseConfiguration
             setMaxThreads( StringUtils.isEmpty( value ) ? -1 : Integer.parseInt( value ) );
         } else if ( name.equals( "drools.eventProcessingMode" ) ) {
             setEventProcessingMode( EventProcessingMode.determineAssertBehaviour( StringUtils.isEmpty( value ) ? "cloud" : value ) );
-        } else if ( name.equals( "drools.imperfect.factory" ) ) {
+        } else if ( name.equals( "org.drools.chance.factory" ) ) {
             setFactoryName(value);
+        } else if ( name.equals( "org.drools.chance.enable" ) ) {
+            setImperfectActive(Boolean.parseBoolean(value));
         }
     }
 
@@ -350,7 +355,7 @@ public class RuleBaseConfiguration
             return Integer.toString( getMaxThreads() );
         } else if ( name.equals( "drools.eventProcessingMode" ) ) {
             return getEventProcessingMode().toExternalForm();
-        } else if ( name.equals( "drools.imperfect.factory" ) ) {
+        } else if ( name.equals( "org.drools.chance.factory" ) ) {
             return getFactoryName();
         }
 
@@ -454,10 +459,16 @@ public class RuleBaseConfiguration
         setEventProcessingMode( EventProcessingMode.determineAssertBehaviour( this.chainedProperties.getProperty( "drools.eventProcessingMode",
                                                                                                                   "cloud" ) ) );
         
-        setFactoryName(this.chainedProperties.getProperty("drools.imperfect.factory", "org.drools.degrees.factory.SimpleDegreeFactory"));
+        setFactoryName(this.chainedProperties.getProperty("org.drools.chance.factory", "org.drools.degrees.factory.SimpleDegreeFactory"));
+        
+        setImperfectActive( Boolean.valueOf( this.chainedProperties.getProperty("org.drools.chance.enable", "false")).booleanValue());
     }
 
-    /**
+    private void setImperfectActive(boolean booleanValue) {
+    	this.imperfect = booleanValue;		
+	}
+
+	/**
      * Makes the configuration object immutable. Once it becomes immutable,
      * there is no way to make it mutable again.
      * This is done to keep consistency.
@@ -628,11 +639,18 @@ public class RuleBaseConfiguration
                 return PriorityQueueAgendaGroupFactory.getInstance();
             }
         } else {
-            return PriorityQueueAgendaGroupFactory.getInstance();
+        	if (! isImperfect())
+        		return PriorityQueueAgendaGroupFactory.getInstance();
+        	else 
+        		return ImperfectAgendaGroupFactory.getInstance();
         }
     }
 
-    public SequentialAgenda getSequentialAgenda() {
+    public boolean isImperfect() {
+		return imperfect;
+	}
+
+	public SequentialAgenda getSequentialAgenda() {
         return this.sequentialAgenda;
     }
 

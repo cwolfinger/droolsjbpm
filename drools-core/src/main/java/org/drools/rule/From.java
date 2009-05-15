@@ -71,5 +71,9 @@ public class From extends ConditionalElement
     public boolean isPatternScopeDelimiter() {
         return true;
     }
+    
+    public boolean isCutter() {
+    	return false;
+    }
 
 }

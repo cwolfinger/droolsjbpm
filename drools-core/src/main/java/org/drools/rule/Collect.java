@@ -123,4 +123,9 @@ public class Collect extends ConditionalElement
     public boolean isPatternScopeDelimiter() {
         return true;
     }
+
+	public boolean isCutter() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

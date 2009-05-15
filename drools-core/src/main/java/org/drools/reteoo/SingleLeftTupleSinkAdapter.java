@@ -71,7 +71,12 @@ public class SingleLeftTupleSinkAdapter extends AbstractLeftTupleSinkAdapter {
             LeftTuple temp = child.getLeftParentNext();
             doPropagateRetractLeftTuple( context, workingMemory, child, child.getLeftTupleSink() );
             child.unlinkFromRightParent();
-            child.unlinkFromLeftParent();
+            child.unlinkFromLeftParent();                        
+
+            System.out.println(this.getClass() + "HACKED TO DETACH RECORD OBSERVER");
+            if (child instanceof ImperfectLeftTuple)
+            	((ImperfectLeftTuple) child).getRecord().deleteObservers();
+            
             child = temp;
         }
     }

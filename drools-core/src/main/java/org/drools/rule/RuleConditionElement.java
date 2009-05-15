@@ -80,5 +80,8 @@ public interface RuleConditionElement
      * @return
      */
     public boolean isPatternScopeDelimiter();
+    
+    
+    public boolean isCutter(); 
 
 }

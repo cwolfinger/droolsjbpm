@@ -371,5 +371,8 @@ public class DoubleBetaConstraints
 				ans = constraint1.getEvalTemplate(key);
 		return ans;
 	}
+	public boolean isCutter() {
+		return constraint0.isCutter() || constraint1.isCutter();
+	}
 	
 }

@@ -203,7 +203,7 @@ public class VariableConstraint extends MutableTypeConstraint
 
         final VariableConstraint other = (VariableConstraint) object;
 
-        return this.fieldExtractor.equals( other.fieldExtractor ) && this.restriction.equals( other.restriction );
+        return this.fieldExtractor.equals( other.fieldExtractor ) && this.restriction.equals( other.restriction ) && (this.isCutter() == other.isCutter());
     }
 
     public Object clone() {
@@ -225,6 +225,21 @@ public class VariableConstraint extends MutableTypeConstraint
 	return ans;
 	}
 
+	public boolean isCutter() {
+		return this.restriction.isCutter();
+	}
+
+	public void setCutter(boolean cutter) {
+		this.restriction.setCutter(cutter);		
+	}
+	
+	public String getLabel() {
+		return this.restriction.getLabel();
+	}
+
+	public void setLabel(String label) {
+		this.restriction.setLabel(label);
+	}
 	
 
 }

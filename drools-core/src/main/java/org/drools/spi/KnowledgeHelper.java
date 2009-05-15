@@ -133,6 +133,10 @@ public interface KnowledgeHelper
     
     public IDegree getConsequenceDegree();
     
+    public void setConsequenceDegree(IDegree deg);
+    
+    
+    
     public void inject(Object arg, String field, String op, String value);
     
     public void inject(Object[] args, String field, String op, String value);
@@ -140,8 +144,22 @@ public interface KnowledgeHelper
     public void inject(Object arg, String key);
     
     public void inject(Object[] args, String key);
+    
+    
+    public void injectKey(Object arg, String field, String op, String value);
+    
+    public void injectKey(Object[] args, String field, String op, String value);
+    
+    public void injectKey(Object arg, String key);
+    
+    public void injectKey(Object[] args, String key);
+    
+    
+    public void injectId(Object arg, String key);
+    
+    public void injectId(Object[] args, String key);
 
-    public void setConsequenceDegree(IDegree deg);
+    
     
     
     

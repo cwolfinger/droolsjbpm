@@ -52,9 +52,14 @@ public class LiteralConstraint
 
     private InternalReadAccessor readAccesor;
     private LiteralRestriction   restriction;
+    
 
-	private EvaluationTemplate template;
-
+	
+    private EvaluationTemplate template;
+   
+    private String label;
+    
+    
     public LiteralConstraint() {
         this( null,
               null );
@@ -158,7 +163,7 @@ public class LiteralConstraint
         }
         final LiteralConstraint other = (LiteralConstraint) object;
 
-        return this.readAccesor.equals( other.readAccesor ) && this.restriction.equals( other.restriction );
+        return this.readAccesor.equals( other.readAccesor ) && this.restriction.equals( other.restriction ) && (this.isCutter() == other.isCutter());
     }
 
     public Object clone() {
@@ -196,10 +201,34 @@ public class LiteralConstraint
 	
 	public EvaluationTemplate buildEvaluationTemplate(int id, Map<ConstraintKey, Set<String>> dependencies, IDegreeFactory factory) {
 		 Set<String> deps;
+		 
+		 String label = this.restriction.getLabel();		 
+		 Set<String> aliasedDeps = null;
+		 	if (dependencies != null && label != null) {
+		 		ConstraintKey tester = new ConstraintKey();
+		 			tester.setAlias(label);
+		 		aliasedDeps = dependencies.remove(tester);
+		 		
+		 		if (aliasedDeps != null) {
+		 			ConstraintKey properKey = this.getConstraintKey();		 						 				
+		 			Set<String> previousDeps = dependencies.remove(properKey);
+		 			
+		 			if (previousDeps != null)
+		 				aliasedDeps.addAll(previousDeps);
+		 			
+		 			properKey.setAlias(label);
+		 			
+		 			dependencies.put(properKey, aliasedDeps);		 		
+		 		}
+		 	}
+		 	
+		 
 		 if (dependencies == null)
 			 deps = Collections.emptySet();
 		 else 
 			 deps = dependencies.get(this.getConstraintKey());
+		 
+		
 		 
 	   	this.template = new SingleEvaluationTemplate(id,this.getConstraintKey(),deps,factory.getMergeStrategy(),factory.getNullHandlingStrategy());
 	   	return template;
@@ -211,6 +240,28 @@ public class LiteralConstraint
 		else return null;
 	}
 	
+	
+	public boolean isCutter() {
+		return restriction.isCutter();
+	}
+	
+	public void setCutter(boolean cut) {
+		restriction.setCutter(cut);
+	}
+
+	/**
+	 * @param label the label to set
+	 */
+	public void setLabel(String label) {
+		this.label = label;
+	}
+
+	/**
+	 * @return the label
+	 */
+	public String getLabel() {
+		return label;
+	}
 
 	
 }

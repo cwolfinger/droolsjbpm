@@ -212,7 +212,7 @@ public class SequentialKnowledgeHelper
     
     
     
-	public void inject(ArgList args, String field, String op, String value) {
+	public void injectKey(ArgList args, String field, String op, String value) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -227,21 +227,21 @@ public class SequentialKnowledgeHelper
 		
 	}
 
-	public void inject(Object arg, String field, String op, String value) {
-		this.inject(new ArgList(arg), field, op, value);
+	public void injectKey(Object arg, String field, String op, String value) {
+		this.injectKey(new ArgList(arg), field, op, value);
 	}
 
-	public void inject(Object[] args, String field, String op, String value) {
-		this.inject(new ArgList(args), field, op, value);
+	public void injectKey(Object[] args, String field, String op, String value) {
+		this.injectKey(new ArgList(args), field, op, value);
 		
 	}
 
-	public void inject(Object arg, String key) {
+	public void injectKey(Object arg, String key) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	public void inject(Object[] args, String key) {
+	public void injectKey(Object[] args, String key) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -252,6 +252,36 @@ public class SequentialKnowledgeHelper
 	}
 
 	public void setEvaluation(Evaluation eval) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void injectId(Object arg, String key) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void injectId(Object[] args, String key) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void inject(Object arg, String field, String op, String value) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void inject(Object[] args, String field, String op, String value) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void inject(Object arg, String key) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void inject(Object[] args, String key) {
 		// TODO Auto-generated method stub
 		
 	}

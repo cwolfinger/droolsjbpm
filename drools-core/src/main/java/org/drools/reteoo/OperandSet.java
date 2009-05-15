@@ -14,20 +14,39 @@ import org.drools.common.TupleStartEqualsConstraint;
 import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.rule.ContextEntry;
 import org.drools.runtime.rule.WorkingMemory;
+import org.drools.spi.PropagationContext;
 
 
 public class OperandSet extends Observable implements Observer {
 	
 	private ObservableRightTupleMemoryWrapper memory;
-	private ContextEntry[] context;
+	private ContextEntry context[];
 	private IDegreeFactory factory;
-	private LeftTuple tuple;
+	private ImperfectLeftTuple tuple;
 	private InternalWorkingMemory workMem;
+	private LeftTupleSinkPropagator sink;
+	private PropagationContext propContext;
+	
+	private ImperfectExistsNode node;
 	
 	private BetaConstraints joinConstraints;
 	
 	
-	public OperandSet(LeftTuple lTuple, ObservableRightTupleMemoryWrapper mem, BetaConstraints constraints, ContextEntry[] context, InternalWorkingMemory wmem, IDegreeFactory factory) {
+	private boolean adding;
+	private boolean removing;
+	
+	
+	public boolean isAdding() {
+		return adding;
+	}
+	
+	public boolean isRemoving() {
+		return removing;
+	}
+	
+	
+	
+	public OperandSet(ImperfectLeftTuple lTuple, ObservableRightTupleMemoryWrapper mem, BetaConstraints constraints, ContextEntry[] context, InternalWorkingMemory wmem, IDegreeFactory factory, LeftTupleSinkPropagator sink, ImperfectExistsNode node, PropagationContext pCtx) {
 		this.tuple = lTuple;
 		this.memory = mem;
 			this.memory.addObserver(this);
@@ -35,6 +54,10 @@ public class OperandSet extends Observable implements Observer {
 		this.context = context;
 		this.joinConstraints = constraints;
 		this.workMem = wmem;
+		this.sink = sink;
+		
+		this.node = node;
+		this.propContext = pCtx;
 	}
 	
 	public LinkedList<Evaluation> getEvaluations() {
@@ -63,32 +86,116 @@ public class OperandSet extends Observable implements Observer {
 
 	
 	
-	public void update(Observable arg0, Object newArg) {
+	public void update(Observable sender, Object newArg) {
 		
+		ImperfectRightTuple impRT;
 		
-		if (newArg instanceof ImperfectRightTuple) {
-			ImperfectRightTuple impRT = (ImperfectRightTuple) newArg;
-			EvalRecord record = impRT.getRecord().clone();
+		if (sender instanceof ObservableRightTupleMemoryWrapper) {
 			
-			joinConstraints.updateFromTuple(getContext(), workMem, tuple);
-			if (! (joinConstraints instanceof EmptyBetaConstraints)) {			
-				Evaluation[] newEvals = joinConstraints.isSatisfiedCachedRight(context, tuple, factory);
-				for (Evaluation newEv : newEvals) {
-					if (! newEv.getKey().toString().equals("starts(tuple,...)"))
-						record.addEvaluation(newEv);
+			ObservableRightTupleMemoryWrapper wrapper = (ObservableRightTupleMemoryWrapper) sender;			
+			if (newArg instanceof ImperfectRightTuple) {				
+				impRT = (ImperfectRightTuple) newArg;
+				
+				if (wrapper.isAdding()) {
+					this.adding = true;
+					
+															
+					EvalRecord record = impRT.getRecord().clone();
+					
+					
+					
+					joinConstraints.updateFromTuple(getContext(), workMem, tuple);
+					if (! (joinConstraints instanceof EmptyBetaConstraints)) {			
+						Evaluation[] newEvals = joinConstraints.isSatisfiedCachedRight(context, tuple, factory);
+						for (Evaluation newEv : newEvals) {
+							if (! newEv.getKey().toString().equals("starts(tuple,...)"))
+								record.addEvaluation(newEv);
+						}
+					}
+					joinConstraints.resetTuple(getContext());
+					
+					this.setChanged();
+					this.notifyObservers(record);
+										
+					
+					this.adding = false;
+					
+				} else if (wrapper.isRemoving()) {
+		
+					this.removing = true;
+					
+					impRT = ((ImperfectRightTuple) newArg); 
+					
+															
+					if (wrapper.size() == 0) {
+						
+						
+						this.setChanged();
+						this.notifyObservers(impRT.getRecord());
+						
+						this.deleteObservers();
+						
+						
+						
+						if ( tuple.getBetaChildren() != null ) {
+				            this.sink.propagateRetractLeftTuple( tuple,
+				                                                 wrapper.getPropContext(),
+				                                                 workMem );
+				            System.out.println("Killed children");			
+				        }
+						
+						
+						
+						
+						
+						
+						this.removing = false;
+						
+						
+						
+						// Now regenerate the tuple for a new prop...
+						EvalRecord mainRecord = ((ImperfectLeftTuple) tuple).getRecord();
+						EvalRecord propRecord = mainRecord.clone();
+																		
+						SetCompositeEvaluation newEval = (SetCompositeEvaluation) node.template.spawn(this,node.constraints);
+						propRecord.addEvaluation(newEval);
+						this.addObserver(newEval);			
+						
+							propRecord.setLeftTuple(tuple);    				
+							propRecord.setFactory(factory);
+							propRecord.setPropagationContext(propContext);
+							propRecord.setWorkingMemory(workMem);
+						
+						node.update(this,propRecord);
+						
+						System.out.println();																																				
+						
+						
+						
+					} else {
+						
+						this.setChanged();
+						this.notifyObservers(impRT.getRecord());
+					
+						this.removing = false;
+					}
+					
+																						
+					
+					
+					
 				}
-			}
-			joinConstraints.resetTuple(getContext());
-			
-			this.setChanged();
-			this.notifyObservers(record);
-			
-					
-		} else {
-			
-					
-		}						
-		
+						
+			} else {
+				
+						
+			}						
+		}
+	}
+	
+	
+	public String toString() {
+		return "OpSet " + size();
 	}
 	
 	

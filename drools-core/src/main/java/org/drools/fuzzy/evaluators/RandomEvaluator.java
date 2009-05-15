@@ -48,7 +48,9 @@ public class RandomEvaluator extends BaseImperfectEvaluator {
 	}
 	
 	
-	
+	public String toString() {
+		return "random";
+	}
 	
 	
 	

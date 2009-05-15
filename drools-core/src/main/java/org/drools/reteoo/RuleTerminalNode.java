@@ -316,6 +316,9 @@ public final class RuleTerminalNode extends BaseNode
 
         final Activation activation = leftTuple.getActivation();
         
+        
+        
+        
         // activation can be null if the LeftTuple previous propagated into a no-loop
         if ( activation == null ) {
             return;

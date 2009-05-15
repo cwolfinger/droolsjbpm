@@ -1987,6 +1987,11 @@ public abstract class AbstractWorkingMemory
 		
 		return;
 	}
+    
+    public ConstraintKey retrieveKeyForId(String id) {
+    	ConstraintKey ck = this.ruleBase.getRete().retrieveKeyForId(id);
+    	return ck;
+    }
 
 	private Evaluation prepareEval(String ruleName, ArgList args, ConstraintKey key,
 			IDegree degree, IGammaNode node) {

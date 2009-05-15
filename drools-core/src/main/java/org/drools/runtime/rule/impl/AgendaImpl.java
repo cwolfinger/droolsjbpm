@@ -46,4 +46,9 @@ public class AgendaImpl
             return null;
         }
     }       
+    
+    
+    public InternalAgenda getInnerAgenda() {
+    	return agenda;
+    }
 }

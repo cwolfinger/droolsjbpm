@@ -38,10 +38,23 @@ public class GroupElement extends ConditionalElement
     public static final Type AND = Type.AND;
     public static final Type OR = Type.OR;
     public static final Type NOT = Type.NOT;
+    public static final Type XOR = Type.XOR;
+    public static final Type EQV = Type.EQV;
     public static final Type EXISTS = Type.EXISTS;
+//    public static final Type FORANY = Type.FORANY;
+    public static final Type DISC = Type.DISC;
+    public static final Type AVG = Type.AVG;
+    public static final Type DMP = Type.DMP;
+    
+    public static final Type HEDGE = Type.HEDGE;
+    
+    
+    
 
     private Type              type             = null;
     private List              children         = new ArrayList();
+    private String			  param			   = null;
+    private String			  label			   = null;
 
     public GroupElement() {
         this( Type.AND );
@@ -49,6 +62,11 @@ public class GroupElement extends ConditionalElement
 
     public GroupElement(final Type type) {
         this.type = type;
+    }
+    
+    public GroupElement(final Type type, String spec) {
+        this.type = type;
+        this.setParam(spec);
     }
 
     public void readExternal(ObjectInput in) throws IOException,
@@ -62,6 +80,11 @@ public class GroupElement extends ConditionalElement
         out.writeObject( children );
     }
 
+    public boolean isCutter() {
+    	return false;
+    }
+    
+    
     /**
      * Adds a child to the current GroupElement.
      *
@@ -295,6 +318,14 @@ public class GroupElement extends ConditionalElement
     public boolean isAnd() {
         return AND.equals( this.type );
     }
+    
+    public boolean isXor() {
+        return XOR.equals( this.type );
+    }
+    
+    public boolean isEqv() {
+        return EQV.equals( this.type );
+    }
 
     public boolean isOr() {
         return OR.equals( this.type );
@@ -307,6 +338,26 @@ public class GroupElement extends ConditionalElement
     public boolean isExists() {
         return EXISTS.equals( this.type );
     }
+    
+    public boolean isDiscount() {
+        return DISC.equals( this.type );
+    }
+    
+    public boolean isAverage() {
+        return AVG.equals( this.type );
+    }
+    
+    public boolean isDoubleMP() {
+        return DMP.equals( this.type );
+    }
+    
+    public boolean isHedge() {
+        return HEDGE.equals( this.type );
+    }
+    
+//    public boolean isForAny() {
+//        return FORANY.equals( this.type );
+//    }
 
     public String toString() {
         return this.type.toString() + this.children.toString();
@@ -321,14 +372,49 @@ public class GroupElement extends ConditionalElement
     }
 
     /**
+	 * @param param the param to set
+	 */
+	public void setParam(String param) {
+		this.param = param;
+	}
+
+	/**
+	 * @return the param
+	 */
+	public String getParam() {
+		return param;
+	}
+
+	/**
+	 * @param label the label to set
+	 */
+	public void setLabel(String label) {
+		this.label = label;
+	}
+
+	/**
+	 * @return the label
+	 */
+	public String getLabel() {
+		return label;
+	}
+
+	/**
      * A public enum for CE types
      */
     public static enum Type {
 
         AND(false), 
         OR(false), 
-        NOT(true), 
-        EXISTS(true);
+        NOT(true),
+        XOR(false),
+        EQV(false),
+        EXISTS(true),
+        AVG(false),
+        DISC(false),
+        DMP(false),
+        HEDGE(false);
+//        FORANY(true);
 
         private final boolean scopeDelimiter;
 

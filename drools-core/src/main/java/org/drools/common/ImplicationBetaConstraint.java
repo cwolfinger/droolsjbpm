@@ -259,5 +259,19 @@ public class ImplicationBetaConstraint implements BetaConstraints {
 
 
 
+
+
+
+	public boolean isCutter() {		
+		return false;
+	}
+
+	
+
+
+
+
+
+
 	
 }
