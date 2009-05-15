@@ -4,6 +4,11 @@ public class DynamicConstraintKey extends ConstraintKey {
 
 	private String op;
 	
+	
+	private DynamicConstraintKey() {		
+		op = "";
+	}
+	
 	public DynamicConstraintKey(String op) {
 		super(op, "");
 		this.op = op;
@@ -16,6 +21,13 @@ public class DynamicConstraintKey extends ConstraintKey {
 	
 	public void reset() {
 		this.key = buildKey(op, "");
+	}
+	
+	public ConstraintKey clone() {
+		DynamicConstraintKey ans = new DynamicConstraintKey();
+		ans.op = new String(this.op);
+		ans.key = new String(this.key);
+		return ans;
 	}
 	
 	public void addArg(ConstraintKey arg) {

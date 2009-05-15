@@ -58,5 +58,7 @@ public interface KnowledgeBaseConfiguration
     extends
     PropertiesConfiguration,
     KnowledgeBaseOptionsConfiguration {
+	
+	public boolean isImperfect();
 
 }

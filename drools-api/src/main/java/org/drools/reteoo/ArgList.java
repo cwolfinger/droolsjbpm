@@ -39,6 +39,9 @@ public class ArgList {
 		
 	}
 	
+	public boolean delete(ArgList args) {
+		return this.args.removeAll(args.args);
+	}
 	
 	
 	

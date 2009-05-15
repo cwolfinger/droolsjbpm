@@ -50,7 +50,7 @@ public class SimpleDegree extends Degree {
 	
 	
 	public boolean toBoolean() {		
-		return value > 0.5;
+		return value > 0;
 	}
 
 	public SimpleDegree getDegree() {
