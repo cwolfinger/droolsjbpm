@@ -40,7 +40,9 @@ public class RuleBaseFactory {
     }
     
     public static RuleBase newRuleBase(final RuleBaseConfiguration config) {
-        return RuleBaseFactory.newRuleBase( RuleBase.RETEOO,
+    	int type = config.isImperfect() ? RuleBase.IMPERFECT_RETEOO : RuleBase.RETEOO;
+        return RuleBaseFactory.newRuleBase( 
+        									type,
                                             config );
     }    
 
