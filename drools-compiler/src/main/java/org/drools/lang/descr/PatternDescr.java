@@ -33,6 +33,7 @@ public class PatternDescr extends BaseDescr implements Cloneable {
     private int                     rightParentCharacter = -1;
     private PatternSourceDescr      source;
     private List<BehaviorDescr>     behaviors;
+       
 
     public PatternDescr() {
         this( null,
@@ -166,5 +167,9 @@ public class PatternDescr extends BaseDescr implements Cloneable {
         }
         return clone;
     }
+    
+    
+    
 
+	
 }

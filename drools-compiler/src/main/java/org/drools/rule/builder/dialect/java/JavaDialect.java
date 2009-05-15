@@ -39,17 +39,21 @@ import org.drools.lang.descr.AndDescr;
 import org.drools.lang.descr.BaseDescr;
 import org.drools.lang.descr.CollectDescr;
 import org.drools.lang.descr.EntryPointDescr;
+import org.drools.lang.descr.EqvDescr;
 import org.drools.lang.descr.EvalDescr;
 import org.drools.lang.descr.ExistsDescr;
+import org.drools.lang.descr.ForAnyDescr;
 import org.drools.lang.descr.ForallDescr;
 import org.drools.lang.descr.FromDescr;
 import org.drools.lang.descr.FunctionDescr;
+import org.drools.lang.descr.HedgeDescr;
 import org.drools.lang.descr.NotDescr;
 import org.drools.lang.descr.OrDescr;
 import org.drools.lang.descr.PatternDescr;
 import org.drools.lang.descr.ProcessDescr;
 import org.drools.lang.descr.QueryDescr;
 import org.drools.lang.descr.RuleDescr;
+import org.drools.lang.descr.XorDescr;
 import org.drools.rule.Function;
 import org.drools.rule.JavaDialectRuntimeData;
 import org.drools.rule.LineMappings;
@@ -61,6 +65,7 @@ import org.drools.rule.builder.CollectBuilder;
 import org.drools.rule.builder.ConsequenceBuilder;
 import org.drools.rule.builder.EnabledBuilder;
 import org.drools.rule.builder.EntryPointBuilder;
+import org.drools.rule.builder.ForAnyBuilder;
 import org.drools.rule.builder.ForallBuilder;
 import org.drools.rule.builder.FromBuilder;
 import org.drools.rule.builder.FunctionBuilder;
@@ -110,6 +115,9 @@ public class JavaDialect
     private static final ForallBuilder               FORALL_BUILDER                = new ForallBuilder();
     private static final EntryPointBuilder           ENTRY_POINT_BUILDER           = new EntryPointBuilder();
     private static final GroupElementBuilder         GE_BUILDER                    = new GroupElementBuilder();
+    private static final ForAnyBuilder               FORANY_BUILDER                = new ForAnyBuilder();
+    
+    
 
     // a map of registered builders
     private static Map                               builders;
@@ -191,9 +199,19 @@ public class JavaDialect
 
         builders.put( NotDescr.class,
                       GE_BUILDER );
+        
+        builders.put( XorDescr.class,
+                GE_BUILDER );
+        
+        builders.put( EqvDescr.class,
+                GE_BUILDER );
 
         builders.put( ExistsDescr.class,
                       GE_BUILDER );
+        
+        builders.put( ForAnyDescr.class,
+                FORANY_BUILDER );
+        
 
         builders.put( PatternDescr.class,
                       PATTERN_BUILDER );
@@ -209,6 +227,9 @@ public class JavaDialect
 
         builders.put( EvalDescr.class,
                       EVAL_BUILDER );
+        
+        builders.put( HedgeDescr.class,
+                GE_BUILDER );
 
         builders.put( EntryPointDescr.class,
                       ENTRY_POINT_BUILDER );
@@ -362,6 +383,8 @@ public class JavaDialect
     public FromBuilder getFromBuilder() {
         return FROM_BUILDER;
     }
+    
+    
 
     public EntryPointBuilder getEntryPointBuilder() {
         return ENTRY_POINT_BUILDER;

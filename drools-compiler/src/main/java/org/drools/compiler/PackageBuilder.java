@@ -996,7 +996,7 @@ public class PackageBuilder {
                 type.setFormat( TypeDeclaration.Format.POJO );
                 Class clazz;
                 try {
-                    if ( typeDescr.getFields().size() > 0 ) {
+                    if ( typeDescr.getFields().size() > -1 ) {
                         // generate the bean if its needed
                         generateDeclaredBean( typeDescr,
                                               type,
@@ -1566,26 +1566,83 @@ public class PackageBuilder {
     		while (idx != -1) {
     			
     			int endIdx = cons.indexOf(';', idx);
-    			if (idx < 10 || (cons.charAt(idx-8) != '/' && cons.charAt(idx-9) != '/')) {
+    			
+    			char choice = cons.charAt(idx+6);
+    			
+    			if (choice == 'K') {
+    				//injectKey
+    				idx = idx+3;
+    				
+        			if (idx < 13 || (cons.charAt(idx-11) != '/' && cons.charAt(idx-12) != '/')) {
+        				
+        			
+        				StringTokenizer tok = new StringTokenizer(cons.substring(idx,endIdx),",)");
+        				tok.nextToken();
+        				ConstraintKey ck = null;
+        				if (tok.countTokens() >= 3)
+        					 ck = new ConstraintKey(tok.nextToken().replaceAll("\"", ""),
+        							tok.nextToken().replaceAll("\"", ""),
+        							tok.nextToken().replaceAll("\"", ""));
+        				else 
+        					ck = new ConstraintKey(tok.nextToken().replaceAll("\"", ""));
+        			
+        				Set<String> deps = ans.get(ck);
+        				if (deps == null) {
+        					deps = new HashSet<String>();
+        					ans.put(ck,deps);
+        				}
+        					deps.add(r.getName());
+        			}
+    				
+    			} else if (choice == 'I') {
+    				idx = idx+2;
     				
     			
-    				StringTokenizer tok = new StringTokenizer(cons.substring(idx,endIdx),",)");
-    				tok.nextToken();
-    				ConstraintKey ck = null;
-    				if (tok.countTokens() >= 3)
-    					 ck = new ConstraintKey(tok.nextToken().replaceAll("\"", ""),
-    							tok.nextToken().replaceAll("\"", ""),
-    							tok.nextToken().replaceAll("\"", ""));
-    				else 
-    					ck = new ConstraintKey(tok.nextToken().replaceAll("\"", ""));
+        			if (idx < 12 || (cons.charAt(idx-10) != '/' && cons.charAt(idx-11) != '/')) {
+        				
+        			
+        				StringTokenizer tok = new StringTokenizer(cons.substring(idx,endIdx),",)");
+        				tok.nextToken();
+        				
+        					ConstraintKey ck = new ConstraintKey();
+        					String alias = tok.nextToken().replaceAll("\"", "");
+        						ck.setAlias(alias);
+        					
+        				Set<String> deps = ans.get(ck);
+        				if (deps == null) {
+        					deps = new HashSet<String>();
+        					ans.put(ck,deps);
+        				}
+        					deps.add(r.getName());
+        			}
+    				
+    				
+    			} else {
     			
-    				Set<String> deps = ans.get(ck);
-    				if (deps == null) {
-    					deps = new HashSet<String>();
-    					ans.put(ck,deps);
-    				}
-    					deps.add(r.getName());
+        			if (idx < 10 || (cons.charAt(idx-8) != '/' && cons.charAt(idx-9) != '/')) {
+        				
+        			
+        				StringTokenizer tok = new StringTokenizer(cons.substring(idx,endIdx),",)");
+        				tok.nextToken();
+        				ConstraintKey ck = null;
+        				if (tok.countTokens() >= 3)
+        					 ck = new ConstraintKey(tok.nextToken().replaceAll("\"", ""),
+        							tok.nextToken().replaceAll("\"", ""),
+        							tok.nextToken().replaceAll("\"", ""));
+        				else 
+        					ck = new ConstraintKey(tok.nextToken().replaceAll("\"", ""));
+        			
+        				Set<String> deps = ans.get(ck);
+        				if (deps == null) {
+        					deps = new HashSet<String>();
+        					ans.put(ck,deps);
+        				}
+        					deps.add(r.getName());
+        			}
+    				
     			}
+    			
+    			
     		
     			idx = cons.indexOf("inject",endIdx);
     		}

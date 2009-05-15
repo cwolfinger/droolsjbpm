@@ -48,5 +48,9 @@ public class FieldConstraintDescr extends BaseDescr {
     public RestrictionConnectiveDescr getRestriction() {
         return this.restriction;
     }
+    
+    public boolean isCutter() {
+    	return this.restriction.isCutter();
+    }
 
 }

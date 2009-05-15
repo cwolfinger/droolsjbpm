@@ -83,4 +83,13 @@ public class RestrictionConnectiveDescr extends RestrictionDescr {
             }
         };
     }
+    
+    public boolean isCutter() {
+    	for (RestrictionDescr rd : this.restrictions)
+    		if (rd.isCutter())
+    			return true;
+    	return false;    	
+    }
+    
 }
+

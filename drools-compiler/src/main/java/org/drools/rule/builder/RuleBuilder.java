@@ -128,7 +128,14 @@ public class RuleBuilder {
                 final Calendar cal = Calendar.getInstance();
                 cal.setTime( DateUtils.parseDate( attributeDescr.getValue() ) );
                 rule.setDateExpires( cal );
+            } else if ( name.equals( "prior" ) ) {
+            	rule.setPriorDescription(attributeDescr.getValue().substring(1,attributeDescr.getValue().length()-1));
+            } else if ( name.equals( "entail_mode" ) ) {
+            	rule.setEntailMode(attributeDescr.getValue());
+            } else if ( name.equals( "filter_str" ) ) {
+            	rule.setFilterStrategy(attributeDescr.getValue());
             }
+            
         }
 
         buildSalience( context );

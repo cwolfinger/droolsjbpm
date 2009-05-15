@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.drools.Order;
 import org.drools.base.ClassObjectType;
 import org.drools.base.FieldFactory;
 import org.drools.base.ValueType;
@@ -128,6 +129,8 @@ public class PatternBuilder
                                                           "ObjectType not correctly defined" ) );
             return null;
         }
+        
+        
 
         ObjectType objectType = null;
 
@@ -223,6 +226,12 @@ public class PatternBuilder
 
         // poping the pattern
         context.getBuildStack().pop();
+        
+        if (patternDescr.isCutter())
+        	pattern.setCutter(true);
+        
+        if (patternDescr.getLabel() != null)
+        	pattern.setLabel(patternDescr.getLabel());
 
         return pattern;
     }
@@ -231,6 +240,14 @@ public class PatternBuilder
                                  final Pattern pattern,
                                  final Object constraint,
                                  final AbstractCompositeConstraint container) {
+    	
+    	boolean cutter = false;
+    	String label = null;
+    	if (constraint instanceof RestrictionDescr) {
+    		cutter = ((RestrictionDescr) constraint).isCutter();
+    		label = ((RestrictionDescr) constraint).getLabel();
+    	}
+    	
         if ( constraint instanceof FieldBindingDescr ) {
             build( context,
                    pattern,
@@ -260,9 +277,12 @@ public class PatternBuilder
                 if ( and.getType().equals( Constraint.ConstraintType.UNKNOWN ) ) {
                     this.setConstraintType( pattern,
                                             (MutableTypeConstraint) and );
-                }
+                }                
                 container.addConstraint( and );
             }
+            and.setCutter(cutter);
+            and.setLabel(label);
+            and.setParams(((AndDescr) constraint ).getParams());
         } else if ( constraint instanceof OrDescr ) {
             OrConstraint or = new OrConstraint();
             for ( Iterator it = ((OrDescr) constraint).getDescrs().iterator(); it.hasNext(); ) {
@@ -279,8 +299,12 @@ public class PatternBuilder
                     this.setConstraintType( pattern,
                                             (MutableTypeConstraint) or );
                 }
+                
                 container.addConstraint( or );
             }
+            or.setCutter(cutter);  
+            or.setLabel(label);
+            or.setParams(((OrDescr) constraint ).getParams());
         } else {
             context.getErrors().add( new DescrBuildError( context.getParentDescr(),
                                                           (BaseDescr) constraint,
@@ -403,6 +427,14 @@ public class PatternBuilder
                                                           "This is a bug: Unkown restriction type '" + restriction.getClass() + "' for pattern '" + pattern.getObjectType().toString() + "' in rule '" + context.getRule().getName() + "'" ) );
         }
 
+        
+        boolean isCutter = fieldConstraintDescr.isCutter();
+        constraint.setCutter(isCutter);
+        
+        
+        
+        
+        
         if ( container == null ) {
             pattern.addConstraint( constraint );
         } else {
@@ -506,6 +538,10 @@ public class PatternBuilder
                                                         extractor,
                                                         fieldConstraintDescr,
                                                         restrictionDescr );
+                restrictions[index].setLabel(restrictionDescr.getLabel());
+                
+                
+                
                 if ( restrictions[index] == null ) {
                     context.getErrors().add( new DescrBuildError( context.getParentDescr(),
                                                                   fieldConstraintDescr,

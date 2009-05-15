@@ -33,6 +33,8 @@ tokens {
 	VT_OR_PREFIX;
 	VT_AND_INFIX;
 	VT_OR_INFIX;
+	VT_EQUIV;
+	VT_XOR;
 
 	VT_ACCUMULATE_INIT_CLAUSE;
 	VT_ACCUMULATE_ID_CLAUSE;
@@ -55,6 +57,20 @@ tokens {
 	VT_GLOBAL_ID;
 	VT_FUNCTION_ID;
 	VT_PARAM_LIST;
+	
+	VT_CONSTRID;
+	
+	
+	VT_HEDGE;
+	
+	VT_CONSTR_ATTRIBUTES;
+  
+  VT_CONSTRID;  
+  VT_CUT;
+  VT_PRIOR;
+  VT_ARGS;
+  VT_TYPE;
+	
 
 	VK_DATE_EFFECTIVE;
 	VK_DATE_EXPIRES;
@@ -84,14 +100,36 @@ tokens {
 	VK_IN;
 	VK_OR;
 	VK_AND;
+	VK_EQUIV;
+	VK_XOR;
 	VK_EXISTS;
 	VK_FORALL;
+	VK_FORANY;
 	VK_ACTION;
 	VK_REVERSE;
 	VK_RESULT;
 	VK_OPERATOR;
 	VK_END;
 	VK_INIT;
+	
+	VK_SUBJECT;
+	VK_WEIGHT;
+	
+	
+	
+  VK_CUT;
+  
+  VK_APPROX;
+  
+  VK_ENTAIL;
+  VK_PRIOR;
+  VK_FILTER;
+  
+  VK_AT;
+  VK_CONSTRID;
+  
+  VK_ARGS;
+  VK_TYPE;
 }
 
 @parser::header {
@@ -391,7 +429,7 @@ tokens {
 	public void emitErrorMessage(String msg) {
 	}
 }
-
+ 
 compilation_unit
 	:	package_statement?
 		statement*
@@ -721,6 +759,9 @@ rule_attribute
 	|	ruleflow_group 
 	|	lock_on_active
 	|	dialect 
+	| prior
+	| entail_mode
+	| filter
 	;
 finally {
 	if (isEditorInterfaceEnabled && isFailed) {
@@ -795,6 +836,24 @@ lock_on_active
 	:	lock_on_active_key^ {	emit(Location.LOCATION_RULE_HEADER_KEYWORD);	} BOOL?
 	{	emit($BOOL, DroolsEditorType.BOOLEAN_CONST );	}
 	;
+	
+prior
+  : prior_key^ { emit(Location.LOCATION_RULE_HEADER_KEYWORD);  } paren_chunk  
+  ;
+  
+entail_mode
+  : entail_mode_key^ { emit(Location.LOCATION_RULE_HEADER_KEYWORD);  } STRING
+  { emit($STRING, DroolsEditorType.STRING_CONST ); }
+  ;  	
+  
+filter
+  : filter_key^ { emit(Location.LOCATION_RULE_HEADER_KEYWORD);  } STRING
+  { emit($STRING, DroolsEditorType.STRING_CONST ); }
+  ;
+
+
+
+
 
 normal_lhs_block
 	:	lhs*
@@ -807,35 +866,81 @@ lhs	:	lhs_or
 lhs_or
 @init{
 	Token orToken = null;
-}	:	(LEFT_PAREN or_key)=> 
+}	:	(LEFT_PAREN or_key constr_parameters?)=> 
 		LEFT_PAREN  {	emit($LEFT_PAREN, DroolsEditorType.SYMBOL);	}
-			or=or_key
+			or=or_key				
+			constr_parameters?
 	{	emit(Location.LOCATION_LHS_BEGIN_OF_CONDITION_AND_OR);	}
 			lhs_and+ 
 		RIGHT_PAREN {	emit($RIGHT_PAREN, DroolsEditorType.SYMBOL);	} // PREFIX 
-		-> ^(VT_OR_PREFIX[$or.start] lhs_and+ RIGHT_PAREN)
+		-> ^(VT_OR_PREFIX[$or.start] constr_parameters? lhs_and+ RIGHT_PAREN)
+	
+	
+	| (LEFT_PAREN equiv_key constr_parameters?)=> 
+    LEFT_PAREN  { emit($LEFT_PAREN, DroolsEditorType.SYMBOL); }
+      equiv=equiv_key      
+      constr_parameters?
+  { emit(Location.LOCATION_LHS_BEGIN_OF_CONDITION_AND_OR);  }
+      lhs_and
+      lhs_and      
+    RIGHT_PAREN { emit($RIGHT_PAREN, DroolsEditorType.SYMBOL);  } // PREFIX 
+    -> ^(VT_EQUIV[$equiv.start] constr_parameters? lhs_and lhs_and RIGHT_PAREN)
+	
+	| (LEFT_PAREN xor_key constr_parameters?)=> 
+    LEFT_PAREN  { emit($LEFT_PAREN, DroolsEditorType.SYMBOL); }
+      xor=xor_key      
+      constr_parameters?
+  { emit(Location.LOCATION_LHS_BEGIN_OF_CONDITION_AND_OR);  }
+      lhs_and
+      lhs_and      
+    RIGHT_PAREN { emit($RIGHT_PAREN, DroolsEditorType.SYMBOL);  } // PREFIX 
+    -> ^(VT_XOR[$xor.start] constr_parameters? lhs_and lhs_and RIGHT_PAREN)
+	
+	
 	|	(lhs_and -> lhs_and) 
-		( (or_key|DOUBLE_PIPE)=> (value=or_key {orToken = $value.start;} |pipe=DOUBLE_PIPE {orToken = $pipe; emit($DOUBLE_PIPE, DroolsEditorType.SYMBOL);}) 
+		( (or_key  constr_parameters? |DOUBLE_PIPE)=> (value=or_key square_chunk? {orToken = $value.start;} 
+		  |pipe=DOUBLE_PIPE {orToken = $pipe; emit($DOUBLE_PIPE, DroolsEditorType.SYMBOL);}) 
 	{	emit(Location.LOCATION_LHS_BEGIN_OF_CONDITION_AND_OR);	}
 		lhs_and 
-		-> ^(VT_OR_INFIX[orToken] $lhs_or lhs_and))*
+		-> ^(VT_OR_INFIX[orToken]  constr_parameters? $lhs_or lhs_and))*
+		
+	|  hedge lhs_or
+	   -> ^(hedge lhs_or)	
+									
 	;
+
+
+hedge
+@init{
+  Token type = null;
+}
+  : value=very_key {type = $value.start; } -> VT_HEDGE[type]
+  ;
+
 
 lhs_and
 @init{
 	Token andToken = null;
-}	:	(LEFT_PAREN and_key)=> 
+}	:	(LEFT_PAREN and_key square_chunk?)=> 
 		LEFT_PAREN {	emit($LEFT_PAREN, DroolsEditorType.SYMBOL);	} 
 			and=and_key
+			square_chunk?
+			constr_parameters?
 	{	emit(Location.LOCATION_LHS_BEGIN_OF_CONDITION_AND_OR);	}
 			lhs_unary+ 
 		RIGHT_PAREN {	emit($RIGHT_PAREN, DroolsEditorType.SYMBOL);	}  // PREFIX
-		-> ^(VT_AND_PREFIX[$and.start] lhs_unary+ RIGHT_PAREN)
-	|	(lhs_unary -> lhs_unary) 
-		( (and_key|DOUBLE_AMPER)=> (value=and_key {andToken = $value.start;} |amper=DOUBLE_AMPER {andToken = $amper; emit($DOUBLE_AMPER, DroolsEditorType.SYMBOL);}) 
+		-> ^(VT_AND_PREFIX[$and.start] square_chunk? constr_parameters? lhs_unary+ RIGHT_PAREN)
+		
+	|	
+	
+	(lhs_unary -> lhs_unary) 
+		( (and_key square_chunk? |DOUBLE_AMPER)=> 
+		( value=and_key constr_parameters? square_chunk? {andToken = $value.start; } 
+		  |amper=DOUBLE_AMPER {andToken = $amper; emit($DOUBLE_AMPER, DroolsEditorType.SYMBOL);}
+		) 
 	{	emit(Location.LOCATION_LHS_BEGIN_OF_CONDITION_AND_OR);	}
 		lhs_unary 
-		-> ^(VT_AND_INFIX[andToken] $lhs_and lhs_unary) )*
+		-> ^(VT_AND_INFIX[andToken] square_chunk? constr_parameters? $lhs_and  lhs_unary ) )*			  
 	;
 
 lhs_unary
@@ -844,6 +949,7 @@ lhs_unary
 		|	lhs_not
 		|	lhs_eval
 		|	lhs_forall
+		| lhs_forany
 		|	LEFT_PAREN! {	emit($LEFT_PAREN, DroolsEditorType.SYMBOL); emit(Location.LOCATION_LHS_BEGIN_OF_CONDITION );	}  
 				lhs_or 
 			RIGHT_PAREN {	emit($RIGHT_PAREN, DroolsEditorType.SYMBOL);	}
@@ -899,11 +1005,27 @@ lhs_forall
 		RIGHT_PAREN {	emit($RIGHT_PAREN, DroolsEditorType.SYMBOL);	}
 		-> ^(forall_key pattern_source+ RIGHT_PAREN)
 	;
+	
+	
 
+lhs_forany
+  : forany_key 
+    LEFT_PAREN {  emit($LEFT_PAREN, DroolsEditorType.SYMBOL); } 
+      lhs_or  
+      (
+      (subject_key s=lhs_or)?
+      (weight_key w=lhs_or)?
+      )
+    RIGHT_PAREN { emit($RIGHT_PAREN, DroolsEditorType.SYMBOL);  }
+    -> ^(forany_key lhs_or (subject_key $s)? (weight_key $w)? RIGHT_PAREN)
+  ;
+	
+	
 pattern_source
 @init { boolean isFailed = true;	}
 @after { isFailed = false;	}
-	:	lhs_pattern
+	:	
+	  lhs_pattern
 		over_clause?
 		(
 			FROM^
@@ -1071,11 +1193,14 @@ expression_chain
 	  -> ^(VT_EXPRESSION_CHAIN[$DOT] ID square_chunk? paren_chunk? expression_chain?)
 	;
 
+	
 lhs_pattern
-	:	fact_binding -> ^(VT_PATTERN fact_binding)
-	|	fact -> ^(VT_PATTERN fact)
-	;
+  : fact_binding -> ^(VT_PATTERN fact_binding) //^(VT_CUT cut_key)?
+  | fact  -> ^(VT_PATTERN fact) //^(VT_CUT cut_key)?     
+  ;
+	
 
+  
 fact_binding
  	:	label
 		( fact
@@ -1101,11 +1226,15 @@ fact
 	{	emit(Location.LOCATION_LHS_INSIDE_CONDITION_START);	}
 			constraints? 
 		RIGHT_PAREN {	isFailedOnConstraints = false;	}
+		 constr_parameters? 
 	{	if ($RIGHT_PAREN.text.equals(")") ){ //WORKAROUND FOR ANTLR BUG!
 			emit($RIGHT_PAREN, DroolsEditorType.SYMBOL);
 			emit(Location.LOCATION_LHS_BEGIN_OF_CONDITION);
 		}	}
-	->	^(VT_FACT pattern_type constraints? RIGHT_PAREN)
+		
+		
+		
+	->	^(VT_FACT pattern_type constraints? constr_parameters? RIGHT_PAREN)
 	;
 finally {
 	if (isEditorInterfaceEnabled && isFailedOnConstraints && input.LA(1) == EOF && input.get(input.index() - 1).getType() == WS){
@@ -1125,15 +1254,123 @@ constraint
 	:	or_constr
 	;
 
+
+
+
 or_constr
-	:	and_constr ( DOUBLE_PIPE^ 
-	{	emit($DOUBLE_PIPE, DroolsEditorType.SYMBOL);	} and_constr )* 
+  :             
+     or_constr_config
+          
+        (DOUBLE_PIPE^                        
+         and_constr
+        )*
+        
+  ;
+  
+or_constr_config
+  :     
+    (and_constr SINGLE_PIPE) =>
+      and_constr
+         SINGLE_PIPE
+           //square_chunk?
+           //constr_identifier? 
+           //cut?
+           constr_parameters             
+           and_constr
+      -> ^(SINGLE_PIPE 
+            // square_chunk? ^(VT_CONSTRID constr_identifier)? cut?
+            constr_parameters? 
+            and_constr and_constr)
+    |
+    and_constr      
+  ;     
+
+and_constr
+
+  :       
+          and_constr_config
+          
+          (DOUBLE_AMPER^                         
+           unary_constr
+          )*
+                
+           
+  ;
+  
+and_constr_config
+  :     
+    (unary_constr SINGLE_AMPER) =>
+      unary_constr
+         SINGLE_AMPER
+           //square_chunk?
+           //constr_identifier?
+           //cut?
+           constr_parameters?                 
+           unary_constr           
+      -> ^(SINGLE_AMPER 
+            // square_chunk? ^(VT_CONSTRID constr_identifier)? cut?
+            constr_parameters? 
+            unary_constr unary_constr)
+    |
+    unary_constr      
+  ;      
+
+
+
+/*
+or_constr
+	:		          
+                      
+     (
+        and_constr  
+          (SINGLE_PIPE
+           square_chunk?
+           constr_parameters?                 
+           and_constr
+          )
+          (DOUBLE_PIPE                         
+           and_constr
+          )*
+                
+        -> ^(SINGLE_PIPE constr_parameters? and_constr+)
+     
+     |
+     
+      and_constr
+        (DOUBLE_PIPE^                         
+         and_constr
+        )*
+        
+     )                  
 	;
 
 and_constr
-	:	unary_constr ( DOUBLE_AMPER^ 
-	{	emit($DOUBLE_AMPER, DroolsEditorType.SYMBOL);;	} unary_constr )*
+
+	:	 	 
+	   	          
+     (
+          unary_constr   
+          (SINGLE_AMPER
+           square_chunk?
+           constr_parameters?                 
+           unary_constr
+          )
+          (DOUBLE_AMPER                         
+           unary_constr
+          )*
+                
+          -> ^(SINGLE_AMPER constr_parameters? unary_constr+)
+     
+     |
+        unary_constr
+        (DOUBLE_AMPER^                         
+         unary_constr
+        )*
+     )   
 	;
+
+*/
+
 
 unary_constr
 options { k=2; }
@@ -1159,10 +1396,11 @@ field_constraint
 	boolean isArrow = false;
 }	:	label accessor_path 
 		( or_restr_connective | arw=ARROW {	emit($ARROW, DroolsEditorType.SYMBOL);	} paren_chunk {isArrow = true;})?
+		//cut_key?
 		-> {isArrow}? ^(VT_BIND_FIELD label ^(VT_FIELD accessor_path)) ^(VK_EVAL[$arw] paren_chunk)?
-		-> ^(VT_BIND_FIELD label ^(VT_FIELD accessor_path or_restr_connective?))
-	|	accessor_path or_restr_connective
-		-> ^(VT_FIELD accessor_path or_restr_connective)
+		-> ^(VT_BIND_FIELD label ^(VT_FIELD accessor_path or_restr_connective? ))
+	|	accessor_path or_restr_connective 
+		-> ^(VT_FIELD accessor_path or_restr_connective )
 	;
 
 label
@@ -1172,8 +1410,8 @@ label
 	;
 
 or_restr_connective
-	:	and_restr_connective ({(validateRestr())}?=> DOUBLE_PIPE^ 
-	{	emit($DOUBLE_PIPE, DroolsEditorType.SYMBOL);	}  and_restr_connective )* 
+	:	and_restr_connective ({(validateRestr())}?=> DOUBLE_PIPE^  
+	{	emit($DOUBLE_PIPE, DroolsEditorType.SYMBOL);	}   and_restr_connective )* 
 	;
 catch [ RecognitionException re ] {
 	if (!lookaheadTest){
@@ -1203,7 +1441,10 @@ constraint_expression
 options{
 k=3;
 }	:	compound_operator
-	|	simple_operator
+	|	simple_operator ans=constr_parameters? expression_value
+	   -> ^(simple_operator expression_value) ^(constr_parameters)?
+	| custom_operator ans=constr_parameters? expression_value?
+	   -> ^(custom_operator expression_value?) ^(constr_parameters)?
 	|	LEFT_PAREN! {	emit($LEFT_PAREN, DroolsEditorType.SYMBOL);	} 
 			or_restr_connective 
 		RIGHT_PAREN {	emit($RIGHT_PAREN, DroolsEditorType.SYMBOL);	} 
@@ -1251,21 +1492,61 @@ finally {
 }
 
 simple_operator
-@init {if ( state.backtracking==0 ) emit(Location.LOCATION_LHS_INSIDE_CONDITION_OPERATOR);}
+@init {
+  if ( state.backtracking==0 ) emit(Location.LOCATION_LHS_INSIDE_CONDITION_OPERATOR); 
+}
 	:	
-	(
-		EQUAL^ {	emit($EQUAL, DroolsEditorType.SYMBOL);	}
-	|	GREATER^ {	emit($GREATER, DroolsEditorType.SYMBOL);	}
-	|	GREATER_EQUAL^ {	emit($GREATER_EQUAL, DroolsEditorType.SYMBOL);	}
-	|	LESS^ {	emit($LESS, DroolsEditorType.SYMBOL);	}
-	|	LESS_EQUAL^ {	emit($LESS_EQUAL, DroolsEditorType.SYMBOL);	}
-	|	NOT_EQUAL^ {	emit($NOT_EQUAL, DroolsEditorType.SYMBOL);	}
-	|	not_key?
-		(	operator_key^ square_chunk?	)
-	)
-	{	emit(Location.LOCATION_LHS_INSIDE_CONDITION_ARGUMENT);	}
-	expression_value
+	   ( 
+		    EQUAL^ {	emit($EQUAL, DroolsEditorType.SYMBOL);	} //ans=constr_parameters?
+		    { emit(Location.LOCATION_LHS_INSIDE_CONDITION_ARGUMENT);
+		    } 		    		   
+        //expression_value
+        
+        
+	   |	GREATER^ {	emit($GREATER, DroolsEditorType.SYMBOL);	} //ans=constr_parameters?
+	      { emit(Location.LOCATION_LHS_INSIDE_CONDITION_ARGUMENT);  
+	      
+	      }
+        //expression_value
+        
+	   |	GREATER_EQUAL^ {	emit($GREATER_EQUAL, DroolsEditorType.SYMBOL);	} //ans=constr_parameters?
+	      {  emit(Location.LOCATION_LHS_INSIDE_CONDITION_ARGUMENT);
+	      
+	      }
+        //expression_value
+	   
+	   |	LESS^ {	emit($LESS, DroolsEditorType.SYMBOL);	} //ans=constr_parameters?
+	      {  emit(Location.LOCATION_LHS_INSIDE_CONDITION_ARGUMENT);
+	      
+	      }
+        //expression_value 
+	   
+	   |	LESS_EQUAL^ {	emit($LESS_EQUAL, DroolsEditorType.SYMBOL);	} //ans=constr_parameters?
+	      { emit(Location.LOCATION_LHS_INSIDE_CONDITION_ARGUMENT);
+	      
+	      }
+        //expression_value
+	   
+	   |	NOT_EQUAL^ {	emit($NOT_EQUAL, DroolsEditorType.SYMBOL);	} //ans=constr_parameters?
+	      { emit(Location.LOCATION_LHS_INSIDE_CONDITION_ARGUMENT);
+	      
+	      }
+        //expression_value
+	   
+	   
+	   )	   	 	      	
 	;
+
+
+custom_operator
+  :  
+     not_key?
+     approx_symb? operator_key^
+     square_chunk?      
+     { emit(Location.LOCATION_LHS_INSIDE_CONDITION_ARGUMENT);  
+        
+    }        
+  ;
 
 //Simple Syntax Sugar
 compound_operator 
@@ -1284,6 +1565,75 @@ finally {
 		input.consume();
 		emit(true, Location.LOCATION_LHS_INSIDE_CONDITION_OPERATOR);
 	}	}
+	
+	
+	
+/*	
+constr_parameters
+  : AT!
+      
+  ;	
+  */
+  
+constr_parameters
+ :   
+  AT!
+  LEFT_PAREN!
+    constr_attr*
+  RIGHT_PAREN!  
+  -> ^(VT_CONSTR_ATTRIBUTES constr_attr*)
+  ;
+
+
+
+
+constr_attr
+  :  
+    c_param_id    
+    | c_param_type
+    | c_param_args
+    | c_param_cut
+    | c_param_prior    
+  ;
+
+
+c_param_id
+  :
+    id_key^
+    EQUALS!
+    cid=STRING    
+  ;
+
+c_param_type
+  :
+    type_key^
+    EQUALS!
+    type=STRING    
+  ;  
+
+c_param_cut
+  :
+    kut_key^
+    EQUALS!
+    kut=STRING     
+  ;
+
+c_param_args
+  :
+    args_key^
+    EQUALS!
+    pms=STRING    
+  ;
+  
+c_param_prior
+  :
+    prior_key^
+    EQUALS! 
+    pri=STRING    
+  ;    
+  
+  
+  
 
 operator_key
 	:      {(isPluggableEvaluator(false))}? => id=ID
@@ -1466,7 +1816,7 @@ date_effective_key
 		emit($id2, DroolsEditorType.KEYWORD);	}
 		->	VK_DATE_EFFECTIVE[$start, text]
 	;
-
+ 
 date_expires_key
 @init{
 	String text = "";
@@ -1561,6 +1911,25 @@ dialect_key
 		->	VK_DIALECT[$id]
 	;
 
+prior_key
+  : {(validateIdentifierKey(DroolsSoftKeywords.PRIOR))}?=>  id=ID
+  { emit($id, DroolsEditorType.KEYWORD);  }
+    ->  VK_PRIOR[$id]
+  ;
+
+entail_mode_key
+  : {(validateIdentifierKey(DroolsSoftKeywords.ENTAIL))}?=>  id=ID
+  { emit($id, DroolsEditorType.KEYWORD);  }
+    ->  VK_ENTAIL[$id]
+  ;
+
+filter_key
+  : {(validateIdentifierKey(DroolsSoftKeywords.FILTER))}?=>  id=ID
+  { emit($id, DroolsEditorType.KEYWORD);  }
+    ->  VK_FILTER[$id]
+  ;
+
+
 salience_key
 	:	{(validateIdentifierKey(DroolsSoftKeywords.SALIENCE))}?=>  id=ID
 	{	emit($id, DroolsEditorType.KEYWORD);	}
@@ -1648,8 +2017,21 @@ or_key
 and_key
 	:	{(validateIdentifierKey(DroolsSoftKeywords.AND))}?=>  id=ID
 	{	emit($id, DroolsEditorType.KEYWORD);	}
-		->	VK_AND[$id]
+		->	VK_AND[$id]	
 	;
+	
+equiv_key
+  : {(validateIdentifierKey(DroolsSoftKeywords.EQUIV))}?=>  id=ID
+  { emit($id, DroolsEditorType.KEYWORD);  }
+    ->  VK_EQUIV[$id]
+  ;	
+  
+xor_key
+  : {(validateIdentifierKey(DroolsSoftKeywords.XOR))}?=>  id=ID
+  { emit($id, DroolsEditorType.KEYWORD);  }
+    ->  VK_XOR[$id]
+  ;  
+	
 
 exists_key
 	:	{(validateIdentifierKey(DroolsSoftKeywords.EXISTS))}?=>  id=ID
@@ -1662,6 +2044,12 @@ forall_key
 	{	emit($id, DroolsEditorType.KEYWORD);	}
 		->	VK_FORALL[$id]
 	;
+	
+forany_key
+  : {(validateIdentifierKey(DroolsSoftKeywords.FORANY))}?=>  id=ID
+  { emit($id, DroolsEditorType.KEYWORD);  }
+    ->  VK_FORANY[$id]
+  ;	
 
 action_key
 	:	{(validateIdentifierKey(DroolsSoftKeywords.ACTION))}?=>  id=ID
@@ -1697,6 +2085,74 @@ init_key
 	{	emit($id, DroolsEditorType.KEYWORD);	}
 		->	VK_INIT[$id]
 	;
+	
+	
+subject_key
+  : {(validateIdentifierKey(DroolsSoftKeywords.SUBJECT))}?=>  id=ID
+  { emit($id, DroolsEditorType.KEYWORD);  }
+    ->  VK_SUBJECT[$id]
+  ;
+  
+  
+weight_key
+  : {(validateIdentifierKey(DroolsSoftKeywords.WEIGHT))}?=>  id=ID
+  { emit($id, DroolsEditorType.KEYWORD);  }
+    ->  VK_WEIGHT[$id]
+  ;  	
+	
+	
+very_key
+  : {(validateIdentifierKey(DroolsSoftKeywords.VERY))}?=>  id=ID
+  { emit($id, DroolsEditorType.KEYWORD);  }
+    ->  VK_VERY[$id]
+  ;   	
+	
+/*	
+cut_key
+  : CUT -> VK_CUT
+  ;
+*/  
+
+
+
+
+
+  
+id_key
+  : {(validateIdentifierKey(DroolsSoftKeywords.CID))}?=>  id=ID
+  { emit($id, DroolsEditorType.KEYWORD);  }
+    ->  VK_CONSTRID[$id]
+  ;           
+  
+kut_key  
+  : {(validateIdentifierKey(DroolsSoftKeywords.CUT))}?=>  id=ID
+  { emit($id, DroolsEditorType.KEYWORD);  }
+    ->  VK_CUT[$id]
+  ;
+  
+type_key  
+  : {(validateIdentifierKey(DroolsSoftKeywords.TYPE))}?=>  id=ID
+  { emit($id, DroolsEditorType.KEYWORD);  }
+    ->  VK_TYPE[$id]
+  ;  
+
+args_key  
+  : {(validateIdentifierKey(DroolsSoftKeywords.ARGS))}?=>  id=ID
+  { emit($id, DroolsEditorType.KEYWORD);  }
+    ->  VK_PARAMS[$id]
+  ;  
+    
+  
+
+
+
+	
+approx_symb
+  : APPROX -> VK_APPROX
+  ;	
+  
+	
+	
 
 WS      :       (	' '
                 |	'\t'
@@ -1783,6 +2239,16 @@ THEN
 WHEN
 	:	'when'
 	;
+
+
+APPROX
+  : '~'
+  ;
+
+CUT 
+  : '!'
+  ;
+  
 
 AT	:	'@'
 	;
@@ -1874,6 +2340,14 @@ DOUBLE_AMPER
 DOUBLE_PIPE
 	:	'||'
 	;
+	
+SINGLE_AMPER
+  : '&'
+  ;
+  
+SINGLE_PIPE
+  : '|'
+  ;	
 
 SH_STYLE_SINGLE_LINE_COMMENT	
 	:	'#' ( options{greedy=false;} : .)* EOL /* ('\r')? '\n'  */
@@ -1884,7 +2358,7 @@ SH_STYLE_SINGLE_LINE_COMMENT
 C_STYLE_SINGLE_LINE_COMMENT	
 	:	'//' ( options{greedy=false;} : .)* EOL // ('\r')? '\n' 
                 { $channel=HIDDEN; }
-	;
+	; 
 
 MULTI_LINE_COMMENT
 	:	'/*' (options{greedy=false;} : .)* '*/'
@@ -1892,5 +2366,5 @@ MULTI_LINE_COMMENT
 	;
 
 MISC 	:
-		'!' | '$' | '%' | '^' | '*' | '_' | '-' | '+'  | '?' | '/' | '\'' | '\\' | '|' | '&'
+		'$' | '%' | '^' | '*' | '_' | '-' | '+'  | '?' | '/' | '\'' | '\\' 
 	;

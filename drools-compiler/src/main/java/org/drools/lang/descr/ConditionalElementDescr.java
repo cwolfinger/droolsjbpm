@@ -27,4 +27,8 @@ public interface ConditionalElementDescr {
     public void addOrMerge(final BaseDescr baseDescr);
     
     public List<? extends BaseDescr> getDescrs();
+    
+    public String getParams();
+    
+    public String getLabel();
 }

@@ -48,7 +48,7 @@ options{
 compilation_unit
 	:	^(VT_COMPILATION_UNIT package_statement statement*)
 	;
-
+ 
 package_statement returns [String packageName]
 	:	^(VK_PACKAGE packageId=package_id)
 	{	this.packageDescr = factory.createPackage($packageId.idList);	
@@ -203,9 +203,31 @@ rule_attribute returns [AttributeDescr attributeDescr]
 	|	^(attrName=VK_ENABLED (value=BOOL|value=VT_PAREN_CHUNK)) 
 	|	^(attrName=VK_RULEFLOW_GROUP value=STRING) 
 	|	^(attrName=VK_LOCK_ON_ACTIVE value=BOOL?)
-	|	^(attrName=VK_DIALECT value=STRING))
+	|	^(attrName=VK_DIALECT value=STRING)
+	| ^(attrName=VK_PRIOR value=VT_PAREN_CHUNK)
+	| ^(attrName=VK_ENTAIL value=STRING)
+	| ^(attrName=VK_FILTER value=STRING)
+	)
 	{	$attributeDescr = factory.createAttribute($attrName, $value);	}
 	;
+
+
+constraint_attributes returns [List attrList]
+@init{
+  $attrList = new LinkedList<AttributeDescr>();
+} : ^(VT_CONSTR_ATTRIBUTES (conAtt=constr_attribute {attrList.add($conAtt.attributeDescr);})+)
+  ;
+  
+constr_attribute returns [AttributeDescr attributeDescr] 
+  : (
+    ^(attrName=VK_CONSTRID value=STRING) 
+  | ^(attrName=VK_ARGS value=STRING)  
+  | ^(attrName=VK_TYPE value=STRING)   
+  | ^(attrName=VK_CUT value=STRING)   
+  | ^(attrName=VK_PRIOR value=STRING)   
+  )
+  { $attributeDescr = factory.createAttribute($attrName, $value); }
+  ;  
 	
 lhs_block returns [AndDescr andDescr]
 @init{
@@ -216,26 +238,47 @@ lhs_block returns [AndDescr andDescr]
 lhs	returns [BaseDescr baseDescr]
 @init{
 	List<BaseDescr> lhsList = new LinkedList<BaseDescr>();
-}	:	^(start=VT_OR_PREFIX (dt=lhs {	lhsList.add($dt.baseDescr);	})+)
-	{	$baseDescr = factory.createOr($start, lhsList);	}
-	|	^(start=VT_OR_INFIX dt1=lhs dt2=lhs)
+}	:	^(start=VT_OR_PREFIX attribs=constraint_attributes? (dt=lhs {	lhsList.add($dt.baseDescr);	})+)
+	{	$baseDescr = factory.createOr($start, lhsList, attribs);	}
+	|	^(start=VT_OR_INFIX attribs=constraint_attributes? dt1=lhs dt2=lhs)
 	{	lhsList.add($dt1.baseDescr);
 		lhsList.add($dt2.baseDescr);
-		$baseDescr = factory.createOr($start, lhsList);	}
-	|	^(start=VT_AND_PREFIX (dt=lhs {	lhsList.add($dt.baseDescr);	})+)
-	{	$baseDescr = factory.createAnd($start, lhsList);	}
-	|	^(start=VT_AND_INFIX dt1=lhs dt2=lhs)
+		$baseDescr = factory.createOr($start, lhsList, attribs);	}
+	|	^(start=VT_AND_PREFIX attribs=constraint_attributes? (dt=lhs {	lhsList.add($dt.baseDescr);	})+)
+	{	$baseDescr = factory.createAnd($start, lhsList, attribs);	}
+	|	^(start=VT_AND_INFIX attribs=constraint_attributes? dt1=lhs dt2=lhs)
 	{	lhsList.add($dt1.baseDescr);
 		lhsList.add($dt2.baseDescr);
-		$baseDescr = factory.createAnd($start, lhsList);	}
+		$baseDescr = factory.createAnd($start, lhsList, attribs);	}
+		
+	|  ^(start=VT_EQUIV attribs=constraint_attributes? dt1=lhs dt2=lhs)
+  { lhsList.add($dt1.baseDescr);
+    lhsList.add($dt2.baseDescr);
+    $baseDescr = factory.createEquiv($start, lhsList, attribs);  }	
+  |  ^(start=VT_XOR attribs=constraint_attributes? dt1=lhs dt2=lhs)
+  { lhsList.add($dt1.baseDescr);
+    lhsList.add($dt2.baseDescr);
+    $baseDescr = factory.createXor($start, lhsList, attribs);  }  
+		
+		
+		
 	|	^(start=VK_EXISTS dt=lhs)
 	{	$baseDescr = factory.createExists($start, $dt.baseDescr);	}
 	|	^(start=VK_NOT dt=lhs)
 	{	$baseDescr = factory.createNot($start, $dt.baseDescr);	}
+	
+	|  ^(start=VT_HEDGE dt=lhs)
+  { $baseDescr = factory.createHedge($start, $dt.baseDescr);  }
+	
+	
 	|	^(start=VK_EVAL pc=VT_PAREN_CHUNK)
 	{	$baseDescr = factory.createEval($start, $pc);	}
 	|	^(start=VK_FORALL (dt=lhs {	lhsList.add($dt.baseDescr);	})+)
 	{	$baseDescr = factory.createForAll($start, lhsList);	}
+	
+	|  ^(start=VK_FORANY (arg=lhs (VK_SUBJECT sub=lhs)? (VK_WEIGHT wgt=lhs)?) )
+  { $baseDescr = factory.createForAny($start, arg.baseDescr, sub == null ? null : sub.baseDescr, wgt == null ? null : wgt.baseDescr); }
+  
 	|	^(FROM pn=lhs_pattern fe=from_elements)
 	{	$baseDescr = factory.setupFrom($pn.baseDescr, $fe.patternSourceDescr);	}
 	|	pn=lhs_pattern
@@ -303,9 +346,11 @@ expression_chain
 		expression_chain?)
 	;
 
-lhs_pattern returns [BaseDescr baseDescr]
-	:	^(VT_PATTERN fe=fact_expression) oc=over_clause?
-	{	$baseDescr = factory.setupBehavior($fe.descr, $oc.behaviorList);	}
+lhs_pattern returns [BaseDescr baseDescr] 
+	:	^(VT_PATTERN fe=fact_expression ) oc=over_clause?
+	{	
+	 $baseDescr = factory.setupBehavior($fe.descr, $oc.behaviorList);	  
+	}
 	;
 
 over_clause returns [List behaviorList]
@@ -321,23 +366,23 @@ over_element returns [BehaviorDescr behavior]
 fact_expression returns [BaseDescr descr]
 @init{
 	List<BaseDescr> exprList = new LinkedList<BaseDescr>();
-}	:	^(VT_FACT pt=pattern_type (fe=fact_expression {exprList.add($fe.descr);})*)
-	{	$descr = factory.createPattern($pt.dataType, exprList);	}
-	|	^(VT_FACT_BINDING label=VT_LABEL fact=fact_expression)
+}	:	^(VT_FACT pt=pattern_type (fe=fact_expression {exprList.add($fe.descr);})* attribs=constraint_attributes?)
+	{	$descr = factory.createPattern($pt.dataType, exprList, attribs);	}
+	|	^(VT_FACT_BINDING label=VT_LABEL fact=fact_expression )
 	{	$descr = factory.setupPatternBiding($label, $fact.descr);	}
-	|	^(start=VT_FACT_OR left=fact_expression right=fact_expression)
+	|	^(start=VT_FACT_OR left=fact_expression right=fact_expression )
 	{	$descr = factory.createFactOr($start, $left.descr, $right.descr);	}
 
-	|	^(VT_FIELD field=field_element fe=fact_expression?)
+	|	^(VT_FIELD field=field_element fe=fact_expression? attribs=constraint_attributes?)
 	{	if (null != fe){
-			$descr = factory.setupFieldConstraint($field.element, $fe.descr);
+			$descr = factory.setupFieldConstraint($field.element, $fe.descr, attribs);
 		} else {
-			$descr = factory.setupFieldConstraint($field.element, null);
+			$descr = factory.setupFieldConstraint($field.element, null, attribs);
 		}	}
 	|	^(VT_BIND_FIELD label=VT_LABEL fe=fact_expression)
 	{	$descr = factory.createFieldBinding($label, $fe.descr);	}
 
-	|	^(VK_EVAL pc=VT_PAREN_CHUNK)
+	|	^(VK_EVAL pc=VT_PAREN_CHUNK) 
 	{	$descr = factory.createPredicate($pc);	}
 
 	|	^(op=EQUAL fe=fact_expression)
@@ -352,23 +397,27 @@ fact_expression returns [BaseDescr descr]
 	{	$descr = factory.setupRestriction($op, null, $fe.descr);	}
 	|	^(op=LESS_EQUAL fe=fact_expression)
 	{	$descr = factory.setupRestriction($op, null, $fe.descr);	}
-	|	^(op=VK_OPERATOR not=VK_NOT? param=VT_SQUARE_CHUNK? fe=fact_expression)
-	{	$descr = factory.setupRestriction($op, $not, $fe.descr, $param);	}
-
+	|	^(op=VK_OPERATOR not=VK_NOT? approx=VK_APPROX? param=VT_SQUARE_CHUNK? attribs=constraint_attributes? fe=fact_expression?)
+	{	$descr = factory.setupRestriction($op, $not, (fe == null ? null : $fe.descr), $param, attribs);	}
+	
+ 
 	|	^(VK_IN not=VK_NOT? (fe=fact_expression {exprList.add($fe.descr);})+)
 	{	$descr = factory.createRestrictionConnective($not, exprList);	}
 
-	|	^(DOUBLE_PIPE left=fact_expression right=fact_expression)
-	{	$descr = factory.createOrRestrictionConnective($left.descr, $right.descr);	}
-	|	^(DOUBLE_AMPER left=fact_expression right=fact_expression)
-	{	$descr = factory.createAndRestrictionConnective($left.descr, $right.descr);	}
+	|	^((DOUBLE_PIPE | SINGLE_PIPE)  attribs=constraint_attributes? left=fact_expression right=fact_expression )
+	{	$descr = factory.createOrRestrictionConnective($left.descr, $right.descr, attribs); }	
+	  
+	|	^((DOUBLE_AMPER | SINGLE_AMPER) attribs=constraint_attributes? left=fact_expression right=fact_expression )
+	{	$descr = factory.createAndRestrictionConnective($left.descr, $right.descr, attribs); 
+		
+	} 
 
 	|	^(VT_ACCESSOR_PATH (ae=accessor_element {exprList.add($ae.element);})+)
 	{	$descr = factory.createAccessorPath(exprList);	}
 	|	s=STRING
 	{	$descr = factory.createStringLiteralRestriction($s);	}
 	|	i=INT
-	{	$descr = factory.createIntLiteralRestriction($i);	}
+	{	$descr = factory.createIntLiteralRestriction($i);	} 
 	|	f=FLOAT
 	{	$descr = factory.createFloatLiteralRestriction($f);	}
 	|	b=BOOL
@@ -400,3 +449,14 @@ data_type returns [BaseDescr dataType]
 	:	^(VT_DATA_TYPE idList+=ID+ (LEFT_SQUARE rightList+=RIGHT_SQUARE)*)
 	{	$dataType = factory.createDataType($idList, $rightList);	}
 	;
+  
+cut returns [boolean isCutter] 
+  : ^(start=VT_CUT VK_CUT)
+  { $isCutter = true; }
+  ;
+  
+constr_identifier returns [String id] 
+  : ^(start=VT_CONSTRID ans=VK_AT) 
+    { $id = $ans.text; }    
+  ;    
+	

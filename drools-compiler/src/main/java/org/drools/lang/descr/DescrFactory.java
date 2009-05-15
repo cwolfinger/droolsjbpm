@@ -1,6 +1,8 @@
 package org.drools.lang.descr;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -518,7 +520,55 @@ public class DescrFactory {
 		}
 		return or;
 	}
-
+	
+	
+	
+	private void fillWithAttribs(BaseDescr descr, List<AttributeDescr> attribs) {
+		Map<String,String> atts = buildAttributes(attribs);
+		
+		String params = atts.get("args");
+		String id = atts.get("id");
+		String cutS = atts.get("cut");
+			boolean cutter = cutS == null ? false : Boolean.parseBoolean(cutS);
+		String type = atts.get("type");
+		String prior = atts.get("prior");
+						
+		String p = params == null ? null : params;
+		if (p == null)
+			p = type;
+		else 
+			p+= type;
+			
+		descr.setParams(p);
+			
+		descr.setCutter(cutter);		
+		descr.setLabel(id);		
+	}
+	
+	
+	
+	public OrDescr createOr(DroolsTree start, List<BaseDescr> lhsList, List<AttributeDescr> attribs) {
+		Map<String,String> atts = buildAttributes(attribs);
+		
+//		String params = atts.get("args");
+//		String id = atts.get("id");
+//		String cutS = atts.get("cut");
+//			boolean cutter = cutS == null ? false : Boolean.parseBoolean(cutS);
+//		String type = atts.get("type");
+//		String prior = atts.get("prior");
+//			
+						
+		OrDescr or = createOr(start, lhsList);
+		fillWithAttribs(or, attribs);
+					
+//		or.setParams((params == null ? "" : params)+(type == null ? "" : type));
+//			
+//		or.setCutter(cutter);		
+//		or.setLabel(id);
+		return or;
+	}
+	
+	
 	/**
 	 * Factory method that creates an AndDescr. This method handles prefixed and
 	 * infixed formats.
@@ -542,6 +592,28 @@ public class DescrFactory {
 		}
 		return and;
 	}
+	
+	public AndDescr createAnd(DroolsTree start, List<BaseDescr> lhsList, List<AttributeDescr> attribs) {
+//		Map<String,String> atts = buildAttributes(attribs);	
+//		
+//
+//		String params = atts.get("args");
+//		String id = atts.get("id");
+//		String cutS = atts.get("cut");
+//			boolean cutter = cutS == null ? false : Boolean.parseBoolean(cutS);
+//		String type = atts.get("type");
+//		String prior = atts.get("prior");
+		
+		AndDescr and = createAnd(start, lhsList);
+		fillWithAttribs(and, attribs);
+			
+//		and.setParams((params == null ? "" : params)+(type == null ? "" : type));
+//		and.setCutter(cutter);
+//		and.setLabel(id);
+		return and;
+	}
+	
+	
 
 	/**
 	 * Factory method that creates an ExistsDescr.
@@ -582,6 +654,33 @@ public class DescrFactory {
 		not.addDescr(baseDescr);
 		return not;
 	}
+	
+	
+	
+	
+	/**
+	 * Factory method that creates a HedgeDescr.
+	 * 
+	 * @param start
+	 *            hedge statement, used to get offset location
+	 * @param baseDescr
+	 *            binded descriptor
+	 * @return HedgeDescr filled.
+	 * @see HedgeDescr
+	 */
+	public HedgeDescr createHedge(DroolsTree start, BaseDescr baseDescr) {
+		HedgeDescr hedge = new HedgeDescr();
+		hedge.setLocation(getColumnLocation(start), getColumnLocation(start));
+		hedge.setStartCharacter(getStartOffsetLocation(start));
+		hedge.setEndLocation(baseDescr.getEndLine(), baseDescr.getEndColumn());
+		hedge.setEndCharacter(baseDescr.getEndCharacter());
+		hedge.addDescr(baseDescr);
+		
+			hedge.setModifier(baseDescr.getText());			
+			
+		return hedge;
+	}
+	
 
 	/**
 	 * Factory method that creates an EvalDescr.
@@ -626,6 +725,35 @@ public class DescrFactory {
 		}
 		return forAll;
 	}
+	
+	
+	
+	public ForAnyDescr createForAny(DroolsTree start, BaseDescr arg, BaseDescr constr, BaseDescr wgt) {
+		ForAnyDescr forAny = new ForAnyDescr();
+		forAny.setLocation(getColumnLocation(start), getColumnLocation(start));
+		forAny.setStartCharacter(getStartOffsetLocation(start));
+
+		if (wgt != null) {
+			forAny.setEndLocation(wgt.getEndLine(), wgt.getEndColumn());
+			forAny.setEndCharacter(wgt.getEndCharacter());
+		} else if (constr != null) {
+			forAny.setEndLocation(constr.getEndLine(), constr.getEndColumn());
+			forAny.setEndCharacter(constr.getEndCharacter());
+		} else {
+			forAny.setEndLocation(arg.getEndLine(), arg.getEndColumn());
+			forAny.setEndCharacter(arg.getEndCharacter());
+		}
+		
+		forAny.addDescr(arg);
+		forAny.addDescr(constr);
+		forAny.addDescr(wgt);
+		return forAny;
+	}
+	
+	
+	
+	
+	
 
 	/**
 	 * Factory method that creates a PatternDescr.
@@ -692,6 +820,20 @@ public class DescrFactory {
 		collect.setInputPattern((PatternDescr) baseDescr);
 		return collect;
 	}
+	
+	
+	
+//	public CutDescr createCut(DroolsTree start, DroolsTree end) {
+//		CutDescr cut = new CutDescr();
+//		cut.setLocation(getColumnLocation(start), getColumnLocation(start));
+//		cut.setStartCharacter(getStartOffsetLocation(start));
+//		cut
+//				.setEndLocation(getLineLocation(end),getColumnLocation(end));
+//		cut.setEndCharacter(getEndOffsetLocation(end));
+//		//cut.setInputPattern((PatternDescr) baseDescr);
+//		return cut;
+//	}
+	
 
 	/**
 	 * Factory method that creates an EntryPointDescr.
@@ -926,7 +1068,17 @@ public class DescrFactory {
 	 * @return
 	 */
 	public PatternDescr createPattern(BaseDescr dataType,
-			List<BaseDescr> exprList) {
+			List<BaseDescr> exprList, List<AttributeDescr> attribs) {
+//		Map<String,String> atts = buildAttributes(attribs);
+//		
+//
+//		String params = atts.get("args");
+//		String id = atts.get("id");
+//		String cutS = atts.get("cut");
+//			boolean cutter = cutS == null ? false : Boolean.parseBoolean(cutS);
+//		String type = atts.get("type");
+//		String prior = atts.get("prior");
+		
 		PatternDescr pattern = new PatternDescr();
 		pattern.setLocation(dataType.getEndLine(), dataType.getEndColumn());
 		pattern.setEndLocation(dataType.getEndLine(), dataType.getEndColumn());
@@ -963,8 +1115,34 @@ public class DescrFactory {
 					.getEndCharacter());
 		}
 
+		fillWithAttribs(pattern, attribs);
+		
+//		pattern.setLabel(id);
+//		pattern.setCutter(cutter);
+		
 		return pattern;
 	}
+
+	
+	
+	private Map<String, String> buildAttributes(List<AttributeDescr> attribs) {
+		HashMap<String,String> map = new HashMap<String,String>();
+		
+		if (attribs == null)
+			return map;
+		
+		for (AttributeDescr attDesc : attribs) {
+			String value = attDesc.getValue();
+			if (value != null && value.startsWith("\""))
+				value = value.substring(1,value.length()-1);
+			String oldVal = map.put(attDesc.getName(), value);			
+			if (oldVal != null)
+				throw new RuntimeDroolsException("Duplicate attribute found : "+oldVal);
+		}
+		
+		return map;
+	}
+	
 
 	/**
 	 * Method that setups a pattern binding.
@@ -1026,11 +1204,30 @@ public class DescrFactory {
 	 */
 	public FieldConstraintDescr setupFieldConstraint(
 			FieldConstraintDescr field, BaseDescr descr) {
+		return setupFieldConstraint(field, descr, new ArrayList<AttributeDescr>());
+	}
+	
+	public FieldConstraintDescr setupFieldConstraint(
+			FieldConstraintDescr field, BaseDescr descr, List<AttributeDescr> attribs) {
+		
+//		Map<String,String> atts = buildAttributes(attribs);
+//		String param = atts.get("args");
+//		String id = atts.get("id");
+//		String cutS = atts.get("cut");
+//		boolean cutter = cutS == null ? false : Boolean.parseBoolean(cutS);
+//		String type = atts.get("type");
+				
 		if (null != descr && descr instanceof RestrictionDescr) {
-			field.getRestriction().addOrMerge((RestrictionDescr) descr);
+			RestrictionDescr restDescr = (RestrictionDescr) descr;
+				fillWithAttribs(restDescr, attribs);
+//				restDescr.setCutter(cutter);
+//				restDescr.setLabel(id);
+			field.getRestriction().addOrMerge(restDescr);
 		}
+				
 		return field;
 	}
+		
 
 	/**
 	 * Factory method that creates a FieldBindingDescr.
@@ -1086,7 +1283,7 @@ public class DescrFactory {
 	 * @see EvaluatorBasedRestrictionDescr
 	 */
 	public BaseDescr setupRestriction(DroolsTree operator, DroolsTree not,
-			BaseDescr descr) {
+			BaseDescr descr) {		
 		if (descr instanceof EvaluatorBasedRestrictionDescr) {
 			EvaluatorBasedRestrictionDescr evaluator = (EvaluatorBasedRestrictionDescr) descr;
 			evaluator.setEvaluator(operator.getText());
@@ -1095,6 +1292,8 @@ public class DescrFactory {
 			} else {
 				evaluator.setNegated(true);
 			}
+		} else if (descr == null) {
+			descr = new LiteralRestrictionDescr(operator.getText(),not != null,null,null,LiteralRestrictionDescr.TYPE_NULL);
 		}
 		return descr;
 	}
@@ -1116,13 +1315,23 @@ public class DescrFactory {
 	 * @see EvaluatorBasedRestrictionDescr
 	 */
 	public BaseDescr setupRestriction(DroolsTree operator, DroolsTree not,
-			BaseDescr descr, DroolsTree param) {
+			BaseDescr descr, DroolsTree configParams, List<AttributeDescr> attribs) {
+//		Map<String,String> atts = buildAttributes(attribs);
+//		
+//		String params = atts.get("args");
+//		String id = atts.get("id");
+//		String cutS = atts.get("cut");
+//		Boolean cutter = cutS == null ? false : Boolean.parseBoolean(cutS);
+//		String type = atts.get("type");
+//						
 		BaseDescr retDescr = setupRestriction(operator, not, descr);
-		if (null != param && descr instanceof EvaluatorBasedRestrictionDescr) {
-			EvaluatorBasedRestrictionDescr evaluator = (EvaluatorBasedRestrictionDescr) descr;
-			evaluator.setParameterText(param.getText().substring(1,
-					param.getText().length() - 1));
+		if (null != configParams && retDescr instanceof EvaluatorBasedRestrictionDescr) {
+			EvaluatorBasedRestrictionDescr evaluator = (EvaluatorBasedRestrictionDescr) retDescr;
+			String paramStr = configParams == null ? null : (configParams.getText().substring(1,configParams.getText().length()-1));
+			evaluator.setParameterText(paramStr);
 		}
+		
+		fillWithAttribs(retDescr, attribs);
 		return retDescr;
 	}
 
@@ -1203,6 +1412,26 @@ public class DescrFactory {
 		return or;
 
 	}
+	
+	
+	public BaseDescr createOrRestrictionConnective(BaseDescr left,
+			BaseDescr right, List<AttributeDescr> attribs) {
+//		Map<String,String> atts = buildAttributes(attribs);
+//		String params = atts.get("args");
+//		String id = atts.get("id");
+//		String cutS = atts.get("cut");
+//		Boolean cutter = cutS == null ? false : Boolean.parseBoolean(cutS);
+//		String type = atts.get("type");
+			
+				
+		BaseDescr or = createAndRestrictionConnective(left, right);						
+//		or.setParams((params == null ? "" : params)+(type == null ? "" : type));			
+//		or.setCutter(cutter);
+//		
+//		or.setLabel(id);
+		fillWithAttribs(or, attribs);
+		return or;
+	}
 
 	/**
 	 * Factory method that creates a RestrictionConnectiveDescr of type AND or
@@ -1237,6 +1466,26 @@ public class DescrFactory {
 			and = consAnd;
 		}
 
+		return and;
+	}
+	
+	
+	public BaseDescr createAndRestrictionConnective(BaseDescr left,
+			BaseDescr right, List<AttributeDescr> attribs) {
+//		Map<String,String> atts = buildAttributes(attribs);
+//		String params = atts.get("args");
+//		String id = atts.get("id");
+//		String cutS = atts.get("cut");
+//		Boolean cutter = cutS == null ? false : Boolean.parseBoolean(cutS);
+//		String type = atts.get("type");
+//			
+				
+		BaseDescr and = createAndRestrictionConnective(left, right);
+		fillWithAttribs(and, attribs);				
+//		and.setParams((params == null ? "" : params)+(type == null ? "" : type));			
+//				and.setCutter(cutter);
+//		
+//		and.setLabel(id);	
 		return and;
 	}
 
@@ -1391,6 +1640,92 @@ public class DescrFactory {
 		return fieldConstraint;
 	}
 
+	
+	
+	/**
+	 * Factory method that creates a XorDescr
+	 * 
+	 * @param start
+	 *            xor statement, used to get offset location
+	 * @param baseDescr
+	 *            binded descriptor
+	 * @return XorDescr filled.
+	 * @see XorDescr
+	 */
+	public XorDescr createXor(DroolsTree start, List<BaseDescr> lhsList) {
+		XorDescr xor = new XorDescr();
+		xor.setLocation(getColumnLocation(start), getColumnLocation(start));
+		xor.setStartCharacter(getStartOffsetLocation(start));
+		xor.setEndLocation(lhsList.get(lhsList.size() - 1).getEndLine(),
+				lhsList.get(lhsList.size() - 1).getEndColumn());
+		xor.setEndCharacter(lhsList.get(lhsList.size() - 1).getEndCharacter());
+		for (BaseDescr baseDescr : lhsList) {
+			xor.addDescr(baseDescr);
+		}
+		return xor;
+	}
+	
+	public XorDescr createXor(DroolsTree start, List<BaseDescr> lhsList, List<AttributeDescr> attribs) {
+		Map<String,String> atts = buildAttributes(attribs);
+		
+//		String params = atts.get("args");
+//		String id = atts.get("id");
+//		String cutS = atts.get("cut");
+//		Boolean cutter = cutS == null ? false : Boolean.parseBoolean(cutS);
+//		String type = atts.get("type");
+		
+		XorDescr xor = createXor(start, lhsList);
+		fillWithAttribs(xor, attribs);
+//		xor.setParams((params == null ? "" : params)+(type == null ? "" : type));
+//		xor.setCutter(cutter);
+//		xor.setLabel(id);
+		return xor;
+	}
+	
+	
+	/**
+	 * Factory method that creates a EqvDescr
+	 * 
+	 * @param start
+	 *            Eqv statement, used to get offset location
+	 * @param baseDescr
+	 *            binded descriptor
+	 * @return EqvDescr filled.
+	 * @see EqvDescr
+	 */
+	public EqvDescr createEquiv(DroolsTree start, List<BaseDescr> lhsList) {
+		EqvDescr eqv = new EqvDescr();
+		eqv.setLocation(getColumnLocation(start), getColumnLocation(start));
+		eqv.setStartCharacter(getStartOffsetLocation(start));
+		eqv.setEndLocation(lhsList.get(lhsList.size() - 1).getEndLine(),
+				lhsList.get(lhsList.size() - 1).getEndColumn());
+		eqv.setEndCharacter(lhsList.get(lhsList.size() - 1).getEndCharacter());
+		for (BaseDescr baseDescr : lhsList) {
+			eqv.addDescr(baseDescr);
+		}
+		return eqv;
+	}
+	
+	public EqvDescr createEquiv(DroolsTree start, List<BaseDescr> lhsList, List<AttributeDescr> attribs) {
+//		Map<String,String> atts = buildAttributes(attribs);
+//		
+//		String params = atts.get("args");
+//		String id = atts.get("id");
+//		String cutS = atts.get("cut");
+//		Boolean cutter = cutS == null ? false : Boolean.parseBoolean(cutS);
+//		String type = atts.get("type");
+		
+		EqvDescr eqv = createEquiv(start, lhsList);			 			
+		fillWithAttribs(eqv, attribs);
+//		eqv.setParams((params == null ? "" : params)+(type == null ? "" : type));
+//		eqv.setCutter(cutter);
+//		eqv.setLabel(id);
+		return eqv;
+	}
+	
+	
+	
+	
 	/**
 	 * Factory method that creates an accessor element descriptor.
 	 * 

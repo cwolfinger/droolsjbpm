@@ -38,9 +38,11 @@ public class BaseDescr
     private String            text             = "";
     private int				  id			   = -1;
     
-    
+    private boolean			  cutter		   = false;
+    private String 			  params 		   = null;
+    private String 			  label			   = null;
   
-    
+     
     public int getId() {
     	return id;
     }
@@ -132,4 +134,49 @@ public class BaseDescr
     public void setStartCharacter(final int startCharacter) {
         this.startCharacter = startCharacter;
     }
+
+	/**
+	 * @param cutter the cutter to set
+	 */
+	public void setCutter(boolean cutter) {
+		this.cutter = cutter;
+	}
+
+	/**
+	 * @return the cutter
+	 */
+	public boolean isCutter() {
+		return cutter;
+	}
+
+	/**
+	 * @param params the params to set
+	 */
+	public void setParams(String params) {
+		this.params = params;
+	}
+
+	/**
+	 * @return the params
+	 */
+	public String getParams() {
+		return params;
+	}
+
+	/**
+	 * @param label the label to set
+	 */
+	public void setLabel(String label) {	
+		if (label != null)
+			System.err.println(label);
+		this.label = label;
+	}
+
+	/**
+	 * @return the label
+	 */
+	public String getLabel() {
+		
+		return label;
+	}
 }

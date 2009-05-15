@@ -48,8 +48,11 @@ public class DroolsSoftKeywords {
 	public static final String IN = "in";
 	public static final String OR = "or";
 	public static final String AND = "and";
+	public static final String EQUIV = "equiv";
+	public static final String XOR = "xor";
 	public static final String EXISTS = "exists";
 	public static final String FORALL = "forall";
+	public static final String FORANY = "forany";
 	public static final String ENTRY = "entry";
 	public static final String POINT = "point";
 	public static final String ACTION = "action";
@@ -57,7 +60,20 @@ public class DroolsSoftKeywords {
 	public static final String RESULT = "result";
     public static final String END = "end";
     public static final String INIT = "init";
+    public static final String SUBJECT = "subject_to";
+    public static final String WEIGHT = "weight";
+    public static final String PRIOR = "prior";
+    public static final String ENTAIL = "entail_mode";
+    public static final String FILTER = "filter_str";
+    public static final String VERY = "very";
+    public static final String CID = "id";
+    public static final String CUT = "cut";
+    public static final String TYPE = "type";
+    public static final String ARGS = "args";
+     	
 	
+    
+    
 	public static boolean isOperator( final String operator, final boolean negated ) {
 	    try {
 	        Operator.determineOperator( operator, negated );

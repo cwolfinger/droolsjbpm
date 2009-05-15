@@ -22,9 +22,13 @@ import org.drools.RuntimeDroolsException;
 import org.drools.lang.descr.AndDescr;
 import org.drools.lang.descr.BaseDescr;
 import org.drools.lang.descr.ConditionalElementDescr;
+import org.drools.lang.descr.EqvDescr;
 import org.drools.lang.descr.ExistsDescr;
+import org.drools.lang.descr.ForAnyDescr;
+import org.drools.lang.descr.HedgeDescr;
 import org.drools.lang.descr.NotDescr;
 import org.drools.lang.descr.OrDescr;
+import org.drools.lang.descr.XorDescr;
 import org.drools.rule.GroupElement;
 import org.drools.rule.GroupElementFactory;
 import org.drools.rule.Pattern;
@@ -50,7 +54,15 @@ public class GroupElementBuilder
                                     final Pattern prefixPattern) {
         final ConditionalElementDescr cedescr = (ConditionalElementDescr) descr;
 
-        final GroupElement ge = newGroupElementFor( cedescr.getClass() );
+        final GroupElement ge;
+        if (cedescr.getParams() == null)
+        	ge = newGroupElementFor( cedescr.getClass() );
+        else 
+        	ge = newGroupElementFor(cedescr.getClass(),cedescr.getParams());
+        
+        if (descr.getLabel() != null)
+        	ge.setLabel(descr.getLabel());
+        
         context.getBuildStack().push( ge );
 
         if ( prefixPattern != null ) {
@@ -93,7 +105,36 @@ public class GroupElementBuilder
             return GroupElementFactory.newNotInstance();
         } else if ( ExistsDescr.class.isAssignableFrom( descr ) ) {
             return GroupElementFactory.newExistsInstance();
-        } else {
+        } else if ( XorDescr.class.isAssignableFrom( descr ) ) {
+            return GroupElementFactory.newXorInstance();
+        } else if ( EqvDescr.class.isAssignableFrom( descr ) ) {
+            return GroupElementFactory.newEqvInstance();    
+        } else if ( HedgeDescr.class.isAssignableFrom( descr)) {
+        	return GroupElementFactory.newHedgeInstance();
+        }
+        else {
+            throw new RuntimeDroolsException( "BUG: Not able to create a group element for descriptor: " + descr.getName() );
+        }
+    }
+    
+    
+    private GroupElement newGroupElementFor(final Class descr, String params) {
+        if ( AndDescr.class.isAssignableFrom( descr ) ) {
+            return GroupElementFactory.newAndInstance(params);
+        } else if ( OrDescr.class.isAssignableFrom( descr ) ) {
+            return GroupElementFactory.newOrInstance(params);
+        } else if ( NotDescr.class.isAssignableFrom( descr ) ) {
+            return GroupElementFactory.newNotInstance(params);
+        } else if ( ExistsDescr.class.isAssignableFrom( descr ) ) {
+            return GroupElementFactory.newExistsInstance(params);
+        } else if ( XorDescr.class.isAssignableFrom( descr ) ) {
+            return GroupElementFactory.newXorInstance(params);
+        } else if ( EqvDescr.class.isAssignableFrom( descr ) ) {
+            return GroupElementFactory.newEqvInstance(params);    
+        } else if ( HedgeDescr.class.isAssignableFrom( descr)) {
+        	return GroupElementFactory.newHedgeInstance( params );
+        }
+        else {
             throw new RuntimeDroolsException( "BUG: Not able to create a group element for descriptor: " + descr.getName() );
         }
     }
