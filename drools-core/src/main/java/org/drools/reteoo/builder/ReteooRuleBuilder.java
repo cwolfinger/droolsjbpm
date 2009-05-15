@@ -180,9 +180,11 @@ public class ReteooRuleBuilder {
         				context.getBehaviors().toArray(new Behavior[context.getBehaviors().size()]),
         				factory,        		
         				context);
+        		
+            	context.setTupleSource((ModusPonensNode) this.getUtils().attachNode(context, mpNode));
+
         	}
         	
-        	context.setTupleSource((ModusPonensNode) this.getUtils().attachNode(context, mpNode));
             
         	
         	
