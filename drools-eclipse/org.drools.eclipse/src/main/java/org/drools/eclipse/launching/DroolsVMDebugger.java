@@ -25,6 +25,7 @@ import org.eclipse.jdt.internal.launching.LaunchingMessages;
 import org.eclipse.jdt.internal.launching.LaunchingPlugin;
 import org.eclipse.jdt.internal.launching.LibraryInfo;
 import org.eclipse.jdt.internal.launching.StandardVMDebugger;
+import org.eclipse.jdt.internal.launching.StandardVMRunner;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.JavaRuntime;

@@ -75,6 +75,17 @@ public class DefaultFactHandle
         this.object = object;
         this.objectHashCode = object.hashCode();
     }
+    
+    public DefaultFactHandle(final int id,
+                             final int objectHashCode,
+                             final long recency) {
+        this.id = id;
+        this.recency = recency;
+        this.objectHashCode = objectHashCode;
+    }
+        
+    
+    
 
     // ----------------------------------------------------------------------
     // Instance members
@@ -98,6 +109,14 @@ public class DefaultFactHandle
     public int getObjectHashCode() {
         return this.objectHashCode;
     }
+    
+    public int getIdentityHashCode() {
+        return System.identityHashCode( this.object );
+    }    
+    
+    protected void setObjectHashCode( int hashCode ) {
+        this.objectHashCode = hashCode;
+    }
 
     /**
      * @see Object
@@ -107,17 +126,19 @@ public class DefaultFactHandle
     }
 
     /**
+     * format_version:id:identity:hashcode:recency
+     * 
      * @see FactHandle
      */
     public String toExternalForm() {
-        return "[fact fid:" + this.id + ":" + this.recency + ":" + this.object + "]";
+        return "0:" + this.id + ":" + getIdentityHashCode() + ":" + getObjectHashCode() + ":" + getRecency();
     }
 
     /**
      * @see Object
      */
     public String toString() {
-        return toExternalForm();
+        return "[fact " + toExternalForm() + ":" + this.object + "]";
     }
 
     public long getRecency() {
@@ -138,6 +159,10 @@ public class DefaultFactHandle
         this.entryPoint = null;
     }
 
+    public boolean isValid() {
+        return ( this.id != -1 );
+    }
+    
     public Object getObject() {
         return this.object;
     }
@@ -190,5 +215,15 @@ public class DefaultFactHandle
 
     public void setEntryPoint(WorkingMemoryEntryPoint sourceNode) {
         this.entryPoint = sourceNode;
+    }
+    
+    public DefaultFactHandle clone() {
+        DefaultFactHandle clone =  new DefaultFactHandle(this.id, this.object, this.recency);
+        clone.entryPoint = this.entryPoint;
+        clone.key = this.key;
+        clone.leftTuple = this.leftTuple;
+        clone.rightTuple = this.rightTuple;
+        clone.objectHashCode = this.objectHashCode;
+        return clone;
     }
 }

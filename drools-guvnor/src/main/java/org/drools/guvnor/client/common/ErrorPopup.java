@@ -20,15 +20,15 @@ package org.drools.guvnor.client.common;
 import org.drools.guvnor.client.rpc.DetailedSerializableException;
 import org.drools.guvnor.client.messages.Constants;
 
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.*;
 import com.google.gwt.core.client.GWT;
 import com.gwtext.client.core.EventObject;
 import com.gwtext.client.widgets.Button;
 import com.gwtext.client.widgets.Window;
+import com.gwtext.client.widgets.Panel;
 import com.gwtext.client.widgets.event.ButtonListenerAdapter;
+import com.gwtext.client.widgets.event.WindowListener;
+import com.gwtext.client.widgets.event.WindowListenerAdapter;
 import com.gwtext.client.widgets.layout.VerticalLayout;
 
 
@@ -39,7 +39,9 @@ public class ErrorPopup  {
 
     public static ErrorPopup instance = null;
     private Constants constants = ((Constants) GWT.create(Constants.class));
+    private VerticalPanel body;
     //new Image("images/error_dialog.png")
+
 
 
     private ErrorPopup(String message, String longMessage) {
@@ -47,14 +49,39 @@ public class ErrorPopup  {
     	Window w = new Window();
     	w.setTitle(constants.Error());
     	w.setWidth(400);
-    	w.setHeight((longMessage != null) ? 300 : 150);
+    	//w.setHeight((longMessage != null) ? 300 : 150);
     	w.setModal(true);
     	w.setShadow(true);
     	w.setClosable(true);
     	w.setPlain(true);
 
     	w.setLayout(new VerticalLayout());
+        body = new VerticalPanel();
 
+
+        addMessage(message, longMessage);
+
+        body.setWidth("100%");
+        w.add(body);
+
+
+        
+
+        w.show();
+
+
+        w.addListener(new WindowListenerAdapter() {
+            @Override
+            public void onDeactivate(Window window) {
+                instance = null;
+            }
+        });
+
+
+
+    }
+
+    private void addMessage(String message, String longMessage) {
         if (message.contains("ItemExistsException")) {    //NON-NLS
             longMessage = message;
             message = constants.SorryAnItemOfThatNameAlreadyExistsInTheRepositoryPleaseChooseAnother();
@@ -62,12 +89,14 @@ public class ErrorPopup  {
         }
 
         final String longDescription = longMessage;
-        VerticalPanel vp = new VerticalPanel();
-        if (longMessage == null) {
-        	vp.add(new HTML("<image src='images/error_dialog.png'/>&nbsp;<strong><b>" + message +"</b></strong>"));
-        } else {
-        	vp.add(new HTML("<image src='images/error_dialog.png'/>&nbsp;<strong><b>" + message +"</b></strong><hr/>"));
-        }
+
+        HorizontalPanel hp = new HorizontalPanel();
+        hp.add(new Image("images/validation_error.gif"));
+        Label msg = new Label(message);
+        msg.setStyleName("error-title");
+        hp.add(msg);
+        body.add(hp);
+
 
         final SimplePanel detailPanel = new SimplePanel();
         if (longMessage != null && !"".equals(longMessage)) {
@@ -75,38 +104,45 @@ public class ErrorPopup  {
 	        showD.addListener(new ButtonListenerAdapter() {
 				public void onClick(Button button, EventObject e) {
 					detailPanel.clear();
-					detailPanel.add(new SmallLabel(longDescription));
+                    VerticalPanel vp = new VerticalPanel();
+                    vp.add(new HTML("<hr/>"));
 
+                    Label lng = new Label(longDescription);
+                    lng.setStyleName("error-long-message");
+                    vp.add(lng);
+                    detailPanel.add(vp);
 				}
 	        });
 	        detailPanel.add(showD);
         }
-        vp.setWidth("100%");
+
         detailPanel.setWidth("100%");
-        vp.add(detailPanel);
-        w.add(vp);
-
-
-        w.show();
-
+        body.add(detailPanel);
     }
-
-
-
-
-
 
 
     /** Convenience method to popup the message. */
     public static void showMessage(String message) {
-    	new ErrorPopup(message, null);
+        if (instance != null) {
+            instance.addMessage(message, null);
+        } else {
+            instance = new ErrorPopup(message, null);
+        }
+
+        LoadingPopup.close();
     }
 
     /**
      * For showing a more detailed report.
      */
     public static void showMessage(DetailedSerializableException exception) {
-        new ErrorPopup(exception.getMessage(), exception.getLongDescription());
+
+        if (instance != null) {
+            instance.addMessage(exception.getMessage(), exception.getLongDescription());
+        } else {
+            instance = new ErrorPopup(exception.getMessage(), exception.getLongDescription());    
+        }
+
         LoadingPopup.close();
     }
 

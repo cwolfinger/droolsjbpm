@@ -22,12 +22,12 @@ import org.eclipse.jdt.debug.core.IJavaFieldVariable;
 import org.eclipse.jdt.debug.core.IJavaObject;
 import org.eclipse.jdt.debug.core.IJavaReferenceType;
 import org.eclipse.jdt.debug.core.IJavaValue;
+import org.eclipse.jdt.internal.debug.core.model.JDILocalVariable;
 import org.eclipse.jdt.internal.debug.core.model.JDIObjectValue;
 import org.eclipse.jdt.internal.debug.core.model.JDIStackFrame;
 
 import com.sun.jdi.AbsentInformationException;
 import com.sun.jdi.ArrayReference;
-import com.sun.jdi.BooleanValue;
 import com.sun.jdi.ClassNotLoadedException;
 import com.sun.jdi.ClassType;
 import com.sun.jdi.Field;
@@ -41,7 +41,6 @@ import com.sun.jdi.ObjectReference;
 import com.sun.jdi.ReferenceType;
 import com.sun.jdi.StackFrame;
 import com.sun.jdi.StringReference;
-import com.sun.jdi.ThreadReference;
 import com.sun.jdi.Value;
 
 /**
@@ -52,90 +51,7 @@ import com.sun.jdi.Value;
  */
 public class MVELStackFrame extends DroolsStackFrame {
 
-    private int                             cacheLineNumber           = -1;
-    private int                             cacheBreakpointLineNumber = -1;
-    private String                          cacheMVELName             = null;
-    private IVariable[]                     cacheVariables            = null;
-
-    private boolean                         evaluating                = false;
-
-    /**
-     * Dummy type with changed stratum to force debugger's LaunchView to show proper stackframe name
-     */
-    private static final IJavaReferenceType REF_TYPE                  = new IJavaReferenceType() {
-
-    	public IJavaFieldVariable getField(String name) throws DebugException {
-    		return null;
-    	}
-    	public IJavaClassObject getClassObject() throws DebugException {
-    		return null;
-    	}
-    	
-    	public String[] getAvailableStrata() throws DebugException {
-    		return null;
-    	}
-    	
-    	public String getDefaultStratum() throws DebugException {
-    		return "MVEL";
-    	}
-    	
-    	public String[] getDeclaredFieldNames() throws DebugException {
-    		return null;
-    	}
-    	
-    	public String[] getAllFieldNames() throws DebugException {
-    		return null;
-    	}
-        
-        public IJavaObject getClassLoaderObject() throws DebugException {
-    		return null;
-    	}
-        
-        public String getGenericSignature() throws DebugException {
-    		return null;
-    	}
-        
-        public String getSourceName() throws DebugException {
-    		return null;
-    	}
-        
-        public String[] getSourceNames(String stratum) throws DebugException {
-    		return null;
-    	}
-        
-        public String[] getSourcePaths(String stratum) throws DebugException {
-    		return null;
-    	}
-        
-        public IJavaObject[] getInstances(long max) throws DebugException {
-    		return null;
-    	}
-        
-		public String getName() throws DebugException {
-			return null;
-		}
-		
-		public String getSignature() throws DebugException {
-			return null;
-		}
-		
-		public IDebugTarget getDebugTarget() {
-			return null;
-		}
-		
-		public ILaunch getLaunch() {
-			return null;
-		}
-		
-		public String getModelIdentifier() {
-			return null;
-		}
-		
-		public Object getAdapter(Class adapter) {
-			return null;
-		}
-
-                                                                      };
+    private final MVELStackFrameContext ctxCache = new MVELStackFrameContext();
 
     public MVELStackFrame(DroolsThread thread,
                           StackFrame frame,
@@ -146,38 +62,44 @@ public class MVELStackFrame extends DroolsStackFrame {
 
     }
 
-    public IVariable[] getVariables() throws DebugException {
-
-        if ( !isSuspended() ) {
-            return null;
-        }
-
-        if ( cacheVariables != null ) {
-            return cacheVariables;
-        }
-
-        evaluating = true;
+    @Override
+    public RuleInfo getExecutingRuleInfo() {
         try {
-            List result = new ArrayList( 0 );
+            String type = getDeclaringTypeName();
+
+            return DroolsEclipsePlugin.getDefault().getRuleInfoByClass( type );
+
+        } catch ( DebugException exc ) {
+            DroolsEclipsePlugin.log( exc );
+        }
+        return null;
+    }
+
+    @Override
+    public IVariable[] getVariables() throws DebugException {
+        synchronized ( getThread() ) {
+            if ( !isSuspended() ) {
+                return new IVariable[0];
+            }
+
+            IVariable[] cache = ctxCache.getCacheVariables();
+            if ( cache != null ) {
+                return cache;
+            }
+
+            List<IVariable> result = new ArrayList<IVariable>( 0 );
 
             Method method = getUnderlyingMethod(); // onBreak
             ReferenceType declaringType = method.declaringType(); // org.drools.base.mvel.MVELDebugHandler
 
             try {
-
                 Object var = method.variables().get( 0 );
                 LocalVariable v2 = (LocalVariable) var;
-                DroolsLocalVariable frameLocal = new DroolsLocalVariable( this,
-                                                                          v2 );
+                JDILocalVariable frameLocal = new JDILocalVariable( this,
+                                                                    v2 );
 
                 IValue knownVars = DebugUtil.getValueByExpression( "return getFactory().getKnownVariables().toArray(new String[0]);",
                                                                    frameLocal.getValue() );
-
-                IValue factory = DebugUtil.getValueByExpression( "return getFactory();",
-                                                                 frameLocal.getValue() );
-
-                IValue vars2 = DebugUtil.getValueByExpression( "return getFactory().getKnownVariables();",
-                                                               frameLocal.getValue() );
 
                 JDIObjectValue vvv = (JDIObjectValue) knownVars;
 
@@ -189,8 +111,8 @@ public class MVELStackFrame extends DroolsStackFrame {
                     while ( varIter.hasNext() ) {
                         final String varName = ((StringReference) varIter.next()).value();
 
-                        IJavaValue val = (IJavaValue) DebugUtil.getValueByExpression( "return getVariableResolver(\"" + varName + "\").getValue();",
-                                                                                      factory );
+                        IJavaValue val = (IJavaValue) DebugUtil.getValueByExpression( "return getFactory().getVariableResolver(\"" + varName + "\").getValue();",
+                                                                                      frameLocal.getValue() );
                         if ( val != null ) {
                             final ObjectReference valRef = ((JDIObjectValue) val).getUnderlyingObject();
                             VariableWrapper local = new VariableWrapper( varName,
@@ -205,123 +127,51 @@ public class MVELStackFrame extends DroolsStackFrame {
 
                 }
 
-                IVariable[] vararr = (IVariable[]) result.toArray( new IVariable[result.size()] );
-                cacheVariables = vararr;
+                IVariable[] vararr = result.toArray( new IVariable[result.size()] );
+                Arrays.sort( vararr,
+                             new Comparator<IVariable>() {
+                                 public int compare(IVariable var1,
+                                                    IVariable var2) {
+                                     try {
+                                         return var1.getName().compareTo( var2.getName() );
+                                     } catch ( DebugException e ) {
+                                         return 0;
+                                     }
+                                 }
+                             } );
+                result = new ArrayList( (vararr.length - 1) / 2 );
+                for ( int i = 0; i < vararr.length; i++ ) {
+                    String name = vararr[i].getName();
+                    if ( !(name.equals( DROOLS_VAR_NAME )) && !(name.endsWith( HANDLE_SUFIX )) ) {
+                        result.add( vararr[i] );
+                    }
+                }
+                vararr = (IVariable[]) result.toArray( new IVariable[result.size()] );
+                
+                ctxCache.setCacheVariables( vararr );
                 return vararr;
 
             } catch ( Throwable t ) {
                 DroolsEclipsePlugin.log( t );
             }
-
-            IVariable[] vararr = (IVariable[]) result.toArray( new IVariable[result.size()] );
-
-            Arrays.sort( vararr,
-                         new Comparator() {
-
-                             public int compare(Object var1,
-                                                Object var2) {
-                                 try {
-                                     return ((IVariable) var1).getName().compareTo( ((IVariable) var2).getName() );
-                                 } catch ( DebugException e ) {
-                                     return 0;
-                                 }
-                             }
-
-                         } );
-            cacheVariables = vararr;
-            return vararr;
-        } finally {
-            evaluating = false;
-            evalEnd();
+            return new IVariable[0];
         }
     }
-
-    private boolean internalHasNext(Value iter) throws InvalidTypeException,
-                                               ClassNotLoadedException,
-                                               IncompatibleThreadStateException,
-                                               InvocationException,
-                                               DebugException {
-        BooleanValue hasNext = (BooleanValue) runMethod( iter,
-                                                         "hasNext" );
-        return hasNext.booleanValue();
-    }
-
-    private Value fetchField(Value factoryVar,
-                             String fieldName) throws ClassNotLoadedException,
-                                              DebugException {
-        return fetchField( (ObjectReference) factoryVar,
-                           fieldName );
-    }
-
-    private Value runMethod(Value val,
-                            String methodName) throws InvalidTypeException,
-                                              ClassNotLoadedException,
-                                              IncompatibleThreadStateException,
-                                              InvocationException,
-                                              DebugException {
-
-        ObjectReference refObj = (ObjectReference) val;
-        ReferenceType t = refObj.referenceType();
-        Method m2 = (Method) t.methodsByName( methodName ).iterator().next();
-        ThreadReference thread = ((DroolsThread) getThread()).getUnderlyingThread();
-
-        Value res = refObj.invokeMethod( thread,
-                                         m2,
-                                         new ArrayList(),
-                                         0 );
-
-        return res;
-    }
-
-    private Value fetchField(DroolsLocalVariable frameLocal,
-                             String fieldName) throws DebugException,
-                                              ClassNotLoadedException {
-        ObjectReference objRef = ((JDIObjectValue) frameLocal.getValue()).getUnderlyingObject();
-        return fetchField( objRef,
-                           fieldName );
-    }
-
-    private Value fetchField(ObjectReference ref,
-                             String fieldName) throws ClassNotLoadedException,
-                                              DebugException {
-        ClassType varType = (ClassType) ref.type();
-        Field field = varType.fieldByName( fieldName );
-        Value res = ref.getValue( field );
-        return res;
-    }
-
-    protected DroolsStackFrame createNewDroolsFrame(StackFrame frame,
-                                                    int depth) {
-        return new MVELStackFrame( (DroolsThread) getThread(),
-                                   frame,
-                                   depth );
-    }
-
     public int getLineNumber() throws DebugException {
+        synchronized ( getThread() ) {
+            int cache = ctxCache.getCacheLineNumber();
+            if ( cache != -1 ) {
+                return cache;
+            }
 
-        if ( cacheLineNumber != -1 ) {
-            return cacheLineNumber;
-        }
-
-        if ( !isSuspended() ) {
-            return -1;
-        }
-
-        evaluating = true;
-        try {
             DroolsDebugTarget t = (DroolsDebugTarget) getDebugTarget();
-
-            //int lineNr = getBreakpointLineNumber();
             String sourceName = getMVELName();
-
             DroolsLineBreakpoint bpoint = (DroolsLineBreakpoint) t.getDroolsBreakpoint( sourceName );
-
             if ( bpoint == null ) {
                 return -1;
             }
 
             int line;
-
             try {
                 line = Integer.parseInt( bpoint.getFileRuleMappings().get( sourceName ).toString() );
             } catch ( Throwable t2 ) {
@@ -330,72 +180,75 @@ public class MVELStackFrame extends DroolsStackFrame {
             }
 
             int fragmentLine = getBreakpointLineNumber(); // 4->5 for step over
-
             int res = line + fragmentLine;
 
-            cacheLineNumber = res;
-            return res;
-        } finally {
-            evaluating = false;
-            evalEnd();
-        }
-    }
-
-    public RuleInfo getExecutingRuleInfo() {
-        try {
-            String type = getDeclaringTypeName();
-
-            return DroolsEclipsePlugin.getDefault().getRuleInfoByClass( type );
-
-        } catch ( DebugException exc ) {
-            DroolsEclipsePlugin.log( exc );
-        }
-        return null;
-    }
-
-    public int getBreakpointLineNumber() {
-
-        if ( cacheBreakpointLineNumber != -1 ) {
-            return cacheBreakpointLineNumber;
-        }
-
-        if ( !isSuspended() ) {
-            return -1;
-        }
-
-        evaluating = true;
-        try {
-            try {
-                Object o = getRemoteVar( "lineNumber" );
-                if ( o == null ) {
-                    return -1;
-                }
-                IntegerValue val = (IntegerValue) o;
-                int realval = val.value();
-                cacheBreakpointLineNumber = realval;
-                return realval;
-            } catch ( Throwable e ) {
-                DroolsEclipsePlugin.log( e );
+            if ( fragmentLine == -1 ) {
+                return -1;
             }
-            return -1;
-        } finally {
-            evaluating = false;
-            evalEnd();
+            ctxCache.setCacheLineNumber( res );
+            return res;
         }
+    }
+
+    private int getBreakpointLineNumber() {
+        if ( ctxCache.getCacheBreakpointLineNumber() != -1 ) {
+            return ctxCache.getCacheBreakpointLineNumber();
+        }
+
+        // Drools 4
+        try {
+            Object o = getRemoteVar( "lineNumber" );
+            if ( o == null ) {
+                return -1;
+            }
+            IntegerValue val = (IntegerValue) o;
+            int realval = val.value();
+            ctxCache.setCacheBreakpointLineNumber( realval );
+            return realval;
+        } catch ( NullPointerException e ) {
+            // Drools 5+
+        } catch ( Throwable e ) {
+            DroolsEclipsePlugin.log( e );
+        }
+
+        // Drools 5
+        try {
+            Object o = getRemoteVar( "label" );
+            if ( o == null ) {
+                return -1;
+            }
+            ObjectReference obj = (ObjectReference) o;
+            ClassType frameType = (ClassType) obj.type();
+            Field field = frameType.fieldByName( "lineNumber" );
+            o = obj.getValue( field );
+            if ( o == null ) {
+                return -1;
+            }
+            IntegerValue val = (IntegerValue) o;
+            int realval = val.value();
+            ctxCache.setCacheBreakpointLineNumber( realval );
+            return realval;
+        } catch ( NullPointerException e ) {
+            // Drools 5+
+        } catch ( Throwable e ) {
+            DroolsEclipsePlugin.log( e );
+        }
+
+        return -1;
     }
 
     public String getMVELName() {
+        synchronized ( getThread() ) {
+            String cache = ctxCache.getCacheMVELName();
+            if ( cache != null ) {
+                return cache;
+            }
+            
+            if ( !isSuspended() ) {
+                return null;
+            }
 
-        if ( cacheMVELName != null ) {
-            return cacheMVELName;
-        }
-
-        if ( !isSuspended() ) {
-            return null;
-        }
-
-        evaluating = true;
-        try {
+            // Drools 4
             try {
                 Object rem = getRemoteVar( "sourceName" );
                 if ( rem == null ) {
@@ -403,16 +256,36 @@ public class MVELStackFrame extends DroolsStackFrame {
                 }
                 StringReference res = (StringReference) rem;
                 String realres = res.value();
-                cacheMVELName = realres;
+                ctxCache.setCacheMVELName( realres );
+                return realres;
+            } catch ( NullPointerException e ) {
+                // Drools 5
+            } catch ( Throwable e ) {
+                DroolsEclipsePlugin.log( e );
+            }
+
+            // Drools 5
+            try {
+                Object rem = getRemoteVar( "label" );
+                if ( rem == null ) {
+                    return null;
+                }
+                ObjectReference obj = (ObjectReference) rem;
+                ClassType frameType = (ClassType) obj.type();
+                Field field = frameType.fieldByName( "sourceFile" );
+                rem = obj.getValue( field );
+                if ( rem == null ) {
+                    return null;
+                }
+                StringReference res = (StringReference) rem;
+                String realres = res.value();
+                ctxCache.setCacheMVELName( realres );
                 return realres;
             } catch ( Throwable e ) {
                 DroolsEclipsePlugin.log( e );
             }
 
             return "Unavailable";
-        } finally {
-            evaluating = false;
-            evalEnd();
         }
     }
 
@@ -443,10 +316,9 @@ public class MVELStackFrame extends DroolsStackFrame {
         //IValue value = jdivar.getValue();
         ObjectReferenceImpl o = (ObjectReferenceImpl) value;
 
-        /*        if ( value instanceof JDINullValue ) {
-         return null;
-         }
-         */
+        //if ( value instanceof JDINullValue ) {
+        // return null;
+        // }
 
         //ObjectReference o = (ObjectReference) ((JDIObjectValue) value).getUnderlyingObject();
         if ( o == null ) {
@@ -462,12 +334,19 @@ public class MVELStackFrame extends DroolsStackFrame {
         return getMVELName();
     }
 
-    public boolean canStepInto() {
-        return false;
+    public String getSourceName() throws DebugException {
+        return getMVELName();
+    }
+    
+    public void stepOver() throws DebugException {
+        synchronized ( getThread() ) {
+            ctxCache.clear();
+        }
+        super.stepOver();
     }
 
-    public boolean canStepOver() {
-        return exists() && !isObsolete() && !evaluating;
+    public boolean canStepInto() {
+        return false;
     }
 
     public boolean canDropToFrame() {
@@ -486,45 +365,129 @@ public class MVELStackFrame extends DroolsStackFrame {
         return REF_TYPE;
     }
 
-    public String getSourceName() throws DebugException {
-        return getMVELName();
-    }
+    public static class MVELStackFrameContext {
+        private int         cacheLineNumber           = -1;
+        private int         cacheBreakpointLineNumber = -1;
+        private String      cacheMVELName             = null;
+        private IVariable[] cacheVariables            = null;
 
-    protected JDIStackFrame bind(StackFrame frame,
-                                 int depth) {
-        clearCachedData();
-        return super.bind( frame,
-                           depth );
-    }
+        public synchronized void clear() {
+            cacheLineNumber = -1;
+            cacheBreakpointLineNumber = -1;
+            cacheMVELName = null;
+            cacheVariables = null;
+        }
 
-    protected void clearCachedData() {
-        super.clearCachedData();
-        clearFrameCache();
-        if ( !isSuspended() ) {
-            initMVELinfo();
+        public synchronized int getCacheLineNumber() {
+            return cacheLineNumber;
+        }
+
+        public synchronized void setCacheLineNumber(int cacheLineNumber) {
+            this.cacheLineNumber = cacheLineNumber;
+        }
+
+        public synchronized int getCacheBreakpointLineNumber() {
+            return cacheBreakpointLineNumber;
+        }
+
+        public synchronized void setCacheBreakpointLineNumber(int cacheBreakpointLineNumber) {
+            this.cacheBreakpointLineNumber = cacheBreakpointLineNumber;
+        }
+
+        public synchronized String getCacheMVELName() {
+            return cacheMVELName;
+        }
+
+        public synchronized void setCacheMVELName(String cacheMVELName) {
+            this.cacheMVELName = cacheMVELName;
+        }
+
+        public synchronized IVariable[] getCacheVariables() {
+            return cacheVariables;
+        }
+
+        public synchronized void setCacheVariables(IVariable[] cacheVariables) {
+            this.cacheVariables = cacheVariables;
         }
     }
 
-    private void initMVELinfo() {
-        try {
-            getLineNumber();
-        } catch ( DebugException e ) {
-            // no luck this time. will be initialized later
-        }
-        getBreakpointLineNumber();
-        getMVELName();
-        try {
-            getVariables();
-        } catch ( DebugException e1 ) {
-            // no luck this time. will be initialized later
-        }
-    }
+    /**
+      * Dummy type with changed stratum to force debugger's LaunchView to show proper stackframe name
+      */
+    private static final IJavaReferenceType REF_TYPE = new IJavaReferenceType() {
 
-    private void clearFrameCache() {
-        cacheLineNumber = -1;
-        cacheBreakpointLineNumber = -1;
-        cacheMVELName = null;
-        cacheVariables = null;
-    }
+                                                         public IJavaFieldVariable getField(String name) throws DebugException {
+                                                             return null;
+                                                         }
+
+                                                         public IJavaClassObject getClassObject() throws DebugException {
+                                                             return null;
+                                                         }
+
+                                                         public String[] getAvailableStrata() throws DebugException {
+                                                             return null;
+                                                         }
+
+                                                         public String getDefaultStratum() throws DebugException {
+                                                             return "MVEL";
+                                                         }
+
+                                                         public String[] getDeclaredFieldNames() throws DebugException {
+                                                             return null;
+                                                         }
+
+                                                         public String[] getAllFieldNames() throws DebugException {
+                                                             return null;
+                                                         }
+
+                                                         public IJavaObject getClassLoaderObject() throws DebugException {
+                                                             return null;
+                                                         }
+
+                                                         public String getGenericSignature() throws DebugException {
+                                                             return null;
+                                                         }
+
+                                                         public String getSourceName() throws DebugException {
+                                                             return null;
+                                                         }
+
+                                                         public String[] getSourceNames(String stratum) throws DebugException {
+                                                             return null;
+                                                         }
+
+                                                         public String[] getSourcePaths(String stratum) throws DebugException {
+                                                             return null;
+                                                         }
+
+                                                         public IJavaObject[] getInstances(long max) throws DebugException {
+                                                             return null;
+                                                         }
+
+                                                         public String getName() throws DebugException {
+                                                             return null;
+                                                         }
+
+                                                         public String getSignature() throws DebugException {
+                                                             return null;
+                                                         }
+
+                                                         public IDebugTarget getDebugTarget() {
+                                                             return null;
+                                                         }
+
+                                                         public ILaunch getLaunch() {
+                                                             return null;
+                                                         }
+
+                                                         public String getModelIdentifier() {
+                                                             return null;
+                                                         }
+
+                                                         public Object getAdapter(Class adapter) {
+                                                             return null;
+                                                         }
+
+                                                     };
 
 }

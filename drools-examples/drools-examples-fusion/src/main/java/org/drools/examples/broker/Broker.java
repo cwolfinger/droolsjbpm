@@ -30,6 +30,8 @@ import org.drools.examples.broker.model.CompanyRegistry;
 import org.drools.examples.broker.model.StockTick;
 import org.drools.examples.broker.ui.BrokerWindow;
 import org.drools.io.ResourceFactory;
+import org.drools.logger.KnowledgeRuntimeLogger;
+import org.drools.logger.KnowledgeRuntimeLoggerFactory;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.runtime.rule.WorkingMemoryEntryPoint;
 
@@ -57,13 +59,19 @@ public class Broker implements EventReceiver, BrokerServices {
 
     @SuppressWarnings("unchecked")
     public void receive(Event<?> event) {
-        StockTick tick = ((Event<StockTick>)event).getObject();
-        Company company = this.companies.getCompany( tick.getSymbol() );
-        this.tickStream.insert( tick );
-        this.session.getAgenda().getAgendaGroup( "evaluation" ).setFocus();
-        this.session.fireAllRules();
-        window.updateCompany( company.getSymbol() );
-        window.updateTick( tick );
+        try {
+            StockTick tick = ((Event<StockTick>) event).getObject();
+            Company company = this.companies.getCompany( tick.getSymbol() );
+            this.tickStream.insert( tick );
+            this.session.getAgenda().getAgendaGroup( "evaluation" ).setFocus();
+            this.session.fireAllRules();
+            window.updateCompany( company.getSymbol() );
+            window.updateTick( tick );
+        } catch ( Exception e ) {
+            System.err.println("=============================================================");
+            System.err.println("Unexpected exception caught: "+e.getMessage() );
+            e.printStackTrace();
+        }
     }
     
     private StatefulKnowledgeSession createSession() {

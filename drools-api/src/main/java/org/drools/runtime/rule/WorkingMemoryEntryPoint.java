@@ -84,11 +84,22 @@ public interface WorkingMemoryEntryPoint {
     Object getObject(FactHandle factHandle);
 
     /**
-     * Returns all facts from the current session.
+     * <p>
+     * Returns all facts from the current session as a Collection.
+     * </p>
+     * 
+     * <p>This class is <i>not</i> a general-purpose <tt>Collection</tt>
+     * implementation!  While this class implements the <tt>Collection</tt> interface, it
+     * intentionally violates <tt>Collection</tt> general contract, which mandates the
+     * use of the <tt>equals</tt> method when comparing objects.</p>
+     * 
+     * <p>Instead the approach used when comparing objects with the <tt>contains(Object)</tt>
+     * method is dependent on the WorkingMemory configuration, where it can be configured for <tt>Identity</tt>
+     * or for <tt>Equality</tt>.</p> 
      * 
      * @return
      */
-    Collection< ? extends Object > getObjects();
+    Collection< Object > getObjects();
 
     /**
      * Returns all facts from the current session that are accepted by the given <code>ObjectFilter</code>.
@@ -97,14 +108,14 @@ public interface WorkingMemoryEntryPoint {
      *  
      * @return
      */
-    Collection< ? extends Object > getObjects(ObjectFilter filter);
+    Collection< Object > getObjects(ObjectFilter filter);
 
     /**
      * Returns all <code>FactHandle</code>s from the current session.
      * 
      * @return
      */
-    Collection< ? extends FactHandle> getFactHandles();
+    <T extends FactHandle> Collection< T > getFactHandles();
 
     /**
      * Returns all <code>FactHandle</code>s from the current session for which the facts are accepted by 
@@ -114,5 +125,5 @@ public interface WorkingMemoryEntryPoint {
      * 
      * @return
      */
-    Collection< ? extends FactHandle> getFactHandles(ObjectFilter filter);    
+    <T extends FactHandle> Collection< T > getFactHandles(ObjectFilter filter);    
 }

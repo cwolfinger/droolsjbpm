@@ -332,20 +332,23 @@ public class ReteooWorkingMemory extends AbstractWorkingMemory {
         }
 
         public void execute(InternalWorkingMemory workingMemory) {
-            final PropagationContext context = new PropagationContextImpl( workingMemory.getNextPropagationIdCounter(),
-                                                                           PropagationContext.EXPIRATION,
-                                                                           null,
-                                                                           null,
-                                                                           this.factHandle );
-            ((EventFactHandle)factHandle).setExpired( true );
-            this.node.retractObject( factHandle,
-                                     context,
-                                     workingMemory );
-            
-            // if no activations for this expired event
-            if( ((EventFactHandle)factHandle).getActivationsCount() == 0 ) {
-                // remove it from the object store and clean up resources
-                ((EventFactHandle)factHandle).getEntryPoint().retract( factHandle );
+            if( this.factHandle.isValid() ) {
+                // if the fact is still in the working memory (since it may have been previously retracted already
+                final PropagationContext context = new PropagationContextImpl( workingMemory.getNextPropagationIdCounter(),
+                                                                               PropagationContext.EXPIRATION,
+                                                                               null,
+                                                                               null,
+                                                                               this.factHandle );
+                ((EventFactHandle)factHandle).setExpired( true );
+                this.node.retractObject( factHandle,
+                                         context,
+                                         workingMemory );
+                
+                // if no activations for this expired event
+                if( ((EventFactHandle)factHandle).getActivationsCount() == 0 ) {
+                    // remove it from the object store and clean up resources
+                    ((EventFactHandle)factHandle).getEntryPoint().retract( factHandle );
+                }
             }
         }
     }
@@ -356,19 +359,19 @@ public class ReteooWorkingMemory extends AbstractWorkingMemory {
         return this;
     }
 
-    public Collection< ? extends FactHandle> getFactHandles() {
+    public <T extends org.drools.runtime.rule.FactHandle> Collection< T > getFactHandles() {
         throw new UnsupportedOperationException("this is implementedby StatefulKnowledgeImpl");
     }
 
-    public Collection< ? extends FactHandle> getFactHandles(ObjectFilter filter) {
+    public <T extends org.drools.runtime.rule.FactHandle> Collection< T > getFactHandles(ObjectFilter filter) {
         throw new UnsupportedOperationException("this is implementedby StatefulKnowledgeImpl");
     }
 
-    public Collection< ? extends Object> getObjects() {
+    public Collection< Object > getObjects() {
         throw new UnsupportedOperationException("this is implementedby StatefulKnowledgeImpl");
     }
 
-    public Collection< ? extends Object> getObjects(ObjectFilter filter) {
+    public Collection< Object > getObjects(ObjectFilter filter) {
         throw new UnsupportedOperationException("this is implementedby StatefulKnowledgeImpl");
     }
 

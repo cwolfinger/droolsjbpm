@@ -84,9 +84,9 @@ import org.drools.rule.EntryPoint;
 import org.drools.rule.Rule;
 import org.drools.rule.TimeMachine;
 import org.drools.ruleflow.core.RuleFlowProcess;
-import org.drools.runtime.ExecutionResults;
 import org.drools.runtime.Environment;
 import org.drools.runtime.EnvironmentName;
+import org.drools.runtime.ExecutionResults;
 import org.drools.runtime.ExitPoint;
 import org.drools.runtime.Globals;
 import org.drools.runtime.KnowledgeRuntime;
@@ -164,7 +164,7 @@ public abstract class AbstractWorkingMemory
     protected Queue<WorkingMemoryAction>                                      actionQueue;
 
     protected volatile boolean                                                evaluatingActionQueue;
-
+    
     protected ReentrantLock                                                   lock;
 
     protected boolean                                                         discardOnLogicalOverride;
@@ -541,6 +541,7 @@ public abstract class AbstractWorkingMemory
         }
 
         try {
+            this.ruleBase.readLock();
             this.lock.lock();
             // Make sure the global has been declared in the RuleBase
             final Map globalDefintions = this.ruleBase.getGlobals();
@@ -556,6 +557,7 @@ public abstract class AbstractWorkingMemory
             }
         } finally {
             this.lock.unlock();
+            this.ruleBase.readUnlock();
         }
     }
 
@@ -620,30 +622,6 @@ public abstract class AbstractWorkingMemory
     public void halt() {
         this.agenda.halt();
     }
-
-    // /**
-    // * This is a synchronous call that will keep the engine running
-    // * until halt() is called. If no more activations exist, the engine
-    // * will wait until either halt is called or new activations are
-    // * created. In the later case, it will fire them.
-    // */
-    // public void runUntilHalt() {
-    // do {
-    // fireAllRules();
-    // synchronized( this.agenda ) {
-    // if( !halt && this.agenda.agendaSize() == 0 ) {
-    // try {
-    // this.agenda.wait();
-    // } catch (InterruptedException e) {
-    // // set status and continue
-    // Thread.currentThread().interrupted();
-    // break;
-    // }
-    // }
-    // }
-    // } while( !halt );
-    //    	
-    // }
 
     public synchronized int fireAllRules() throws FactException {
         return fireAllRules( null,
@@ -885,6 +863,7 @@ public abstract class AbstractWorkingMemory
         }
 
         try {
+            this.ruleBase.readLock();
             this.lock.lock();
             // check if the object already exists in the WM
             handle = (InternalFactHandle) this.objectStore.getHandleForObject( object );
@@ -1027,6 +1006,7 @@ public abstract class AbstractWorkingMemory
 
         } finally {
             this.lock.unlock();
+            this.ruleBase.readUnlock();
         }
         return handle;
     }
@@ -1144,14 +1124,21 @@ public abstract class AbstractWorkingMemory
                         final Rule rule,
                         final Activation activation) throws FactException {
         try {
+            this.ruleBase.readLock();
             this.lock.lock();
             this.ruleBase.executeQueuedActions();
 
-            final InternalFactHandle handle = (InternalFactHandle) factHandle;
+            InternalFactHandle handle = (InternalFactHandle) factHandle;
             if ( handle.getId() == -1 ) {
                 // can't retract an already retracted handle
                 return;
             }
+            
+            // the handle might have been disconnected, so reconnect if it has
+            if ( factHandle instanceof DisconnectedFactHandle ) {
+                handle = this.objectStore.reconnect( handle );
+            }
+            
             removePropertyChangeListener( handle );
 
             if ( activation != null ) {
@@ -1208,6 +1195,7 @@ public abstract class AbstractWorkingMemory
             executeQueuedActions();
         } finally {
             this.lock.unlock();
+            this.ruleBase.readUnlock();
         }
     }
 
@@ -1221,11 +1209,17 @@ public abstract class AbstractWorkingMemory
                               final Rule rule,
                               final Activation activation) {
         try {
+            this.ruleBase.readLock();
             this.lock.lock();
             this.ruleBase.executeQueuedActions();
 
-            final InternalFactHandle handle = (InternalFactHandle) factHandle;
-
+            InternalFactHandle handle = (InternalFactHandle) factHandle;
+            
+            // the handle might have been disconnected, so reconnect if it has
+            if ( factHandle instanceof DisconnectedFactHandle ) {
+                handle = this.objectStore.reconnect( handle );
+            }
+            
             if ( handle.getId() == -1 ) {
                 // the handle is invalid, most likely already retracted, so
                 // return
@@ -1271,6 +1265,7 @@ public abstract class AbstractWorkingMemory
             }
         } finally {
             this.lock.unlock();
+            this.ruleBase.readUnlock();
         }
     }
 
@@ -1287,10 +1282,17 @@ public abstract class AbstractWorkingMemory
                              final Rule rule,
                              final Activation activation) {
         try {
+            this.ruleBase.readLock();
             this.lock.lock();
             this.ruleBase.executeQueuedActions();
 
-            final InternalFactHandle handle = (InternalFactHandle) factHandle;
+            InternalFactHandle handle = (InternalFactHandle) factHandle;
+            
+            // the handle might have been disconnected, so reconnect if it has
+            if ( factHandle instanceof DisconnectedFactHandle ) {
+                handle = this.objectStore.reconnect( handle );
+            }
+            
             final Object originalObject = handle.getObject();
 
             if ( this.maintainTms ) {
@@ -1339,6 +1341,7 @@ public abstract class AbstractWorkingMemory
 
         } finally {
             this.lock.unlock();
+            this.ruleBase.readUnlock();
         }
     }
 
@@ -1363,13 +1366,19 @@ public abstract class AbstractWorkingMemory
      * 
      * @see WorkingMemory
      */
-    public void update(final org.drools.FactHandle factHandle,
+    public void update(org.drools.FactHandle factHandle,
                        final Object object,
                        final Rule rule,
                        final Activation activation) throws FactException {
         try {
+            this.ruleBase.readLock();
             this.lock.lock();
             this.ruleBase.executeQueuedActions();
+            
+            // the handle might have been disconnected, so reconnect if it has
+            if ( factHandle instanceof DisconnectedFactHandle ) {
+                factHandle = this.objectStore.reconnect( factHandle );
+            }
 
             // only needed if we maintain tms, but either way we must get it
             // before we do the retract
@@ -1462,6 +1471,7 @@ public abstract class AbstractWorkingMemory
             executeQueuedActions();
         } finally {
             this.lock.unlock();
+            this.ruleBase.readUnlock();
         }
     }
 
@@ -1472,7 +1482,18 @@ public abstract class AbstractWorkingMemory
                 WorkingMemoryAction action = null;
 
                 while ( (action = actionQueue.poll()) != null ) {
-                    action.execute( this );
+                    try {
+                        action.execute( this );
+                    } catch ( Exception e ) {
+                        if( e instanceof RuntimeDroolsException ) {
+                            // rethrow the exception
+                            throw ((RuntimeDroolsException)e);
+                        } else {
+                            System.err.println("************************************************");
+                            System.err.println("Exception caught while executing action: "+action.toString());
+                            e.printStackTrace();
+                        }
+                    }
                 }
                 evaluatingActionQueue = false;
             }
@@ -1839,6 +1860,7 @@ public abstract class AbstractWorkingMemory
     }
     
     public void startBatchExecution() {
+        this.ruleBase.readLock();
         this.lock.lock();
         this.batchExecutionResult = new BatchExecutionResultImpl();
     }
@@ -1850,6 +1872,7 @@ public abstract class AbstractWorkingMemory
     public void endBatchExecution() {
         this.batchExecutionResult = null;
         this.lock.unlock();
+        this.ruleBase.readUnlock();
     }    
 
     // public static class FactHandleInvalidation implements WorkingMemoryAction

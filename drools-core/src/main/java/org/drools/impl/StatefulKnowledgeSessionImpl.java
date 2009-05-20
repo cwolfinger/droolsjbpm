@@ -243,6 +243,15 @@ public class StatefulKnowledgeSessionImpl
     public ProcessInstance getProcessInstance(long id) {
         return this.session.getProcessInstance( id );
     }
+    
+    public void abortProcessInstance(long id) {
+    	org.drools.process.instance.ProcessInstance processInstance =
+    		this.session.getProcessInstance( id );
+    	if (processInstance == null) {
+    		throw new IllegalArgumentException("Could not find process instance for id " + id);
+    	}
+    	processInstance.setState( ProcessInstance.STATE_ABORTED );
+    }
 
     public Collection<ProcessInstance> getProcessInstances() {
         List<ProcessInstance> result = new ArrayList<ProcessInstance>();
@@ -304,25 +313,25 @@ public class StatefulKnowledgeSessionImpl
     //        return new FutureAdapter( this.session.asyncFireAllRules() );
     //    }
 
-    public Collection< ? extends FactHandle> getFactHandles() {
+    public <T extends org.drools.runtime.rule.FactHandle> Collection< T > getFactHandles() {
         return new ObjectStoreWrapper( session.getObjectStore(),
                                        null,
                                        ObjectStoreWrapper.FACT_HANDLE );
     }
 
-    public Collection< ? extends FactHandle> getFactHandles(org.drools.runtime.ObjectFilter filter) {
+    public <T extends org.drools.runtime.rule.FactHandle> Collection< T > getFactHandles(org.drools.runtime.ObjectFilter filter) {
         return new ObjectStoreWrapper( session.getObjectStore(),
                                        filter,
                                        ObjectStoreWrapper.FACT_HANDLE );
     }
 
-    public Collection< ? > getObjects() {
+    public Collection< Object > getObjects() {
         return new ObjectStoreWrapper( session.getObjectStore(),
                                        null,
                                        ObjectStoreWrapper.OBJECT );
     }
 
-    public Collection< ? > getObjects(org.drools.runtime.ObjectFilter filter) {
+    public Collection< Object > getObjects(org.drools.runtime.ObjectFilter filter) {
         return new ObjectStoreWrapper( session.getObjectStore(),
                                        filter,
                                        ObjectStoreWrapper.OBJECT );

@@ -1127,14 +1127,45 @@ public class ServiceImplementationTest extends TestCase {
 	}
 
 	public void testLoadSuggestionCompletionEngine() throws Exception {
-		RepositoryService impl = getService();
-		String uuid = impl.createPackage("testSuggestionComp", "x");
-		PackageConfigData conf = impl.loadPackageConfig(uuid);
-		conf.header = "import java.util.List";
+        ServiceImplementation impl = getService();
+        RulesRepository repo = impl.repository;
 
-		SuggestionCompletionEngine eng = impl
-				.loadSuggestionCompletionEngine("testSuggestionComp");
-		assertNotNull(eng);
+        // create our package
+        PackageItem pkg = repo.createPackage("testSILoadSCE", "");
+
+        AssetItem model = pkg.addAsset("MyModel", "");
+        model.updateFormat(AssetFormats.MODEL);
+        model.updateBinaryContentAttachment(this.getClass()
+                .getResourceAsStream("/billasurf.jar"));
+        model.checkin("");
+        ServiceImplementation.updateDroolsHeader("import com.billasurf.Board", pkg);
+
+        AssetItem m2 = pkg.addAsset("MyModel2", "");
+        m2.updateFormat(AssetFormats.DRL_MODEL);
+        m2.updateContent("declare Whee\n name: String\nend");
+        m2.checkin("");
+
+
+        AssetItem r1 = pkg.addAsset("garbage", "");
+        r1.updateFormat(AssetFormats.DRL);
+        r1.updateContent("this will not compile");
+        r1.checkin("");
+
+
+
+        SuggestionCompletionEngine eng = impl
+                .loadSuggestionCompletionEngine(pkg.getName());
+        assertNotNull(eng);
+        assertEquals(2, eng.factTypes.length);
+
+        for (String ft : eng.factTypes) {
+            if (!(ft.equals("Board") || ft.equals("Whee"))) {
+                fail("Should be one of the above...");
+            }
+        }
+
+
+
 
 	}
 
@@ -1335,6 +1366,23 @@ public class ServiceImplementationTest extends TestCase {
 		assertEquals(42, p.getAge());
 	}
 
+    public void testSuggestionCompletionLoading() throws Exception {
+            ServiceImplementation impl = getService();
+            RulesRepository repo = impl.repository;
+
+            // create our package
+            PackageItem pkg = repo.createPackage("testSISuggestionCompletionLoading", "");
+            ServiceImplementation.updateDroolsHeader("import org.drools.Person", pkg);
+            AssetItem rule1 = pkg.addAsset("model_1", "");
+            rule1.updateFormat(AssetFormats.DRL_MODEL);
+            rule1.updateContent("declare Whee\n name: String \nend");
+            rule1.checkin("");
+            repo.save();
+
+
+
+    }
+
 	public void testPackageSource() throws Exception {
 		ServiceImplementation impl = getService();
 		RulesRepository repo = impl.repository;
@@ -1445,6 +1493,38 @@ public class ServiceImplementationTest extends TestCase {
 
 	}
 
+
+    	public void testBuildAssetWithError() throws Exception {
+		ServiceImplementation impl = getService();
+		RulesRepository repo = impl.repository;
+
+		// create our package
+		PackageItem pkg = repo.createPackage("testBuildAssetWithError", "");
+		AssetItem model = pkg.addAsset("MyModel", "");
+		model.updateFormat(AssetFormats.MODEL);
+		model.updateBinaryContentAttachment(this.getClass()
+				.getResourceAsStream("/billasurf.jar"));
+		model.checkin("");
+
+		ServiceImplementation.updateDroolsHeader("import com.billasurf.Person", pkg);
+
+		AssetItem asset = pkg.addAsset("testRule", "");
+		asset.updateFormat(AssetFormats.DRL);
+		asset.updateContent("rule 'MyGoodRule' \n when Personx() then System.err.println(42); \n end");
+		asset.checkin("");
+		repo.save();
+
+		RuleAsset rule = impl.loadRuleAsset(asset.getUUID());
+
+
+		BuilderResult[] result = impl.buildAsset(rule);
+		assertNotNull(result);
+        assertEquals(-1, result[0].message.indexOf("Check log for"));
+        assertTrue(result[0].message.indexOf("Unable to resolve") > -1);
+
+
+	}
+
 	public void testBuildAsset() throws Exception {
 		ServiceImplementation impl = getService();
 		RulesRepository repo = impl.repository;
@@ -1471,6 +1551,8 @@ public class ServiceImplementationTest extends TestCase {
 		// check its all OK
 		BuilderResult[] result = impl.buildAsset(rule);
 		assertNull(result);
+
+        ServiceImplementation.ruleBaseCache.clear();
 
 		// try it with a bad rule
 		RuleContentText text = new RuleContentText();

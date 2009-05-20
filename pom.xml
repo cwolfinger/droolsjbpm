@@ -8,12 +8,12 @@
     <packaging>pom</packaging>
     <name>Drools</name>
     <!-- TODO Use -SNAPSHOT instead of .SNAPSHOT (gives problems with building the drools eclipse plugin) -->
-    <version>5.0.0</version>
+    <version>5.0.1.SNAPSHOT</version>
     <description>A rule production system</description>
     <url>http://www.jboss.com/products/rules</url>
 
     <properties>
-        <mvel.dep.version>2.0.9pre2</mvel.dep.version>
+        <mvel.dep.version>2.0.10</mvel.dep.version>
     </properties>
 
     <prerequisites>
@@ -431,7 +431,7 @@
 	            <module>drools-clips</module>
 	            <module>drools-pipeline</module>    
 	            <module>drools-process</module>                  
-	            <module>drools-atom</module>                  
+	            <!-- <module>drools-atom</module> -->
 	            <!-- <module>drools-bpel</module>                 
 	            <module>drools-jpdl</module>                 
 	            <module>drools-osworkflow</module>          -->
@@ -1317,10 +1317,10 @@
         </snapshotRepository>
 
         <!-- TODO configure this if it's needed -->
-        <repository>
-           <id>maven.jboss.org</id>
-           <url>https://svn.jboss.org/repos/repository.jboss.org/maven2</url>
-        </repository>
+        <!--<repository>-->
+         <!--  <id>maven.jboss.org</id>-->
+          <!-- <url>https://svn.jboss.org/repos/repository.jboss.org/maven2</url>-->
+        <!--/repository>-->
         <!--    <snapshotRepository>
          <id>snapshots.jboss.org</id>
        </snapshotRepository> -->

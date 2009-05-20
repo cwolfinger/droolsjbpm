@@ -49,6 +49,7 @@ import org.drools.process.command.RegisterWorkItemHandlerCommand;
 import org.drools.process.command.RemoveEventListenerCommand;
 import org.drools.process.command.RetractCommand;
 import org.drools.process.command.SetGlobalCommand;
+import org.drools.process.command.SetProcessInstanceStateCommand;
 import org.drools.process.command.SignalEventCommand;
 import org.drools.process.command.StartProcessCommand;
 import org.drools.process.command.UnregisterExitPointCommand;
@@ -98,6 +99,13 @@ public class CommandBasedStatefulKnowledgeSession
         command.setProcessInstanceId( id );
         return commandService.execute( command );
     }
+    
+    public void abortProcessInstance(long id) {
+    	SetProcessInstanceStateCommand command = new SetProcessInstanceStateCommand();
+    	command.setProcessInstanceId( id );
+    	command.setState( ProcessInstance.STATE_ABORTED );
+        commandService.execute( command );
+    }
 
     public CommandService getCommandService() {
         return commandService;
@@ -138,9 +146,7 @@ public class CommandBasedStatefulKnowledgeSession
 
     public void signalEvent(String type,
                             Object event) {
-        SignalEventCommand command = new SignalEventCommand();
-        command.setEventType( type );
-        command.setEvent( event );
+        SignalEventCommand command = new SignalEventCommand(type, event);
         commandService.execute( command );
     }
 
@@ -256,20 +262,20 @@ public class CommandBasedStatefulKnowledgeSession
         return this.commandService.execute( new GetFactHandleCommand( object ) );
     }
 
-    public Collection< ? extends FactHandle> getFactHandles() {
-        return this.commandService.execute( new GetFactHandlesCommand() );
+    public <T extends org.drools.runtime.rule.FactHandle> Collection< T > getFactHandles() {
+        return (Collection<T>) this.commandService.execute( new GetFactHandlesCommand() );
 
     }
 
-    public Collection< ? extends FactHandle> getFactHandles(ObjectFilter filter) {
-        return this.commandService.execute( new GetFactHandlesCommand( filter ) );
+    public <T extends org.drools.runtime.rule.FactHandle> Collection< T > getFactHandles(ObjectFilter filter) {
+        return (Collection<T>) this.commandService.execute( new GetFactHandlesCommand( filter ) );
     }
 
-    public Collection< ? extends Object> getObjects() {
+    public Collection< Object > getObjects() {
         return getObjects( null );
     }
 
-    public Collection< ? extends Object > getObjects(ObjectFilter filter) {
+    public Collection< Object > getObjects(ObjectFilter filter) {
         Collection result = commandService.execute( new GetObjectsCommand( filter ) );
         return result;
     }

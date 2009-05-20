@@ -106,20 +106,17 @@ public class SingleSessionCommandService
 
             this.em.persist( this.sessionInfo );
 
-            //            System.out.println( "committing" );
             ut.commit();
-            //            System.out.println( "commit complete" );
+            
         } catch ( Throwable t1 ) {
             try {
                 if ( ut != null ) {
                     ut.rollback();
                 }
-                throw new RuntimeException( "Could not insert session data",
-                                            t1 );
             } catch ( Throwable t2 ) {
-                throw new RuntimeException( "Could not rollback transaction",
-                                            t2 );
+                throw new RuntimeException( "Could not rollback transaction", t2 );
             }
+            throw new RuntimeException( "Could not commit session", t1 );
         }
         
         // update the session id to be the same as the session info id
@@ -165,6 +162,10 @@ public class SingleSessionCommandService
                 throw new RuntimeException( "Could not rollback transaction",
                                             t2 );
             }
+        }
+        
+        if (sessionInfo == null) {
+        	throw new RuntimeException("Could not find session data for id " + sessionId);
         }
 
         this.marshallingHelper = new JPASessionMarshallingHelper( this.sessionInfo,

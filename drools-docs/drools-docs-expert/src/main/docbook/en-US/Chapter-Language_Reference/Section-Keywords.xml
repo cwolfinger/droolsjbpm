@@ -14,196 +14,197 @@
 
     <title>Keywords</title>
 
-    <para>Drools 5 introduces the concept of Hard and Soft keywords.</para>
+    <para>Drools 5 introduces the concept of <emphasis>hard</emphasis> and
+    <emphasis>soft</emphasis> keywords.</para>
 
     <para>Hard keywords are reserved, you cannot use any hard keyword when
     naming your domain objects, properties, methods, functions and other
     elements that are used in the rule text.</para>
 
-    <para>Here is a list of hard keywords that must be avoided as identifiers
+    <para>Here is the list of hard keywords that must be avoided as identifiers
     when writing rules:</para>
 
     <itemizedlist>
       <listitem>
-        <para>true</para>
+        <para><kw>true</kw></para>
       </listitem>
 
       <listitem>
-        <para>false</para>
+        <para><kw>false</kw></para>
       </listitem>
 
       <listitem>
-        <para>accumulate</para>
+        <para><kw>accumulate</kw></para>
       </listitem>
 
       <listitem>
-        <para>collect</para>
+        <para><kw>collect</kw></para>
       </listitem>
 
       <listitem>
-        <para>from</para>
+        <para><kw>from</kw></para>
       </listitem>
 
       <listitem>
-        <para>null</para>
+        <para><kw>null</kw></para>
       </listitem>
 
       <listitem>
-        <para>over</para>
+        <para><kw>over</kw></para>
       </listitem>
 
       <listitem>
-        <para>then</para>
+        <para><kw>then</kw></para>
       </listitem>
 
       <listitem>
-        <para>when</para>
+        <para><kw>when</kw></para>
       </listitem>
     </itemizedlist>
 
     <para>Soft keywords are just recognized in their context, enabling you to
-    use this words in any other place you wish. Here is a list of soft
+    use these words in any other place you wish. Here is a list of the soft
     keywords:</para>
 
     <itemizedlist>
       <listitem>
-        <para>lock-on-active</para>
+        <para><kw>lock-on-active</kw></para>
       </listitem>
 
       <listitem>
-        <para>date-effective</para>
+        <para><kw>date-effective</kw></para>
       </listitem>
 
       <listitem>
-        <para>date-expires</para>
+        <para><kw>date-expires</kw></para>
       </listitem>
 
       <listitem>
-        <para>no-loop</para>
+        <para><kw>no-loop</kw></para>
       </listitem>
 
       <listitem>
-        <para>auto-focus</para>
+        <para><kw>auto-focus</kw></para>
       </listitem>
 
       <listitem>
-        <para>activation-group</para>
+        <para><kw>activation-group</kw></para>
       </listitem>
 
       <listitem>
-        <para>agenda-group</para>
+        <para><kw>agenda-group</kw></para>
       </listitem>
 
       <listitem>
-        <para>ruleflow-group</para>
+        <para><kw>ruleflow-group</kw></para>
       </listitem>
 
       <listitem>
-        <para>entry-point</para>
+        <para><kw>entry-point</kw></para>
       </listitem>
 
       <listitem>
-        <para>duration</para>
+        <para><kw>duration</kw></para>
       </listitem>
 
       <listitem>
-        <para>package</para>
+        <para><kw>package</kw></para>
       </listitem>
 
       <listitem>
-        <para>import</para>
+        <para><kw>import</kw></para>
       </listitem>
 
       <listitem>
-        <para>dialect</para>
+        <para><kw>dialect</kw></para>
       </listitem>
 
       <listitem>
-        <para>salience</para>
+        <para><kw>salience</kw></para>
       </listitem>
 
       <listitem>
-        <para>enabled</para>
+        <para><kw>enabled</kw></para>
       </listitem>
 
       <listitem>
-        <para>attributes</para>
+        <para><kw>attributes</kw></para>
       </listitem>
 
       <listitem>
-        <para>rule</para>
+        <para><kw>rule</kw></para>
       </listitem>
 
       <listitem>
-        <para>extend</para>
+        <para><kw>extend</kw></para>
       </listitem>
 
       <listitem>
-        <para>template</para>
+        <para><kw>template</kw></para>
       </listitem>
 
       <listitem>
-        <para>query</para>
+        <para><kw>query</kw></para>
       </listitem>
 
       <listitem>
-        <para>declare</para>
+        <para><kw>declare</kw></para>
       </listitem>
 
       <listitem>
-        <para>function</para>
+        <para><kw>function</kw></para>
       </listitem>
 
       <listitem>
-        <para>global</para>
+        <para><kw>global</kw></para>
       </listitem>
 
       <listitem>
-        <para>eval</para>
+        <para><kw>eval</kw></para>
       </listitem>
 
       <listitem>
-        <para>not</para>
+        <para><kw>not</kw></para>
       </listitem>
 
       <listitem>
-        <para>in</para>
+        <para><kw>in</kw></para>
       </listitem>
 
       <listitem>
-        <para>or</para>
+        <para><kw>or</kw></para>
       </listitem>
 
       <listitem>
-        <para>and</para>
+        <para><kw>and</kw></para>
       </listitem>
 
       <listitem>
-        <para>exists</para>
+        <para><kw>exists</kw></para>
       </listitem>
 
       <listitem>
-        <para>forall</para>
+        <para><kw>forall</kw></para>
       </listitem>
 
       <listitem>
-        <para>action</para>
+        <para><kw>action</kw></para>
       </listitem>
 
       <listitem>
-        <para>reverse</para>
+        <para><kw>reverse</kw></para>
       </listitem>
 
       <listitem>
-        <para>result</para>
+        <para><kw>result</kw></para>
       </listitem>
 
       <listitem>
-        <para>end</para>
+        <para><kw>end</kw></para>
       </listitem>
 
       <listitem>
-        <para>init</para>
+        <para><kw>init</kw></para>
       </listitem>
     </itemizedlist>
 
@@ -211,15 +212,15 @@
     method name in camel case, like notSomething() or accumulateSomething() -
     there are no issues with that scenario.</para>
 
-    <para>Another improvement on DRL language is the ability to escape hard
-    keywords on rule text. This new feature enables you to use your existing
+    <para>Another improvement of the DRL language is the ability to escape hard
+    keywords on rule text. This feature enables you to use your existing
     domain objects without worrying about keyword collision. To escape a word,
-    simple type it between grave accents, like this:</para>
+    simply enclose it in grave accents, like this:</para>
 
     <programlisting>Holiday( `when` == "july" )</programlisting>
 
     <para>The escape should be used everywehere in rule text, except within code
-    expressions in the LHS or RHS code block. Here are examples of
+    expressions in the LHS or RHS code block. Here are examples of proper
     usage:</para>
 
     <programlisting>rule "validate holiday by eval" 

@@ -21,11 +21,14 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 
 import org.drools.RuntimeDroolsException;
 import org.drools.base.ClassObjectType;
 import org.drools.base.ValueType;
 import org.drools.common.InternalWorkingMemory;
+import org.drools.util.MathUtils;
 
 /**
  * This is a global variable extractor used to get a global variable value
@@ -40,18 +43,15 @@ public class GlobalExtractor
 
     private static final long serialVersionUID = 400L;
     private String            identifier;
-    private ValueType         valueType;
     private ObjectType        objectType;
 
     public GlobalExtractor() {
-
     }
     
     public GlobalExtractor(final String identifier,
                            final ObjectType objectType) {
         this.identifier = identifier;
         this.objectType = objectType;
-        this.valueType = objectType.getValueType();
     }    
 
     public Object getValue(InternalWorkingMemory workingMemory, final Object object) {
@@ -68,7 +68,6 @@ public class GlobalExtractor
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         identifier = in.readUTF();
         objectType = ( ObjectType) in.readObject();
-        valueType = objectType.getValueType();
     }
     
     public void setClassObjectType(ClassObjectType objectType) {
@@ -80,7 +79,7 @@ public class GlobalExtractor
         if ( objectType instanceof ClassObjectType ) {
             return ((ClassObjectType)objectType).getClassType();
         } else {
-            return valueType.getClassType();
+            return objectType.getValueType().getClassType();
         }
     }
 
@@ -88,68 +87,80 @@ public class GlobalExtractor
         if ( objectType instanceof ClassObjectType ) {
             return ((ClassObjectType)objectType).getClassName();
         } else {
-            return valueType.getClassType().getName();
+            return objectType.getValueType().getClassType().getName();
         }                
     }
 
     public ValueType getValueType() {
-        return valueType;
+        return objectType.getValueType();
     }
 
     public boolean getBooleanValue(InternalWorkingMemory workingMemory, final Object object) {
-        if( this.valueType.isBoolean() ) {
+        if( this.objectType.getValueType().isBoolean() ) {
             return ((Boolean) workingMemory.getGlobal( identifier )).booleanValue();
         }
         throw new ClassCastException("Not possible to convert global '"+identifier+"' into a boolean.");
     }
 
     public byte getByteValue(InternalWorkingMemory workingMemory, final Object object) {
-        if( this.valueType.isNumber() ) {
+        if( this.objectType.getValueType().isNumber() ) {
             return ((Number) workingMemory.getGlobal( identifier )).byteValue();
         }
         throw new ClassCastException("Not possible to convert global '"+identifier+"' into a byte.");
     }
 
     public char getCharValue(InternalWorkingMemory workingMemory, final Object object) {
-        if( this.valueType.isChar() ) {
+        if( this.objectType.getValueType().isChar() ) {
             return ((Character) workingMemory.getGlobal( identifier )).charValue();
         }
         throw new ClassCastException("Not possible to convert global '"+identifier+"' into a char.");
     }
 
     public double getDoubleValue(InternalWorkingMemory workingMemory, final Object object) {
-        if( this.valueType.isNumber() ) {
+        if( this.objectType.getValueType().isNumber() ) {
             return ((Number) workingMemory.getGlobal( identifier )).doubleValue();
         }
         throw new ClassCastException("Not possible to convert global '"+identifier+"' into a double.");
     }
 
     public float getFloatValue(InternalWorkingMemory workingMemory, final Object object) {
-        if( this.valueType.isNumber() ) {
+        if( this.objectType.getValueType().isNumber() ) {
             return ((Number) workingMemory.getGlobal( identifier )).floatValue();
         }
         throw new ClassCastException("Not possible to convert global '"+identifier+"' into a float.");
     }
 
     public int getIntValue(InternalWorkingMemory workingMemory, final Object object) {
-        if( this.valueType.isNumber() ) {
+        if( this.objectType.getValueType().isNumber() ) {
             return ((Number) workingMemory.getGlobal( identifier )).intValue();
         }
         throw new ClassCastException("Not possible to convert global '"+identifier+"' into an int.");
     }
 
     public long getLongValue(InternalWorkingMemory workingMemory, final Object object) {
-        if( this.valueType.isNumber() ) {
+        if( this.objectType.getValueType().isNumber() ) {
             return ((Number) workingMemory.getGlobal( identifier )).longValue();
         }
         throw new ClassCastException("Not possible to convert global '"+identifier+"' into a long.");
     }
 
     public short getShortValue(InternalWorkingMemory workingMemory, final Object object) {
-        if( this.valueType.isNumber() ) {
+        if( this.objectType.getValueType().isNumber() ) {
             return ((Number) workingMemory.getGlobal( identifier )).shortValue();
         }
         throw new ClassCastException("Not possible to convert global '"+identifier+"' into a short.");
+    }
+
+    public BigDecimal getBigDecimalValue(InternalWorkingMemory workingMemory,
+                                         Object object) {
+        return MathUtils.getBigDecimal( getValue( workingMemory,
+                                                  object ) );
+    }
+
+    public BigInteger getBigIntegerValue(InternalWorkingMemory workingMemory,
+                                         Object object) {
+        return MathUtils.getBigInteger( getValue( workingMemory,
+                                                  object ) );
     }
 
     public Method getNativeReadMethod() {
@@ -203,39 +214,45 @@ public class GlobalExtractor
     }
 
     public boolean getBooleanValue(Object object) {
-        throw new RuntimeDroolsException("Can't extract a value from a global without a working memory reference");
+        throw new RuntimeDroolsException("Can't extract a value from global "+identifier+" without a working memory reference");
     }
     public byte getByteValue(Object object) {
-        throw new RuntimeDroolsException("Can't extract a value from a global without a working memory reference");
+        throw new RuntimeDroolsException("Can't extract a value from global "+identifier+" without a working memory reference");
     }
     public char getCharValue(Object object) {
-        throw new RuntimeDroolsException("Can't extract a value from a global without a working memory reference");
+        throw new RuntimeDroolsException("Can't extract a value from global "+identifier+" without a working memory reference");
     }
     public double getDoubleValue(Object object) {
-        throw new RuntimeDroolsException("Can't extract a value from a global without a working memory reference");
+        throw new RuntimeDroolsException("Can't extract a value from global "+identifier+" without a working memory reference");
     }
     public float getFloatValue(Object object) {
-        throw new RuntimeDroolsException("Can't extract a value from a global without a working memory reference");
+        throw new RuntimeDroolsException("Can't extract a value from global "+identifier+" without a working memory reference");
     }
     public int getHashCode(Object object) {
-        throw new RuntimeDroolsException("Can't extract a value from a global without a working memory reference");
+        throw new RuntimeDroolsException("Can't extract a value from global "+identifier+" without a working memory reference");
     }
     public int getIndex() {
-        throw new RuntimeDroolsException("Can't extract a value from a global without a working memory reference");
+        throw new RuntimeDroolsException("Can't extract a value from global "+identifier+" without a working memory reference");
     }
     public int getIntValue(Object object) {
-        throw new RuntimeDroolsException("Can't extract a value from a global without a working memory reference");
+        throw new RuntimeDroolsException("Can't extract a value from global "+identifier+" without a working memory reference");
     }
     public long getLongValue(Object object) {
-        throw new RuntimeDroolsException("Can't extract a value from a global without a working memory reference");
+        throw new RuntimeDroolsException("Can't extract a value from global "+identifier+" without a working memory reference");
     }
     public short getShortValue(Object object) {
-        throw new RuntimeDroolsException("Can't extract a value from a global without a working memory reference");
+        throw new RuntimeDroolsException("Can't extract a value from global "+identifier+" without a working memory reference");
     }
     public Object getValue(Object object) {
-        throw new RuntimeDroolsException("Can't extract a value from a global without a working memory reference");
+        throw new RuntimeDroolsException("Can't extract a value from global "+identifier+" without a working memory reference");
+    }
+    public BigDecimal getBigDecimalValue(Object object) {
+        throw new RuntimeDroolsException("Can't extract a value from global "+identifier+" without a working memory reference");
+    }
+    public BigInteger getBigIntegerValue(Object object) {
+        throw new RuntimeDroolsException("Can't extract a value from global "+identifier+" without a working memory reference");
     }
     public boolean isNullValue(Object object) {
-        throw new RuntimeDroolsException("Can't extract a value from a global without a working memory reference");
+        throw new RuntimeDroolsException("Can't extract a value from global "+identifier+" without a working memory reference");
     }
 }

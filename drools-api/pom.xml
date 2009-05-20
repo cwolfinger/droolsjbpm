@@ -5,7 +5,7 @@
   <parent>
     <artifactId>drools</artifactId>
     <groupId>org.drools</groupId>
-    <version>5.0.0</version>
+    <version>5.0.1.SNAPSHOT</version>
   </parent>
 
   <artifactId>drools-api</artifactId>
@@ -88,7 +88,7 @@
               
                 <configuration>
                     <aggregate>false</aggregate>
-                    <!-- doclet>ydoc.doclets.YStandard</doclet>
+                    <!--doclet>ydoc.doclets.YStandard</doclet>
                     <docletPath>                        ${ydoc.home}/lib/ydoc.jar${path.separator}${ydoc.home}/lib/class2svg.jar${path.separator}${ydoc.home}/resources
                     </docletPath>
                     <additionalparam>-umlautogen -tag y.precondition -tag y.postcondition -tag y.complexity -tag param -tag return -tag see -tag y.uml

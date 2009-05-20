@@ -146,9 +146,9 @@ public class DebugUtil {
 
         private IJavaObject fEvaluationValue;
         private IJavaReferenceType fEvaluationType;
-        private IJavaThread fThread;
+        private volatile IJavaThread fThread;
         private IAstEvaluationEngine fEvaluationEngine;
-        private IEvaluationResult fResult;
+        private volatile IEvaluationResult fResult;
 
         public EvaluationBlock(IJavaObject value, IJavaReferenceType type,
                 IJavaThread thread, IAstEvaluationEngine evaluationEngine) {
@@ -159,9 +159,9 @@ public class DebugUtil {
         }
 
         public void evaluationComplete(IEvaluationResult result) {
-            synchronized (this) {
+            synchronized ( fThread ) {
                 fResult = result;
-                this.notify();
+                fThread.notifyAll();
             }
         }
 
@@ -183,14 +183,16 @@ public class DebugUtil {
             fEvaluationEngine.evaluateExpression(compiledExpression,
                     fEvaluationValue, fThread, this,
                     DebugEvent.EVALUATION_IMPLICIT, false);
-            synchronized (this) {
-                if (fResult == null) {
-                    try {
-                        this.wait();
-                    } catch (InterruptedException e) {
-                    }
+            
+            synchronized ( fThread ) {
+                while ( fResult == null ) {
+                        try {
+                            fThread.wait( 100 );
+                        } catch ( InterruptedException e ) {
+                        }
                 }
-            }
+            }            
+            
             if (fResult == null) {
                 return null;
             }

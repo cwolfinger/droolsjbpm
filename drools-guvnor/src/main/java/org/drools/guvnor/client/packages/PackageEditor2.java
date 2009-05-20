@@ -51,6 +51,7 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -509,7 +510,7 @@ FlexTable headerWidgets = new FlexTable();
     /**
      * Will refresh all the data.
      */
-    private void reload() {
+    public void reload() {
         LoadingPopup.showMessage(constants.RefreshingPackageData());
         RepositoryServiceFactory.getService().loadPackageConfig( this.conf.uuid, new GenericCallback<PackageConfigData>() {
             public void onSuccess(PackageConfigData data) {
@@ -542,14 +543,14 @@ FlexTable headerWidgets = new FlexTable();
 
     private Widget description() {
 
-    	final TextBox box = new TextBox();
+    	final TextArea box = new TextArea();
     	box.setText(conf.description);
     	box.addChangeListener(new ChangeListener() {
 			public void onChange(Widget arg0) {
 				conf.description = box.getText();
 			}
     	});
-    	box.setVisibleLength(64);
+    	box.setWidth( "400px" );
 
     	return box;
     }

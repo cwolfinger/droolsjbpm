@@ -20,6 +20,7 @@ import org.drools.solver.core.score.constraint.ConstraintOccurrence;
 import org.drools.solver.core.score.constraint.DoubleConstraintOccurrence;
 import org.drools.solver.core.score.constraint.IntConstraintOccurrence;
 import org.drools.solver.core.score.constraint.UnweightedConstraintOccurrence;
+import org.drools.solver.core.score.Score;
 import org.drools.solver.core.solution.Solution;
 import org.drools.solver.examples.common.persistence.SolutionDao;
 import org.slf4j.Logger;
@@ -37,7 +38,8 @@ public class SolutionBusiness {
     private File unsolvedDataDir;
     private File solvedDataDir;
 
-    private Solver solver;
+    // volatile because the solve method doesn't come from the event thread (like every other method call)
+    private volatile Solver solver;
     private LocalSearchSolverScope localSearchSolverScope;
 
     public void setSolutionDao(SolutionDao solutionDao) {
@@ -87,7 +89,7 @@ public class SolutionBusiness {
         return localSearchSolverScope.getWorkingSolution();
     }
 
-    public double getScore() {
+    public Score getScore() {
         return localSearchSolverScope.calculateScoreFromWorkingMemory();
     }
 
@@ -147,6 +149,10 @@ public class SolutionBusiness {
         solver.solve();
         Solution solution = solver.getBestSolution();
         solver.setStartingSolution(solution);
+    }
+
+    public void cancelSolving() {
+        solver.cancel();
     }
 
     public class SolverExampleFileFilter implements FileFilter {

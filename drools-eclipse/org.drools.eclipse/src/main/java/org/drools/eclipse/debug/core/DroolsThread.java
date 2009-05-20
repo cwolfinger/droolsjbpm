@@ -35,31 +35,20 @@ import com.sun.jdi.ThreadReference;
  *
  */
 public class DroolsThread extends JDIThread {
-
-    private List    fStackFrames;
-    private boolean fRefreshChildren = true;
-
     public DroolsThread(JDIDebugTarget target,
                         ThreadReference thread) throws ObjectCollectedException {
         super( target,
                thread );
     }
 
-    protected void initialize() throws ObjectCollectedException {
-        super.initialize();
-        fStackFrames = new ArrayList();
-    }
-
-    public synchronized List computeStackFrames() throws DebugException {
-        return computeStackFrames( fRefreshChildren );
-    }
-
     protected synchronized List computeStackFrames(boolean refreshChildren) throws DebugException {
+        List fStackFrames = getInternalfStackFrames();
+
         if ( isSuspended() ) {
             if ( isTerminated() ) {
                 fStackFrames.clear();
             } else if ( refreshChildren ) {
-                List frames = getUnderlyingFrames();
+                List frames = getInternalUnderlyingFrames();
                 int oldSize = fStackFrames.size();
                 int newSize = frames.size();
                 int discard = oldSize - newSize; // number of old frames to discard, if any
@@ -72,13 +61,9 @@ public class DroolsThread extends JDIThread {
                 int depth = oldSize;
                 for ( int i = newFrames - 1; i >= 0; i-- ) {
                     StackFrame currentFrame = (StackFrame) frames.get( i );
-                    //MVEL: create an mvel stack frame when the declaring type is our debugger?
-
-                    DroolsStackFrame customFrame;
-
-                    customFrame = createCustomFrame( this,
-                                                     depth,
-                                                     currentFrame );
+                    JDIStackFrame customFrame = createCustomFrame( this,
+                                                                   depth,
+                                                                   currentFrame );
 
                     fStackFrames.add( 0,
                                       customFrame );
@@ -101,16 +86,16 @@ public class DroolsThread extends JDIThread {
                 }
 
             }
-            fRefreshChildren = false;
+            setInternalfRefreshChildren( false );
         } else {
             return Collections.EMPTY_LIST;
         }
         return fStackFrames;
     }
 
-    public final static DroolsStackFrame createCustomFrame(DroolsThread thread,
-                                                           int depth,
-                                                           StackFrame currentFrame) {
+    public final static synchronized DroolsStackFrame createCustomFrame(DroolsThread thread,
+                                                                        int depth,
+                                                                        StackFrame currentFrame) {
         DroolsStackFrame customFrame;
         Location loc = currentFrame.location();
         if ( loc.declaringType().name().equals( "org.drools.base.mvel.MVELDebugHandler" ) && loc.method().name().equals( "onBreak" ) ) {
@@ -125,126 +110,7 @@ public class DroolsThread extends JDIThread {
         return customFrame;
     }
 
-    private List getUnderlyingFrames() throws DebugException {
-        if ( !isSuspended() ) {
-            // Checking isSuspended here eliminates a race condition in resume
-            // between the time stack frames are preserved and the time the
-            // underlying thread is actually resumed.
-            requestFailed( JDIDebugModelMessages.JDIThread_Unable_to_retrieve_stack_frame___thread_not_suspended__1,
-                           null,
-                           IJavaThread.ERR_THREAD_NOT_SUSPENDED );
-        }
-        try {
-            return getUnderlyingThread().frames();
-        } catch ( IncompatibleThreadStateException e ) {
-            requestFailed( JDIDebugModelMessages.JDIThread_Unable_to_retrieve_stack_frame___thread_not_suspended__1,
-                           e,
-                           IJavaThread.ERR_THREAD_NOT_SUSPENDED );
-        } catch ( RuntimeException e ) {
-            targetRequestFailed( MessageFormat.format( JDIDebugModelMessages.JDIThread_exception_retrieving_stack_frames_2,
-                                                       new String[]{e.toString()} ),
-                                 e );
-        } catch ( InternalError e ) {
-            targetRequestFailed( MessageFormat.format( JDIDebugModelMessages.JDIThread_exception_retrieving_stack_frames_2,
-                                                       new String[]{e.toString()} ),
-                                 e );
-        }
-        // execution will not reach this line, as
-        // #targetRequestFailed will thrown an exception
-        return null;
-    }
-
-    protected synchronized void preserveStackFrames() {
-        fRefreshChildren = true;
-        Iterator frames = fStackFrames.iterator();
-        while ( frames.hasNext() ) {
-            ((DroolsStackFrame) frames.next()).setUnderlyingStackFrame( null );
-        }
-    }
-
-    protected synchronized void disposeStackFrames() {
-        fStackFrames.clear();
-        fRefreshChildren = true;
-    }
-
-    protected void popFrame(IStackFrame frame) throws DebugException {
-        JDIDebugTarget target = (JDIDebugTarget) getDebugTarget();
-        if ( target.canPopFrames() ) {
-            // JDK 1.4 support
-            try {
-                // Pop the frame and all frames above it
-                StackFrame jdiFrame = null;
-                int desiredSize = fStackFrames.size() - fStackFrames.indexOf( frame ) - 1;
-                int lastSize = fStackFrames.size() + 1; // Set up to pass the first test
-                int size = fStackFrames.size();
-                while ( size < lastSize && size > desiredSize ) {
-                    // Keep popping frames until the stack stops getting smaller
-                    // or popFrame is gone.
-                    // see Bug 8054
-                    jdiFrame = ((DroolsStackFrame) frame).getUnderlyingStackFrame();
-                    preserveStackFrames();
-                    getUnderlyingThread().popFrames( jdiFrame );
-                    lastSize = size;
-                    size = computeStackFrames().size();
-                }
-            } catch ( IncompatibleThreadStateException exception ) {
-                targetRequestFailed( MessageFormat.format( JDIDebugModelMessages.JDIThread_exception_popping,
-                                                           new String[]{exception.toString()} ),
-                                     exception );
-            } catch ( InvalidStackFrameException exception ) {
-                // InvalidStackFrameException can be thrown when all but the
-                // deepest frame were popped. Fire a changed notification
-                // in case this has occured.
-                fireChangeEvent( DebugEvent.CONTENT );
-                targetRequestFailed( exception.toString(),
-                                     exception );
-            } catch ( RuntimeException exception ) {
-                targetRequestFailed( MessageFormat.format( JDIDebugModelMessages.JDIThread_exception_popping,
-                                                           new String[]{exception.toString()} ),
-                                     exception );
-            }
-        }
-    }
-
-    protected void terminated() {
-        super.terminated();
-    }
-
-    protected void removeCurrentBreakpoint(IBreakpoint bp) {
-        super.removeCurrentBreakpoint( bp );
-    }
-
-    protected synchronized void suspendedByVM() {
-        super.suspendedByVM();
-    }
-
-    protected synchronized void resumedByVM() throws DebugException {
-        super.resumedByVM();
-    }
-
-    protected void setRunning(boolean running) {
-        super.setRunning( running );
-    }
-
-    protected void dropToFrame(IStackFrame frame) throws DebugException {
-        super.dropToFrame( frame );
-    }
-
-    protected synchronized void stepToFrame(IStackFrame frame) throws DebugException {
-        super.stepToFrame( frame );
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.jdt.internal.debug.core.model.JDIThread#newInstance(com.sun.jdi.ClassType, com.sun.jdi.Method, java.util.List)
-     */
-    public ObjectReference newInstance(ClassType receiverClass,
-                                       Method constructor,
-                                       List args) throws DebugException {
-        return super.newInstance( receiverClass,
-                                  constructor,
-                                  args );
-    }
-
+// I don't see the need for any of this custom stepOver stuff, why is it here?
     public synchronized void stepOver() throws DebugException {
 
         // Detection for active stackframe
@@ -264,9 +130,13 @@ public class DroolsThread extends JDIThread {
             return;
         }
 
+        setRunning( true );
+
         preserveStackFrames();
 
-        setRunning( true );
+        fireEvent( new DebugEvent( this,
+                                   DebugEvent.RESUME,
+                                   DebugEvent.STEP_OVER ) );
 
         try {
             getUnderlyingThread().resume();
@@ -318,8 +188,64 @@ public class DroolsThread extends JDIThread {
         super.resume();
     }
 
-    public void setInvokingMethod(boolean invoking) {
-        super.setInvokingMethod( invoking );
+    protected synchronized void disposeStackFrames() {
+        super.disposeStackFrames();
+    }
+
+    protected void terminated() {
+        super.terminated();
+    }
+
+    protected void removeCurrentBreakpoint(IBreakpoint bp) {
+        super.removeCurrentBreakpoint( bp );
+    }
+
+    protected synchronized void suspendedByVM() {
+        super.suspendedByVM();
+    }
+
+    protected synchronized void resumedByVM() throws DebugException {
+        super.resumedByVM();
+    }
+
+    protected void setRunning(boolean running) {
+        super.setRunning( running );
+    }
+
+    public void setInternalfRefreshChildren(boolean bool) {
+        try {
+            java.lang.reflect.Field field = JDIThread.class.getDeclaredField( "fRefreshChildren" );
+            field.setAccessible( true );
+            field.set( this,
+                       bool );
+        } catch ( Exception e ) {
+        }
+    }
+
+    public List getInternalfStackFrames() {
+        try {
+            java.lang.reflect.Field field = JDIThread.class.getDeclaredField( "fStackFrames" );
+
+            field.setAccessible( true );
+
+            return (List) field.get( this );
+        } catch ( Exception e ) {
+            return null;
+        }
+    }
+
+    private List getInternalUnderlyingFrames() throws DebugException {
+        try {
+            java.lang.reflect.Method method = JDIThread.class.getDeclaredMethod( "getUnderlyingFrames",
+                                                                                 null );
+
+            method.setAccessible( true );
+
+            return (List) method.invoke( this,
+                                         null );
+        } catch ( Exception e ) {
+            return null;
+        }
     }
 
 }

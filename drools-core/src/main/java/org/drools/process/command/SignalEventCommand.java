@@ -5,11 +5,28 @@ import org.drools.reteoo.ReteooWorkingMemory;
 
 public class SignalEventCommand implements Command<Object> {
 	
-	private long processInstanceId;
+	private long processInstanceId = -1;
 	private String eventType;
-	private Object event;
+	private Object event;	
 	
-	public long getProcessInstanceId() {
+    public SignalEventCommand() {
+    }   	
+	
+	public SignalEventCommand(String eventType,
+                              Object event) {
+        this.eventType = eventType;
+        this.event = event;
+    }	
+	
+    public SignalEventCommand(long processInstanceId,
+                              String eventType,
+                              Object event) {
+        this.processInstanceId = processInstanceId;
+        this.eventType = eventType;
+        this.event = event;
+    }
+
+    public long getProcessInstanceId() {
 		return processInstanceId;
 	}
 

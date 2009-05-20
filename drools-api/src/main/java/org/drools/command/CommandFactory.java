@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.drools.ProviderInitializationException;
 import org.drools.runtime.ObjectFilter;
+import org.drools.runtime.rule.FactHandle;
 
 /**
  * <p>
@@ -30,8 +31,8 @@ public class CommandFactory {
      * @param object
      * @return
      */
-    public static Command newInsertObject(Object object) {
-        return getCommandFactoryProvider().newInsertObject( object );
+    public static Command newInsert(Object object) {
+        return getCommandFactoryProvider().newInsert( object );
     }
 
     /**
@@ -41,10 +42,10 @@ public class CommandFactory {
      * @param outIdentifier
      * @return
      */
-    public static Command newInsertObject(Object object,
+    public static Command newInsert(Object object,
                                           String outIdentifier) {
-        return getCommandFactoryProvider().newInsertObject( object,
-                                                            outIdentifier );
+        return getCommandFactoryProvider().newInsert( object,
+                                                      outIdentifier );
     }
 
     /**
@@ -56,14 +57,34 @@ public class CommandFactory {
     public static Command newInsertElements(Iterable objects) {
         return getCommandFactoryProvider().newInsertElements( objects );
     }
-    
-    public static Command newGetObjects() {
-    	return getCommandFactoryProvider().newGetObjects( );
+
+    public static Command newRetract(FactHandle factHandle) {
+        return getCommandFactoryProvider().newRetract( factHandle );
     }
-    
+
+    public static Setter newSetter(String accessor,
+                                   String value) {
+        return getCommandFactoryProvider().newSetter( accessor,
+                                                      value );
+    }
+
+    public static Command newModify(FactHandle factHandle,
+                                    List<Setter> setters) {
+        return getCommandFactoryProvider().newModify( factHandle,
+                                                      setters );
+    }
+
+    public static Command newGetObject(FactHandle factHandle) {
+        return getCommandFactoryProvider().newGetObject( factHandle );
+    }
+
+    public static Command newGetObjects() {
+        return getCommandFactoryProvider().newGetObjects();
+    }
+
     public static Command newGetObjects(ObjectFilter filter) {
-    	return getCommandFactoryProvider().newGetObjects( filter );
-    }    
+        return getCommandFactoryProvider().newGetObjects( filter );
+    }
 
     /**
      * Sets the global.
@@ -142,14 +163,14 @@ public class CommandFactory {
         return getCommandFactoryProvider().newGetGlobal( identifier,
                                                          outIdentifier );
     }
-    
+
     public static Command newFireAllRules() {
         return getCommandFactoryProvider().newFireAllRules();
     }
-    
+
     public static Command newFireAllRules(int max) {
-        return getCommandFactoryProvider().newFireAllRules(max);
-    }    
+        return getCommandFactoryProvider().newFireAllRules( max );
+    }
 
     /**
      * Start a process
@@ -172,7 +193,31 @@ public class CommandFactory {
                                           Map<String, Object> parameters) {
         return getCommandFactoryProvider().newStartProcess( processId );
     }
+
+    public static Command newSignalEvent(String type,
+                                         Object event) {
+        return getCommandFactoryProvider().newSignalEvent( type,
+                                                           event );
+    }
+
+    public static Command newSignalEvent(long processInstanceId,
+                                         String type,
+                                         Object event) {
+        return getCommandFactoryProvider().newSignalEvent( processInstanceId,
+                                                           type,
+                                                           event );
+    }
+
+    public static Command newCompleteWorkItem(long workItemId,
+                                              Map<String, Object> results) {
+        return getCommandFactoryProvider().newCompleteWorkItem( workItemId,
+                                                                results );
+    }
     
+    public static Command newAbortWorkItem(long workItemId) {
+        return getCommandFactoryProvider().newAbortWorkItem( workItemId );
+    }    
+
     /**
      * Executes a query. The query results will be added to the ExecutionResults using the 
      * given identifier.
@@ -184,11 +229,12 @@ public class CommandFactory {
      * @return
      */
     public static Command newQuery(String identifier,
-                                    String name) {
-        return getCommandFactoryProvider().newQuery( identifier, name );
-        
+                                   String name) {
+        return getCommandFactoryProvider().newQuery( identifier,
+                                                     name );
+
     }
-    
+
     /**
      * Executes a query using the given parameters. The query results will be added to the 
      * ExecutionResults using the given identifier.
@@ -202,17 +248,19 @@ public class CommandFactory {
      * @return
      */
     public static Command newQuery(String identifier,
-                                    String name,
-                                    Object[] arguments) {
-        return getCommandFactoryProvider().newQuery( identifier, name, arguments );  
-    }    
-    
+                                   String name,
+                                   Object[] arguments) {
+        return getCommandFactoryProvider().newQuery( identifier,
+                                                     name,
+                                                     arguments );
+    }
+
     /**
      * This is a special composite command and will execute all the supplied commands in turn.
      * @param commands
      * @return
      */
-    public static Command newBatchExecution(List<? extends Command> commands) {
+    public static Command newBatchExecution(List< ? extends Command> commands) {
         return getCommandFactoryProvider().newBatchExecution( commands );
     }
 

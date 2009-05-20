@@ -1340,28 +1340,31 @@ public class ServiceImplementation
             Identity.instance().checkPermission( new PackageNameType( packageName ),
                                                  RoleTypes.PACKAGE_READONLY );
         }
-        //FIXME nheron
+
         SuggestionCompletionEngine result = null;
         ClassLoader originalCL = Thread.currentThread().getContextClassLoader();
         try {
             PackageItem pkg = repository.loadPackage( packageName );
-            final RuleBase rb=loadCacheRuleBase(pkg);
             BRMSSuggestionCompletionLoader loader = null;
-			if (this.ruleBaseCache.get(pkg.getUUID()) != null) {
-				ClassLoader cl = ((InternalRuleBase) rb).getRootClassLoader();
-				Thread.currentThread().setContextClassLoader(cl);
-				loader = new BRMSSuggestionCompletionLoader(cl);
-			} else {
-				loader = new BRMSSuggestionCompletionLoader();
-			}
 
-			result = loader.getSuggestionEngine(pkg);
-			
+            List<JarInputStream> jars = BRMSPackageBuilder.getJars( pkg );
+            if ( jars != null && !jars.isEmpty() ) {
+                ClassLoader cl = BRMSPackageBuilder.createClassLoader( jars );
+
+                Thread.currentThread().setContextClassLoader( cl );
+
+                loader = new BRMSSuggestionCompletionLoader( cl );
+            } else {
+                loader = new BRMSSuggestionCompletionLoader();
+            }
+
+            result = loader.getSuggestionEngine( pkg );
+
         } catch ( RulesRepositoryException e ) {
             log.error( e );
             throw new SerializableException( e.getMessage() );
         } finally {
-        	Thread.currentThread().setContextClassLoader( originalCL );
+            Thread.currentThread().setContextClassLoader( originalCL );
         }
         return result;
     }
@@ -1510,16 +1513,10 @@ public class ServiceImplementation
                                                  RoleTypes.PACKAGE_DEVELOPER );
         }
         BuilderResult[] result = null;
-        
-        //FIXME nheron
-        ClassLoader originalCL = Thread.currentThread().getContextClassLoader();
 
         try {
 
             AssetItem item = repository.loadAssetByUUID( asset.uuid );
-            final RuleBase rb=loadCacheRuleBase(item.getPackage());
-			ClassLoader cl = ((InternalRuleBase) rb).getRootClassLoader();
-			Thread.currentThread().setContextClassLoader(cl);
 
             ContentHandler handler = ContentManager.getHandler( item.getFormat() );// new
             // AssetContentFormatHandler();
@@ -1549,9 +1546,7 @@ public class ServiceImplementation
             result[0] = res;
             return result;
             
-        }         finally {
-        	Thread.currentThread().setContextClassLoader( originalCL );
-        }
+        } 
         return result;
     }
 

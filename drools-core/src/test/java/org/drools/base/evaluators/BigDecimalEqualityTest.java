@@ -261,6 +261,24 @@ public class BigDecimalEqualityTest extends TestCase {
         public int getIndex() {
             return 0;  //To change body of implemented methods use File | Settings | File Templates.
         }
+
+        public BigDecimal getBigDecimalValue(InternalWorkingMemory workingMemory,
+                                             Object object) {
+            return (BigDecimal) val;  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        public BigInteger getBigIntegerValue(InternalWorkingMemory workingMemory,
+                                             Object object) {
+            return (BigInteger) val;  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        public BigDecimal getBigDecimalValue(Object object) {
+            return (BigDecimal) val;  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        public BigInteger getBigIntegerValue(Object object) {
+            return (BigInteger) val;  //To change body of implemented methods use File | Settings | File Templates.
+        }
     }
     
 }

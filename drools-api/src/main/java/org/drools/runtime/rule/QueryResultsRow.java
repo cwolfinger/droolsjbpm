@@ -12,4 +12,11 @@ public interface QueryResultsRow {
      * @return
      */
     public Object get(String identifier);
+    
+    /**
+     * Return the FactHandle associated with the given identifier
+     * @param identifier
+     * @return
+     */
+    public FactHandle getFactHandle(String identifier);
 }

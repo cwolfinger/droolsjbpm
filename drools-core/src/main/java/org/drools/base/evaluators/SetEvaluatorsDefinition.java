@@ -21,10 +21,13 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.drools.base.BaseEvaluator;
 import org.drools.base.ValueType;
 import org.drools.common.InternalWorkingMemory;
+import org.drools.rule.VariableRestriction.DoubleVariableContextEntry;
 import org.drools.rule.VariableRestriction.ObjectVariableContextEntry;
 import org.drools.rule.VariableRestriction.VariableContextEntry;
 import org.drools.spi.Evaluator;
@@ -32,9 +35,9 @@ import org.drools.spi.FieldValue;
 import org.drools.spi.InternalReadAccessor;
 
 /**
- * This class defines all the set built in
- * evaluators like contains, memberOf, etc.
- *
+ * This class defines all the set built in evaluators like contains, memberOf,
+ * etc.
+ * 
  * @author etirelli
  */
 public class SetEvaluatorsDefinition
@@ -70,12 +73,6 @@ public class SetEvaluatorsDefinition
                                                         addEvaluator( ValueType.ARRAY_TYPE,
                                                                       NOT_EXCLUDES,
                                                                       ArrayContainsEvaluator.INSTANCE );
-                                                        addEvaluator( ValueType.ARRAY_TYPE,
-                                                                      MEMBEROF,
-                                                                      ArrayMemberOfEvaluator.INSTANCE );
-                                                        addEvaluator( ValueType.ARRAY_TYPE,
-                                                                      NOT_MEMBEROF,
-                                                                      ArrayNotMemberOfEvaluator.INSTANCE );
                                                         addEvaluator( ValueType.BIG_DECIMAL_TYPE,
                                                                       MEMBEROF,
                                                                       BigDecimalMemberOfEvaluator.INSTANCE );
@@ -255,9 +252,9 @@ public class SetEvaluatorsDefinition
                                   parameterText,
                                   Target.FACT,
                                   Target.FACT );
-        
+
     }
-    
+
     /**
      * @inheritDoc
      */
@@ -266,7 +263,7 @@ public class SetEvaluatorsDefinition
                                   final boolean isNegated,
                                   final String parameterText,
                                   final Target left,
-                                  final Target right ) {
+                                  final Target right) {
         return this.evaluators.getEvaluator( type,
                                              Operator.determineOperator( operatorId,
                                                                          isNegated ) );
@@ -288,9 +285,39 @@ public class SetEvaluatorsDefinition
         return this.evaluators.supportsType( type );
     }
 
-    /*  *********************************************************
-     *                Evaluator Implementations
-     *  *********************************************************
+    private static ObjectArrayContainsEvaluator objectArrayEvaluator    = new ObjectArrayContainsEvaluator();
+
+    private static Map<Class, ArrayContains>    primitiveArrayEvaluator = new HashMap() {
+                                                                            {
+                                                                                put( boolean[].class,
+                                                                                     new BooleanArrayContainsEvaluator() );
+                                                                                put( byte[].class,
+                                                                                     new ByteArrayContainsEvaluator() );
+                                                                                put( short[].class,
+                                                                                     new ShortArrayContainsEvaluator() );
+                                                                                put( char[].class,
+                                                                                     new CharArrayContainsEvaluator() );
+                                                                                put( int[].class,
+                                                                                     new IntegerArrayContainsEvaluator() );
+                                                                                put( long[].class,
+                                                                                     new LongArrayContainsEvaluator() );
+                                                                                put( float[].class,
+                                                                                     new FloatArrayContainsEvaluator() );
+                                                                                put( double[].class,
+                                                                                     new DoubleArrayContainsEvaluator() );
+                                                                            }
+                                                                        };
+
+    public static ArrayContains getArrayContains(Class cls) {
+        ArrayContains eval = primitiveArrayEvaluator.get( cls );
+        if ( eval == null ) {
+            eval = objectArrayEvaluator;
+        }
+        return eval;
+    }
+
+    /*
+     * Evaluator Implementations
      */
     public static class ArrayContainsEvaluator extends BaseEvaluator {
 
@@ -306,34 +333,39 @@ public class SetEvaluatorsDefinition
                                 final InternalReadAccessor extractor,
                                 final Object object1,
                                 final FieldValue object2) {
-            final Object value = object2.getValue();
-            final Object[] array = (Object[]) extractor.getValue( workingMemory,
-                                                                  object1 );
+            final Object array = extractor.getValue( workingMemory,
+                                                     object1 );
+
             if ( array == null ) return false;
-            return contains( array,
-                                              value );
+
+            return getArrayContains( array.getClass() ).contains( array,
+                                                                  object2 );
         }
 
         public boolean evaluateCachedRight(InternalWorkingMemory workingMemory,
                                            final VariableContextEntry context,
                                            final Object left) {
-            final Object value = context.declaration.getExtractor().getValue( workingMemory,
-                                                                              left );
-            final Object[] array = (Object[]) ((ObjectVariableContextEntry) context).right;
+            final Object array = ((ObjectVariableContextEntry) context).right;
             if ( array == null ) return false;
-            return contains( array,
-                                              value );
+
+            return getArrayContains( array.getClass() ).contains( array,
+                                                                  workingMemory,
+                                                                  context.declaration.getExtractor(),
+                                                                  left );
         }
 
         public boolean evaluateCachedLeft(InternalWorkingMemory workingMemory,
                                           final VariableContextEntry context,
                                           final Object right) {
-            final Object value = ((ObjectVariableContextEntry) context).left;
-            final Object[] array = (Object[]) context.extractor.getValue( workingMemory,
-                                                                          right );
+            final Object array = context.extractor.getValue( workingMemory,
+                                                             right );
+
             if ( array == null ) return false;
-            return contains( array,
-                                              value );
+
+            return getArrayContains( array.getClass() ).contains( array,
+                                                                  workingMemory,
+                                                                  context.declaration.getExtractor(),
+                                                                  context.reteTuple.get( context.declaration ).getObject() );
         }
 
         public boolean evaluate(InternalWorkingMemory workingMemory,
@@ -341,14 +373,15 @@ public class SetEvaluatorsDefinition
                                 final Object object1,
                                 final InternalReadAccessor extractor2,
                                 final Object object2) {
-            final Object value = extractor2.getValue( workingMemory,
-                                                      object2 );
-            final Object[] array = (Object[]) extractor1.getValue( workingMemory,
-                                                                   object1 );
+            final Object array = extractor1.getValue( workingMemory,
+                                                      object1 );
 
             if ( array == null ) return false;
-            return contains( array,
-                                              value );
+
+            return getArrayContains( array.getClass() ).contains( array,
+                                                                  workingMemory,
+                                                                  extractor2,
+                                                                  object2 );
         }
 
         public String toString() {
@@ -372,100 +405,39 @@ public class SetEvaluatorsDefinition
                                 final InternalReadAccessor extractor,
                                 final Object object1,
                                 final FieldValue object2) {
-            final Object value = object2.getValue();
-            final Object[] array = (Object[]) extractor.getValue( workingMemory,
-                                                                  object1 );
-            if ( array == null ) return true;
-            return !contains( array,
-                              value );
-        }
-
-        public boolean evaluateCachedRight(InternalWorkingMemory workingMemory,
-                                           final VariableContextEntry context,
-                                           final Object left) {
-            final Object value = context.declaration.getExtractor().getValue( workingMemory,
-                                                                              left );
-            final Object[] array = (Object[]) ((ObjectVariableContextEntry) context).right;
-            if ( array == null ) return true;
-            return !contains( array,
-                              value );
-        }
-
-        public boolean evaluateCachedLeft(InternalWorkingMemory workingMemory,
-                                          final VariableContextEntry context,
-                                          final Object right) {
-            final Object value = ((ObjectVariableContextEntry) context).left;
-            final Object[] array = (Object[]) context.extractor.getValue( workingMemory,
-                                                                          right );
-            if ( array == null ) return true;
-            return !contains( array,
-                              value );
-        }
-
-        public boolean evaluate(InternalWorkingMemory workingMemory,
-                                final InternalReadAccessor extractor1,
-                                final Object object1,
-                                final InternalReadAccessor extractor2,
-                                final Object object2) {
-            final Object value = extractor2.getValue( workingMemory,
-                                                      object2 );
-            final Object[] array = (Object[]) extractor1.getValue( workingMemory,
-                                                                   object1 );
-
-            if ( array == null ) return true;
-            return !contains( array,
-                              value );
-        }
-
-        public String toString() {
-            return "Array excludes";
-        }
-    }
-
-    public static class ArrayMemberOfEvaluator extends BaseEvaluator {
-        /**
-         *
-         */
-        private static final long     serialVersionUID = 400L;
-        public final static Evaluator INSTANCE         = new ArrayMemberOfEvaluator();
-
-        public ArrayMemberOfEvaluator() {
-            super( ValueType.ARRAY_TYPE,
-                   MEMBEROF );
-        }
-
-        public boolean evaluate(InternalWorkingMemory workingMemory,
-                                final InternalReadAccessor extractor,
-                                final Object object1,
-                                final FieldValue object2) {
-            final Object[] array = (Object[]) object2.getValue();
-            final Object value = extractor.getValue( workingMemory,
+            final Object array = extractor.getValue( workingMemory,
                                                      object1 );
+
             if ( array == null ) return false;
-            return contains( array,
-                             value );
+
+            return !getArrayContains( array.getClass() ).contains( array,
+                                                                   object2 );
         }
 
         public boolean evaluateCachedRight(InternalWorkingMemory workingMemory,
                                            final VariableContextEntry context,
                                            final Object left) {
-            final Object[] array = (Object[]) context.declaration.getExtractor().getValue( workingMemory,
-                                                                                           left );
-            final Object value = ((ObjectVariableContextEntry) context).right;
+            final Object array = ((ObjectVariableContextEntry) context).right;
             if ( array == null ) return false;
-            return contains( array,
-                             value );
+
+            return !getArrayContains( array.getClass() ).contains( array,
+                                                                   workingMemory,
+                                                                   context.declaration.getExtractor(),
+                                                                   left );
         }
 
         public boolean evaluateCachedLeft(InternalWorkingMemory workingMemory,
                                           final VariableContextEntry context,
                                           final Object right) {
-            final Object[] array = (Object[]) ((ObjectVariableContextEntry) context).left;
-            final Object value = context.extractor.getValue( workingMemory,
+            final Object array = context.extractor.getValue( workingMemory,
                                                              right );
+
             if ( array == null ) return false;
-            return contains( array,
-                             value );
+
+            return !getArrayContains( array.getClass() ).contains( array,
+                                                                   workingMemory,
+                                                                   context.declaration.getExtractor(),
+                                                                   context.getTuple().get( context.getVariableDeclaration() ).getObject() );
         }
 
         public boolean evaluate(InternalWorkingMemory workingMemory,
@@ -473,89 +445,25 @@ public class SetEvaluatorsDefinition
                                 final Object object1,
                                 final InternalReadAccessor extractor2,
                                 final Object object2) {
-            final Object[] array = (Object[]) extractor2.getValue( workingMemory,
-                                                                   object2 );
-            final Object value = extractor1.getValue( workingMemory,
+            final Object array = extractor1.getValue( workingMemory,
                                                       object1 );
 
             if ( array == null ) return false;
-            return contains( array,
-                             value );
-        }
 
-        public String toString() {
-            return "Array memberOf";
-        }
-    }
-
-    public static class ArrayNotMemberOfEvaluator extends BaseEvaluator {
-        /**
-         *
-         */
-        private static final long     serialVersionUID = 400L;
-        public final static Evaluator INSTANCE         = new ArrayNotMemberOfEvaluator();
-
-        public ArrayNotMemberOfEvaluator() {
-            super( ValueType.ARRAY_TYPE,
-                   NOT_MEMBEROF );
-        }
-
-        public boolean evaluate(InternalWorkingMemory workingMemory,
-                                final InternalReadAccessor extractor,
-                                final Object object1,
-                                final FieldValue object2) {
-            final Object[] array = (Object[]) object2.getValue();
-            final Object value = extractor.getValue( workingMemory,
-                                                     object1 );
-            if ( array == null ) return true;
-            return !contains( array,
-                              value );
-        }
-
-        public boolean evaluateCachedRight(InternalWorkingMemory workingMemory,
-                                           final VariableContextEntry context,
-                                           final Object left) {
-            final Object[] array = (Object[]) context.declaration.getExtractor().getValue( workingMemory,
-                                                                                           left );
-            final Object value = ((ObjectVariableContextEntry) context).right;
-            if ( array == null ) return true;
-            return !SetEvaluatorsDefinition.contains( array,
-                              value );
-        }
-
-        public boolean evaluateCachedLeft(InternalWorkingMemory workingMemory,
-                                          final VariableContextEntry context,
-                                          final Object right) {
-            final Object[] array = (Object[]) ((ObjectVariableContextEntry) context).left;
-            final Object value = context.extractor.getValue( workingMemory,
-                                                             right );
-            if ( array == null ) return true;
-            return !contains( array,
-                              value );
-        }
-
-        public boolean evaluate(InternalWorkingMemory workingMemory,
-                                final InternalReadAccessor extractor1,
-                                final Object object1,
-                                final InternalReadAccessor extractor2,
-                                final Object object2) {
-            final Object[] array = (Object[]) extractor2.getValue( workingMemory,
+            return !getArrayContains( array.getClass() ).contains( array,
+                                                                   workingMemory,
+                                                                   extractor2,
                                                                    object2 );
-            final Object value = extractor1.getValue( workingMemory,
-                                                      object1 );
-
-            if ( array == null ) return true;
-            return !SetEvaluatorsDefinition.contains( array,
-                              value );
         }
 
         public String toString() {
-            return "Array not memberOf";
+            return "Array not contains";
         }
     }
-    
+
+
     private static boolean contains(Object[] array,
-                             Object value) {
+                                    Object value) {
         for ( int i = 0; i < array.length; i++ ) {
             if ( array[i] == null && value == null || array[i] != null && array[i].equals( value ) ) {
                 return true;
@@ -590,13 +498,19 @@ public class SetEvaluatorsDefinition
                                 final FieldValue object2) {
             if ( object2.isNull() ) {
                 return false;
-            } else if ( !object2.isCollectionField() ) {
+            } else if ( object2.isCollectionField() ) {
+                final Collection col = (Collection) object2.getValue();
+                final Object value = extractor.getValue( workingMemory,
+                                                         object1 );
+                return col.contains( value );
+            } else if ( object2.getValue().getClass().isArray() ) {
+                return getArrayContains( object2.getValue().getClass() ).contains( object2.getValue(),
+                                                                                   workingMemory,
+                                                                                   extractor,
+                                                                                   object1 );
+            } else {
                 throw new ClassCastException( "Can't check if an attribute is member of an object of class " + object2.getValue().getClass() );
             }
-            final Collection col = (Collection) object2.getValue();
-            final Object value = extractor.getValue( workingMemory,
-                                                     object1 );
-            return col.contains( value );
         }
 
         public boolean evaluateCachedRight(InternalWorkingMemory workingMemory,
@@ -606,12 +520,18 @@ public class SetEvaluatorsDefinition
                                                                                left );
             if ( object == null ) {
                 return false;
-            } else if ( !(object instanceof Collection) ) {
+            } else if ( object instanceof Collection ) {
+                final Collection col = (Collection) object;
+                final Object value = ((ObjectVariableContextEntry) context).right;
+                return col.contains( value );
+            } else if ( object.getClass().isArray() ) {
+                return getArrayContains( object.getClass() ).contains( object,
+                                                                       workingMemory,
+                                                                       context.extractor,
+                                                                       context.object );
+            } else {
                 throw new ClassCastException( "Can't check if an attribute is member of an object of class " + object.getClass() );
             }
-            final Collection col = (Collection) object;
-            final Object value = ((ObjectVariableContextEntry) context).right;
-            return col.contains( value );
         }
 
         public boolean evaluateCachedLeft(InternalWorkingMemory workingMemory,
@@ -620,13 +540,19 @@ public class SetEvaluatorsDefinition
             final Object object = ((ObjectVariableContextEntry) context).left;
             if ( object == null ) {
                 return false;
-            } else if ( !(object instanceof Collection) ) {
+            } else if ( object instanceof Collection ) {
+                final Collection col = (Collection) object;
+                final Object value = context.extractor.getValue( workingMemory,
+                                                                 right );
+                return col.contains( value );
+            } else if ( object.getClass().isArray() ) {
+                return getArrayContains( object.getClass() ).contains( object,
+                                                                       workingMemory,
+                                                                       context.extractor,
+                                                                       right );
+            } else {
                 throw new ClassCastException( "Can't check if an attribute is member of an object of class " + object.getClass() );
             }
-            final Collection col = (Collection) object;
-            final Object value = context.extractor.getValue( workingMemory,
-                                                             right );
-            return col.contains( value );
         }
 
         public boolean evaluate(InternalWorkingMemory workingMemory,
@@ -638,13 +564,19 @@ public class SetEvaluatorsDefinition
                                                        object2 );
             if ( object == null ) {
                 return false;
-            } else if ( !(object instanceof Collection) ) {
+            } else if ( object instanceof Collection ) {
+                final Collection col = (Collection) object;
+                final Object value = extractor1.getValue( workingMemory,
+                                                          object1 );
+                return col.contains( value );
+            } else if ( object.getClass().isArray() ) {                
+                return getArrayContains( object.getClass() ).contains( object,
+                                                                      workingMemory,
+                                                                      extractor1,
+                                                                      object1 );                
+            } else {
                 throw new ClassCastException( "Can't check if an attribute is member of an object of class " + object.getClass() );
             }
-            final Collection col = (Collection) object;
-            final Object value = extractor1.getValue( workingMemory,
-                                                      object1 );
-            return col.contains( value );
         }
 
         public abstract String toString();
@@ -672,13 +604,19 @@ public class SetEvaluatorsDefinition
                                 final FieldValue object2) {
             if ( object2.isNull() ) {
                 return false;
-            } else if ( !object2.isCollectionField() ) {
+            } else if ( object2.isCollectionField() ) {
+                final Collection col = (Collection) object2.getValue();
+                final Object value = extractor.getValue( workingMemory,
+                                                         object1 );
+                return !col.contains( value );
+            } else if ( object2.getValue().getClass().isArray() ) {
+                return !getArrayContains( object2.getValue().getClass() ).contains( object2.getValue(),
+                                                                                   workingMemory,
+                                                                                   extractor,
+                                                                                   object1 );
+            } else {
                 throw new ClassCastException( "Can't check if an attribute is not member of an object of class " + object2.getValue().getClass() );
             }
-            final Collection col = (Collection) object2.getValue();
-            final Object value = extractor.getValue( workingMemory,
-                                                     object1 );
-            return !col.contains( value );
         }
 
         public boolean evaluateCachedRight(InternalWorkingMemory workingMemory,
@@ -688,12 +626,18 @@ public class SetEvaluatorsDefinition
                                                                                left );
             if ( object == null ) {
                 return false;
-            } else if ( !(object instanceof Collection) ) {
+            } else if ( object instanceof Collection ) {
+                final Collection col = (Collection) object;
+                final Object value = ((ObjectVariableContextEntry) context).right;
+                return !col.contains( value );
+            } else if ( object.getClass().isArray() ) {
+                return !getArrayContains( object.getClass() ).contains( object,
+                                                                       workingMemory,
+                                                                       context.extractor,
+                                                                       context.object );
+            } else {
                 throw new ClassCastException( "Can't check if an attribute is not member of an object of class " + object.getClass() );
             }
-            final Collection col = (Collection) object;
-            final Object value = ((ObjectVariableContextEntry) context).right;
-            return !col.contains( value );
         }
 
         public boolean evaluateCachedLeft(InternalWorkingMemory workingMemory,
@@ -702,13 +646,19 @@ public class SetEvaluatorsDefinition
             final Object object = ((ObjectVariableContextEntry) context).left;
             if ( object == null ) {
                 return false;
-            } else if ( !(object instanceof Collection) ) {
+            } else if ( object instanceof Collection ) {
+                final Collection col = (Collection) object;
+                final Object value = context.extractor.getValue( workingMemory,
+                                                                 right );
+                return !col.contains( value );
+            } else if ( object.getClass().isArray() ) {
+                return !getArrayContains( object.getClass() ).contains( object,
+                                                                       workingMemory,
+                                                                       context.extractor,
+                                                                       right );
+            } else {
                 throw new ClassCastException( "Can't check if an attribute is not member of an object of class " + object.getClass() );
             }
-            final Collection col = (Collection) object;
-            final Object value = context.extractor.getValue( workingMemory,
-                                                             right );
-            return !col.contains( value );
         }
 
         public boolean evaluate(InternalWorkingMemory workingMemory,
@@ -720,13 +670,20 @@ public class SetEvaluatorsDefinition
                                                        object2 );
             if ( object == null ) {
                 return false;
-            } else if ( !(object instanceof Collection) ) {
+            } else if ( object instanceof Collection ) {
+                final Collection col = (Collection) object;
+                final Object value = extractor1.getValue( workingMemory,
+                                                          object1 );
+                return !col.contains( value );
+            } else if ( object.getClass().isArray() ) {                
+                return !getArrayContains( object.getClass() ).contains( object,
+                                                                      workingMemory,
+                                                                      extractor1,
+                                                                      object1 );                
+            } else {
                 throw new ClassCastException( "Can't check if an attribute is not member of an object of class " + object.getClass() );
             }
-            final Collection col = (Collection) object;
-            final Object value = extractor1.getValue( workingMemory,
-                                                      object1 );
-            return !col.contains( value );
+           
         }
 
         public abstract String toString();
@@ -1236,5 +1193,390 @@ public class SetEvaluatorsDefinition
         public String toString() {
             return "String not memberOf";
         }
+    }
+
+    public interface ArrayContains {
+        Class getArrayType();
+
+        boolean contains(Object array,
+                         FieldValue value);
+
+        boolean contains(Object array,
+                         InternalWorkingMemory workingMemory,
+                         InternalReadAccessor accessor,
+                         Object object);
+        //        
+        // boolean member(FieldValue array,
+        // Object object);
+        //        
+        // boolean member(Object object,
+        // InternalWorkingMemory workingMemory,
+        // InternalReadAccessor accessor,
+        // Object array);
+    }
+
+    public static class BooleanArrayContainsEvaluator
+        implements
+        ArrayContains {
+
+        public boolean contains(Object array,
+                                FieldValue value) {
+            boolean[] boolArray = (boolean[]) array;
+
+            for ( int i = 0, length = boolArray.length; i < length; i++ ) {
+                if ( boolArray[i] == value.getBooleanValue() ) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public boolean contains(Object array,
+                                InternalWorkingMemory workingMemory,
+                                InternalReadAccessor accessor,
+                                Object object) {
+            boolean[] boolArray = (boolean[]) array;
+
+            for ( int i = 0, length = boolArray.length; i < length; i++ ) {
+                if ( boolArray[i] == accessor.getBooleanValue( workingMemory,
+                                                               object ) ) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private boolean contains(byte[] array,
+                                 byte value,
+                                 boolean negate) {
+            for ( int i = 0, length = array.length; i < length; i++ ) {
+                if ( array[i] == value ) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public Class getArrayType() {
+            return boolean[].class;
+        }
+
+    }
+
+    public static class ByteArrayContainsEvaluator
+        implements
+        ArrayContains {
+
+        public boolean contains(Object array,
+                                FieldValue value) {
+            return contains( (byte[]) array,
+                             value.getByteValue() );
+        }
+
+        public boolean contains(Object array,
+                                InternalWorkingMemory workingMemory,
+                                InternalReadAccessor accessor,
+                                Object object) {
+            return contains( (byte[]) array,
+                             accessor.getByteValue( workingMemory,
+                                                    object ) );
+        }
+
+        private boolean contains(byte[] array,
+                                 byte value) {
+            for ( int i = 0, length = array.length; i < length; i++ ) {
+                if ( array[i] == value ) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public Class getArrayType() {
+            return byte[].class;
+        }
+
+    }
+
+    public static class ShortArrayContainsEvaluator
+        implements
+        ArrayContains {
+
+        public boolean contains(Object array,
+                                FieldValue value) {
+            return contains( (short[]) array,
+                             value.getShortValue() );
+        }
+
+        public boolean contains(Object array,
+                                InternalWorkingMemory workingMemory,
+                                InternalReadAccessor accessor,
+                                Object object) {
+            return contains( (short[]) array,
+                             accessor.getShortValue( workingMemory,
+                                                     object ) );
+        }
+
+        private boolean contains(short[] array,
+                                 short value) {
+            for ( int i = 0, length = array.length; i < length; i++ ) {
+                if ( array[i] == value ) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public Class getArrayType() {
+            return short[].class;
+        }
+    }
+
+    public static class CharArrayContainsEvaluator
+        implements
+        ArrayContains {
+
+        public boolean contains(Object array,
+                                FieldValue value) {
+            return contains( (char[]) array,
+                             value.getCharValue() );
+        }
+
+        public boolean contains(Object array,
+                                InternalWorkingMemory workingMemory,
+                                InternalReadAccessor accessor,
+                                Object object) {
+            return contains( (char[]) array,
+                             accessor.getCharValue( workingMemory,
+                                                    object ) );
+        }
+
+        private boolean contains(char[] array,
+                                 char value) {
+            for ( int i = 0, length = array.length; i < length; i++ ) {
+                if ( array[i] == value ) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public Class getArrayType() {
+            return char[].class;
+        }
+
+    }
+
+    public static class IntegerArrayContainsEvaluator
+        implements
+        ArrayContains {
+
+        public boolean contains(Object array,
+                                FieldValue value) {
+            return contains( (int[]) array,
+                             value.getIntValue() );
+        }
+
+        public boolean contains(Object array,
+                                InternalWorkingMemory workingMemory,
+                                InternalReadAccessor accessor,
+                                Object object) {
+            return contains( (int[]) array,
+                             accessor.getIntValue( workingMemory,
+                                                   object ) );
+        }
+
+        private boolean contains(int[] array,
+                                 int value) {
+            for ( int i = 0, length = array.length; i < length; i++ ) {
+                if ( array[i] == value ) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public Class getArrayType() {
+            return int[].class;
+        }
+
+    }
+
+    public static class LongArrayContainsEvaluator
+        implements
+        ArrayContains {
+
+        public boolean contains(Object array,
+                                FieldValue value) {
+            return contains( (long[]) array,
+                             value.getLongValue() );
+        }
+
+        public boolean contains(Object array,
+                                InternalWorkingMemory workingMemory,
+                                InternalReadAccessor accessor,
+                                Object object) {
+            return contains( (long[]) array,
+                             accessor.getLongValue( workingMemory,
+                                                    object ) );
+        }
+
+        private boolean contains(long[] array,
+                                 long value) {
+            for ( int i = 0, length = array.length; i < length; i++ ) {
+                if ( array[i] == value ) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public Class getArrayType() {
+            return long[].class;
+        }
+
+    }
+
+    public static class FloatArrayContainsEvaluator
+        implements
+        ArrayContains {
+
+        public boolean contains(Object array,
+                                FieldValue value) {
+            return contains( (float[]) array,
+                             value.getFloatValue() );
+        }
+
+        public boolean contains(Object array,
+                                InternalWorkingMemory workingMemory,
+                                InternalReadAccessor accessor,
+                                Object object) {
+            return contains( (float[]) array,
+                             accessor.getFloatValue( workingMemory,
+                                                     object ) );
+        }
+
+        private boolean contains(float[] array,
+                                 float value) {
+            for ( int i = 0, length = array.length; i < length; i++ ) {
+                if ( array[i] == value ) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public Class getArrayType() {
+            return float[].class;
+        }
+    }
+
+    public static class DoubleArrayContainsEvaluator
+        implements
+        ArrayContains {
+
+        public boolean contains(Object array,
+                                FieldValue fieldValue) {
+            return contains( (double[]) array,
+                             fieldValue.getDoubleValue() );
+        }
+
+        public boolean contains(Object array,
+                                InternalWorkingMemory workingMemory,
+                                InternalReadAccessor accessor,
+                                Object object) {
+            return contains( (double[]) array,
+                             accessor.getDoubleValue( workingMemory,
+                                                      object ) );
+        }
+
+        // public boolean member(FieldValue array,
+        // Object object) {
+        // return contains( (double[]) array.getValue(),
+        // object );
+        // }
+        //
+        // public boolean member(Object object,
+        // InternalWorkingMemory workingMemory,
+        // InternalReadAccessor accessor,
+        // Object array) {
+        // return contains( (double[]) accessor.getValue( workingMemory,
+        // object ),
+        // object );
+        // }
+
+        private boolean contains(double[] array,
+                                 double value) {
+            for ( int i = 0, length = array.length; i < length; i++ ) {
+                if ( array[i] == value ) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public Class getArrayType() {
+            return double[].class;
+        }
+    }
+
+    public static class ObjectArrayContainsEvaluator
+        implements
+        ArrayContains {
+
+        public boolean contains(Object array,
+                                FieldValue fieldValue) {
+            return contains( (Object[]) array,
+                             fieldValue.getValue() );
+        }
+
+        public boolean contains(Object array,
+                                InternalWorkingMemory workingMemory,
+                                InternalReadAccessor accessor,
+                                Object object) {
+            return contains( (Object[]) array,
+                             accessor.getValue( workingMemory,
+                                                object ) );
+        }
+
+        private boolean contains(Object[] array,
+                                 Object value) {
+            for ( int i = 0, length = array.length; i < length; i++ ) {
+                if ( array[i].equals( value ) ) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public Class getArrayType() {
+            return Object[].class;
+        }
+
+        // public boolean member(FieldValue array,
+        // Object object) {
+        // return contains( (Object[]) array.getValue(),
+        // object );
+        // }
+        //
+        // public boolean member(Object object,
+        // InternalWorkingMemory workingMemory,
+        // InternalReadAccessor accessor,
+        // Object array) {
+        // return contains( (Object[]) accessor.getValue( workingMemory,
+        // object ),
+        // object );
+        // }
     }
 }

@@ -137,7 +137,7 @@ options {k=2; backtrack=true; memoize=true;}
      	/** This will take a RecognitionException, and create a sensible error message out of it */
      	public String createErrorMessage(RecognitionException e)
         {
-		StringBuffer message = new StringBuffer();		
+		StringBuilder message = new StringBuilder();		
                 message.append( source + ":"+e.line+":"+e.charPositionInLine+" ");
                 if ( e instanceof MismatchedTokenException ) {
                         MismatchedTokenException mte = (MismatchedTokenException)e;
@@ -1077,7 +1077,8 @@ JavaIDDigit
        '\u0d66'..'\u0d6f' |
        '\u0e50'..'\u0e59' |
        '\u0ed0'..'\u0ed9' |
-       '\u1040'..'\u1049'
+       '\u1040'..'\u1049' 
+    |   '\uff10'..'\uff19'
    ;
 
 WS  :  (' '|'\r'|'\t'|'\u000C'|'\n') {$channel=HIDDEN;}

@@ -176,7 +176,7 @@ public class AntlrDSLMappingEntry extends AbstractDSLMappingEntry {
      */
     public void setValuePattern(String value) {
         if ( value != null ) {
-            StringBuffer valuePatternBuffer = new StringBuffer();
+            StringBuilder valuePatternBuffer = new StringBuilder();
 
             if ( headMatchGroupAdded ) {
                 valuePatternBuffer.append( "$1" );
@@ -189,9 +189,10 @@ public class AntlrDSLMappingEntry extends AbstractDSLMappingEntry {
                 int tailIndex = getVariables().get( TAIL_TAG ).intValue();
                 valuePatternBuffer.append( "$" + tailIndex );
             }
-            // unescaping the special character #
+            // unescaping the special character # and creating the line breaks
             String pat = valuePatternBuffer.toString().replaceAll( "\\\\#",
-                                                                   "#" );
+                                                                   "#" ).replaceAll( "\\\\n", 
+                                                                                     "\n" );
             for ( Map.Entry<String, Integer> entry : getVariables().entrySet() ) {
                 pat = pat.replaceAll( "\\{" + entry.getKey() + "(:(.*?))?\\}",
                                       "\\$" + entry.getValue() );

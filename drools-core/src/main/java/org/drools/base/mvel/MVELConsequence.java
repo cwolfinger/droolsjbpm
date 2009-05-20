@@ -67,9 +67,6 @@ public class MVELConsequence implements Consequence, MVELCompileable,
 
 		CompiledExpression compexpr = (CompiledExpression) this.expr;
 
-		// Receive breakpoints from debugger
-		MVELDebugHandler.prepare();
-
 		pkg = knowledgeHelper.getWorkingMemory().getRuleBase().getPackage(
 				knowledgeHelper.getRule().getPackage());
 
@@ -79,18 +76,19 @@ public class MVELConsequence implements Consequence, MVELCompileable,
 				((InternalRuleBase) workingMemory.getRuleBase())
 						.getRootClassLoader());
 
-		if (MVELDebugHandler.isDebugMode()) {
-			if (MVELDebugHandler.verbose) {
-				System.out.println("Executing expression " + compexpr.getSourceName());
-				System.out.println(DebugTools.decompile(compexpr));
-			}
-			MVEL.executeDebugger(compexpr, null, factory);
-		} else {
-			MVEL.executeExpression(compexpr, null, factory);
+		try {
+	        if (MVELDebugHandler.isDebugMode()) {
+	            if (MVELDebugHandler.verbose) {
+	                System.out.println("Executing expression " + compexpr.getSourceName());
+	                System.out.println(DebugTools.decompile(compexpr));
+	            }
+	            MVEL.executeDebugger(compexpr, null, factory);
+	        } else {
+	            MVEL.executeExpression(compexpr, null, factory);
+	        }
+		} finally {
+	        Thread.currentThread().setContextClassLoader(tempClassLoader);
 		}
-
-		Thread.currentThread().setContextClassLoader(tempClassLoader);
-
 	}
 
 	public Serializable getCompExpr() {
