@@ -7,7 +7,7 @@
   <parent>
     <artifactId>drools-docs</artifactId>
     <groupId>org.drools</groupId>
-    <version>5.0.1.FINAL</version>
+    <version>5.0.1</version>
   </parent>  
   
     <artifactId>drools-docs-flow</artifactId>
