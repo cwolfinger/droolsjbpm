@@ -36,8 +36,8 @@ public class SimpleDegree extends Degree {
 		return new SimpleDegree(0);
 	}
 	
-	public static IDegree UNKNOWN() {
-		return FALSE();
+	public static IDegree UNKNOWN(boolean cwa) {
+		return cwa ? FALSE() : TRUE();
 	}
 	
 	
@@ -60,6 +60,10 @@ public class SimpleDegree extends Degree {
 	
 	public String toString() {
 		return ""+value;
+	}
+
+	public float getConfidence(boolean cwa) {
+		return Math.abs(this.value - UNKNOWN(cwa).getDegree().value);
 	}
 	
 }

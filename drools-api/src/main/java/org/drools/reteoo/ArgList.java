@@ -156,12 +156,7 @@ public class ArgList {
 	}
 	
 	
-	public static class Jolly {
-		
-		public Jolly() {
-			
-		}
-	}
+	
 
 
 	

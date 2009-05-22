@@ -64,7 +64,9 @@ public interface WorkingMemoryEntryPoint {
     
     
     
-    void inject(String ruleName, ArgList args, ConstraintKey key, IDegree degree);
+    void inject(String ruleName, ArgList args, ConstraintKey key, IDegree degree, boolean killer);
+    
+    void reject(String ruleName, ArgList args, ConstraintKey key, IDegree degree, boolean killer);
     
     
 
