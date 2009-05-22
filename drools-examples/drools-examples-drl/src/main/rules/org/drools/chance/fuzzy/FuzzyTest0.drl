@@ -1,0 +1,39 @@
+package org.drools.examples.chance.fuzzyTest
+ 
+ 
+ 
+import org.drools.chance.fuzzyTest.Room;
+import java.io.FileWriter;
+
+
+global FileWriter writer;
+
+rule "Hot v1"
+	when 
+		$r : Room( temperature ~hot )		
+	then
+		
+		writer.write("\n\n");
+		writer.write("Room is hot in degree "+drools.getConsequenceDegree()+"\n");
+		writer.write("Evaluator is called directly\n");
+end
+
+rule "Hot v2"
+	when 
+		$r : Room( temperature ~seems hot )		
+	then
+		
+		writer.write("\n\n");			             
+		writer.write("Room is hot in degree "+drools.getConsequenceDegree()+"\n");
+		writer.write("Evaluator from temp domain, requires a method in Room\n");
+end
+
+rule "Hot v3"
+	when 
+		$r : Room( temperature ~seems "warm" )		
+	then
+		
+		writer.write("\n\n");
+		writer.write("Room is warm in degree "+drools.getConsequenceDegree()+"\n");
+		writer.write("Evaluator from temp domain, runtime call (no method in room)\n");
+end

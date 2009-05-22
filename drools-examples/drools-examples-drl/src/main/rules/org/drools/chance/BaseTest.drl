@@ -1,0 +1,117 @@
+package org.drools.chance;
+
+/*
+import org.drools.chance.Test.Trigger;
+import org.drools.chance.Test.Exercise;
+import org.drools.chance.Test.Person;
+import org.drools.chance.Test.Book;
+*/
+import java.io.FileWriter;
+
+
+global FileWriter writer;
+
+
+declare Message
+	status	: int	@key
+	message : String
+end
+
+declare Person
+	name	: String @key
+	age		: int
+end
+
+declare Book
+	title	: String @key
+	owner	: Person 
+end
+
+declare Exercise
+	topic	: String @key
+end
+
+rule "Trigger"
+	when
+		eval(true || false);		
+	then
+		writer.write("\n A Message with status = 0 will hold the message Hello!");
+			Message m = new Message();
+				m.setStatus(0);
+		
+		drools.inject(m,"org.drools.chance.Message.message","equals","Hello!",true);
+end
+
+
+
+
+rule "Synch"
+	when
+		$msgRef : Message( message ~equals "Hello!" ) @( id="MsgId")
+	then
+		writer.write("\n\nSynched rule fires at "+drools.getConsequenceDegree());
+		writer.write("\nDeclared message is "+$msgRef.getMessage()+ " but is thought to be Hello!");
+		writer.write("\n"+drools.getEvaluation().expand()+"\n\n");
+		
+		
+		Person p = new Person();
+			p.setName("davide");
+			//p.setAge(27);
+		
+		
+		Book b = new Book();
+			b.setTitle("Drools Manual");
+			//b.setOwner(p);				
+		writer.write("\n Now stating Davide owns a Drools Manual");
+		
+		//FIXME Until lexical analysis is done properly, args must be defined in two steps
+		Object[] args = new Object[] { p , b }; 
+		drools.inject(args,"org.drools.chance.Book.owner","equals","$p");
+		
+end
+
+
+
+
+
+
+rule "BetaSynch"
+	when		
+		$p : Person( $n : name == "davide" , $a : age > 25 || < 18)			
+		$b : Book(  owner ~equals $p )	
+	then
+		writer.write("\n\n\nBook has no a-priori known owner\n");
+		writer.write("Book.owner = "+$b.getOwner()+"\n");
+		writer.write("but is ack'd as being "+$n+"("+$a+")\n");
+		writer.write("Info comes from rule, evaluation is "+drools.getConsequenceDegree()+"\n");
+		writer.write("\n"+drools.getEvaluation().expand()+"\n");
+		
+		
+		
+		writer.write("\n\nSo, an exceptional exercise will be done\n\n");
+		Exercise e = new Exercise();
+			e.setTopic("Rule Programming");
+		drools.inject(e,"Exceptional");
+end
+
+
+
+
+//This is a rule with false implication, meaning that all conclusions are undetermined
+
+rule "Exceptional"
+
+	prior (0)
+	
+		//default : MP could wait for all injections
+		//this ensures that non-injected objects are passed
+		//should rename in something more readable
+	filter_str "org.drools.reteoo.filters.AlwaysPassFilterStrategy"	
+	
+	when
+		$e : Exercise( $t : topic )		
+	then
+		writer.write("\nEx "+ $t +" can be done? Answer is " + drools.getConsequenceDegree());	
+		writer.write(drools.getEvaluation().expand());
+end
+

@@ -1,0 +1,159 @@
+package org.drools.chance.impliesTest
+ 
+ 
+
+import java.io.FileWriter;
+import org.drools.reteoo.Jolly;
+
+import org.drools.chance.impliesTest.ImpliesTest1.Bird;
+
+global FileWriter writer;
+
+
+/*
+Classes are defined in main 
+
+declare Bird
+	id    : Integer @key
+	isflier	  : Boolean
+	isPenguin : Boolean			
+end
+
+*/
+
+
+/***************************************************
+	 This example shows two features:
+	 
+	 	- Induction of implications
+	 		
+	 	
+	 	- Exceptions
+	 		
+	
+Propagation Policy is : wait for all injecting
+						rules to fire											
+***************************************************/
+
+
+
+/*
+	This rule learns the implication Bird -> Fly
+	Using an induction operator
+*/
+rule "Induct_BirdsFly"	
+				
+	entail_mode "equivalence"
+	
+	when
+		
+		// bird1 : flies == true
+		// bird2 : flies == true
+		// bird3 : flies == false		//actually a Penguin
+		// bird4 : flies == true
+		
+		
+		// So, it is possible / probable / likely / ...
+		// (depends on the semantics of the degrees)
+		// that any chosen bird flies in degree 3/4				
+		forany (
+					(implies
+						$b : Bird()
+						Bird( this == @(cut="true") $b , isFlier == true)
+					)	
+														
+			weight		Bird( id == @(cut="true") $b.id , isFlier != @(cut= "true") null ) 	
+		)	
+		
+		 
+				
+	then
+		writer.write("Induct_BirdsFly "+drools.getEvaluation().expand()+"\n\n");
+		
+		// "*" means that the information will be valid for ANY individual bird 
+		Jolly star = new Jolly();
+		drools.inject(star,"Deduct_BirdsFly");
+end
+
+
+/*
+	This rules USES the implication Bird -> Fly	
+	which is unknown a priori, but will be set by induction
+*/
+rule "Deduct_BirdsFly"
+		
+	prior ("unknown")	
+	entail_mode "implication"
+				
+	when		
+		$b : Bird( $id : id )							 			
+	then
+		writer.write("Contrib from Implication B->F for bird " + $id + " : degree " + drools.getConsequenceDegree() +"\n\n\n");
+		//debug purpose
+		if ($id < 0 || $id > 10)
+			writer.write(drools.getEvaluation().expand()+"\n\n");
+		
+		//The rule entails information on the evaluation of the "isFlier" property for $b
+								 
+		drools.injectId($b,"idFlier");
+				
+end
+
+
+/*
+	This is an exception: penguins do not fly
+	When the exception is false, it will reject with "unknown", effectively doing nothing
+	
+	Notice that you can remove this rule without altering the other rules
+	(not just "enable false" as the #### dependency analysis wouldn't notice it)
+*/
+rule "Exception_BirdsFly"	
+	
+	entail_mode "implication"			//Essential to handle non-exceptional cases normally
+	
+	when		
+		$b : Bird( $id : id, isPenguin == true )							 					
+	then
+		writer.write("Penguinity exception test for "+$id+" : " + drools.getConsequenceDegree() + "\n");
+		
+		// boolean "killer": when true, the more "certain" the degree (whatever it means) 
+		// the more it will override other evaluations
+		
+		// Undercutting defeater :  P => not (B -> F)
+		// This alone will prevent the contrib of 3/4 to flow from B to F in case P is true
+		drools.reject($b,"Deduct_BirdsFly",true);
+		writer.write("Implication B-> will be killed by the negated of " + drools.getConsequenceDegree() + "\n");
+				
+		// Rebutting defeater : P => not F
+		// This will set the conclusion F to false for penguins 				
+		drools.rejectId($b,"idFlier",true);
+		writer.write("Consequence F will be set to the negated of " + drools.getConsequenceDegree() + "\n\n\n\n");		
+				
+end
+
+
+/*
+	This rule uses the consequence F.
+	Bird 99 is a bird	   (isFlier == null)				-> F 3/4
+	Bird -10 is a penguin  (isFlier == null | false)		-> F 0
+	Bird 1031 is a bird    (isFlier == true)				-> F 3/4	(1 with 3-valued degrees and up)
+		last one will also update the degree of B->F to 4/5
+	Bird 100 is a bird	   (isFlier == null)				-> F 4/5	!!
+	
+	Known Issues 
+		- using simple degrees it is not possible to 
+		  model lower bounds
+		- to avoid deadlocks, an evaluator has to be used  
+*/
+
+rule "BirdsFly" 
+	 
+	
+	entail_mode "equivalence"
+	
+	when		
+		$b : Bird( $id : id , this ~flies @( id="idFlier" ) )
+	then
+		writer.write("Bird " +$id+  " : FLIES at degree " + drools.getConsequenceDegree() +"\n");
+		writer.write("++++CONCLUSION : " +drools.getEvaluation().expand()+"\n\n");
+end

@@ -1,0 +1,29 @@
+package org.drools.chance.impliesTest
+ 
+ 
+
+import java.io.FileWriter;
+
+global FileWriter writer;
+
+
+
+
+declare Foo1
+end
+
+declare Foo2
+end 
+
+
+rule "TestImplication"
+	when
+		(implies
+			Foo1( this ~random )
+			Foo2( this ~random )
+		) 
+				
+	then
+		writer.write("Implication "+drools.getEvaluation().expand()+"\n");
+		
+end

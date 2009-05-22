@@ -1,0 +1,70 @@
+package org.drools.examples.chance
+ 
+import org.drools.chance.fuzzyTest.Room;
+import org.drools.chance.fuzzyTest.Fan;
+import java.io.FileWriter;
+
+
+global FileWriter writer;
+
+
+
+
+rule "Cold"
+	when 
+		$r : Room( temperature ~cold )		
+	then
+		drools.inject(new Fan(),"org.drools.chance.fuzzyTest.Fan.speed","seems","stop");	              
+end
+
+rule "Warm"
+	when
+		$r : Room( temperature ~warm )
+	then
+		drools.inject(new Fan(),"org.drools.chance.fuzzyTest.Fan.speed","seems","slow");
+end
+
+
+
+rule "Hot"
+	when
+		$r : Room( temperature ~hot)
+	then
+		drools.inject(new Fan(),"org.drools.chance.fuzzyTest.Fan.speed","seems","fast");
+end
+
+
+
+
+
+
+
+
+
+rule "Fan1" 
+	when 
+		$f : Fan( speed ~seems "fast")
+	then
+		$f.setSpeed("fast",drools.getConsequenceDegree());
+		writer.write("\n\n ********** Set speed to fast ****** \n\n" + drools.getConsequenceDegree());
+end
+
+
+rule "Fan2" 
+	when 
+		$f : Fan( speed ~seems "slow")
+	then
+		$f.setSpeed("slow",drools.getConsequenceDegree());
+		writer.write("\n\n ********** Set speed to slow ****** \n\n" + drools.getConsequenceDegree());
+end
+
+
+
+rule "Fan3" 
+	when 
+		$f : Fan( speed ~seems "stop")
+	then
+		$f.setSpeed("stop",drools.getConsequenceDegree());
+		writer.write("\n\n ********** Set speed to stop ****** \n\n" + drools.getConsequenceDegree());	
+end
+

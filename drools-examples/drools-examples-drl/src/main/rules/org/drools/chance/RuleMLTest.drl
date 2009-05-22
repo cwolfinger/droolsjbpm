@@ -1,0 +1,25 @@
+package org.drools.chance;
+
+import java.io.FileWriter;
+
+
+global FileWriter writer;
+
+
+declare Message
+	status	: int	@key
+	message : String
+end
+
+
+rule "Simple"
+
+	prior ( 0.7 )
+
+	when
+		$m : Message( $s : status == 0 || message == "Hello" ) @(id="MsgId")		
+	then
+		System.out.println();
+end
+
+
