@@ -1,29 +1,195 @@
-package org.drools.examples.chance
+package org.drools.chance;
  
 
-import org.drools.examples.chance.TestGEB.Message;
+import org.drools.chance.TestGEB.Message;
+import org.drools.chance.TestGEB.Foo;
 import java.io.FileWriter;
 
 
 global FileWriter writer;
 
+
+rule "System check"   
+    when
+    then
+        System.out.println("Rule: Drools is up");
+end
+
+
+
+
+
+/*
+
+rule ConstrParams
+	when
+		Message( 
+			status == 
+				@( id="k1" )  
+				0
+							
+			& @( id="k9" ) 
+							
+			status random
+			 											
+			&&
+						
+			status != 0
+								
+		) @( id="k2" )
+		
+		and @( id="k3" )
+								
+		Message(		 
+			status > 
+				@( id="k4" )
+			-1				
+		) @( id="k5" ) 
+		
+		
+		
+	then
+		writer.write("Source1 Rule fired " + drools.getEvaluation().expand()+"\n\n");
+		
+end
+
+
+*/
+
+
+
+
+/*
+rule Source1
+	when
+		Message( status == 0 !)
+	then
+		writer.write("Source1 Rule fired " + drools.getEvaluation().expand()+"\n\n");
+			
+		Foo foo = new Foo(0);										
+		drools.inject(foo,"org.drools.chance.TestGEB$Foo.j","Integer ==","0");
+		drools.inject(foo,"class","==","org.drools.chance.TestGEB$Foo");
+end
+
+
+rule Source2
+	when
+		Message( status < 1 !)
+	then
+		writer.write("Source2 Rule fired " + drools.getEvaluation().expand()+"\n\n");
+		drools.injectId(new Foo(0),"idEql");
+		drools.injectId(new Foo(0),"idClass");
+end
+
+
+rule Trigger
+	when		
+		Message( status == 2 !)
+	then
+		writer.write("Foo generated \n\n");
+		Foo foo = new Foo(0);			
+		insert(foo);
+end
+
+
+rule Target
+	when
+		Foo ( j ==@idEql 0 )@idClass 
+	then
+		writer.write("Target Rule fired " + drools.getEvaluation().expand()+"\n\n");	
+end
+
+*/
+
+
+
+/*
+rule "TestZ"		
+	
+	when
+		Message(status > 2 &@idAnd status < 3 && status random[99]@idCustom !) @idClass1	
+		Message(status < 1 && (status > 3 |[Lukas]@idOr ! status ==@idStandard 2)) @idClass2
+		
+	then
+		writer.write("Test Rule fired " + drools.getEvaluation().expand());
+end
+*/
+
+
+
+/*
+rule "TestEquiv"	
+	when
+		 
+		( equiv
+		
+		$m : Message(status random[] 0)
+		$n : Message(status random[] 1) 
+		
+		)
+		
+		
+	then
+		System.out.println("Rule fired "+ $m);
+		writer.write("Test Rule fired " + drools.getEvaluation().expand());
+end
+*/
+
+
+
+/*
+rule "TestX"	
+	when
+		(
+		and[Lukas]		
+		Message(status random[] 0 || [Lukas] status random[] 1)
+						
+		Message(status == 1)
+		)
+	then
+		writer.write("Test Rule fired " + drools.getEvaluation().expand());
+end
+	*/	
+
+/*
+rule "TestY"		
+	prior (0.432)
+	entail_mode "equivalence"
+	filter_str "org.drools.reteoo.filters.AlwaysPassFilterStrategy"
+	
+
+	when				
+		very Message(status ~random, status < 1)
+		very very $m : Message(status ~random, status < 2)
+	then
+		writer.write("Test Rule fired " + drools.getEvaluation().expand());
+end
+*/
+
+
+
+
+
+
+
+/*
 rule "TestGEB"	
 	when
-		(Message(status == 0)	
+		(		
+		Message(status == 0)
+		and[Lukas]				
+		Message(status == 1)
+		)
 		
-			
-		and
 		
-		Message(status == 1))
+		or[Lukas]
 		
-		
-		or
-		
-		(Message(status == 2)
-		
-		and
-		
-		Message(status == 3))
+		((
+		or[Lukas] 
+		Message(status == 2)
+							
+		Message(status == 3)
+		))
 		
 		
 		Message(status == 4)
@@ -31,6 +197,12 @@ rule "TestGEB"
 	then
 	
 	System.out.println("CE Builder RULE");		
+	writer.write("Test Rule fired " + drools.getEvaluation().expand());
+
 end
+
+*/
+
+
 
 

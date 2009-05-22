@@ -1,7 +1,7 @@
 package org.drools.examples.chance
  
 
-import org.drools.examples.chance.TestQuantifiers.Message;
+import org.drools.chance.TestQuantifiers.Message;
 import java.io.FileWriter;
 
 
@@ -65,7 +65,7 @@ end
 rule "Test Exist 3"	
 	when
 		exists (				   
-				   Message( status == 1)							
+				   Message( status == 2)							
 		)
 	then
 		
@@ -90,9 +90,7 @@ rule "Test Exist 4"
 		writer.write("Existential check "+drools.getConsequenceDegree()+"\n"+drools.getEvaluation().expand()+"\n\n");
 		System.out.println("Existential check "+drools.getConsequenceDegree());			
 end
-
 */
-
 
 
 
@@ -139,7 +137,7 @@ end
 rule "Test Exist 7"	
 	when
 		forall (
-					Message( status < 1 )					
+					Message( status < 2 )					
 		)
 	then
 		
@@ -168,6 +166,7 @@ end
 
 
 
+/*
 rule "Test Exist 8"	
 	when
 		Message( status == 1)
@@ -183,9 +182,7 @@ rule "Test Exist 8"
 			
 end
 
-
-
-
+*/
 
 
 
@@ -225,10 +222,48 @@ end
 
 
 
+rule "TestCut 1"
+	when
+		$m : Message( status > 0  ) ! 
+		Message( this == $m , $s : status random[] 0 )  
+	then
+		writer.write("Rule with cut fires \n");
+		writer.write(drools.getEvaluation().expand() + "\n");
+end
+		
+
+
+/*
+rule "TestCut 2"
+	when
+		$m : Message( status > 0)
+		Message( this == $m , status random[] 1)
+	then
+		writer.write("Rule without cut fires \n");
+		writer.write(drools.getEvaluation().expand() + "\n");
+end
+	*/
 
 
 
 
+
+/*
+rule "Test Forany 9"	
+	when		
+	
+		forany (
+						$m : Message( ) 
+			subject_to 	Message( this == $m ! , status < 3  ) 
+			weight		Message( this == $m ! , status random[] 2  ) 			
+		)
+		
+	then
+				
+		writer.write("Forany "+drools.getEvaluation().expand()+"\n");
+			
+end
+*/
 
 
 
