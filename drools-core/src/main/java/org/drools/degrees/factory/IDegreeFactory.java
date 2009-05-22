@@ -4,13 +4,17 @@ import org.drools.degrees.IDegree;
 import org.drools.degrees.operators.IDegreeCombiner;
 import org.drools.reteoo.filters.IFilterStrategy;
 
+import org.drools.degrees.operators.IDiscountOperator;
+import org.drools.degrees.operators.IDiscountStrategy;
 import org.drools.degrees.operators.IMergeStrategy;
 import org.drools.degrees.operators.INullHandlingStrategy;
 
 public interface IDegreeFactory {
 	
 	
+	public void setClosedWorldAssumption(boolean cwa);		
 	
+	public boolean isClosedWorldAssumption();
 	
 	
 	public IDegree buildDegree(float val);
@@ -37,6 +41,8 @@ public interface IDegreeFactory {
 	public IDegreeCombiner getEquivOperator();
 	
 	public IDegreeCombiner getXorOperator();
+	
+	public IDegreeCombiner getImplicationOperator();
 	
 	
 	public IDegreeCombiner getAggregator();
@@ -73,7 +79,7 @@ public interface IDegreeFactory {
 	public IDegreeCombiner getDoubleMPOperator();
 
 
-	public IDegreeCombiner getDiscountOperator();
+	public IDiscountOperator getDiscountOperator();
 	
 	
 	public IDegreeCombiner getHedgeOperator();
@@ -94,6 +100,8 @@ public interface IDegreeFactory {
 
 
 	public IDegreeCombiner getXorOperator(String params);
+	
+	public IDegreeCombiner getImplicationOperator(String params);
 
 
 	public IDegreeCombiner getOrOperator(String params);
@@ -109,6 +117,9 @@ public interface IDegreeFactory {
 
 
 	public IDegree buildDegree(String priorStr);
+
+
+	public IDiscountStrategy getDiscountStrategy();
 	
 	
 

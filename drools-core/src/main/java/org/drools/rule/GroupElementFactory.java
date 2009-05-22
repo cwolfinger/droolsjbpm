@@ -50,6 +50,10 @@ public class GroupElementFactory {
         return new GroupElement( GroupElement.XOR );
     }
 	
+	public static GroupElement newImpliesInstance() {
+        return new GroupElement( GroupElement.IMPLIES );
+    }
+	
 	public static GroupElement newEqvInstance() {
         return new GroupElement( GroupElement.EQV );
     }

@@ -51,7 +51,7 @@ public class OperatorInstaller
 		
 	}
 	
-	public EvaluationTemplate buildEvaluationTemplate(IDegreeCombiner operator, IMergeStrategy mergeStrat, INullHandlingStrategy nullStrat) {
+	public EvaluationTemplate buildEvaluationTemplate(IDegreeCombiner operator, IMergeStrategy mergeStrat, INullHandlingStrategy nullStrat, IDegreeFactory factory) {
 						
 		template = new CompositeEvaluationTemplate( this.getId(),
 													new DynamicConstraintKey(operator.getName()),													
@@ -59,7 +59,8 @@ public class OperatorInstaller
 													getArity(),
 													operator,
 													mergeStrat,
-													nullStrat												
+													nullStrat,
+													factory
 													);
 					
 		return template;

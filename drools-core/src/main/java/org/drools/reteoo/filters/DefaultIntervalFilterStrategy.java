@@ -34,7 +34,7 @@ public class DefaultIntervalFilterStrategy implements IFilterStrategy {
 			return DROP;
 			*/
 		
-		return PASS;
+		return (eval.getInfoRate() == 1) ? PASS : HOLD;
 		
 	}
 

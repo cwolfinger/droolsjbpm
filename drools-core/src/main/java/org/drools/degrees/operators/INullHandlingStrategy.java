@@ -5,6 +5,6 @@ import org.drools.degrees.factory.IDegreeFactory;
 
 public interface INullHandlingStrategy {
 
-	public IDegree convertNull();
+	public IDegree convertNull(IDegreeFactory factory);
 	
 }

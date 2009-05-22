@@ -138,11 +138,12 @@ public class VariableRestriction
     
     public IDegree isSatisfiedCachedLeft(ContextEntry context,
 			InternalFactHandle handle, IDegreeFactory factory) {
-    	return this.evaluator.evaluateCachedLeft(    			
+    	IDegree deg = this.evaluator.evaluateCachedLeft(    			
     			((VariableContextEntry) context).workingMemory,    			
                 (VariableContextEntry) context,
                 factory,
                 this.evaluator.prepareLeftObject( handle ) );
+    	return deg;
 	}
 
     

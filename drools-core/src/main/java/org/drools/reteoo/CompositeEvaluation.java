@@ -10,6 +10,7 @@ import java.util.Vector;
 
 import org.drools.RuntimeDroolsException;
 import org.drools.degrees.IDegree;
+import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.degrees.operators.IDegreeCombiner;
 import org.drools.degrees.operators.IMergeStrategy;
 import org.drools.degrees.operators.INullHandlingStrategy;
@@ -21,8 +22,8 @@ public class CompositeEvaluation extends Evaluation implements Observer {
 	private float opRate;
 	
 	public CompositeEvaluation(int id, ConstraintKey key, Set<String> deps,
-			Evaluation[] evalDegrees, IDegreeCombiner operator, IMergeStrategy mergeStrat, INullHandlingStrategy nullStrat, ArgList args) {		
-		super(id,key,deps,mergeStrat,nullStrat, args);
+			Evaluation[] evalDegrees, IDegreeCombiner operator, IMergeStrategy mergeStrat, INullHandlingStrategy nullStrat, IDegreeFactory factory, ArgList args) {		
+		super(id,key,deps,mergeStrat,nullStrat, factory, args);
 		
 		if (evalDegrees != null) {
 			this.operands = new Vector<Evaluation>(evalDegrees.length);
@@ -41,8 +42,8 @@ public class CompositeEvaluation extends Evaluation implements Observer {
 	
 	
 	protected CompositeEvaluation(int id, ConstraintKey key, Set<String> deps,
-			IMergeStrategy mergeStrat, INullHandlingStrategy nullStrat,ArgList args) {		
-		super(id,key,deps,mergeStrat,nullStrat, args);
+			IMergeStrategy mergeStrat, INullHandlingStrategy nullStrat, IDegreeFactory factory,ArgList args) {		
+		super(id,key,deps,mergeStrat,nullStrat, factory,args);
 				
 		this.operands = new Vector<Evaluation>(1,1);			
 		this.operator = null;
@@ -54,8 +55,8 @@ public class CompositeEvaluation extends Evaluation implements Observer {
 	
 	
 	public CompositeEvaluation(int id, ConstraintKey key, Set<String> deps,
-			int arity, IDegreeCombiner operator, IMergeStrategy mergeStrat, INullHandlingStrategy nullStrat, ArgList args) {		
-		super(id,key,deps,mergeStrat,nullStrat, args);
+			int arity, IDegreeCombiner operator, IMergeStrategy mergeStrat, INullHandlingStrategy nullStrat, IDegreeFactory factory, ArgList args) {		
+		super(id,key,deps,mergeStrat,nullStrat, factory, args);
 				
 		this.operands = new Vector<Evaluation>(arity,2);
 		
@@ -97,13 +98,13 @@ public class CompositeEvaluation extends Evaluation implements Observer {
 		
 			int j = 0;
 			for (Evaluation eval : getOperands()) {
-				args[j++] = eval == null ? this.getNullHandlingStrat().convertNull() : eval.getDegree();		
+				args[j++] = eval == null ? this.getNullHandlingStrat().convertNull(getFactory()) : eval.getDegree();		
 			}
 		}		
 		
 		
 		
-		IDegree opDeg = this.operator.eval(args);
+		IDegree opDeg = this.operator.eval(args,getFactory());
 		updateOpRate();
 		boolean newContrib = this.addDegree(Evaluation.EVAL, opDeg, getOpRate(),true);
 						

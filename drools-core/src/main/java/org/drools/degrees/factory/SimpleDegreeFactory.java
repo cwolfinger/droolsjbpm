@@ -1,23 +1,28 @@
 package org.drools.degrees.factory;
 
 import org.drools.degrees.IDegree;
-import org.drools.degrees.IntervalDegree;
 import org.drools.degrees.SimpleDegree;
 import org.drools.degrees.operators.IDegreeCombiner;
+import org.drools.degrees.operators.IDiscountOperator;
+import org.drools.degrees.operators.IDiscountStrategy;
 import org.drools.degrees.operators.IMergeStrategy;
 import org.drools.degrees.operators.INullHandlingStrategy;
 import org.drools.degrees.operators.simple.SimpleAverage;
+import org.drools.degrees.operators.simple.SimpleDiscountOperator;
+import org.drools.degrees.operators.simple.SimpleDiscountStrategy;
 import org.drools.degrees.operators.simple.SimpleDotAnd;
 import org.drools.degrees.operators.simple.SimpleDoubleMPOperator;
 import org.drools.degrees.operators.simple.SimpleEquiv;
 import org.drools.degrees.operators.simple.SimpleExists;
 import org.drools.degrees.operators.simple.SimpleIdentityOperator;
 import org.drools.degrees.operators.simple.SimpleLukasAnd;
+import org.drools.degrees.operators.simple.SimpleLukasImplication;
 import org.drools.degrees.operators.simple.SimpleLukasOr;
 import org.drools.degrees.operators.simple.SimpleMaxOr;
 import org.drools.degrees.operators.simple.SimpleMinAnd;
+import org.drools.degrees.operators.simple.SimpleMinMergeStrategy;
 import org.drools.degrees.operators.simple.SimpleNot;
-import org.drools.degrees.operators.simple.SimpleMergeStrategy;
+import org.drools.degrees.operators.simple.SimpleMaxMergeStrategy;
 import org.drools.degrees.operators.simple.SimpleNullHandlingStrategy;
 import org.drools.degrees.operators.simple.SimpleProbSumOr;
 import org.drools.degrees.operators.simple.SimpleVeryModifier;
@@ -30,11 +35,14 @@ import org.drools.reteoo.filters.SimpleFilterStrategy;
 
 public class SimpleDegreeFactory implements IDegreeFactory {
 	
-	public static IDegree FALSE = new SimpleDegree(0);
-	public static IDegree TRUE = new SimpleDegree(1);
+	private boolean cwa = true;
 	
-	//BEWARE OF CWA
-	public static IDegree UNKNOWN = new SimpleDegree(0);
+	
+	public static IDegree FALSE = SimpleDegree.FALSE();
+	public static IDegree TRUE = SimpleDegree.TRUE();
+	
+	//BEWARE OF OWA
+	//private static IDegree UNKNOWN = SimpleDegree.UNKNOWN();
 	
 	public IDegree False() {
 		return FALSE;
@@ -45,7 +53,12 @@ public class SimpleDegreeFactory implements IDegreeFactory {
 	}
 
 	public IDegree Unknown() {
-		return UNKNOWN;
+		if (cwa) {
+			return FALSE;
+		} else {
+			return TRUE;
+		}
+		//return UNKNOWN;
 	}
 
 	
@@ -92,10 +105,10 @@ public class SimpleDegreeFactory implements IDegreeFactory {
 		return new SimpleMinAnd();
 	}
 
-	public IDegree mergeIntersect(IDegree d1,
-			IDegree d2) {
-		return getAggregator().eval(new IDegree[] {d1,d2});
-	}
+//	public IDegree mergeIntersect(IDegree d1,
+//			IDegree d2) {
+//		return getAggregator().eval(new IDegree[] {d1,d2});
+//	}
 
 
 	public IDegreeCombiner getEquivModusPonensOp() {
@@ -109,6 +122,10 @@ public class SimpleDegreeFactory implements IDegreeFactory {
 		return new SimpleAverage() ;
 	}
 
+	public IDegreeCombiner getImplicationOperator() {
+		return new SimpleLukasImplication();
+	}
+	
 
 	public IDegreeCombiner getMaxOrOperator() {
 		return new SimpleMaxOr();
@@ -128,7 +145,11 @@ public class SimpleDegreeFactory implements IDegreeFactory {
 	}
 
 	public IMergeStrategy getMergeStrategy() {
-		return new SimpleMergeStrategy();
+		if (cwa) {
+			return new SimpleMaxMergeStrategy();
+		} else {
+			return new SimpleMinMergeStrategy();
+		}		
 	}
 
 	public INullHandlingStrategy getNullHandlingStrategy() {
@@ -148,8 +169,8 @@ public class SimpleDegreeFactory implements IDegreeFactory {
 		return this.getAndOperator();
 	}
 
-	public IDegreeCombiner getDiscountOperator() {
-		return new SimpleIdentityOperator();
+	public IDiscountOperator getDiscountOperator() {
+		return new SimpleDiscountOperator(this.Unknown().getDegree());
 	}
 
 	public IDegreeCombiner getDoubleMPOperator() {
@@ -217,6 +238,9 @@ public class SimpleDegreeFactory implements IDegreeFactory {
 	}
 
 	public IDegree buildDegree(String priorStr) {
+		if (priorStr.toLowerCase().contains("unknown"))
+			return this.Unknown();
+		
 		return new SimpleDegree(Float.parseFloat(priorStr));
 	}
 
@@ -231,6 +255,24 @@ public class SimpleDegreeFactory implements IDegreeFactory {
 		} else
 			return getModusPonensOp();
 		
+	}
+
+	
+
+	public IDegreeCombiner getImplicationOperator(String params) {
+		return new SimpleLukasImplication();
+	}
+	
+	public IDiscountStrategy getDiscountStrategy() {
+		return new SimpleDiscountStrategy(this.getDiscountOperator());
+	}
+
+	public boolean isClosedWorldAssumption() {
+		return cwa;
+	}
+
+	public void setClosedWorldAssumption(boolean cwa) {
+		this.cwa = cwa;		
 	}
 	
 }

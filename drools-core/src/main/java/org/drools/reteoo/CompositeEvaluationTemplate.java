@@ -22,8 +22,8 @@ public class CompositeEvaluationTemplate extends EvaluationTemplate {
 	protected Map<ConstraintKey,EvaluationTemplate> children;
 	
 	
-	public CompositeEvaluationTemplate(int id, ConstraintKey key, Set<String> deps, int N, IDegreeCombiner operator, IMergeStrategy mergeStrat, INullHandlingStrategy nullStrat) {
-		super(id,key,deps,mergeStrat,nullStrat);
+	public CompositeEvaluationTemplate(int id, ConstraintKey key, Set<String> deps, int N, IDegreeCombiner operator, IMergeStrategy mergeStrat, INullHandlingStrategy nullStrat, IDegreeFactory factory) {
+		super(id,key,deps,mergeStrat,nullStrat, factory);
 		
 		children = new HashMap<ConstraintKey, EvaluationTemplate>();
 		this.N = N;
@@ -48,19 +48,19 @@ public class CompositeEvaluationTemplate extends EvaluationTemplate {
 
 	
 	public Evaluation spawn(Evaluation[] evalDegree) {
-		return new CompositeEvaluation(id,key.clone(),deps,evalDegree,operator,mergeStrat,nullStrat,new ArgList());
+		return new CompositeEvaluation(id,key.clone(),deps,evalDegree,operator,mergeStrat,nullStrat,factory, new ArgList());
 	}
 	
 	public Evaluation spawn(ArgList args) {
-		return new CompositeEvaluation(id,key.clone(),deps,children.values().toArray(new Evaluation[children.values().size()]),operator,mergeStrat,nullStrat,args);
+		return new CompositeEvaluation(id,key.clone(),deps,children.values().toArray(new Evaluation[children.values().size()]),operator,mergeStrat,nullStrat,factory,args);
 	}
 	
 	public Evaluation spawn(int N) {
-		return new CompositeEvaluation(id,key.clone(),deps,N,operator,mergeStrat,nullStrat,new ArgList());
+		return new CompositeEvaluation(id,key.clone(),deps,N,operator,mergeStrat,nullStrat,factory,new ArgList());
 	}
 	
 	public Evaluation spawn(OperandSet args, BetaConstraints joinConstraints) {
-		return new SetCompositeEvaluation(id,key.clone(),deps,operator,args,mergeStrat,nullStrat,joinConstraints);
+		return new SetCompositeEvaluation(id,key.clone(),deps,operator,factory,args,mergeStrat,nullStrat,joinConstraints);
 	}
 	
 	

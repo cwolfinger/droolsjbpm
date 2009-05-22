@@ -3,6 +3,7 @@ package org.drools.degrees.operators;
 import java.util.Collection;
 
 import org.drools.degrees.IDegree;
+import org.drools.degrees.factory.IDegreeFactory;
 
 public abstract  class NegationOperator implements IDegreeCombiner {
 	
@@ -15,12 +16,12 @@ public abstract  class NegationOperator implements IDegreeCombiner {
 		this.operator = op;
 	}
 
-	public IDegree eval(IDegree[] args) {
-		return negate(operator.eval(args));
+	public IDegree eval(IDegree[] args, IDegreeFactory factory) {
+		return negate(operator.eval(args,factory));
 	}
 
-	public IDegree eval(Collection<? extends IDegree> args) {
-		return negate(operator.eval(args));
+	public IDegree eval(Collection<? extends IDegree> args, IDegreeFactory factory) {
+		return negate(operator.eval(args,factory));
 	}
 
 	public String getName() {
@@ -28,7 +29,7 @@ public abstract  class NegationOperator implements IDegreeCombiner {
 	}
 	
 	
-	protected abstract IDegree negate(IDegree arg);
+	public abstract IDegree negate(IDegree arg);
 	
 
 }

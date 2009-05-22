@@ -11,7 +11,7 @@ import org.drools.degrees.operators.NegationOperator;
 public class IntervalNegationOperator extends NegationOperator {
 
 	
-	protected IDegree negate(IDegree arg) {
+	public IDegree negate(IDegree arg) {
 		IntervalDegree iDeg = (IntervalDegree) arg;
 		return new IntervalDegree(iDeg.getPhi(),1-iDeg.getTau());
 	}

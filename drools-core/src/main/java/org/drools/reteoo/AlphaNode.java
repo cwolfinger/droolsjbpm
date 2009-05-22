@@ -195,6 +195,7 @@ public class AlphaNode extends ObjectSource
         }
     }
     
+    
 	public void assertObject(ImperfectFactHandle factHandle,
 			PropagationContext propagationContext,
 			InternalWorkingMemory workingMemory, IDegreeFactory factory,
@@ -211,7 +212,7 @@ public class AlphaNode extends ObjectSource
 			factHandle.addPropertyDegrees(storedEvals);
 		}
 			
-		
+		boolean doCut = false;
 		//Call internal evaluator, if not done before
 		ConstraintKey key = this.constraint.getConstraintKey();
 		Evaluation eval = factHandle.getPropertyDegree(key);
@@ -221,7 +222,8 @@ public class AlphaNode extends ObjectSource
 					memory.context,
 					factory
                 	);	
-			 
+			 if (eval.getDegree().equals(factory.False()) && constraint.isCutter())
+				 doCut = true;
 			
 			for (Evaluation subEval : eval.getEvalTree()) {
 				factHandle.addPropertyDegree(subEval);
@@ -236,6 +238,10 @@ public class AlphaNode extends ObjectSource
 						memory.context,
 						factory
 	                	);		
+				
+				if (localEval.getDegree().equals(factory.False()) && constraint.isCutter())
+					 doCut = true;
+				
 				record.addEvaluation(localEval);
 			}			
 		}   
@@ -244,7 +250,8 @@ public class AlphaNode extends ObjectSource
 		
 		int verdict;
     	
-    	if (this.constraint.isCutter() && record.getDegree().equals(factory.False()))
+    	//if (this.constraint.isCutter() && record.getDegree().equals(factory.False()))
+		if (doCut)
     		verdict = IFilterStrategy.DROP;
     	else 
     		verdict = this.filterStrat.doTry(record); 

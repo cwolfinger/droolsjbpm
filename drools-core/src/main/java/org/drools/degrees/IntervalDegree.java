@@ -73,4 +73,28 @@ public class IntervalDegree implements IDegree {
 		return 1.0f - getPhi();
 	}
 
+	
+	public int hashCode() {
+		return new Float(getLow()).hashCode()^new Float(getUpp()).hashCode();
+	}
+	
+	public boolean equals(Object other) {
+		if (other == null) {
+			return false;
+		} else if (other == this) {
+			return true;
+		} else if (other.getClass().equals(this.getClass()) ) {
+			IntervalDegree o = (IntervalDegree) other;
+			return (this.phi == o.phi) && (this.tau == o.tau);
+		} else {
+			return false;
+		}		
+	}
+
+
+
+	public float getConfidence(boolean cwa) {
+		return phi+tau;
+	}
+	
 }

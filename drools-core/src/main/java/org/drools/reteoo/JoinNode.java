@@ -203,7 +203,7 @@ public class JoinNode extends BetaNode implements IGammaNode, Observer {
     		
     		
         	
-        	
+        	boolean doCut = false;
         	//Call internal evaluator, if not done before
     		ConstraintKey[] keys = this.constraints.getConstraintKeys();
     		if (keys != null) {
@@ -214,6 +214,11 @@ public class JoinNode extends BetaNode implements IGammaNode, Observer {
 //		                        													  factory );
 		    			
 		    			Evaluation[] evals = this.constraints.isSatisfiedCachedLeft(memory.getContext(), factHandle, factory);
+		    			
+		    			for (Evaluation eval : evals) {
+		    				if (eval.getDegree().equals(factory.False()) && constraints.isCutter())
+		    					doCut = true;
+		    			}
 		    			
 		    			//B-constraints are 0 to N
 		    			//Each is evaluated and, if it is the first time, added to the object's handle
@@ -259,7 +264,8 @@ public class JoinNode extends BetaNode implements IGammaNode, Observer {
         	
         	int verdict;
         	
-        	if (this.isCutter && mainRecord.getDegree().equals(factory.False()))
+        	//if (this.isCutter && mainRecord.getDegree().equals(factory.False()))
+        	if (doCut)
         		verdict = IFilterStrategy.DROP;
         	else 
         		verdict = this.filterStrat.doTry(mainRecord); 
@@ -413,7 +419,7 @@ public class JoinNode extends BetaNode implements IGammaNode, Observer {
     		
     		
         	
-        	
+    		boolean doCut = false;
         	//Call internal evaluator, if not done before
     		ConstraintKey[] keys = this.constraints.getConstraintKeys();
     		Evaluation[] evals = null;
@@ -423,6 +429,9 @@ public class JoinNode extends BetaNode implements IGammaNode, Observer {
 		    			evals = this.constraints.isSatisfiedCachedRight( memory.getContext(),
 		                        													  leftTuple, 
 		                        													  factory );
+		    			for (Evaluation eval : evals)
+		    				if (eval.getDegree().equals(factory.False()) && constraints.isCutter())
+		    					doCut = true;
 		    			//B-constraints are 0 to N
 		    			//Each is evaluated and, if it is the first time, added to the object's handle
 		    			if (evals != null) {
@@ -468,7 +477,8 @@ public class JoinNode extends BetaNode implements IGammaNode, Observer {
         		
         	int verdict;
         	
-        	if (this.isCutter && mainRecord.getDegree().equals(factory.False()))
+        	//if (this.isCutter && mainRecord.getDegree().equals(factory.False()))
+        	if (doCut)
         		verdict = IFilterStrategy.DROP;
         	else 
         		verdict = this.filterStrat.doTry(mainRecord); 

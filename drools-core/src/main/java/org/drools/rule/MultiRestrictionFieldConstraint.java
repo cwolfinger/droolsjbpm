@@ -181,7 +181,7 @@ public class MultiRestrictionFieldConstraint extends MutableTypeConstraint
     	
 				
 		//EvaluationTemplate temp = buildTemplateForRestriction(this.restrictions, null, id, dependencies, factory);
-		EvaluationTemplate temp = new SingleEvaluationTemplate(id,this.restrictions.getConstraintKey(),dependencies.get(restrictions.getConstraintKey()),factory.getMergeStrategy(),factory.getNullHandlingStrategy());
+		EvaluationTemplate temp = new SingleEvaluationTemplate(id,this.restrictions.getConstraintKey(),dependencies.get(restrictions.getConstraintKey()),factory.getMergeStrategy(),factory.getNullHandlingStrategy(),factory);
     			    	    		
 		this.setTemplate(temp);
     	return getTemplate();

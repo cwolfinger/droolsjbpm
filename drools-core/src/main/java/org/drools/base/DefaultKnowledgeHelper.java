@@ -285,51 +285,16 @@ public class DefaultKnowledgeHelper
     
     
     
-    
+    public IDegree getConsequenceDegree() {
+    	return consequenceDegree;    
+    }
    
     public void setConsequenceDegree(IDegree deg) {
     	this.consequenceDegree = deg;
     }
     
-    public void injectKey(ArgList args, String field, String op, String value) {
-    	System.out.println("\n"+this.getClass()+" : KH injects a rule for degree "+getConsequenceDegree());
-    	workingMemory.inject(this.getRule().getName(), 
-    					     args,
-    					     new ConstraintKey(field,op,value),
-    					     getConsequenceDegree());    	
-    }
     
-    
-    
-    public IDegree getConsequenceDegree() {
-    	return consequenceDegree;    
-    }
 
-	public void injectKey(Object arg, String field, String op, String value) {
-		this.injectKey(new ArgList(arg), field, op, value);
-	}
-
-	public void injectKey(Object[] args, String field, String op, String value) {
-		this.injectKey(new ArgList(args), field, op, value);
-		
-	}
-
-	public void injectKey(Object arg, String key) {
-		workingMemory.inject(this.getRule().getName(), 
-							 new ArgList(arg), 
-							 new ConstraintKey(key),
-							 getConsequenceDegree());
-		
-	}
-
-	public void injectKey(Object[] args, String key) {
-		workingMemory.inject(this.getRule().getName(), 
-				 new ArgList(args), 
-				 new ConstraintKey(key),
-				 getConsequenceDegree());		
-	}
-	
-	
 	public Evaluation getEvaluation() {
 		return evaluation;
 	}
@@ -337,6 +302,102 @@ public class DefaultKnowledgeHelper
 	public void setEvaluation(Evaluation eval) {
 		this.evaluation = eval;
 	}
+    
+    
+    
+    
+    
+    
+	
+	
+	
+	
+	
+	
+	
+	
+    
+    public void injectKey(ArgList args, String field, String op, String value) {
+    	System.out.println("\n"+this.getClass()+" : KH injects a rule for degree "+getConsequenceDegree());
+    	workingMemory.inject(this.getRule().getName(), 
+    					     args,
+    					     new ConstraintKey(field,op,value),
+    					     getConsequenceDegree(),
+    					     false);    	
+    }
+    public void injectKey(ArgList args, String field, String op, String value, boolean killer) {
+    	System.out.println("\n"+this.getClass()+" : KH injects a rule for degree "+getConsequenceDegree());
+    	workingMemory.inject(this.getRule().getName(), 
+    					     args,
+    					     new ConstraintKey(field,op,value),
+    					     getConsequenceDegree(),
+    					     killer);    	
+    }
+    
+    public void injectKey(Object arg, String key) {
+		workingMemory.inject(this.getRule().getName(), 
+							 new ArgList(arg), 
+							 new ConstraintKey(key),
+							 getConsequenceDegree(),
+							 false);
+		
+	}
+    public void injectKey(Object arg, String key, boolean killer) {
+		workingMemory.inject(this.getRule().getName(), 
+							 new ArgList(arg), 
+							 new ConstraintKey(key),
+							 getConsequenceDegree(),
+							 killer);
+		
+	}
+	public void rejectKey(Object arg, String key) {
+		workingMemory.reject(this.getRule().getName(), 
+							 new ArgList(arg), 
+							 new ConstraintKey(key),
+							 getConsequenceDegree(),
+							 false);
+		
+	}
+	public void rejectKey(Object arg, String key, boolean killer) {
+		workingMemory.reject(this.getRule().getName(), 
+							 new ArgList(arg), 
+							 new ConstraintKey(key),
+							 getConsequenceDegree(),
+							 killer);
+		
+	}
+	
+
+	public void injectKey(Object[] args, String key) {
+		workingMemory.inject(this.getRule().getName(), 
+				 new ArgList(args), 
+				 new ConstraintKey(key),
+				 getConsequenceDegree(),
+				 false);		
+	}
+	public void injectKey(Object[] args, String key, boolean killer) {
+		workingMemory.inject(this.getRule().getName(), 
+				 new ArgList(args), 
+				 new ConstraintKey(key),
+				 getConsequenceDegree(),
+				 killer);		
+	}
+	public void rejectKey(Object[] args, String key) {
+		workingMemory.reject(this.getRule().getName(), 
+				 new ArgList(args), 
+				 new ConstraintKey(key),
+				 getConsequenceDegree(),
+				 false);		
+	}
+	public void rejectKey(Object[] args, String key, boolean killer) {
+		workingMemory.reject(this.getRule().getName(), 
+				 new ArgList(args), 
+				 new ConstraintKey(key),
+				 getConsequenceDegree(),
+				 killer);		
+	}
+	
+	
 
 	
 	
@@ -345,33 +406,176 @@ public class DefaultKnowledgeHelper
 		workingMemory.inject(this.getRule().getName(), 
 				 new ArgList(arg), 
 				 key,
-				 getConsequenceDegree());	
+				 getConsequenceDegree(),
+				 false);	
 	}
+	public void injectId(Object arg, String id, boolean killer) {
+		ConstraintKey key = workingMemory.retrieveKeyForId(id);
+		workingMemory.inject(this.getRule().getName(), 
+				 new ArgList(arg), 
+				 key,
+				 getConsequenceDegree(),
+				 killer);	
+	}
+	public void rejectId(Object arg, String id) {
+		ConstraintKey key = workingMemory.retrieveKeyForId(id);
+		workingMemory.reject(this.getRule().getName(), 
+				 new ArgList(arg), 
+				 key,
+				 getConsequenceDegree(),
+				 false);	
+	}
+	public void rejectId(Object arg, String id, boolean killer) {
+		ConstraintKey key = workingMemory.retrieveKeyForId(id);
+		workingMemory.reject(this.getRule().getName(), 
+				 new ArgList(arg), 
+				 key,
+				 getConsequenceDegree(),
+				 killer);	
+	}
+	
+	
 
 	public void injectId(Object[] args, String id) {
 		ConstraintKey key = workingMemory.retrieveKeyForId(id);
 		workingMemory.inject(this.getRule().getName(), 
 				 new ArgList(args), 
 				 key,
-				 getConsequenceDegree());	
+				 getConsequenceDegree(),
+				 false);	
 	}
+	public void injectId(Object[] args, String id,boolean killer) {
+		ConstraintKey key = workingMemory.retrieveKeyForId(id);
+		workingMemory.inject(this.getRule().getName(), 
+				 new ArgList(args), 
+				 key,
+				 getConsequenceDegree(),
+				 killer);	
+	}
+	public void rejectId(Object[] args, String id) {
+		ConstraintKey key = workingMemory.retrieveKeyForId(id);
+		workingMemory.reject(this.getRule().getName(), 
+				 new ArgList(args), 
+				 key,
+				 getConsequenceDegree(),
+				 false);	
+	}
+	public void rejectId(Object[] args, String id,boolean killer) {
+		ConstraintKey key = workingMemory.retrieveKeyForId(id);
+		workingMemory.reject(this.getRule().getName(), 
+				 new ArgList(args), 
+				 key,
+				 getConsequenceDegree(),
+				 killer);	
+	}
+    
+   
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	public void injectKey(Object arg, String field, String op, String value) {
+		this.injectKey(new ArgList(arg), field, op, value,false);
+	}
+	public void injectKey(Object arg, String field, String op, String value, boolean killer) {
+		this.injectKey(new ArgList(arg), field, op, value,killer);
+	}
+	public void rejectKey(Object arg, String field, String op, String value) {
+		this.rejectKey(new ArgList(arg), field, op, value,false);
+	}
+	public void rejectKey(Object arg, String field, String op, String value, boolean killer) {
+		this.rejectKey(new ArgList(arg), field, op, value, killer);
+	}
+	
+	
+	
+
+	public void injectKey(Object[] args, String field, String op, String value) {
+		this.injectKey(new ArgList(args), field, op, value,false);		
+	}
+	public void injectKey(Object[] args, String field, String op, String value, boolean killer) {
+		this.injectKey(new ArgList(args), field, op, value, killer);		
+	}
+	public void rejectKey(Object[] args, String field, String op, String value) {
+		this.rejectKey(new ArgList(args), field, op, value, false);		
+	}
+	public void rejectKey(Object[] args, String field, String op, String value, boolean killer) {
+		this.rejectKey(new ArgList(args), field, op, value, killer);		
+	}
+
+	
+	
 
 	public void inject(Object arg, String field, String op, String value) {
-		injectKey(arg,field,op,value);
-		
+		injectKey(arg,field,op,value,false);		
+	}
+	public void inject(Object arg, String field, String op, String value, boolean killer) {
+		injectKey(arg,field,op,value,killer);		
+	}
+	public void reject(Object arg, String field, String op, String value) {
+		rejectKey(arg,field,op,value,false);		
+	}
+	public void reject(Object arg, String field, String op, String value, boolean killer) {
+		rejectKey(arg,field,op,value, killer);		
 	}
 
+	
+	
 	public void inject(Object[] args, String field, String op, String value) {
-		injectKey(args,field,op,value);
+		injectKey(args,field,op,value,false);
+	}
+	public void inject(Object[] args, String field, String op, String value, boolean killer) {
+		injectKey(args,field,op,value,killer);
+	}
+	public void reject(Object[] args, String field, String op, String value) {
+		rejectKey(args,field,op,value,false);
+	}
+	public void reject(Object[] args, String field, String op, String value,boolean killer) {
+		rejectKey(args,field,op,value,killer);
 	}
 
+	
+	
 	public void inject(Object arg, String key) {
-		injectKey(arg,key);
+		injectKey(arg,key,false);
+	}
+	public void inject(Object arg, String key,boolean killer) {
+		injectKey(arg,key,killer);
+	}
+	public void reject(Object arg, String key) {
+		rejectKey(arg,key,false);
+	}
+	public void reject(Object arg, String key,boolean killer) {
+		rejectKey(arg,key,killer);
 	}
 
+	
+	
 	public void inject(Object[] args, String key) {
-		injectKey(args,key);
+		injectKey(args,key,false);
 	}
+	public void inject(Object[] args, String key,boolean killer) {
+		injectKey(args,key,killer);
+	}
+	public void reject(Object[] args, String key) {
+		rejectKey(args,key,false);
+	}
+	public void reject(Object[] args, String key, boolean killer) {
+		rejectKey(args,key,killer);
+	}
+
+	
+
+	
     
     
 }

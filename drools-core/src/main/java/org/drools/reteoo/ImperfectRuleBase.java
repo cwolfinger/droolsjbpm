@@ -93,10 +93,12 @@ public class ImperfectRuleBase extends ReteooRuleBase {
                factHandleFactory
                );               
         
-        String factoryName = config.getProperty("org.drools.chance.factory");        
+        String factoryName = config.getProperty("org.drools.chance.factory");
+        	boolean cwa = config.getClosedWorldAssumption();
         IDegreeFactory factory = null;
         try {
 			factory = (IDegreeFactory) Class.forName(factoryName).newInstance();
+			factory.setClosedWorldAssumption(cwa);
 			System.out.println("Created instance of "+factoryName);
 		} catch (InstantiationException e) {
 			// TODO Auto-generated catch block
@@ -153,6 +155,7 @@ public class ImperfectRuleBase extends ReteooRuleBase {
 						getDegreeFactory().getAndOperator(),
 						getDegreeFactory().getMergeStrategy(),
 						getDegreeFactory().getNullHandlingStrategy(),
+						getDegreeFactory(),
 						new ArgList(object));
 		
 				getRete().assertObject( (ImperfectFactHandle) handle,

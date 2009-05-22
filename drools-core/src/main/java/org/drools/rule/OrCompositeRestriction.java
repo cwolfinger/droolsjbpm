@@ -51,7 +51,7 @@ public class OrCompositeRestriction extends AbstractCompositeRestriction {
                                                   handle,
                                                   workingMemory,
                                                   context, factory );
-    	return factory.getOrOperator().eval(degs);
+    	return factory.getOrOperator().eval(degs,factory);
         
 	}
 
@@ -78,7 +78,7 @@ public class OrCompositeRestriction extends AbstractCompositeRestriction {
                                                             handle, factory );
             
         
-        return factory.getOrOperator().eval(degs);
+        return factory.getOrOperator().eval(degs,factory);
 	}
 
     public boolean isAllowedCachedRight(final LeftTuple tuple,
@@ -104,7 +104,7 @@ public class OrCompositeRestriction extends AbstractCompositeRestriction {
         													contextEntry.contextEntries[i],
         													factory );
                    
-        return factory.getOrOperator().eval(degs);
+        return factory.getOrOperator().eval(degs,factory);
 	}
 
     public Object clone() {

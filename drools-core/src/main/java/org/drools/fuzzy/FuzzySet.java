@@ -23,7 +23,9 @@ public abstract class FuzzySet implements IDegree {
 		return name;
 	}
 	
-	
+	public float getConfidence(boolean cwa) {		
+		return 1;
+	}
 	
 	
 	

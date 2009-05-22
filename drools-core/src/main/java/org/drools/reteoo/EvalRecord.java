@@ -46,7 +46,7 @@ public class EvalRecord extends CompositeEvaluation implements Observer {
 	private ImperfectRightTuple					rightTuple;
     private PropagationContext					propagationContext;
     private InternalWorkingMemory 				workingMemory;
-    private IDegreeFactory						factory;
+    //private IDegreeFactory						factory;
     
 	
 	
@@ -57,8 +57,8 @@ public class EvalRecord extends CompositeEvaluation implements Observer {
 //	}
 	
 		
-	public EvalRecord(int id,IDegreeCombiner operator,IMergeStrategy mergeStrat,INullHandlingStrategy nullStrat, ArgList args) {
-		super(id,new DynamicConstraintKey(operator.getName()),null,null,operator,mergeStrat,nullStrat, args);
+	public EvalRecord(int id,IDegreeCombiner operator,IMergeStrategy mergeStrat,INullHandlingStrategy nullStrat, IDegreeFactory factory, ArgList args) {
+		super(id,new DynamicConstraintKey(operator.getName()),null,null,operator,mergeStrat,nullStrat,factory, args);
 		
 		//mainKey = null;
 		//evalMap = new HashMap<ConstraintKey, Evaluation>();
@@ -185,7 +185,7 @@ public class EvalRecord extends CompositeEvaluation implements Observer {
 	
 	public EvalRecord clone() {
 		
-		EvalRecord ans = new EvalRecord(this.getNodeId(),this.getOperator(),this.getMergeStrat(),this.getNullHandlingStrat(), (ArgList) this.getArgs().clone());
+		EvalRecord ans = new EvalRecord(this.getNodeId(),this.getOperator(),this.getMergeStrat(),this.getNullHandlingStrat(), this.getFactory(), (ArgList) this.getArgs().clone());
 		ans.addEvaluations(this);
 		
 		return ans;
@@ -282,19 +282,19 @@ public class EvalRecord extends CompositeEvaluation implements Observer {
 		return workingMemory;
 	}
 
-	/**
-	 * @param factory the factory to set
-	 */
-	public void setFactory(IDegreeFactory factory) {
-		this.factory = factory;
-	}
-
-	/**
-	 * @return the factory
-	 */
-	public IDegreeFactory getFactory() {
-		return factory;
-	}
+//	/**
+//	 * @param factory the factory to set
+//	 */
+//	public void setFactory(IDegreeFactory factory) {
+//		this.factory = factory;
+//	}
+//
+//	/**
+//	 * @return the factory
+//	 */
+//	public IDegreeFactory getFactory() {
+//		return factory;
+//	}
 
 	/**
 	 * @param leftTuple the leftTuple to set

@@ -9,15 +9,32 @@ public class GammaMemory {
 
 	private Map<ArgList, Collection<Evaluation>> store;
 	
+	private Collection<Evaluation> all = null;
+	
 	public GammaMemory() {
 		store = new HashMap<ArgList, Collection<Evaluation>>();
 	}
 	
 	public Collection<Evaluation> retrieve(ArgList o) {
+		Collection<Evaluation> ans;
+							
 		if (o.isPersistent())
-			return this.store.get(o);
+			ans = this.store.get(o);
 		else
-			return this.store.remove(o);		
+			ans = this.store.remove(o);
+		
+		if (all != null) {
+			
+			if (ans == null) {
+				ans = all;
+			} else {
+				ans.addAll(all);
+			}
+			
+			
+		}
+		
+		return ans;
 	}
 	
 	public Collection<ArgList> getKeys() {
@@ -25,6 +42,12 @@ public class GammaMemory {
 	}
 	
 	public void store(ArgList o, Evaluation eval) {
+		if (o.getObject() instanceof Jolly) {
+			all = new LinkedList<Evaluation>();
+			all.add(eval);
+			return;
+		}
+		
 		Collection<Evaluation> coll = store.get(o);
 		if (coll == null) {
 			coll = new LinkedList<Evaluation>();

@@ -285,4 +285,162 @@ public class SequentialKnowledgeHelper
 		// TODO Auto-generated method stub
 		
 	}
+
+	public void reject(Object arg, String field, String op, String value) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void reject(Object[] args, String field, String op, String value) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void reject(Object arg, String key) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void reject(Object[] args, String key) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void rejectId(Object arg, String key) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void rejectId(Object[] args, String key) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void rejectKey(Object arg, String field, String op, String value) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void rejectKey(Object[] args, String field, String op, String value) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void rejectKey(Object arg, String key) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void rejectKey(Object[] args, String key) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void inject(Object arg, String field, String op, String value,
+			boolean killer) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void inject(Object[] args, String field, String op, String value,
+			boolean killer) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void inject(Object arg, String key, boolean killer) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void inject(Object[] args, String key, boolean killer) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void injectId(Object arg, String key, boolean killer) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void injectId(Object[] args, String key, boolean killer) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void injectKey(Object arg, String field, String op, String value,
+			boolean killer) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void injectKey(Object[] args, String field, String op, String value,
+			boolean killer) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void injectKey(Object arg, String key, boolean killer) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void injectKey(Object[] args, String key, boolean killer) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void reject(Object arg, String field, String op, String value,
+			boolean killer) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void reject(Object[] args, String field, String op, String value,
+			boolean killer) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void reject(Object arg, String key, boolean killer) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void reject(Object[] args, String key, boolean killer) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void rejectId(Object arg, String key, boolean killer) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void rejectId(Object[] args, String key, boolean killer) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void rejectKey(Object arg, String field, String op, String value,
+			boolean killer) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void rejectKey(Object[] args, String field, String op, String value,
+			boolean killer) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void rejectKey(Object arg, String key, boolean killer) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void rejectKey(Object[] args, String key, boolean killer) {
+		// TODO Auto-generated method stub
+		
+	}
 }

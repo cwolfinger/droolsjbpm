@@ -5,26 +5,37 @@ import java.util.Iterator;
 
 import org.drools.degrees.IDegree;
 import org.drools.degrees.IntervalDegree;
+import org.drools.degrees.factory.IDegreeFactory;
+import org.drools.degrees.operators.IDiscountStrategy;
 import org.drools.degrees.operators.IMergeStrategy;
 import org.drools.degrees.operators.INullHandlingStrategy;
+import org.drools.reteoo.DiscountOperatorInstaller;
 
 public class DefaultIntervalMergeStrategy implements IMergeStrategy {
 	
 	private IntervalIntersectionOperator op = new IntervalIntersectionOperator();
 
-	public IDegree eval(IDegree[] degrees, INullHandlingStrategy nullStrat) {
+	public IDegree eval(IDegree[] degrees, boolean[] kFlags, INullHandlingStrategy nullStrat, IDegreeFactory factory) {
 		IDegree[] args = new IDegree[degrees.length];
+		
+		
 		for (int j = 0; j < degrees.length; j++) {
-			args[j] = degrees[j] != null ? degrees[j] : nullStrat.convertNull(); 
+			args[j] = degrees[j] != null ? degrees[j] : nullStrat.convertNull(factory);							
 		}
-		return op.eval(args);
+		
+		if (kFlags != null) {
+			IDiscountStrategy discountStrat = factory.getDiscountStrategy();
+			return op.eval(discountStrat.discount(args, kFlags,factory), factory);
+		} else {
+			return op.eval(args, factory);
+		}
 	}
 
-	public IDegree eval(IDegree[] args) {
-		return eval(args, new DefaultIntervalNullHandlingStrategy());
+	public IDegree eval(IDegree[] args, IDegreeFactory factory) {
+		return eval(args, null, new DefaultIntervalNullHandlingStrategy(),factory);
 	}
 
-	public IDegree eval(Collection<? extends IDegree> degrees) {
+	public IDegree eval(Collection<? extends IDegree> degrees, IDegreeFactory factory) {
 		IDegree[] args = new IDegree[degrees.size()];
 		Iterator<? extends IDegree> iter = degrees.iterator();
 		INullHandlingStrategy nullStrat = new DefaultIntervalNullHandlingStrategy();
@@ -32,9 +43,9 @@ public class DefaultIntervalMergeStrategy implements IMergeStrategy {
 		int j = 0;
 		while (iter.hasNext()) {
 			IDegree deg = iter.next();
-			args[j++] = deg != null ? deg : nullStrat.convertNull(); 
+			args[j++] = deg != null ? deg : nullStrat.convertNull(factory); 
 		}
-		return op.eval(args);
+		return op.eval(args, factory);
 	}
 
 	public String getName() {

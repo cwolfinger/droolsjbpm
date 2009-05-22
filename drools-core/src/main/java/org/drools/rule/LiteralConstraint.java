@@ -230,7 +230,7 @@ public class LiteralConstraint
 		 
 		
 		 
-	   	this.template = new SingleEvaluationTemplate(id,this.getConstraintKey(),deps,factory.getMergeStrategy(),factory.getNullHandlingStrategy());
+	   	this.template = new SingleEvaluationTemplate(id,this.getConstraintKey(),deps,factory.getMergeStrategy(),factory.getNullHandlingStrategy(),factory);
 	   	return template;
 	}
 

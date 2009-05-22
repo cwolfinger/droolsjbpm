@@ -14,6 +14,9 @@ public class NumericDomainFuzzySet extends FuzzySet {
 	public Number defuzzify() {
 		return ((FuzzyNumericEvaluator) this.membershipEvaluator).getCenter();
 	}
+
+
+	
 	
 	
 }

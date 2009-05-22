@@ -138,26 +138,56 @@ public interface KnowledgeHelper
     
     
     public void inject(Object arg, String field, String op, String value);
+    public void inject(Object arg, String field, String op, String value,boolean killer);
+    public void reject(Object arg, String field, String op, String value);
+    public void reject(Object arg, String field, String op, String value,boolean killer);
     
     public void inject(Object[] args, String field, String op, String value);
+    public void inject(Object[] args, String field, String op, String value,boolean killer);
+    public void reject(Object[] args, String field, String op, String value);
+    public void reject(Object[] args, String field, String op, String value,boolean killer);
     
     public void inject(Object arg, String key);
+    public void inject(Object arg, String key,boolean killer);
+    public void reject(Object arg, String key);
+    public void reject(Object arg, String key,boolean killer);
     
     public void inject(Object[] args, String key);
+    public void inject(Object[] args, String key,boolean killer);
+    public void reject(Object[] args, String key);
+    public void reject(Object[] args, String key,boolean killer);
     
     
     public void injectKey(Object arg, String field, String op, String value);
+    public void injectKey(Object arg, String field, String op, String value,boolean killer);
+    public void rejectKey(Object arg, String field, String op, String value);
+    public void rejectKey(Object arg, String field, String op, String value,boolean killer);
     
     public void injectKey(Object[] args, String field, String op, String value);
+    public void injectKey(Object[] args, String field, String op, String value,boolean killer);
+    public void rejectKey(Object[] args, String field, String op, String value);
+    public void rejectKey(Object[] args, String field, String op, String value,boolean killer);
     
     public void injectKey(Object arg, String key);
+    public void injectKey(Object arg, String key,boolean killer);
+    public void rejectKey(Object arg, String key);
+    public void rejectKey(Object arg, String key,boolean killer);
     
     public void injectKey(Object[] args, String key);
+    public void injectKey(Object[] args, String key,boolean killer);
+    public void rejectKey(Object[] args, String key);
+    public void rejectKey(Object[] args, String key,boolean killer);
     
     
     public void injectId(Object arg, String key);
+    public void injectId(Object arg, String key,boolean killer);
+    public void rejectId(Object arg, String key);
+    public void rejectId(Object arg, String key,boolean killer);
     
     public void injectId(Object[] args, String key);
+    public void injectId(Object[] args, String key,boolean killer);
+    public void rejectId(Object[] args, String key);
+    public void rejectId(Object[] args, String key,boolean killer);
 
     
     

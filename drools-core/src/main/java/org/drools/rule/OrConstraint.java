@@ -65,7 +65,8 @@ public class OrConstraint extends AbstractCompositeConstraint {
     			N,
     			getOperator(),
     			factory.getMergeStrategy(),
-    			factory.getNullHandlingStrategy());
+    			factory.getNullHandlingStrategy(),
+    			factory);
 
     	int Na = this.alphaConstraints.length;
 		int Nb = this.betaConstraints.length;		

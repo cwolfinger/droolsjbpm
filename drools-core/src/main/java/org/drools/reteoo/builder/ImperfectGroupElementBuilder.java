@@ -60,6 +60,9 @@ public class ImperfectGroupElementBuilder extends GroupElementBuilder implements
         this.getGeBuilders().put( GroupElement.EQV,
                 new ImperfectEqvBuilder() );
         
+        this.getGeBuilders().put( GroupElement.IMPLIES,
+                new ImperfectImpliesBuilder() );
+        
         this.getGeBuilders().put( GroupElement.EXISTS,
                              new ImperfectExistsBuilder() );
         
@@ -195,7 +198,7 @@ public class ImperfectGroupElementBuilder extends GroupElementBuilder implements
 													context.getRuleBase().getConfiguration().isMultithreadEvaluation());
         
         
-        instNode.buildEvaluationTemplate(operator,factory.getMergeStrategy(),factory.getNullHandlingStrategy());
+        instNode.buildEvaluationTemplate(operator,factory.getMergeStrategy(),factory.getNullHandlingStrategy(),factory);
         
         context.setTupleSource((LeftTupleSource) utils.attachNode(
         							context,
@@ -257,6 +260,16 @@ public class ImperfectGroupElementBuilder extends GroupElementBuilder implements
 		}				
 	}
 	
+	private static class ImperfectImpliesBuilder extends ImperfectOperatorArgsBuilder  {
+		@Override
+		protected IDegreeCombiner getOperator(IDegreeFactory factory, String params) {
+			if (params == null)
+				return factory.getImplicationOperator();
+			else 
+				return factory.getImplicationOperator(params);
+		}				
+	}
+	
 	private static class ImperfectEqvBuilder extends ImperfectOperatorArgsBuilder  {
 		@Override
 		protected IDegreeCombiner getOperator(IDegreeFactory factory, String params) {
@@ -302,233 +315,7 @@ public class ImperfectGroupElementBuilder extends GroupElementBuilder implements
 	
 	
 	
-	
-//
-//	private static class ImperfectAndBuilder
-//        implements
-//        ReteooComponentBuilder {
-//
-//        /**
-//         * @inheritDoc
-//         * 
-//         * And group elements just iterate over their children
-//         * selecting and calling the build procedure for each one
-//         * 
-//         */
-//        public void build(final BuildContext context,
-//                          final BuildUtils utils,
-//                          final RuleConditionElement rce) {
-//
-//        	
-//        	
-//        	IDegreeFactory factory = ((ImperfectRuleBase) context.getRuleBase()).getDegreeFactory();
-//            
-//            IDegreeCombiner operator;
-//            if (context.isNegated()) {
-//            	operator = factory.getNegationOperator();
-//            		((NegationOperator) operator).setOperator(factory.getAndOperator());
-//            	context.toggleNegated();	
-//            	
-//            } else {
-//            	operator = factory.getAndOperator();
-//            }
-//        	
-//        	
-//            final GroupElement ge = (GroupElement) rce;
-//
-//            // iterate over each child and build it
-//            for ( final Iterator it = ge.getChildren().iterator(); it.hasNext(); ) {
-//
-//                final RuleConditionElement child = (RuleConditionElement) it.next();
-//
-//                final ReteooComponentBuilder builder = utils.getBuilderFor( child );
-//
-//               builder.build( context,
-//                               utils,
-//                               child );
-//
-//                // if a previous object source was bound, but no tuple source
-//                if ( context.getObjectSource() != null && context.getTupleSource() == null ) {
-//                    // adapt it to a Tuple source                    
-//                    context.setTupleSource( (LeftTupleSource) utils.attachNode( context,
-//                                                                                new LeftInputAdapterNode( context.getNextId(),
-//                                                                                                          context.getObjectSource(),
-//                                                                                                          context ) ) );
-//
-//                    context.setObjectSource( null );
-//                }
-//
-//                // if there was a previous tuple source, then a join node is needed
-//                if ( context.getObjectSource() != null && context.getTupleSource() != null ) {
-//                    // so, create the tuple source and clean up the constraints and object source
-//                    final BetaConstraints betaConstraints = utils.createBetaNodeConstraint( context,
-//                                                                                            context.getBetaconstraints(),
-//                                                                                            false );
-//
-//                    Behavior[] behaviors = createBehaviorArray( context );
-//
-//                    context.setTupleSource( (LeftTupleSource) utils.attachNode( context,
-//                    														    new JoinNode( context.getNextId(),
-//                    														    		context.getTupleSource(),
-//                    														    		context.getObjectSource(),
-//                    														    		betaConstraints,
-//                    														    		behaviors,
-//                    														    		context ) ) );
-//                    context.setBetaconstraints( null );
-//                    context.setObjectSource( null );
-//                }
-//            }
-//            
-//            int arity = ge.getChildren().size();
-//            	Object firstChild = ge.getChildren().get(0);
-//            	if (firstChild instanceof Pattern) {
-//            		Pattern pat = (Pattern) firstChild;
-//            		if (pat.getObjectType().isAssignableFrom(new ClassObjectType(InitialFact.class))) 
-//            			arity--;
-//            	}
-////            	if (firstChild.isPatternScopeDelimiter())
-////            		;
-//            		
-//            OperatorInstaller instNode = new AndOperatorInstaller(
-//														context.getTupleSource(),
-//														arity,
-//														context.getNextId(),
-//														context.getPartitionId(),
-//														context.getRuleBase().getConfiguration().isMultithreadEvaluation());
-//            
-//            
-//            instNode.buildEvaluationTemplate(operator,factory.getMergeStrategy(),factory.getNullHandlingStrategy());
-//            
-//            context.setTupleSource((LeftTupleSource) utils.attachNode(
-//            							context,
-//            							instNode
-//            							));
-//            
-//            
-//            
-//        }
-//
-//        public boolean requiresLeftActivation(final BuildUtils utils,
-//                                              final RuleConditionElement rce) {
-//            final GroupElement and = (GroupElement) rce;
-//
-//            // need to check this because in the case of an empty rule, the root AND
-//            // will have no child
-//            if ( and.getChildren().isEmpty() ) {
-//                return true;
-//            }
-//
-//            final RuleConditionElement child = (RuleConditionElement) and.getChildren().get( 0 );
-//            final ReteooComponentBuilder builder = utils.getBuilderFor( child );
-//
-//            return builder.requiresLeftActivation( utils,
-//                                                   child );
-//        }
-//    }
-//
-//    private static class ImperfectOrBuilder
-//        implements
-//        ReteooComponentBuilder {
-//
-//       
-//    	
-//    	 public void build(final BuildContext context,
-//                 final BuildUtils utils,
-//                 final RuleConditionElement rce) {
-//
-//    		 IDegreeFactory factory = ((ImperfectRuleBase) context.getRuleBase()).getDegreeFactory();
-//
-//    		 IDegreeCombiner operator;
-//             if (context.isNegated()) {
-//             	operator = factory.getNegationOperator();
-//             		((NegationOperator) operator).setOperator(factory.getOrOperator());
-//             	context.toggleNegated();	
-//             	
-//             } else {
-//             	operator = factory.getOrOperator();
-//             }
-//    		 
-//	
-//    		 final GroupElement ge = (GroupElement) rce;
-//
-//    		 // 	iterate over each child and build it
-//    		 for ( final Iterator it = ge.getChildren().iterator(); it.hasNext(); ) {
-//    			 
-//    			 final RuleConditionElement child = (RuleConditionElement) it.next();
-//
-//    			 final ReteooComponentBuilder builder = utils.getBuilderFor( child );
-//
-//    			 builder.build( context,
-//    					 utils,
-//    					 child );
-//
-//       // 	if a previous object source was bound, but no tuple source
-//    			 if ( context.getObjectSource() != null && context.getTupleSource() == null ) {
-//           // 	adapt it to a Tuple source                    
-//    				 context.setTupleSource( (LeftTupleSource) utils.attachNode( context,
-//                                                                       new LeftInputAdapterNode( context.getNextId(),
-//                                                                                                 context.getObjectSource(),
-//                                                                                                 context ) ) );
-//
-//    				 context.setObjectSource( null );
-//    			 }
-//
-//    			 // if there was a previous tuple source, then a join node is needed
-//    			 if ( context.getObjectSource() != null && context.getTupleSource() != null ) {
-//           // 	so, create the tuple source and clean up the constraints and object source
-//    				 final BetaConstraints betaConstraints = utils.createBetaNodeConstraint( context,
-//    						 context.getBetaconstraints(),
-//    						 false );
-//
-//    				 Behavior[] behaviors = createBehaviorArray( context );
-//
-//    				 context.setTupleSource( (LeftTupleSource) utils.attachNode( context,
-//    						 new JoinNode( context.getNextId(),
-//    								 context.getTupleSource(),
-//    								 context.getObjectSource(),
-//    								 betaConstraints,
-//    								 behaviors,
-//    								 context ) ) );
-//    				 context.setBetaconstraints( null );
-//    				 context.setObjectSource( null );
-//    			 }
-//    		 }
-//    		     		              
-//    		 OperatorInstaller instNode = new OrOperatorInstaller(
-//						context.getTupleSource(),
-//						ge.getChildren().size(),
-//						context.getNextId(),
-//						context.getPartitionId(),
-//						context.getRuleBase().getConfiguration().isMultithreadEvaluation());
-//    		 
-//    		 
-//    		 instNode.buildEvaluationTemplate(operator,factory.getMergeStrategy(),factory.getNullHandlingStrategy());
-//    		 
-//    		 context.setTupleSource((LeftTupleSource) utils.attachNode(
-//						context,
-//						instNode
-//						));
-//             
-//    	 }
-//
-//    	 public boolean requiresLeftActivation(final BuildUtils utils,
-//    			 final RuleConditionElement rce) {
-//    		 final GroupElement and = (GroupElement) rce;
-//
-//    		 // need to check this because in the case of an empty rule, the root AND
-//   // 	will have no child
-//    		 if ( and.getChildren().isEmpty() ) {
-//    			 return true;
-//    		 }
-//
-//    		 final RuleConditionElement child = (RuleConditionElement) and.getChildren().get( 0 );
-//    		 final ReteooComponentBuilder builder = utils.getBuilderFor( child );
-//
-//    		 return builder.requiresLeftActivation( utils,
-//                                          child );
-//    	 }
-//    	
-//    }
+
 
     private static class ImperfectNotBuilder
         implements
@@ -659,7 +446,7 @@ public class ImperfectGroupElementBuilder extends GroupElementBuilder implements
                     behaviors,
                     context );
             
-            exNode.buildEvaluationTemplate(operator,context.getRule().getDependencies(),factory.getMergeStrategy(),factory.getNullHandlingStrategy());
+            exNode.buildEvaluationTemplate(operator,context.getRule().getDependencies(),factory.getMergeStrategy(),factory.getNullHandlingStrategy(),factory);
             
             context.setTupleSource( (LeftTupleSource) utils.attachNode( context,
                                                                          exNode) );
@@ -771,7 +558,7 @@ public class ImperfectGroupElementBuilder extends GroupElementBuilder implements
                 behaviors,
                 context );
         
-        exNode.buildEvaluationTemplate(operator,context.getRule().getDependencies(),factory.getMergeStrategy(),factory.getNullHandlingStrategy());
+        exNode.buildEvaluationTemplate(operator,context.getRule().getDependencies(),factory.getMergeStrategy(),factory.getNullHandlingStrategy(),factory);
         
         context.setTupleSource( (LeftTupleSource) utils.attachNode( context,
                                                                      exNode) );

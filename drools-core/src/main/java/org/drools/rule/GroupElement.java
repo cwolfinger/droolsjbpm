@@ -39,6 +39,7 @@ public class GroupElement extends ConditionalElement
     public static final Type OR = Type.OR;
     public static final Type NOT = Type.NOT;
     public static final Type XOR = Type.XOR;
+    public static final Type IMPLIES = Type.IMPLIES;
     public static final Type EQV = Type.EQV;
     public static final Type EXISTS = Type.EXISTS;
 //    public static final Type FORANY = Type.FORANY;
@@ -323,6 +324,10 @@ public class GroupElement extends ConditionalElement
         return XOR.equals( this.type );
     }
     
+    public boolean isImplies() {
+        return IMPLIES.equals( this.type );
+    }
+    
     public boolean isEqv() {
         return EQV.equals( this.type );
     }
@@ -408,6 +413,7 @@ public class GroupElement extends ConditionalElement
         OR(false), 
         NOT(true),
         XOR(false),
+        IMPLIES(false),
         EQV(false),
         EXISTS(true),
         AVG(false),

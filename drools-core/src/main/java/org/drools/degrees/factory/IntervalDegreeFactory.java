@@ -1,13 +1,19 @@
 package org.drools.degrees.factory;
 
+import java.util.StringTokenizer;
+
 import org.drools.degrees.IDegree;
 import org.drools.degrees.IntervalDegree;
+import org.drools.degrees.SimpleDegree;
 import org.drools.degrees.operators.IDegreeCombiner;
+import org.drools.degrees.operators.IDiscountOperator;
+import org.drools.degrees.operators.IDiscountStrategy;
 import org.drools.degrees.operators.IMergeStrategy;
 import org.drools.degrees.operators.INullHandlingStrategy;
 import org.drools.degrees.operators.intervals.DefaultIntervalMergeStrategy;
 import org.drools.degrees.operators.intervals.DefaultIntervalNullHandlingStrategy;
 import org.drools.degrees.operators.intervals.IntervalDiscountOperator;
+import org.drools.degrees.operators.intervals.IntervalDiscountStrategy;
 import org.drools.degrees.operators.intervals.IntervalDoubleMPOperator;
 import org.drools.degrees.operators.intervals.IntervalEquivOperator;
 import org.drools.degrees.operators.intervals.IntervalExistsOperator;
@@ -15,6 +21,7 @@ import org.drools.degrees.operators.intervals.IntervalForAnyOperator;
 import org.drools.degrees.operators.intervals.IntervalForallOperator;
 import org.drools.degrees.operators.intervals.IntervalIntersectionOperator;
 import org.drools.degrees.operators.intervals.IntervalLukasAndOperator;
+import org.drools.degrees.operators.intervals.IntervalLukasImplicationOperator;
 import org.drools.degrees.operators.intervals.IntervalLukasOrOperator;
 import org.drools.degrees.operators.intervals.IntervalMaxOrOperator;
 import org.drools.degrees.operators.intervals.IntervalMinAndOperator;
@@ -31,6 +38,8 @@ public class IntervalDegreeFactory implements IDegreeFactory {
 	public static IDegree FALSE = new IntervalDegree(0,0);
 	public static IDegree TRUE = new IntervalDegree(1,1);
 	public static IDegree UNKNOWN = new IntervalDegree(0,1);
+	
+	private boolean cwa;
 	
 	public IDegree False() {
 		return FALSE;
@@ -120,7 +129,7 @@ public class IntervalDegreeFactory implements IDegreeFactory {
 		return new IntervalLukasOrOperator();
 	}
 
-	public IDegreeCombiner getDiscountOperator() {
+	public IDiscountOperator getDiscountOperator() {
 		return new IntervalDiscountOperator();
 	}
 
@@ -128,6 +137,10 @@ public class IntervalDegreeFactory implements IDegreeFactory {
 		return new IntervalDoubleMPOperator();
 	}
 	
+	
+	public IDegreeCombiner getImplicationOperator() {
+		return new IntervalLukasImplicationOperator();
+	}
 	
 	
 	
@@ -161,6 +174,10 @@ public class IntervalDegreeFactory implements IDegreeFactory {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	public IDegreeCombiner getImplicationOperator(String params) {
+		return new IntervalLukasImplicationOperator();
+	}
 
 	public IDegreeCombiner getHedgeOperator() {
 		throw new UnsupportedOperationException("Not yet...");
@@ -171,8 +188,28 @@ public class IntervalDegreeFactory implements IDegreeFactory {
 	}
 
 	public IDegree buildDegree(String priorStr) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Not yet...");
+		if (priorStr.equals("unknown"))
+			return Unknown();
+		
+		
+		StringTokenizer tok = new StringTokenizer(priorStr,"[,]");
+		if (tok.countTokens() == 2) {
+			try {
+				float low = Float.parseFloat(tok.nextToken());
+				float upp = Float.parseFloat(tok.nextToken());
+				return new IntervalDegree(low, upp);
+			} catch (NumberFormatException nfe) {
+				return Unknown();
+			}	
+						
+		} else {
+			try {
+				float val = Float.parseFloat(tok.nextToken());
+				return new IntervalDegree(val,val);
+			} catch (NumberFormatException nfe) {
+				return Unknown();
+			}
+		}
 	}
 
 	public IDegreeCombiner getModusPonensOperator(String params) {
@@ -186,6 +223,18 @@ public class IntervalDegreeFactory implements IDegreeFactory {
 		} else
 			return getModusPonensOp();
 		
+	}
+
+	public IDiscountStrategy getDiscountStrategy() {
+		return new IntervalDiscountStrategy(getDiscountOperator());
+	}
+
+	public boolean isClosedWorldAssumption() {
+		return cwa;
+	}
+
+	public void setClosedWorldAssumption(boolean cwa) {
+		this.cwa = cwa;		
 	}
 
 }

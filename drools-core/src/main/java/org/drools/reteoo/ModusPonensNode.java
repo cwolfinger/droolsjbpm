@@ -103,6 +103,8 @@ public class ModusPonensNode extends JoinNode {
             ImperfectRightTuple dummyRT = new ImperfectRightTuple(handle,this,null);
             
             Evaluation implEval = this.constraints.isSatisfiedCachedLeft( new ContextEntry[] {adHocCtx}, handle, factory)[0];
+            	// For future injections...
+            	((ImperfectFactHandle) leftTuple.getLastHandle()).addPropertyDegree(implEval);
 
         	
             ArgList args = leftTuple.getArgList();
@@ -115,7 +117,7 @@ public class ModusPonensNode extends JoinNode {
     		
     		
     		
-        	EvalRecord mpRecord = new EvalRecord(this.id,getMPOperator(),factory.getMergeStrategy(),factory.getNullHandlingStrategy(),new ArgList());
+        	EvalRecord mpRecord = new EvalRecord(this.id,getMPOperator(),factory.getMergeStrategy(),factory.getNullHandlingStrategy(),factory,new ArgList());
         		Evaluation core = premiseRecord.getOperands().iterator().next();
         		core.deleteObserver(premiseRecord);
         	mpRecord.addEvaluation(core);        		

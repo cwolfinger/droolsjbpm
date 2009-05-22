@@ -136,6 +136,7 @@ public class RuleBaseConfiguration
     private String                         ruleBaseUpdateHandler;
     private boolean 					   imperfect;    
     
+    
 
     private EventProcessingMode            eventProcessingMode;
 
@@ -155,6 +156,7 @@ public class RuleBaseConfiguration
     private NodeInstanceFactoryRegistry    processNodeInstanceFactoryRegistry;
 
     private String						   imperfectFactoryName;
+    private boolean						   cwa;
     
     private transient ClassLoader          classLoader;
 
@@ -185,6 +187,7 @@ public class RuleBaseConfiguration
         out.writeInt( maxThreads );
         out.writeObject( eventProcessingMode );
         out.writeObject(imperfectFactoryName);
+        out.writeBoolean(cwa);
     }
 
     public void readExternal(ObjectInput in) throws IOException,
@@ -213,6 +216,7 @@ public class RuleBaseConfiguration
         maxThreads = in.readInt();
         eventProcessingMode = (EventProcessingMode) in.readObject();
         imperfectFactoryName = (String) in.readObject();
+        cwa = in.readBoolean();
     }
 
     /**
@@ -304,12 +308,16 @@ public class RuleBaseConfiguration
             setEventProcessingMode( EventProcessingMode.determineAssertBehaviour( StringUtils.isEmpty( value ) ? "cloud" : value ) );
         } else if ( name.equals( "org.drools.chance.factory" ) ) {
             setFactoryName(value);
+        } else if ( name.equals( "org.drools.chance.cwa" ) ) {
+            setClosedWorldAssumption(StringUtils.isEmpty( value ) ? true : Boolean.valueOf( value ));
         } else if ( name.equals( "org.drools.chance.enable" ) ) {
-            setImperfectActive(Boolean.parseBoolean(value));
+            setImperfectActive(StringUtils.isEmpty( value ) ? true : Boolean.valueOf( value ));
         }
     }
 
-    public String getProperty(String name) {
+    
+
+	public String getProperty(String name) {
         name = name.trim();
         if ( StringUtils.isEmpty( name ) ) {
             return null;
@@ -357,7 +365,9 @@ public class RuleBaseConfiguration
             return getEventProcessingMode().toExternalForm();
         } else if ( name.equals( "org.drools.chance.factory" ) ) {
             return getFactoryName();
-        }
+        } else if ( name.equals( "org.drools.chance.cwa" ) ) {
+            return Boolean.toString( getClosedWorldAssumption());
+        } 
 
         return null;
     }
@@ -462,11 +472,21 @@ public class RuleBaseConfiguration
         setFactoryName(this.chainedProperties.getProperty("org.drools.chance.factory", "org.drools.degrees.factory.SimpleDegreeFactory"));
         
         setImperfectActive( Boolean.valueOf( this.chainedProperties.getProperty("org.drools.chance.enable", "false")).booleanValue());
+        
+        setClosedWorldAssumption( Boolean.valueOf( this.chainedProperties.getProperty("org.drools.chance.cwa", "true")).booleanValue());
     }
 
     private void setImperfectActive(boolean booleanValue) {
     	this.imperfect = booleanValue;		
 	}
+    
+    private void setClosedWorldAssumption(boolean b) {
+		this.cwa = b;
+	}
+    
+    public boolean getClosedWorldAssumption() {
+    	return this.cwa;
+    }
 
 	/**
      * Makes the configuration object immutable. Once it becomes immutable,

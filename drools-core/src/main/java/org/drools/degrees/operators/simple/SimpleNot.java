@@ -9,7 +9,7 @@ import org.drools.degrees.operators.NegationOperator;
 
 public class SimpleNot extends NegationOperator {
 
-	protected IDegree negate(IDegree arg) {
+	public IDegree negate(IDegree arg) {
 		return new SimpleDegree(1-arg.getDegree().getValue());
 	}
 

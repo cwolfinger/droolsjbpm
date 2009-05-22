@@ -120,7 +120,7 @@ public class SingleLeftTupleSinkAdapter extends AbstractLeftTupleSinkAdapter {
 			InternalWorkingMemory workingMemory, IDegreeFactory factory,
 			EvalRecord record, boolean leftTupleMemoryEnabled) {
     	
-    	EvalRecord masterRecord = new EvalRecord(-1,factory.getAndOperator(),factory.getMergeStrategy(),factory.getNullHandlingStrategy(),new ArgList());
+    	EvalRecord masterRecord = new EvalRecord(-1,factory.getAndOperator(),factory.getMergeStrategy(),factory.getNullHandlingStrategy(),factory,new ArgList());
     		masterRecord.addEvaluation(record);
     		
 //    		System.out.println("--------------------------------------");

@@ -58,7 +58,7 @@ public class ImperfectExistsNode extends ExistsNode implements Observer {
 	}
 	
 	
-	public EvaluationTemplate buildEvaluationTemplate(IDegreeCombiner operator, Map<ConstraintKey,Set<String>> deps, IMergeStrategy mergeStrat, INullHandlingStrategy nullStrat) {
+	public EvaluationTemplate buildEvaluationTemplate(IDegreeCombiner operator, Map<ConstraintKey,Set<String>> deps, IMergeStrategy mergeStrat, INullHandlingStrategy nullStrat, IDegreeFactory factory) {
 		
 		
 		
@@ -69,7 +69,8 @@ public class ImperfectExistsNode extends ExistsNode implements Observer {
 				1,
 				operator,
 				mergeStrat,
-				nullStrat);
+				nullStrat,
+				factory);
 		
 		return template;
 	

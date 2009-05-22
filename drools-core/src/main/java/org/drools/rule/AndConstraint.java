@@ -274,7 +274,8 @@ public class AndConstraint extends AbstractCompositeConstraint {
     			N,
     			this.getOperator(),
     			factory.getMergeStrategy(),
-    			factory.getNullHandlingStrategy());
+    			factory.getNullHandlingStrategy(),
+    			factory);
 
     	int Na = this.alphaConstraints.length;
 		int Nb = this.betaConstraints.length;		

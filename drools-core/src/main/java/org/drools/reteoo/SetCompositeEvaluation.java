@@ -28,10 +28,10 @@ public class SetCompositeEvaluation extends CompositeEvaluation {
 	//IOperandSet args;
 	
 	public SetCompositeEvaluation(int id, ConstraintKey key, Set<String> deps,
-			IDegreeCombiner operator, OperandSet opSet,
+			IDegreeCombiner operator, IDegreeFactory factory, OperandSet opSet,
 			IMergeStrategy mergeStrat, INullHandlingStrategy nullStrat,
 			BetaConstraints joinConstraints) {
-		super(id,key,deps,mergeStrat,nullStrat, new ArgList());
+		super(id,key,deps,mergeStrat,nullStrat, factory, new ArgList());
 		
 		setOperator(operator);
 		

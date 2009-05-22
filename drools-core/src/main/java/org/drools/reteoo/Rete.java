@@ -285,7 +285,7 @@ public class Rete extends ObjectSource
 		}
 		else {
 			if (! node.equals(constraintIndex.get(key)))
-				throw new RuntimeDroolsException("Found duplicate key: this may be a know issue");
+				throw new RuntimeDroolsException("Found duplicate key: "+key+" this may be a know issue");
 		}
 	}
 	

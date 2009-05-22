@@ -55,6 +55,8 @@ import org.drools.concurrent.ExecutorService;
 import org.drools.definition.process.Process;
 import org.drools.degrees.IDegree;
 import org.drools.degrees.factory.IDegreeFactory;
+import org.drools.degrees.operators.IDegreeCombiner;
+import org.drools.degrees.operators.NegationOperator;
 import org.drools.event.AgendaEventListener;
 import org.drools.event.AgendaEventSupport;
 import org.drools.event.RuleBaseEventListener;
@@ -1943,11 +1945,15 @@ public abstract class AbstractWorkingMemory
     
     
     
+    public void reject(String ruleName, ArgList args, ConstraintKey key, IDegree degree, boolean killer) {
+    	NegationOperator non = (NegationOperator) ((ImperfectRuleBase) getRuleBase()).getDegreeFactory().getNegationOperator();
+    		IDegree negDegree = non.negate(degree);
+    	inject(ruleName, args, key, negDegree, killer);
+    }
     
     
     
-    
-    public void inject(String ruleName, ArgList args, ConstraintKey key, IDegree degree) {
+    public void inject(String ruleName, ArgList args, ConstraintKey key, IDegree degree, boolean killer) {
     	Object factHandle = this.getObjectStore().getHandleForObject(args.getObject());
     	    	
     	IGammaNode node = this.ruleBase.getRete().getNode(key);
@@ -1956,7 +1962,7 @@ public abstract class AbstractWorkingMemory
     		//Object does not exist, YET
     		//Prepare eval to be collected...    	
     		if (node != null)
-    			node.storeEvaluation(args, prepareEval(ruleName,args,key,degree,node));
+    			node.storeEvaluation(args, prepareEval(ruleName,args,key,degree,node,killer));
     	} else {
     		if (factHandle instanceof ImperfectFactHandle) {
     			
@@ -1967,13 +1973,13 @@ public abstract class AbstractWorkingMemory
     			if (eval == null && node != null) {    				    				
     				// Object exsits, but its prop hasn't been evaluated yet
     				// Prepare eval to be collected at the node...
-    				node.storeEvaluation(args,prepareEval(ruleName,args,key,degree,node));
+    				node.storeEvaluation(args,prepareEval(ruleName,args,key,degree,node,killer));
     				    				    				
     			} else if (eval != null) {
     				// Object exists and has already been eval'ed
     				// Add new degree to evaluation
     				//TODO: 1 should be confidence!    				
-    				eval.addDegree(ruleName, degree,1,true);
+    				eval.addDegree(ruleName, degree,1,killer,true);
     				//Notification is implicit in the record...
     			} else if (node == null) {
     				System.out.println("Warning - injected USELESS eval");
@@ -1994,12 +2000,13 @@ public abstract class AbstractWorkingMemory
     }
 
 	private Evaluation prepareEval(String ruleName, ArgList args, ConstraintKey key,
-			IDegree degree, IGammaNode node) {
+			IDegree degree, IGammaNode node, boolean killer) {
 				
 		EvaluationTemplate templ = node.getEvaluationTemplate(key);
 		
-		return templ.spawn(ruleName,degree, args);
-		
+		Evaluation eval = templ.spawn(ruleName,degree, args);
+			eval.setKiller(ruleName,killer);
+		return eval;
 	}
 
 }

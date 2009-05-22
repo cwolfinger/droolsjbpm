@@ -668,7 +668,13 @@ public class StatefulKnowledgeSessionImpl
     
     
 	public void inject(String rule, ArgList args, ConstraintKey key,
-			IDegree degree) {
+			IDegree degree, boolean killer) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void reject(String ruleName, ArgList args, ConstraintKey key,
+			IDegree degree, boolean killer) {
 		// TODO Auto-generated method stub
 		
 	}

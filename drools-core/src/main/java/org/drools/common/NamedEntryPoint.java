@@ -489,7 +489,13 @@ public class NamedEntryPoint
 
 	
 	public void inject(String premise, ArgList args,
-			ConstraintKey key, IDegree degree) {
+			ConstraintKey key, IDegree degree, boolean killer) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void reject(String ruleName, ArgList args, ConstraintKey key,
+			IDegree degree, boolean killer) {
 		// TODO Auto-generated method stub
 		
 	}

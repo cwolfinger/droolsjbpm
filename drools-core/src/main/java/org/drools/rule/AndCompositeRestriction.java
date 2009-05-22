@@ -51,7 +51,7 @@ public class AndCompositeRestriction extends AbstractCompositeRestriction {
                                                   handle,
                                                   workingMemory,
                                                   context, factory );
-    	return factory.getAndOperator().eval(degs);
+    	return factory.getAndOperator().eval(degs,factory);
         
 	}
 
@@ -81,7 +81,7 @@ public class AndCompositeRestriction extends AbstractCompositeRestriction {
                                                             handle, factory );
             
         
-        return factory.getAndOperator().eval(degs);
+        return factory.getAndOperator().eval(degs,factory);
 	}
 
 	
@@ -110,7 +110,7 @@ public class AndCompositeRestriction extends AbstractCompositeRestriction {
         													contextEntry.contextEntries[i],
         													factory );
                    
-        return factory.getAndOperator().eval(degs);
+        return factory.getAndOperator().eval(degs,factory);
 	}
 
     

@@ -241,7 +241,8 @@ public class InstanceNotEqualsConstraint
 												this.getConstraintKey(),
 												dependencies.get(this.getConstraintKey()),
 												factory.getMergeStrategy(),
-												factory.getNullHandlingStrategy());
+												factory.getNullHandlingStrategy(),
+												factory);
 		return template;
 	}
 	

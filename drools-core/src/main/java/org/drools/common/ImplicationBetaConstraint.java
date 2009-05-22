@@ -230,7 +230,7 @@ public class ImplicationBetaConstraint implements BetaConstraints {
 
 	public EvaluationTemplate[] buildEvaluationTemplates(int id, Map<ConstraintKey, Set<String>> dependencies, IDegreeFactory factory) {
 		template = new EvaluationTemplate[1];
-			template[0] = new SingleEvaluationTemplate(id,singletonKeys[0],dependencies.get(singletonKeys[0]),factory.getMergeStrategy(),factory.getNullHandlingStrategy());			
+			template[0] = new SingleEvaluationTemplate(id,singletonKeys[0],dependencies.get(singletonKeys[0]),factory.getMergeStrategy(),factory.getNullHandlingStrategy(),factory);			
 		return template;
 	}
 

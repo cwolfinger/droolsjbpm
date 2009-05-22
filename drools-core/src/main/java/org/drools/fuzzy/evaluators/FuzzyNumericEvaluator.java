@@ -36,10 +36,8 @@ public class FuzzyNumericEvaluator extends BaseImperfectEvaluator {
 	public FuzzyNumericEvaluator(Operator op, final ValueType type,
             				final boolean isNegated,
             				final String parameters) {
-			super( type , op );
+			super( type , op, parameters );
 			this.isNegated = isNegated;
-			
-            this.mu = this.parseParameters( parameters );	        
 	}
 	
 	
@@ -58,11 +56,13 @@ public class FuzzyNumericEvaluator extends BaseImperfectEvaluator {
 	
 	
    
-    protected IDegree eval(Number number, IDegreeFactory factory) {
+    protected IDegree eval(Object left, Object right, IDegreeFactory factory) {
     			
-		if (number == null) return factory.Unknown();
+		if (left == null) return factory.Unknown();
+		if (! (left instanceof Number))
+			throw new RuntimeDroolsException("Numbers only");
 		
-		return mu.eval(number, factory);
+		return mu.eval((Number) left, factory);
     }
     
     
@@ -70,72 +70,12 @@ public class FuzzyNumericEvaluator extends BaseImperfectEvaluator {
     	return "FuzzyNumericEvaluator - " + getOperator().getOperatorString(); 
     }
     
-    
-    
-    
-    
-    public IDegree evaluate(InternalWorkingMemory workingMemory, IDegreeFactory factory,
-			InternalReadAccessor extractor, Object object1, FieldValue value) {
-		
-    	Object field = extractor.getValue(object1);
-		if (field == null)
-			return eval(null, factory);
-												    	    
-    	return eval((Number) field, factory);
-		
-	}
-    
-    
-	public boolean evaluate(InternalWorkingMemory workingMemory,
-			InternalReadAccessor extractor, Object object1, FieldValue value) {			
-		return evaluate(workingMemory, getFactory(workingMemory), extractor, object1, value).toBoolean();
-	}
-
-	
-	public IDegree evaluate(InternalWorkingMemory workingMemory,
-			IDegreeFactory factory,
-			InternalReadAccessor leftExtractor, Object left,
-			InternalReadAccessor rightExtractor, Object right) {
-		throw new RuntimeDroolsException("Fuzzy Numeric Evaluator : Unary op ");
-	}
-	
-	public boolean evaluate(InternalWorkingMemory workingMemory,
-			InternalReadAccessor leftExtractor, Object left,
-			InternalReadAccessor rightExtractor, Object right) {
-		throw new RuntimeDroolsException("Fuzzy Numeric Evaluator : Unary op ");
-	}
-
-	
-	public IDegree evaluateUncertainCachedLeft(InternalWorkingMemory workingMemory,
-			VariableContextEntry context, Object object1) {
-		throw new RuntimeDroolsException("Fuzzy Numeric Evaluator : Unary op ");	
-	}
-	public boolean evaluateCachedLeft(InternalWorkingMemory workingMemory,
-			VariableContextEntry context, Object object1) {
-		return evaluateUncertainCachedLeft(workingMemory,context,object1).toBoolean();
-	}
-
-	
-	public IDegree evaluateUncertainCachedRight(InternalWorkingMemory workingMemory,
-			VariableContextEntry context, Object object2) {
-		throw new RuntimeDroolsException("Fuzzy Numeric Evaluator : Unary op ");
-	}
-	public boolean evaluateCachedRight(InternalWorkingMemory workingMemory,
-			VariableContextEntry context, Object object2) {
-		return evaluateUncertainCachedRight(workingMemory, context, object2).toBoolean();
-	}
-	
-	
-	
-	
-	
+       
 	public Number getCenter() {
 		return mu.getCenter();
 	}
 	
-	
-	
-	
+			
 	@Override
     public int hashCode() {
         final int PRIME = 37;
@@ -161,11 +101,11 @@ public class FuzzyNumericEvaluator extends BaseImperfectEvaluator {
      *
      * @param parameters
      */
-    private INumericSetMembershipFunction parseParameters(String parameters) {
+    public void parseParameters(String parameters) {
     	    	    	    	
         StringTokenizer tok = new StringTokenizer(parameters," ,");   
         if (tok.countTokens() == 0) 
-        	return new SkepticNumericMembershipFunction();
+        	setMu(new SkepticNumericMembershipFunction());
         	
         String className = tok.nextToken();
                 
@@ -185,7 +125,8 @@ public class FuzzyNumericEvaluator extends BaseImperfectEvaluator {
 					
 					INumericSetMembershipFunction mu = (INumericSetMembershipFunction) obj;
 					mu.init(params);
-					return mu;
+					setMu(mu);
+					return;
 				}
 			} catch (ClassNotFoundException e) {	
 				System.out.println(e.toString());
@@ -214,6 +155,17 @@ public class FuzzyNumericEvaluator extends BaseImperfectEvaluator {
 			
         
     }
+
+
+	public INumericSetMembershipFunction getMu() {
+		return mu;
+	}
+
+
+
+	public void setMu(INumericSetMembershipFunction mu) {
+		this.mu = mu;
+	}
 
 }
 	

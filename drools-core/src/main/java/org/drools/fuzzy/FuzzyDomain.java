@@ -8,11 +8,12 @@ import java.util.Map;
 
 import org.drools.base.ValueType;
 import org.drools.base.evaluators.EvaluatorDefinition;
+import org.drools.base.evaluators.ImperfectEvaluatorDefinition;
 import org.drools.base.evaluators.Operator;
 import org.drools.base.evaluators.EvaluatorDefinition.Target;
 import org.drools.spi.Evaluator;
 
-public abstract class FuzzyDomain implements EvaluatorDefinition {
+public abstract class FuzzyDomain implements ImperfectEvaluatorDefinition {
 	
 	
 	private Map<String, FuzzySet> granules;

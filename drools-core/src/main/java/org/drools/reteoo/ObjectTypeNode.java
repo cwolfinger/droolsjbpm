@@ -199,7 +199,8 @@ public class ObjectTypeNode extends ObjectSource
     										getConstraintKey(),
     										deps,
     										factory.getMergeStrategy(),
-    										factory.getNullHandlingStrategy());
+    										factory.getNullHandlingStrategy(),
+    										factory);
 		return templ;
 	}
 
@@ -640,7 +641,7 @@ public class ObjectTypeNode extends ObjectSource
 
 		Evaluation eval = factHandle.getPropertyDegree(key); 
 		if (eval == null) {			
-			eval = this.template.spawn(storedEvals == null ? factory.True() : factory.False(),new ArgList(factHandle.getObject())); 				
+			eval = this.template.spawn(storedEvals == null ? factory.True() : factory.Unknown(),new ArgList(factHandle.getObject())); 				
 			factHandle.addPropertyDegree(eval);
 		}
 		

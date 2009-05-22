@@ -34,44 +34,17 @@ public class SeemsEvaluator
 	public SeemsEvaluator() {		
 		this(ValueType.OBJECT_TYPE,false,"");
 	}
-	
-	
+		
 	public SeemsEvaluator(final ValueType type,
             				final boolean isNegated,
             				final String parameters) {
 			super( type,
-                   SeemsEvaluatorDefinition.SEEMS);            
+                   SeemsEvaluatorDefinition.SEEMS,
+                   parameters);            
 	}
 	
 	
-	
-	
-	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        super.readExternal(in);
-        
 
-    }
-
-    public void writeExternal(ObjectOutput out) throws IOException {
-        super.writeExternal(out);
-
-
-    }
-	
-	
-   
-    protected IDegree eval(WorkingMemory workingMemory) {
-    	if (! (workingMemory.getRuleBase() instanceof ImperfectRuleBase)) {
-			throw new RuntimeDroolsException("Seems Evaluator : Uncertainty has not been enabled in the current Rule Base");
-		}
-		IDegreeFactory factory = ((ImperfectRuleBase) workingMemory.getRuleBase()).getDegreeFactory();
-		
-		return eval(factory);
-    }
-    
-    protected IDegree eval(IDegreeFactory factory) {    	
-		return factory.Unknown();
-    }
     
     public IDegree evaluate(InternalWorkingMemory workingMemory,
     		IDegreeFactory factory,
@@ -79,16 +52,11 @@ public class SeemsEvaluator
 			Object object1, 
 			FieldValue value) {
 		
-    	Evaluator set = ((IDynamicEvaluable) object1).getPred(value.toString());
-    	
-    	return set.evaluate(workingMemory, factory, extractor, object1, new LongFieldImpl(1));
-		
+    	Evaluator set = ((IDynamicEvaluable) object1).getPred(value.toString());    	
+    	return set.evaluate(workingMemory, factory, extractor, object1, new LongFieldImpl(1));		
 	}
     
-	public boolean evaluate(InternalWorkingMemory workingMemory,
-			InternalReadAccessor extractor, Object object1, FieldValue value) {			
-		return eval(workingMemory).toBoolean();
-	}
+	
 
 	
 	public IDegree evaluate(InternalWorkingMemory workingMemory,
@@ -96,7 +64,7 @@ public class SeemsEvaluator
 			InternalReadAccessor leftExtractor, Object left,
 			InternalReadAccessor rightExtractor, Object right) {
 		
-		
+
 		Object set = rightExtractor.getValue(right);
 			if (set == null) {
 				return factory.Unknown();
@@ -104,69 +72,18 @@ public class SeemsEvaluator
 		return ((Evaluator) set).evaluate(workingMemory, factory, leftExtractor, left, new LongFieldImpl(1));
 								
 	}
-	
-	public boolean evaluate(InternalWorkingMemory workingMemory,
-			InternalReadAccessor leftExtractor, Object left,
-			InternalReadAccessor rightExtractor, Object right) {		
-		return eval(workingMemory).toBoolean();
-	}
 
 	
-	public IDegree evaluateCachedLeft(InternalWorkingMemory workingMemory,
-			VariableContextEntry context, IDegreeFactory factory, Object object1) {
-		return eval(factory);
-	}
-	public boolean evaluateCachedLeft(InternalWorkingMemory workingMemory,
-			VariableContextEntry context, Object object1) {
-		return eval(workingMemory).toBoolean();
-	}
 
-	
-	public IDegree evaluateCachedRight(InternalWorkingMemory workingMemory,
-			VariableContextEntry context, IDegreeFactory factory, Object object2) {
-		return eval(factory);
-	}
-	public boolean evaluateCachedRight(InternalWorkingMemory workingMemory,
-			VariableContextEntry context, Object object2) {
-		return eval(workingMemory).toBoolean();
-	}
-	
-	
-	
-	
 	@Override
-    public int hashCode() {
-        final int PRIME = 37;
-        int result = PRIME * super.hashCode();                    
-        return result;
-    }
+	protected IDegree eval(Object left, Object right, IDegreeFactory factory) {
+		return factory.Unknown();
+	}
 	
 	
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    @Override
-    public boolean equals(Object obj) {
-        if ( this == obj ) return true;
-        if ( !super.equals( obj ) ) return false;
-        if ( getClass() != obj.getClass() ) return false;     
-        return true;
-    }
+	
 
-    
-    public String toString() {
-    	return SeemsEvaluatorDefinition.SEEMS.getOperatorString();
-    }
-    
-    /**
-     * This methods tries to parse the string of parameters to customize
-     * the evaluator.
-     *
-     * @param parameters
-     */
-    private void parseParameters(String parameters) {
-        
-    }
+ 
 
 	
 

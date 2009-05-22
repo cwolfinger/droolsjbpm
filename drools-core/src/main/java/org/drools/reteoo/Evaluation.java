@@ -11,6 +11,7 @@ import java.util.Observer;
 import java.util.Set;
 
 import org.drools.degrees.IDegree;
+import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.degrees.operators.IMergeStrategy;
 import org.drools.degrees.operators.INullHandlingStrategy;
 
@@ -29,27 +30,38 @@ public class Evaluation extends Observable {
 	private Map<String,IDegree> degrees;
 	private int totDegrees;
 	private Map<String,Float> confidence;
+	private Map<String,Boolean> killer;
 	
 	private IDegree aggDegree;
 	
 	private IMergeStrategy 				mergeStrat;
 	private INullHandlingStrategy 		nullStrat;
 	
+	private IDegreeFactory				factory;
+	
 	private ArgList args;
+	
+	
 
 	
 	
-	public Evaluation(int id, ConstraintKey key, Set<String> deps, IMergeStrategy mergeStrat, INullHandlingStrategy nullStrat, ArgList args) {
+	public Evaluation(int id, ConstraintKey key, Set<String> deps, IMergeStrategy mergeStrat, INullHandlingStrategy nullStrat, IDegreeFactory factory, ArgList args) {
+		this.factory = factory;
+
+		
 		if (deps == null)
 			deps = Collections.emptySet();
 		this.nodeId = id;
 		this.degrees = new HashMap<String,IDegree>();
 		this.confidence = new HashMap<String,Float>();
+		this.killer = new HashMap<String,Boolean>();
+		
 			this.degrees.put(PRIOR, null);	
 			this.degrees.put(EVAL, null);
 			for (String s : deps) {
 				this.degrees.put(s, null);
 				confidence.put(s,new Float(0));
+				killer.put(s,false);
 			}
 			totDegrees = 2+deps.size();			
 			
@@ -60,14 +72,14 @@ public class Evaluation extends Observable {
 		this.args = args;
 	}
 	
-	public Evaluation(int id, ConstraintKey key, Set<String> deps, IDegree evalDeg, IMergeStrategy mergeStrat, INullHandlingStrategy nullStrat, ArgList args) {
-		this(id,key,deps,mergeStrat,nullStrat,args);
+	public Evaluation(int id, ConstraintKey key, Set<String> deps, IDegree evalDeg, IMergeStrategy mergeStrat, INullHandlingStrategy nullStrat, IDegreeFactory factory, ArgList args) {
+		this(id,key,deps,mergeStrat,nullStrat,factory,args);
 		this.addDegree(Evaluation.EVAL,evalDeg,1,true);
 		
 	}
 	
-	public Evaluation(int id, ConstraintKey key, Set<String> deps, IDegree evalDeg, String source, IMergeStrategy mergeStrat, INullHandlingStrategy nullStrat, ArgList args) {
-		this(id,key,deps,mergeStrat,nullStrat,args);
+	public Evaluation(int id, ConstraintKey key, Set<String> deps, IDegree evalDeg, String source, IMergeStrategy mergeStrat, INullHandlingStrategy nullStrat, IDegreeFactory factory, ArgList args) {
+		this(id,key,deps,mergeStrat,nullStrat,factory,args);
 		this.addDegree(source,evalDeg,1,true);
 	}
 	
@@ -96,14 +108,19 @@ public class Evaluation extends Observable {
 	
 	
 	public void merge(Evaluation other) {	
-		this.addDegrees(other.degrees, other.confidence);
+		this.addDegrees(other.degrees, other.confidence, other.killer);
 	}
 
-	private void addDegrees(Map<String, IDegree> moreDegrees, Map<String, Float> conf) {
+	private void addDegrees(Map<String, IDegree> moreDegrees, Map<String, Float> conf, Map<String, Boolean> killer) {
 		boolean newContrib = false;
 		
 		for (String source : moreDegrees.keySet()) {
 			IDegree evalDeg = moreDegrees.get(source);
+			
+			Boolean killerContri = killer.get(source);
+				if (killerContri == null) 
+					killerContri = false;
+				
 			if (evalDeg != null) {
 				System.out.println("Trying to merge degrees for source "+ source + "+1");
 				
@@ -117,7 +134,7 @@ public class Evaluation extends Observable {
 					this.degrees.put(source,evalDeg);
 				}
 				 */
-				newContrib = newContrib || this.addDegree(source, evalDeg, conf.get(source),false);
+				newContrib = newContrib || this.addDegree(source, evalDeg, conf.get(source),killerContri,false);
 				
 				
 				
@@ -135,8 +152,11 @@ public class Evaluation extends Observable {
 	
 	}
 	
-		
 	public boolean addDegree(String source, IDegree evalDeg, float wgt, boolean immediateUpdate) {
+		return addDegree(source, evalDeg, wgt, false, immediateUpdate);
+	}
+		
+	public boolean addDegree(String source, IDegree evalDeg, float wgt, boolean isKiller, boolean immediateUpdate) {
 		boolean newContrib = false;
 		boolean rateIncr = false;
 		Float prevConf;
@@ -154,10 +174,12 @@ public class Evaluation extends Observable {
 				confidence.put(source, wgt);
 			rateIncr = prevConf == null ? true : prevConf.floatValue() < wgt;
 			
+						
 			IDegree oldVal = getDegreeBit(source);
 			if (oldVal == null) {
 				System.out.println(this.key+" Added degree for source "+ source + " with wgt "+wgt);
-				this.degrees.put(source,evalDeg);					
+				this.degrees.put(source,evalDeg);
+				this.killer.put(source,isKiller);
 				newContrib = true;
 			} else {
 					if (oldVal.equals(evalDeg)) {
@@ -166,6 +188,12 @@ public class Evaluation extends Observable {
 					} else {
 						System.out.println(this.key+" UPDATED degree for source "+ source + " with wgt "+wgt);
 						this.degrees.put(source,evalDeg);
+						newContrib = true;
+					}
+					
+					boolean wasKiller = killer.get(source);
+					if (wasKiller != isKiller) {
+						killer.put(source,isKiller);
 						newContrib = true;
 					}
 			}
@@ -233,11 +261,24 @@ public class Evaluation extends Observable {
 	
 	protected IDegree mergeDegrees() {
 		IDegree[] bits = new IDegree[this.totDegrees];
-		int j = 0;
-		for (String s : degrees.keySet())
-			bits[j++] = degrees.get(s);
+		boolean[] killerFlags = new boolean[this.totDegrees];
+		boolean needKill = false;
 		
-		return this.mergeStrat.eval(bits,nullStrat);		
+		int j = 0;
+		for (String s : degrees.keySet()) {
+			bits[j] = degrees.get(s);
+			Boolean flag = killer.get(s);
+			killerFlags[j] = flag == null ? false : flag;
+				if (killerFlags[j]) 
+					needKill = true;
+			
+			j++;
+		}
+		
+		if (needKill)
+			return this.mergeStrat.eval(bits, killerFlags, nullStrat, getFactory());
+		else
+			return this.mergeStrat.eval(bits, null, nullStrat, getFactory());
 	}
 	
 	
@@ -349,6 +390,34 @@ public class Evaluation extends Observable {
 	
 	public ArgList getArgs() {
 		return args;
+	}
+
+	/**
+	 * @param factory the factory to set
+	 */
+	public void setFactory(IDegreeFactory factory) {
+		this.factory = factory;
+	}
+
+	/**
+	 * @return the factory
+	 */
+	public IDegreeFactory getFactory() {
+		return factory;
+	}
+
+	/**
+	 * @param killer the killer to set
+	 */
+	public void setKiller(String id, boolean killer) {
+		this.killer.put(id,killer);
+	}
+
+	/**
+	 * @return the killer
+	 */
+	public boolean isKiller(String id) {
+		return killer.get(id);
 	}
 	
 	
