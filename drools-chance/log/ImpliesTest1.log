@@ -1,0 +1,323 @@
+Penguinity exception test for 1 : [0.0,1.0]
+Implication B-> will be killed by the negated of [0.0,1.0]
+Consequence F will be set to the negated of [0.0,1.0]
+
+
+
+Penguinity exception test for 2 : [0.0,1.0]
+Implication B-> will be killed by the negated of [0.0,1.0]
+Consequence F will be set to the negated of [0.0,1.0]
+
+
+
+Penguinity exception test for 3 : [1.0,1.0]
+Implication B-> will be killed by the negated of [1.0,1.0]
+Consequence F will be set to the negated of [1.0,1.0]
+
+
+
+Penguinity exception test for 4 : [0.0,1.0]
+Implication B-> will be killed by the negated of [0.0,1.0]
+Consequence F will be set to the negated of [0.0,1.0]
+
+
+
+Induct_BirdsFly Eval Record info(1.0) for args L : Bird 32	 
+AND{
+(32@20) : [0.75,0.75] i_xand(i_forAny()) [EVAL [0.75,0.75],]
+(0@21) : [1.0,1.0] Induct_BirdsFly [EVAL [0.0,1.0],PRIOR [1.0,1.0],]
+}
+
+(32@22) : [0.75,0.75] i_dblMP(i_xand(i_forAny())Induct_BirdsFly) [EVAL [0.75,0.75],]
+	(32@20) : [0.75,0.75] i_xand(i_forAny()) [EVAL [0.75,0.75],]
+		(0@19) : [0.75,0.75] i_forAny() [EVAL [0.75,0.75],]
+			(32@-1) : [1.0,1.0] i_xand(i_discount(i_ximp(i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird)),i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,true),Object ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,$b))),i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean !=(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,null),Integer ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.id,id)))) [EVAL [1.0,1.0],]
+				(32@17) : [1.0,1.0] i_discount(i_ximp(i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird)),i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,true),Object ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,$b))),i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean !=(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,null),Integer ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.id,id))) [EVAL [1.0,1.0],]
+					(32@12) : [1.0,1.0] i_ximp(i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird)),i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,true),Object ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,$b))) [EVAL [1.0,1.0],]
+						(32@1) : [1.0,1.0] i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird)) [EVAL [1.0,1.0],]
+							(32@6) : [1.0,1.0] ==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird) [EVAL [1.0,1.0],]
+						(32@1) : [1.0,1.0] i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,true),Object ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,$b)) [EVAL [1.0,1.0],]
+							(32@6) : [1.0,1.0] ==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird) [EVAL [1.0,1.0],]
+							(32@10) : [1.0,1.0] Boolean ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,true) [EVAL [1.0,1.0],]
+							(32@11) : [1.0,1.0] Object ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,$b) [EVAL [1.0,1.0],]
+					(32@1) : [1.0,1.0] i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean !=(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,null),Integer ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.id,id)) [EVAL [1.0,1.0],]
+						(32@6) : [1.0,1.0] ==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird) [EVAL [1.0,1.0],]
+						(32@15) : [1.0,1.0] Boolean !=(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,null) [EVAL [1.0,1.0],]
+						(32@16) : [1.0,1.0] Integer ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.id,id) [EVAL [1.0,1.0],]
+			(33@-1) : [1.0,1.0] i_xand(i_discount(i_ximp(i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird)),i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,true),Object ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,$b))),i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean !=(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,null),Integer ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.id,id)))) [EVAL [1.0,1.0],]
+				(33@17) : [1.0,1.0] i_discount(i_ximp(i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird)),i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,true),Object ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,$b))),i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean !=(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,null),Integer ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.id,id))) [EVAL [1.0,1.0],]
+					(33@12) : [1.0,1.0] i_ximp(i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird)),i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,true),Object ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,$b))) [EVAL [1.0,1.0],]
+						(33@1) : [1.0,1.0] i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird)) [EVAL [1.0,1.0],]
+							(33@6) : [1.0,1.0] ==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird) [EVAL [1.0,1.0],]
+						(33@1) : [1.0,1.0] i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,true),Object ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,$b)) [EVAL [1.0,1.0],]
+							(33@6) : [1.0,1.0] ==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird) [EVAL [1.0,1.0],]
+							(33@10) : [1.0,1.0] Boolean ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,true) [EVAL [1.0,1.0],]
+							(33@11) : [1.0,1.0] Object ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,$b) [EVAL [1.0,1.0],]
+					(33@1) : [1.0,1.0] i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean !=(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,null),Integer ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.id,id)) [EVAL [1.0,1.0],]
+						(33@6) : [1.0,1.0] ==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird) [EVAL [1.0,1.0],]
+						(33@15) : [1.0,1.0] Boolean !=(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,null) [EVAL [1.0,1.0],]
+						(33@16) : [1.0,1.0] Integer ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.id,id) [EVAL [1.0,1.0],]
+			(34@-1) : [0.0,0.0] i_xand(i_discount(i_ximp(i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird)),i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,true),Object ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,$b))),i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean !=(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,null),Integer ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.id,id)))) [EVAL [0.0,0.0],]
+				(34@17) : [0.0,0.0] i_discount(i_ximp(i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird)),i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,true),Object ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,$b))),i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean !=(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,null),Integer ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.id,id))) [EVAL [0.0,0.0],]
+					(34@12) : [0.0,0.0] i_ximp(i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird)),i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,true),Object ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,$b))) [EVAL [0.0,0.0],]
+						(34@1) : [1.0,1.0] i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird)) [EVAL [1.0,1.0],]
+							(34@6) : [1.0,1.0] ==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird) [EVAL [1.0,1.0],]
+						(34@1) : [0.0,0.0] i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,true),Object ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,$b)) [EVAL [0.0,0.0],]
+							(34@6) : [1.0,1.0] ==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird) [EVAL [1.0,1.0],]
+							(34@10) : [0.0,0.0] Boolean ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,true) [EVAL [0.0,0.0],]
+							(34@11) : [1.0,1.0] Object ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,$b) [EVAL [1.0,1.0],]
+					(34@1) : [1.0,1.0] i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean !=(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,null),Integer ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.id,id)) [EVAL [1.0,1.0],]
+						(34@6) : [1.0,1.0] ==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird) [EVAL [1.0,1.0],]
+						(34@15) : [1.0,1.0] Boolean !=(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,null) [EVAL [1.0,1.0],]
+						(34@16) : [1.0,1.0] Integer ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.id,id) [EVAL [1.0,1.0],]
+			(35@-1) : [1.0,1.0] i_xand(i_discount(i_ximp(i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird)),i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,true),Object ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,$b))),i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean !=(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,null),Integer ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.id,id)))) [EVAL [1.0,1.0],]
+				(35@17) : [1.0,1.0] i_discount(i_ximp(i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird)),i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,true),Object ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,$b))),i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean !=(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,null),Integer ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.id,id))) [EVAL [1.0,1.0],]
+					(35@12) : [1.0,1.0] i_ximp(i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird)),i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,true),Object ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,$b))) [EVAL [1.0,1.0],]
+						(35@1) : [1.0,1.0] i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird)) [EVAL [1.0,1.0],]
+							(35@6) : [1.0,1.0] ==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird) [EVAL [1.0,1.0],]
+						(35@1) : [1.0,1.0] i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,true),Object ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,$b)) [EVAL [1.0,1.0],]
+							(35@6) : [1.0,1.0] ==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird) [EVAL [1.0,1.0],]
+							(35@10) : [1.0,1.0] Boolean ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,true) [EVAL [1.0,1.0],]
+							(35@11) : [1.0,1.0] Object ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,$b) [EVAL [1.0,1.0],]
+					(35@1) : [1.0,1.0] i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean !=(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,null),Integer ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.id,id)) [EVAL [1.0,1.0],]
+						(35@6) : [1.0,1.0] ==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird) [EVAL [1.0,1.0],]
+						(35@15) : [1.0,1.0] Boolean !=(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,null) [EVAL [1.0,1.0],]
+						(35@16) : [1.0,1.0] Integer ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.id,id) [EVAL [1.0,1.0],]
+	(0@21) : [1.0,1.0] Induct_BirdsFly [EVAL [0.0,1.0],PRIOR [1.0,1.0],]
+
+
+
+*************************************************************************************
+Penguinity exception test for 99 : [0.0,1.0]
+Implication B-> will be killed by the negated of [0.0,1.0]
+Consequence F will be set to the negated of [0.0,1.0]
+
+
+
+Contrib from Implication B->F for bird 99 : degree [0.75,1.0]
+
+
+Eval Record info(1.0) for args L : Bird 130	 
+AND{
+(130@26) : [1.0,1.0] i_xand(i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird))) [EVAL [1.0,1.0],]
+(130@27) : [0.75,0.75] Deduct_BirdsFly [Exception_BirdsFly [0.0,1.0],Induct_BirdsFly [0.75,0.75],EVAL [0.0,1.0],PRIOR [0.0,1.0],]
+}
+
+(130@28) : [0.75,1.0] i_modPon(i_xand(i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird))),Deduct_BirdsFly) [EVAL [0.75,1.0],]
+	(130@26) : [1.0,1.0] i_xand(i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird))) [EVAL [1.0,1.0],]
+		(130@1) : [1.0,1.0] i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird)) [EVAL [1.0,1.0],]
+			(130@6) : [1.0,1.0] ==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird) [EVAL [1.0,1.0],]
+	(130@27) : [0.75,0.75] Deduct_BirdsFly [Exception_BirdsFly [0.0,1.0],Induct_BirdsFly [0.75,0.75],EVAL [0.0,1.0],PRIOR [0.0,1.0],]
+
+
+Bird 99 : FLIES at degree [0.75,1.0]
+++++CONCLUSION : Eval Record info(1.0) for args L : Bird 130	 
+AND{
+(130@40) : [0.75,1.0] i_xand(i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),flies(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,null))) [EVAL [0.75,1.0],]
+(130@41) : [1.0,1.0] BirdsFly [EVAL [0.0,1.0],PRIOR [1.0,1.0],]
+}
+
+(130@42) : [0.75,1.0] i_dblMP(i_xand(i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),flies(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,null))),BirdsFly) [EVAL [0.75,1.0],]
+	(130@40) : [0.75,1.0] i_xand(i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),flies(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,null))) [EVAL [0.75,1.0],]
+		(130@1) : [0.75,1.0] i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),flies(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,null)) [EVAL [0.75,1.0],]
+			(130@6) : [1.0,1.0] ==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird) [EVAL [1.0,1.0],]
+			(130@38) : [0.75,1.0] flies(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,null) [Deduct_BirdsFly [0.75,1.0],Exception_BirdsFly [0.0,1.0],EVAL [0.0,1.0],]
+	(130@41) : [1.0,1.0] BirdsFly [EVAL [0.0,1.0],PRIOR [1.0,1.0],]
+
+
+
+*************************************************************************************
+Penguinity exception test for -10 : [1.0,1.0]
+Implication B-> will be killed by the negated of [1.0,1.0]
+Consequence F will be set to the negated of [1.0,1.0]
+
+
+
+Contrib from Implication B->F for bird -10 : degree [0.0,1.0]
+
+
+Eval Record info(1.0) for args L : Bird 21	 
+AND{
+(21@26) : [1.0,1.0] i_xand(i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird))) [EVAL [1.0,1.0],]
+(21@27) : [0.0,0.0] Deduct_BirdsFly [Exception_BirdsFly [0.0,0.0],Induct_BirdsFly [0.75,0.75],EVAL [0.0,1.0],PRIOR [0.0,1.0],]
+}
+
+(21@28) : [0.0,1.0] i_modPon(i_xand(i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird))),Deduct_BirdsFly) [EVAL [0.0,1.0],]
+	(21@26) : [1.0,1.0] i_xand(i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird))) [EVAL [1.0,1.0],]
+		(21@1) : [1.0,1.0] i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird)) [EVAL [1.0,1.0],]
+			(21@6) : [1.0,1.0] ==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird) [EVAL [1.0,1.0],]
+	(21@27) : [0.0,0.0] Deduct_BirdsFly [Exception_BirdsFly [0.0,0.0],Induct_BirdsFly [0.75,0.75],EVAL [0.0,1.0],PRIOR [0.0,1.0],]
+
+
+Bird -10 : FLIES at degree [0.0,0.0]
+++++CONCLUSION : Eval Record info(1.0) for args L : Bird 21	 
+AND{
+(21@40) : [0.0,0.0] i_xand(i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),flies(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,null))) [EVAL [0.0,0.0],]
+(21@41) : [1.0,1.0] BirdsFly [EVAL [0.0,1.0],PRIOR [1.0,1.0],]
+}
+
+(21@42) : [0.0,0.0] i_dblMP(i_xand(i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),flies(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,null))),BirdsFly) [EVAL [0.0,0.0],]
+	(21@40) : [0.0,0.0] i_xand(i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),flies(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,null))) [EVAL [0.0,0.0],]
+		(21@1) : [0.0,0.0] i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),flies(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,null)) [EVAL [0.0,0.0],]
+			(21@6) : [1.0,1.0] ==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird) [EVAL [1.0,1.0],]
+			(21@38) : [0.0,0.0] flies(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,null) [Deduct_BirdsFly [0.0,1.0],Exception_BirdsFly [0.0,0.0],EVAL [0.0,1.0],]
+	(21@41) : [1.0,1.0] BirdsFly [EVAL [0.0,1.0],PRIOR [1.0,1.0],]
+
+
+
+*************************************************************************************
+Penguinity exception test for 1000 : [0.0,1.0]
+Implication B-> will be killed by the negated of [0.0,1.0]
+Consequence F will be set to the negated of [0.0,1.0]
+
+
+
+Induct_BirdsFly Eval Record info(1.0) for args L : Bird 32	 
+AND{
+(32@20) : [0.8,0.8] i_xand(i_forAny()) [EVAL [0.8,0.8],]
+(0@21) : [1.0,1.0] Induct_BirdsFly [EVAL [0.0,1.0],PRIOR [1.0,1.0],]
+}
+
+(32@22) : [0.8,0.8] i_dblMP(i_xand(i_forAny())Induct_BirdsFly) [EVAL [0.8,0.8],]
+	(32@20) : [0.8,0.8] i_xand(i_forAny()) [EVAL [0.8,0.8],]
+		(1031@19) : [0.8,0.8] i_forAny() [EVAL [0.8,0.8],]
+			(32@-1) : [1.0,1.0] i_xand(i_discount(i_ximp(i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird)),i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,true),Object ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,$b))),i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean !=(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,null),Integer ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.id,id)))) [EVAL [1.0,1.0],]
+				(32@17) : [1.0,1.0] i_discount(i_ximp(i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird)),i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,true),Object ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,$b))),i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean !=(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,null),Integer ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.id,id))) [EVAL [1.0,1.0],]
+					(32@12) : [1.0,1.0] i_ximp(i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird)),i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,true),Object ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,$b))) [EVAL [1.0,1.0],]
+						(32@1) : [1.0,1.0] i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird)) [EVAL [1.0,1.0],]
+							(32@6) : [1.0,1.0] ==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird) [EVAL [1.0,1.0],]
+						(32@1) : [1.0,1.0] i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,true),Object ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,$b)) [EVAL [1.0,1.0],]
+							(32@6) : [1.0,1.0] ==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird) [EVAL [1.0,1.0],]
+							(32@10) : [1.0,1.0] Boolean ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,true) [EVAL [1.0,1.0],]
+							(32@11) : [1.0,1.0] Object ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,$b) [EVAL [1.0,1.0],]
+					(32@1) : [1.0,1.0] i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean !=(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,null),Integer ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.id,id)) [EVAL [1.0,1.0],]
+						(32@6) : [1.0,1.0] ==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird) [EVAL [1.0,1.0],]
+						(32@15) : [1.0,1.0] Boolean !=(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,null) [EVAL [1.0,1.0],]
+						(32@16) : [1.0,1.0] Integer ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.id,id) [EVAL [1.0,1.0],]
+			(33@-1) : [1.0,1.0] i_xand(i_discount(i_ximp(i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird)),i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,true),Object ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,$b))),i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean !=(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,null),Integer ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.id,id)))) [EVAL [1.0,1.0],]
+				(33@17) : [1.0,1.0] i_discount(i_ximp(i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird)),i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,true),Object ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,$b))),i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean !=(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,null),Integer ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.id,id))) [EVAL [1.0,1.0],]
+					(33@12) : [1.0,1.0] i_ximp(i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird)),i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,true),Object ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,$b))) [EVAL [1.0,1.0],]
+						(33@1) : [1.0,1.0] i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird)) [EVAL [1.0,1.0],]
+							(33@6) : [1.0,1.0] ==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird) [EVAL [1.0,1.0],]
+						(33@1) : [1.0,1.0] i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,true),Object ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,$b)) [EVAL [1.0,1.0],]
+							(33@6) : [1.0,1.0] ==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird) [EVAL [1.0,1.0],]
+							(33@10) : [1.0,1.0] Boolean ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,true) [EVAL [1.0,1.0],]
+							(33@11) : [1.0,1.0] Object ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,$b) [EVAL [1.0,1.0],]
+					(33@1) : [1.0,1.0] i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean !=(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,null),Integer ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.id,id)) [EVAL [1.0,1.0],]
+						(33@6) : [1.0,1.0] ==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird) [EVAL [1.0,1.0],]
+						(33@15) : [1.0,1.0] Boolean !=(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,null) [EVAL [1.0,1.0],]
+						(33@16) : [1.0,1.0] Integer ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.id,id) [EVAL [1.0,1.0],]
+			(34@-1) : [0.0,0.0] i_xand(i_discount(i_ximp(i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird)),i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,true),Object ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,$b))),i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean !=(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,null),Integer ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.id,id)))) [EVAL [0.0,0.0],]
+				(34@17) : [0.0,0.0] i_discount(i_ximp(i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird)),i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,true),Object ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,$b))),i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean !=(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,null),Integer ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.id,id))) [EVAL [0.0,0.0],]
+					(34@12) : [0.0,0.0] i_ximp(i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird)),i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,true),Object ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,$b))) [EVAL [0.0,0.0],]
+						(34@1) : [1.0,1.0] i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird)) [EVAL [1.0,1.0],]
+							(34@6) : [1.0,1.0] ==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird) [EVAL [1.0,1.0],]
+						(34@1) : [0.0,0.0] i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,true),Object ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,$b)) [EVAL [0.0,0.0],]
+							(34@6) : [1.0,1.0] ==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird) [EVAL [1.0,1.0],]
+							(34@10) : [0.0,0.0] Boolean ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,true) [EVAL [0.0,0.0],]
+							(34@11) : [1.0,1.0] Object ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,$b) [EVAL [1.0,1.0],]
+					(34@1) : [1.0,1.0] i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean !=(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,null),Integer ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.id,id)) [EVAL [1.0,1.0],]
+						(34@6) : [1.0,1.0] ==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird) [EVAL [1.0,1.0],]
+						(34@15) : [1.0,1.0] Boolean !=(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,null) [EVAL [1.0,1.0],]
+						(34@16) : [1.0,1.0] Integer ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.id,id) [EVAL [1.0,1.0],]
+			(35@-1) : [1.0,1.0] i_xand(i_discount(i_ximp(i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird)),i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,true),Object ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,$b))),i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean !=(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,null),Integer ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.id,id)))) [EVAL [1.0,1.0],]
+				(35@17) : [1.0,1.0] i_discount(i_ximp(i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird)),i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,true),Object ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,$b))),i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean !=(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,null),Integer ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.id,id))) [EVAL [1.0,1.0],]
+					(35@12) : [1.0,1.0] i_ximp(i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird)),i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,true),Object ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,$b))) [EVAL [1.0,1.0],]
+						(35@1) : [1.0,1.0] i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird)) [EVAL [1.0,1.0],]
+							(35@6) : [1.0,1.0] ==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird) [EVAL [1.0,1.0],]
+						(35@1) : [1.0,1.0] i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,true),Object ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,$b)) [EVAL [1.0,1.0],]
+							(35@6) : [1.0,1.0] ==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird) [EVAL [1.0,1.0],]
+							(35@10) : [1.0,1.0] Boolean ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,true) [EVAL [1.0,1.0],]
+							(35@11) : [1.0,1.0] Object ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,$b) [EVAL [1.0,1.0],]
+					(35@1) : [1.0,1.0] i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean !=(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,null),Integer ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.id,id)) [EVAL [1.0,1.0],]
+						(35@6) : [1.0,1.0] ==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird) [EVAL [1.0,1.0],]
+						(35@15) : [1.0,1.0] Boolean !=(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,null) [EVAL [1.0,1.0],]
+						(35@16) : [1.0,1.0] Integer ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.id,id) [EVAL [1.0,1.0],]
+			(1031@-1) : [1.0,1.0] i_xand(i_discount(i_ximp(i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird)),i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,true),Object ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,$b))),i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean !=(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,null),Integer ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.id,id)))) [EVAL [1.0,1.0],]
+				(1031@17) : [1.0,1.0] i_discount(i_ximp(i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird)),i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,true),Object ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,$b))),i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean !=(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,null),Integer ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.id,id))) [EVAL [1.0,1.0],]
+					(1031@12) : [1.0,1.0] i_ximp(i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird)),i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,true),Object ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,$b))) [EVAL [1.0,1.0],]
+						(1031@1) : [1.0,1.0] i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird)) [EVAL [1.0,1.0],]
+							(1031@6) : [1.0,1.0] ==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird) [EVAL [1.0,1.0],]
+						(1031@1) : [1.0,1.0] i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,true),Object ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,$b)) [EVAL [1.0,1.0],]
+							(1031@6) : [1.0,1.0] ==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird) [EVAL [1.0,1.0],]
+							(1031@10) : [1.0,1.0] Boolean ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,true) [EVAL [1.0,1.0],]
+							(1031@11) : [1.0,1.0] Object ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,$b) [EVAL [1.0,1.0],]
+					(1031@1) : [1.0,1.0] i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),Boolean !=(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,null),Integer ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.id,id)) [EVAL [1.0,1.0],]
+						(1031@6) : [1.0,1.0] ==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird) [EVAL [1.0,1.0],]
+						(1031@15) : [1.0,1.0] Boolean !=(org.drools.chance.impliesTest.ImpliesTest1$Bird.isFlier,null) [EVAL [1.0,1.0],]
+						(1031@16) : [1.0,1.0] Integer ==(org.drools.chance.impliesTest.ImpliesTest1$Bird.id,id) [EVAL [1.0,1.0],]
+	(0@21) : [1.0,1.0] Induct_BirdsFly [EVAL [0.0,1.0],PRIOR [1.0,1.0],]
+
+
+Contrib from Implication B->F for bird 1000 : degree [0.75,1.0]
+
+
+Eval Record info(1.0) for args L : Bird 1031	 
+AND{
+(1031@26) : [1.0,1.0] i_xand(i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird))) [EVAL [1.0,1.0],]
+(1031@27) : [0.75,0.75] Deduct_BirdsFly [Exception_BirdsFly [0.0,1.0],Induct_BirdsFly [0.75,0.75],EVAL [0.0,1.0],PRIOR [0.0,1.0],]
+}
+
+(1031@28) : [0.75,1.0] i_modPon(i_xand(i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird))),Deduct_BirdsFly) [EVAL [0.75,1.0],]
+	(1031@26) : [1.0,1.0] i_xand(i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird))) [EVAL [1.0,1.0],]
+		(1031@1) : [1.0,1.0] i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird)) [EVAL [1.0,1.0],]
+			(1031@6) : [1.0,1.0] ==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird) [EVAL [1.0,1.0],]
+	(1031@27) : [0.75,0.75] Deduct_BirdsFly [Exception_BirdsFly [0.0,1.0],Induct_BirdsFly [0.75,0.75],EVAL [0.0,1.0],PRIOR [0.0,1.0],]
+
+
+Bird 1000 : FLIES at degree [1.0,1.0]
+++++CONCLUSION : Eval Record info(1.0) for args L : Bird 1031	 
+AND{
+(1031@40) : [1.0,1.0] i_xand(i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),flies(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,null))) [EVAL [1.0,1.0],]
+(1031@41) : [1.0,1.0] BirdsFly [EVAL [0.0,1.0],PRIOR [1.0,1.0],]
+}
+
+(1031@42) : [1.0,1.0] i_dblMP(i_xand(i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),flies(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,null))),BirdsFly) [EVAL [1.0,1.0],]
+	(1031@40) : [1.0,1.0] i_xand(i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),flies(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,null))) [EVAL [1.0,1.0],]
+		(1031@1) : [1.0,1.0] i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),flies(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,null)) [EVAL [1.0,1.0],]
+			(1031@6) : [1.0,1.0] ==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird) [EVAL [1.0,1.0],]
+			(1031@38) : [1.0,1.0] flies(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,null) [Deduct_BirdsFly [0.75,1.0],Exception_BirdsFly [0.0,1.0],EVAL [1.0,1.0],]
+	(1031@41) : [1.0,1.0] BirdsFly [EVAL [0.0,1.0],PRIOR [1.0,1.0],]
+
+
+
+*************************************************************************************
+Penguinity exception test for 100 : [0.0,1.0]
+Implication B-> will be killed by the negated of [0.0,1.0]
+Consequence F will be set to the negated of [0.0,1.0]
+
+
+
+Contrib from Implication B->F for bird 100 : degree [0.8,1.0]
+
+
+Eval Record info(1.0) for args L : Bird 131	 
+AND{
+(131@26) : [1.0,1.0] i_xand(i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird))) [EVAL [1.0,1.0],]
+(131@27) : [0.8,0.8] Deduct_BirdsFly [Exception_BirdsFly [0.0,1.0],Induct_BirdsFly [0.8,0.8],EVAL [0.0,1.0],PRIOR [0.0,1.0],]
+}
+
+(131@28) : [0.8,1.0] i_modPon(i_xand(i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird))),Deduct_BirdsFly) [EVAL [0.8,1.0],]
+	(131@26) : [1.0,1.0] i_xand(i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird))) [EVAL [1.0,1.0],]
+		(131@1) : [1.0,1.0] i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird)) [EVAL [1.0,1.0],]
+			(131@6) : [1.0,1.0] ==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird) [EVAL [1.0,1.0],]
+	(131@27) : [0.8,0.8] Deduct_BirdsFly [Exception_BirdsFly [0.0,1.0],Induct_BirdsFly [0.8,0.8],EVAL [0.0,1.0],PRIOR [0.0,1.0],]
+
+
+Bird 100 : FLIES at degree [0.79999995,1.0]
+++++CONCLUSION : Eval Record info(1.0) for args L : Bird 131	 
+AND{
+(131@40) : [0.79999995,1.0] i_xand(i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),flies(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,null))) [EVAL [0.79999995,1.0],]
+(131@41) : [1.0,1.0] BirdsFly [EVAL [0.0,1.0],PRIOR [1.0,1.0],]
+}
+
+(131@42) : [0.79999995,1.0] i_dblMP(i_xand(i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),flies(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,null))),BirdsFly) [EVAL [0.79999995,1.0],]
+	(131@40) : [0.79999995,1.0] i_xand(i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),flies(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,null))) [EVAL [0.79999995,1.0],]
+		(131@1) : [0.79999995,1.0] i_xand(==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird),flies(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,null)) [EVAL [0.79999995,1.0],]
+			(131@6) : [1.0,1.0] ==(class,org.drools.chance.impliesTest.ImpliesTest1$Bird) [EVAL [1.0,1.0],]
+			(131@38) : [0.8,1.0] flies(org.drools.chance.impliesTest.ImpliesTest1$Bird.this,null) [Deduct_BirdsFly [0.8,1.0],Exception_BirdsFly [0.0,1.0],EVAL [0.0,1.0],]
+	(131@41) : [1.0,1.0] BirdsFly [EVAL [0.0,1.0],PRIOR [1.0,1.0],]
+
+
+
+*************************************************************************************

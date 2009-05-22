@@ -1,0 +1,27 @@
+Degrees test Eval Record info(1.0) for args L : Message 1	 
+AND{
+(1@25) : 0.03926195 dotAnd(maxOr(dotAnd(==(class,org.drools.chance.Message),Integer ==(org.drools.chance.Message.status,0),Integer ==(org.drools.chance.Message.status,1)),dotAnd(==(class,org.drools.chance.Message),random(org.drools.chance.Message.status,2))),-dotAnd(dotAnd(==(class,org.drools.chance.Message),random(org.drools.chance.Message.status,3)),dotAnd(==(class,org.drools.chance.Message),random(org.drools.chance.Message.status,4))),dotAnd(==(class,org.drools.chance.Message),random(org.drools.chance.Message.status,5))) [EVAL 0.03926195,]
+(1@26) : 1.0 TestOpDegs [EVAL 0.0,PRIOR 1.0,]
+}
+
+(1@27) : 0.03926195 minAnd(dotAnd(maxOr(dotAnd(==(class,org.drools.chance.Message),Integer ==(org.drools.chance.Message.status,0),Integer ==(org.drools.chance.Message.status,1)),dotAnd(==(class,org.drools.chance.Message),random(org.drools.chance.Message.status,2))),-dotAnd(dotAnd(==(class,org.drools.chance.Message),random(org.drools.chance.Message.status,3)),dotAnd(==(class,org.drools.chance.Message),random(org.drools.chance.Message.status,4))),dotAnd(==(class,org.drools.chance.Message),random(org.drools.chance.Message.status,5))),TestOpDegs) [EVAL 0.03926195,]
+	(1@25) : 0.03926195 dotAnd(maxOr(dotAnd(==(class,org.drools.chance.Message),Integer ==(org.drools.chance.Message.status,0),Integer ==(org.drools.chance.Message.status,1)),dotAnd(==(class,org.drools.chance.Message),random(org.drools.chance.Message.status,2))),-dotAnd(dotAnd(==(class,org.drools.chance.Message),random(org.drools.chance.Message.status,3)),dotAnd(==(class,org.drools.chance.Message),random(org.drools.chance.Message.status,4))),dotAnd(==(class,org.drools.chance.Message),random(org.drools.chance.Message.status,5))) [EVAL 0.03926195,]
+		(1@11) : 0.5074657 maxOr(dotAnd(==(class,org.drools.chance.Message),Integer ==(org.drools.chance.Message.status,0),Integer ==(org.drools.chance.Message.status,1)),dotAnd(==(class,org.drools.chance.Message),random(org.drools.chance.Message.status,2))) [EVAL 0.5074657,]
+			(1@1) : 0.0 dotAnd(==(class,org.drools.chance.Message),Integer ==(org.drools.chance.Message.status,0),Integer ==(org.drools.chance.Message.status,1)) [EVAL 0.0,]
+				(1@3) : 1.0 ==(class,org.drools.chance.Message) [EVAL 1.0,]
+				(1@4) : 1.0 Integer ==(org.drools.chance.Message.status,0) [EVAL 1.0,]
+				(1@5) : 0.0 Integer ==(org.drools.chance.Message.status,1) [EVAL 0.0,]
+			(1@1) : 0.5074657 dotAnd(==(class,org.drools.chance.Message),random(org.drools.chance.Message.status,2)) [EVAL 0.5074657,]
+				(1@3) : 1.0 ==(class,org.drools.chance.Message) [EVAL 1.0,]
+				(1@9) : 0.5074657 random(org.drools.chance.Message.status,2) [EVAL 0.5074657,]
+		(1@20) : 0.7902721 -dotAnd(dotAnd(==(class,org.drools.chance.Message),random(org.drools.chance.Message.status,3)),dotAnd(==(class,org.drools.chance.Message),random(org.drools.chance.Message.status,4))) [EVAL 0.7902721,]
+			(1@1) : 0.6247462 dotAnd(==(class,org.drools.chance.Message),random(org.drools.chance.Message.status,3)) [EVAL 0.6247462,]
+				(1@3) : 1.0 ==(class,org.drools.chance.Message) [EVAL 1.0,]
+				(1@14) : 0.6247462 random(org.drools.chance.Message.status,3) [EVAL 0.6247462,]
+			(1@1) : 0.3357009 dotAnd(==(class,org.drools.chance.Message),random(org.drools.chance.Message.status,4)) [EVAL 0.3357009,]
+				(1@3) : 1.0 ==(class,org.drools.chance.Message) [EVAL 1.0,]
+				(1@18) : 0.3357009 random(org.drools.chance.Message.status,4) [EVAL 0.3357009,]
+		(1@1) : 0.09790131 dotAnd(==(class,org.drools.chance.Message),random(org.drools.chance.Message.status,5)) [EVAL 0.09790131,]
+			(1@3) : 1.0 ==(class,org.drools.chance.Message) [EVAL 1.0,]
+			(1@23) : 0.09790131 random(org.drools.chance.Message.status,5) [EVAL 0.09790131,]
+	(1@26) : 1.0 TestOpDegs [EVAL 0.0,PRIOR 1.0,]
