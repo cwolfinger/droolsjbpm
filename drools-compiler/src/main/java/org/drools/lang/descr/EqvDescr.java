@@ -64,8 +64,8 @@ public class EqvDescr extends BaseDescr
     }
 
     public void addOrMerge(final BaseDescr baseDescr) {
-        if ( baseDescr instanceof AndDescr ) {
-            this.descrs.addAll( ((AndDescr) baseDescr).getDescrs() );
+        if ( baseDescr instanceof EqvDescr ) {
+            this.descrs.addAll( ((EqvDescr) baseDescr).getDescrs() );
         } else {
             addDescr( baseDescr );
         }

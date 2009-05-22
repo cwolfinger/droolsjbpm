@@ -35,6 +35,7 @@ tokens {
 	VT_OR_INFIX;
 	VT_EQUIV;
 	VT_XOR;
+	VT_IMPLIES;
 
 	VT_ACCUMULATE_INIT_CLAUSE;
 	VT_ACCUMULATE_ID_CLAUSE;
@@ -102,6 +103,7 @@ tokens {
 	VK_AND;
 	VK_EQUIV;
 	VK_XOR;
+	VK_IMPLIES;
 	VK_EXISTS;
 	VK_FORALL;
 	VK_FORANY;
@@ -895,6 +897,16 @@ lhs_or
       lhs_and      
     RIGHT_PAREN { emit($RIGHT_PAREN, DroolsEditorType.SYMBOL);  } // PREFIX 
     -> ^(VT_XOR[$xor.start] constr_parameters? lhs_and lhs_and RIGHT_PAREN)
+    
+  | (LEFT_PAREN implies_key constr_parameters?)=> 
+    LEFT_PAREN  { emit($LEFT_PAREN, DroolsEditorType.SYMBOL); }
+      implies=implies_key      
+      constr_parameters?
+  { emit(Location.LOCATION_LHS_BEGIN_OF_CONDITION_AND_OR);  }
+      lhs_and
+      lhs_and      
+    RIGHT_PAREN { emit($RIGHT_PAREN, DroolsEditorType.SYMBOL);  } // PREFIX 
+    -> ^(VT_IMPLIES[$implies.start] constr_parameters? lhs_and lhs_and RIGHT_PAREN)  
 	
 	
 	|	(lhs_and -> lhs_and) 
@@ -1266,7 +1278,7 @@ or_constr
         )*
         
   ;
-  
+   
 or_constr_config
   :     
     (and_constr SINGLE_PIPE) =>
@@ -2030,7 +2042,13 @@ xor_key
   : {(validateIdentifierKey(DroolsSoftKeywords.XOR))}?=>  id=ID
   { emit($id, DroolsEditorType.KEYWORD);  }
     ->  VK_XOR[$id]
-  ;  
+  ;
+  
+implies_key
+  : {(validateIdentifierKey(DroolsSoftKeywords.IMPLIES))}?=>  id=ID
+  { emit($id, DroolsEditorType.KEYWORD);  }
+    ->  VK_IMPLIES[$id]
+  ;      
 	
 
 exists_key

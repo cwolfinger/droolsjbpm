@@ -546,7 +546,7 @@ public class MockWorkingMemory implements InternalWorkingMemory {
 
 
 	public void inject(String premise, ArgList args,
-			ConstraintKey key, IDegree degree) {
+			ConstraintKey key, IDegree degree, boolean killer) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -554,6 +554,12 @@ public class MockWorkingMemory implements InternalWorkingMemory {
 	public Object setNodeMemory(NodeMemory node, Object memory) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public void reject(String ruleName, ArgList args, ConstraintKey key,
+			IDegree degree, boolean killer) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

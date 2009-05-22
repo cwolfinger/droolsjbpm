@@ -1424,7 +1424,7 @@ public class DescrFactory {
 //		String type = atts.get("type");
 			
 				
-		BaseDescr or = createAndRestrictionConnective(left, right);						
+		BaseDescr or = createOrRestrictionConnective(left, right);						
 //		or.setParams((params == null ? "" : params)+(type == null ? "" : type));			
 //		or.setCutter(cutter);
 //		
@@ -1721,6 +1721,38 @@ public class DescrFactory {
 //		eqv.setCutter(cutter);
 //		eqv.setLabel(id);
 		return eqv;
+	}
+	
+	
+	
+	public ImpliesDescr createImplies(DroolsTree start, List<BaseDescr> lhsList) {
+		ImpliesDescr imp = new ImpliesDescr();
+		imp.setLocation(getColumnLocation(start), getColumnLocation(start));
+		imp.setStartCharacter(getStartOffsetLocation(start));
+		imp.setEndLocation(lhsList.get(lhsList.size() - 1).getEndLine(),
+				lhsList.get(lhsList.size() - 1).getEndColumn());
+		imp.setEndCharacter(lhsList.get(lhsList.size() - 1).getEndCharacter());
+		for (BaseDescr baseDescr : lhsList) {
+			imp.addDescr(baseDescr);
+		}
+		return imp;
+	}
+	
+	public ImpliesDescr createImplies(DroolsTree start, List<BaseDescr> lhsList, List<AttributeDescr> attribs) {
+		Map<String,String> atts = buildAttributes(attribs);
+		
+//		String params = atts.get("args");
+//		String id = atts.get("id");
+//		String cutS = atts.get("cut");
+//		Boolean cutter = cutS == null ? false : Boolean.parseBoolean(cutS);
+//		String type = atts.get("type");
+		
+		ImpliesDescr imp = createImplies(start, lhsList);
+		fillWithAttribs(imp, attribs);
+//		xor.setParams((params == null ? "" : params)+(type == null ? "" : type));
+//		xor.setCutter(cutter);
+//		xor.setLabel(id);
+		return imp;
 	}
 	
 	

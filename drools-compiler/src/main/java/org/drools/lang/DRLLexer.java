@@ -1,4 +1,4 @@
-// $ANTLR 3.1.1 /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g 2009-05-14 14:06:22
+// $ANTLR 3.1.1 /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g 2009-05-20 03:15:20
 
 	package org.drools.lang;
 
@@ -12,155 +12,157 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 public class DRLLexer extends Lexer {
-    public static final int VT_ACCESSOR_ELEMENT=39;
-    public static final int ACCUMULATE=122;
-    public static final int VT_DATA_TYPE=40;
-    public static final int VK_TYPE=103;
-    public static final int DOT_STAR=107;
-    public static final int VK_APPROX=96;
-    public static final int VT_CONSTRID=47;
-    public static final int VK_OPERATOR=90;
-    public static final int VK_FUNCTION=74;
-    public static final int VK_GLOBAL=75;
-    public static final int VK_AND=81;
-    public static final int VT_TYPE=53;
-    public static final int EQUALS=114;
-    public static final int SH_STYLE_SINGLE_LINE_COMMENT=149;
-    public static final int VK_AUTO_FOCUS=58;
-    public static final int VK_SALIENCE=64;
+    public static final int VT_ACCESSOR_ELEMENT=40;
+    public static final int ACCUMULATE=124;
+    public static final int VT_DATA_TYPE=41;
+    public static final int VK_TYPE=105;
+    public static final int DOT_STAR=109;
+    public static final int VK_APPROX=98;
+    public static final int VK_OPERATOR=92;
+    public static final int VT_CONSTRID=48;
+    public static final int VK_FUNCTION=75;
+    public static final int VK_GLOBAL=76;
+    public static final int VK_AND=82;
+    public static final int VT_TYPE=54;
+    public static final int EQUALS=116;
+    public static final int SH_STYLE_SINGLE_LINE_COMMENT=151;
+    public static final int VK_AUTO_FOCUS=59;
+    public static final int VK_SALIENCE=65;
     public static final int EOF=-1;
-    public static final int VT_CUT=50;
-    public static final int VT_CONSTR_ATTRIBUTES=49;
-    public static final int VT_PATTERN_TYPE=41;
+    public static final int VT_CUT=51;
+    public static final int VT_CONSTR_ATTRIBUTES=50;
+    public static final int VT_PATTERN_TYPE=42;
     public static final int VT_FUNCTION_IMPORT=5;
     public static final int VT_OR_INFIX=26;
-    public static final int DOUBLE_AMPER=119;
-    public static final int GREATER=128;
-    public static final int EOL=142;
-    public static final int VK_EQUIV=82;
-    public static final int VK_IMPORT=69;
-    public static final int NOT_EQUAL=132;
-    public static final int VK_ACTION=87;
+    public static final int DOUBLE_AMPER=121;
+    public static final int GREATER=130;
+    public static final int EOL=144;
+    public static final int VK_EQUIV=83;
+    public static final int VK_IMPORT=70;
+    public static final int NOT_EQUAL=134;
+    public static final int VK_ACTION=89;
     public static final int VT_EQUIV=27;
-    public static final int VK_RULE=67;
-    public static final int LESS=130;
+    public static final int VK_RULE=68;
+    public static final int LESS=132;
     public static final int VT_SLOT=15;
-    public static final int VK_OR=80;
-    public static final int VK_ARGS=102;
-    public static final int VT_HEDGE=48;
-    public static final int VK_CUT=95;
+    public static final int VK_OR=81;
+    public static final int VK_ARGS=104;
+    public static final int VT_HEDGE=49;
+    public static final int VK_CUT=97;
     public static final int VT_AND_PREFIX=23;
-    public static final int VK_AT=100;
-    public static final int VK_FILTER=99;
-    public static final int NULL=134;
-    public static final int BOOL=116;
-    public static final int VK_ENTAIL=97;
-    public static final int VK_QUERY=72;
-    public static final int VK_SUBJECT=93;
-    public static final int INT=117;
-    public static final int SEMICOLON=104;
-    public static final int VK_PRIOR=98;
-    public static final int VT_FUNCTION_ID=45;
+    public static final int VK_AT=102;
+    public static final int VK_FILTER=101;
+    public static final int NULL=136;
+    public static final int BOOL=118;
+    public static final int VK_ENTAIL=99;
+    public static final int VK_QUERY=73;
+    public static final int VK_SUBJECT=95;
+    public static final int INT=119;
+    public static final int SEMICOLON=106;
+    public static final int VK_PRIOR=100;
+    public static final int VT_FUNCTION_ID=46;
     public static final int VT_RHS_CHUNK=17;
-    public static final int VT_FACT_BINDING=34;
-    public static final int CUT=148;
-    public static final int VK_RULEFLOW_GROUP=61;
-    public static final int VK_ENTRY_POINT=77;
-    public static final int SINGLE_AMPER=125;
-    public static final int VT_PACKAGE_ID=42;
-    public static final int VK_RESULT=89;
+    public static final int VT_FACT_BINDING=35;
+    public static final int CUT=150;
+    public static final int VK_RULEFLOW_GROUP=62;
+    public static final int VK_ENTRY_POINT=78;
+    public static final int SINGLE_AMPER=127;
+    public static final int VT_PACKAGE_ID=43;
+    public static final int VK_RESULT=91;
     public static final int VT_LABEL=8;
-    public static final int WS=143;
-    public static final int VK_NO_LOOP=57;
-    public static final int LEFT_CURLY=138;
+    public static final int WS=145;
+    public static final int VK_NO_LOOP=58;
+    public static final int LEFT_CURLY=140;
     public static final int VT_FACT=6;
-    public static final int VT_PATTERN=33;
-    public static final int VK_IN=79;
-    public static final int LEFT_PAREN=109;
-    public static final int LESS_EQUAL=131;
-    public static final int VT_IMPORT_ID=43;
+    public static final int VT_PATTERN=34;
+    public static final int VK_IN=80;
+    public static final int LEFT_PAREN=111;
+    public static final int LESS_EQUAL=133;
     public static final int VT_RULE_ID=12;
-    public static final int MISC=140;
-    public static final int FROM=120;
+    public static final int VT_IMPORT_ID=44;
+    public static final int MISC=142;
+    public static final int FROM=122;
     public static final int VT_XOR=28;
-    public static final int COLLECT=123;
-    public static final int EscapeSequence=144;
-    public static final int VK_ACTIVATION_GROUP=59;
-    public static final int VK_ENABLED=65;
-    public static final int C_STYLE_SINGLE_LINE_COMMENT=150;
-    public static final int VK_PACKAGE=70;
-    public static final int VK_END=91;
-    public static final int OVER=121;
-    public static final int VK_EXTEND=68;
-    public static final int RIGHT_SQUARE=136;
-    public static final int RIGHT_CURLY=139;
-    public static final int SINGLE_PIPE=124;
-    public static final int VT_FACT_OR=35;
-    public static final int VT_FIELD=37;
-    public static final int FLOAT=133;
-    public static final int VT_ACCUMULATE_ID_CLAUSE=30;
-    public static final int VK_EXISTS=84;
-    public static final int VK_FORANY=86;
-    public static final int VK_DATE_EXPIRES=55;
-    public static final int ID=105;
-    public static final int HexDigit=145;
-    public static final int VK_EVAL=76;
+    public static final int COLLECT=125;
+    public static final int EscapeSequence=146;
+    public static final int VK_ACTIVATION_GROUP=60;
+    public static final int VK_ENABLED=66;
+    public static final int C_STYLE_SINGLE_LINE_COMMENT=152;
+    public static final int VK_END=93;
+    public static final int VK_PACKAGE=71;
+    public static final int OVER=123;
+    public static final int VK_EXTEND=69;
+    public static final int RIGHT_SQUARE=138;
+    public static final int RIGHT_CURLY=141;
+    public static final int SINGLE_PIPE=126;
+    public static final int VT_FACT_OR=36;
+    public static final int VK_IMPLIES=85;
+    public static final int VT_FIELD=38;
+    public static final int FLOAT=135;
+    public static final int VT_ACCUMULATE_ID_CLAUSE=31;
+    public static final int VK_EXISTS=86;
+    public static final int VK_FORANY=88;
+    public static final int VK_DATE_EXPIRES=56;
+    public static final int ID=107;
+    public static final int HexDigit=147;
+    public static final int VK_EVAL=77;
     public static final int VT_OR_PREFIX=24;
-    public static final int VK_WEIGHT=94;
-    public static final int APPROX=141;
-    public static final int AT=112;
-    public static final int DOUBLE_PIPE=118;
-    public static final int VT_ARGS=52;
-    public static final int RIGHT_PAREN=111;
-    public static final int VK_XOR=83;
+    public static final int VK_WEIGHT=96;
+    public static final int APPROX=143;
+    public static final int AT=114;
+    public static final int DOUBLE_PIPE=120;
+    public static final int VT_ARGS=53;
+    public static final int RIGHT_PAREN=113;
+    public static final int VT_IMPLIES=29;
+    public static final int VK_XOR=84;
     public static final int VT_COMPILATION_UNIT=4;
-    public static final int THEN=137;
-    public static final int VT_EXPRESSION_CHAIN=32;
-    public static final int COMMA=110;
-    public static final int EQUAL=127;
+    public static final int THEN=139;
+    public static final int VT_EXPRESSION_CHAIN=33;
+    public static final int COMMA=112;
+    public static final int EQUAL=129;
     public static final int VT_BEHAVIOR=21;
-    public static final int VK_CONSTRID=101;
-    public static final int VK_DIALECT=63;
+    public static final int VK_CONSTRID=103;
+    public static final int VK_DIALECT=64;
     public static final int VT_QUERY_ID=9;
-    public static final int DOT=106;
-    public static final int VT_PRIOR=51;
-    public static final int VT_GLOBAL_ID=44;
-    public static final int VK_NOT=78;
-    public static final int VT_FROM_SOURCE=31;
-    public static final int VK_DECLARE=73;
+    public static final int DOT=108;
+    public static final int VT_PRIOR=52;
+    public static final int VT_GLOBAL_ID=45;
+    public static final int VK_NOT=79;
+    public static final int VT_FROM_SOURCE=32;
+    public static final int VK_DECLARE=74;
     public static final int VT_ENTRYPOINT_ID=13;
     public static final int VT_PAREN_CHUNK=20;
     public static final int VT_TYPE_DECLARE_ID=11;
-    public static final int VK_REVERSE=88;
-    public static final int VK_LOCK_ON_ACTIVE=56;
-    public static final int VK_TEMPLATE=71;
-    public static final int VK_DURATION=62;
+    public static final int VK_REVERSE=90;
+    public static final int VK_LOCK_ON_ACTIVE=57;
+    public static final int VK_TEMPLATE=72;
+    public static final int VK_DURATION=63;
     public static final int VT_RULE_ATTRIBUTES=16;
     public static final int VT_AND_INFIX=25;
-    public static final int VT_ACCESSOR_PATH=38;
-    public static final int MULTI_LINE_COMMENT=151;
-    public static final int VK_FORALL=85;
-    public static final int COLON=113;
+    public static final int VT_ACCESSOR_PATH=39;
+    public static final int MULTI_LINE_COMMENT=153;
+    public static final int VK_FORALL=87;
+    public static final int COLON=115;
     public static final int VT_AND_IMPLICIT=22;
-    public static final int VT_ACCUMULATE_INIT_CLAUSE=29;
+    public static final int VT_ACCUMULATE_INIT_CLAUSE=30;
     public static final int VT_CURLY_CHUNK=18;
     public static final int VT_SLOT_ID=14;
-    public static final int VK_ATTRIBUTES=66;
-    public static final int WHEN=115;
-    public static final int UnicodeEscape=146;
+    public static final int VK_ATTRIBUTES=67;
+    public static final int WHEN=117;
+    public static final int UnicodeEscape=148;
     public static final int VT_SQUARE_CHUNK=19;
-    public static final int VK_DATE_EFFECTIVE=54;
+    public static final int VK_DATE_EFFECTIVE=55;
     public static final int VT_TEMPLATE_ID=10;
-    public static final int VT_PARAM_LIST=46;
-    public static final int ARROW=126;
-    public static final int VT_BIND_FIELD=36;
-    public static final int VK_AGENDA_GROUP=60;
+    public static final int VT_PARAM_LIST=47;
+    public static final int ARROW=128;
+    public static final int VT_BIND_FIELD=37;
+    public static final int VK_AGENDA_GROUP=61;
     public static final int VT_CONSTRAINTS=7;
-    public static final int LEFT_SQUARE=135;
-    public static final int GREATER_EQUAL=129;
-    public static final int OctalEscape=147;
-    public static final int VK_INIT=92;
-    public static final int STRING=108;
+    public static final int LEFT_SQUARE=137;
+    public static final int GREATER_EQUAL=131;
+    public static final int OctalEscape=149;
+    public static final int VK_INIT=94;
+    public static final int STRING=110;
 
     	private List<DroolsParserException> errors = new ArrayList<DroolsParserException>();
     	private DroolsParserExceptionFactory errorMessageFactory = new DroolsParserExceptionFactory(null, null);
@@ -212,10 +214,10 @@ public class DRLLexer extends Lexer {
         try {
             int _type = WS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2157:9: ( ( ' ' | '\\t' | '\\f' | EOL )+ )
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2157:17: ( ' ' | '\\t' | '\\f' | EOL )+
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2175:9: ( ( ' ' | '\\t' | '\\f' | EOL )+ )
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2175:17: ( ' ' | '\\t' | '\\f' | EOL )+
             {
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2157:17: ( ' ' | '\\t' | '\\f' | EOL )+
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2175:17: ( ' ' | '\\t' | '\\f' | EOL )+
             int cnt1=0;
             loop1:
             do {
@@ -247,28 +249,28 @@ public class DRLLexer extends Lexer {
 
                 switch (alt1) {
             	case 1 :
-            	    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2157:19: ' '
+            	    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2175:19: ' '
             	    {
             	    match(' '); if (state.failed) return ;
 
             	    }
             	    break;
             	case 2 :
-            	    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2158:19: '\\t'
+            	    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2176:19: '\\t'
             	    {
             	    match('\t'); if (state.failed) return ;
 
             	    }
             	    break;
             	case 3 :
-            	    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2159:19: '\\f'
+            	    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2177:19: '\\f'
             	    {
             	    match('\f'); if (state.failed) return ;
 
             	    }
             	    break;
             	case 4 :
-            	    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2160:19: EOL
+            	    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2178:19: EOL
             	    {
             	    mEOL(); if (state.failed) return ;
 
@@ -302,10 +304,10 @@ public class DRLLexer extends Lexer {
     // $ANTLR start "EOL"
     public final void mEOL() throws RecognitionException {
         try {
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2166:6: ( ( ( '\\r\\n' )=> '\\r\\n' | '\\r' | '\\n' ) )
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2167:6: ( ( '\\r\\n' )=> '\\r\\n' | '\\r' | '\\n' )
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2184:6: ( ( ( '\\r\\n' )=> '\\r\\n' | '\\r' | '\\n' ) )
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2185:6: ( ( '\\r\\n' )=> '\\r\\n' | '\\r' | '\\n' )
             {
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2167:6: ( ( '\\r\\n' )=> '\\r\\n' | '\\r' | '\\n' )
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2185:6: ( ( '\\r\\n' )=> '\\r\\n' | '\\r' | '\\n' )
             int alt2=3;
             int LA2_0 = input.LA(1);
 
@@ -330,7 +332,7 @@ public class DRLLexer extends Lexer {
             }
             switch (alt2) {
                 case 1 :
-                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2167:14: ( '\\r\\n' )=> '\\r\\n'
+                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2185:14: ( '\\r\\n' )=> '\\r\\n'
                     {
                     match("\r\n"); if (state.failed) return ;
 
@@ -338,14 +340,14 @@ public class DRLLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2168:25: '\\r'
+                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2186:25: '\\r'
                     {
                     match('\r'); if (state.failed) return ;
 
                     }
                     break;
                 case 3 :
-                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2169:25: '\\n'
+                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2187:25: '\\n'
                     {
                     match('\n'); if (state.failed) return ;
 
@@ -368,10 +370,10 @@ public class DRLLexer extends Lexer {
         try {
             int _type = INT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2174:2: ( ( '-' )? ( '0' .. '9' )+ )
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2174:4: ( '-' )? ( '0' .. '9' )+
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2192:2: ( ( '-' )? ( '0' .. '9' )+ )
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2192:4: ( '-' )? ( '0' .. '9' )+
             {
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2174:4: ( '-' )?
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2192:4: ( '-' )?
             int alt3=2;
             int LA3_0 = input.LA(1);
 
@@ -380,7 +382,7 @@ public class DRLLexer extends Lexer {
             }
             switch (alt3) {
                 case 1 :
-                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2174:5: '-'
+                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2192:5: '-'
                     {
                     match('-'); if (state.failed) return ;
 
@@ -389,7 +391,7 @@ public class DRLLexer extends Lexer {
 
             }
 
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2174:10: ( '0' .. '9' )+
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2192:10: ( '0' .. '9' )+
             int cnt4=0;
             loop4:
             do {
@@ -403,7 +405,7 @@ public class DRLLexer extends Lexer {
 
                 switch (alt4) {
             	case 1 :
-            	    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2174:11: '0' .. '9'
+            	    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2192:11: '0' .. '9'
             	    {
             	    matchRange('0','9'); if (state.failed) return ;
 
@@ -436,10 +438,10 @@ public class DRLLexer extends Lexer {
         try {
             int _type = FLOAT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2178:2: ( ( '-' )? ( '0' .. '9' )+ '.' ( '0' .. '9' )+ )
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2178:4: ( '-' )? ( '0' .. '9' )+ '.' ( '0' .. '9' )+
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2196:2: ( ( '-' )? ( '0' .. '9' )+ '.' ( '0' .. '9' )+ )
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2196:4: ( '-' )? ( '0' .. '9' )+ '.' ( '0' .. '9' )+
             {
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2178:4: ( '-' )?
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2196:4: ( '-' )?
             int alt5=2;
             int LA5_0 = input.LA(1);
 
@@ -448,7 +450,7 @@ public class DRLLexer extends Lexer {
             }
             switch (alt5) {
                 case 1 :
-                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2178:5: '-'
+                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2196:5: '-'
                     {
                     match('-'); if (state.failed) return ;
 
@@ -457,7 +459,7 @@ public class DRLLexer extends Lexer {
 
             }
 
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2178:10: ( '0' .. '9' )+
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2196:10: ( '0' .. '9' )+
             int cnt6=0;
             loop6:
             do {
@@ -471,7 +473,7 @@ public class DRLLexer extends Lexer {
 
                 switch (alt6) {
             	case 1 :
-            	    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2178:11: '0' .. '9'
+            	    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2196:11: '0' .. '9'
             	    {
             	    matchRange('0','9'); if (state.failed) return ;
 
@@ -489,7 +491,7 @@ public class DRLLexer extends Lexer {
             } while (true);
 
             match('.'); if (state.failed) return ;
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2178:26: ( '0' .. '9' )+
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2196:26: ( '0' .. '9' )+
             int cnt7=0;
             loop7:
             do {
@@ -503,7 +505,7 @@ public class DRLLexer extends Lexer {
 
                 switch (alt7) {
             	case 1 :
-            	    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2178:27: '0' .. '9'
+            	    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2196:27: '0' .. '9'
             	    {
             	    matchRange('0','9'); if (state.failed) return ;
 
@@ -536,7 +538,7 @@ public class DRLLexer extends Lexer {
         try {
             int _type = STRING;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2182:5: ( ( '\"' ( EscapeSequence | ~ ( '\\\\' | '\"' ) )* '\"' ) | ( '\\'' ( EscapeSequence | ~ ( '\\\\' | '\\'' ) )* '\\'' ) )
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2200:5: ( ( '\"' ( EscapeSequence | ~ ( '\\\\' | '\"' ) )* '\"' ) | ( '\\'' ( EscapeSequence | ~ ( '\\\\' | '\\'' ) )* '\\'' ) )
             int alt10=2;
             int LA10_0 = input.LA(1);
 
@@ -555,13 +557,13 @@ public class DRLLexer extends Lexer {
             }
             switch (alt10) {
                 case 1 :
-                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2182:8: ( '\"' ( EscapeSequence | ~ ( '\\\\' | '\"' ) )* '\"' )
+                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2200:8: ( '\"' ( EscapeSequence | ~ ( '\\\\' | '\"' ) )* '\"' )
                     {
-                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2182:8: ( '\"' ( EscapeSequence | ~ ( '\\\\' | '\"' ) )* '\"' )
-                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2182:9: '\"' ( EscapeSequence | ~ ( '\\\\' | '\"' ) )* '\"'
+                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2200:8: ( '\"' ( EscapeSequence | ~ ( '\\\\' | '\"' ) )* '\"' )
+                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2200:9: '\"' ( EscapeSequence | ~ ( '\\\\' | '\"' ) )* '\"'
                     {
                     match('\"'); if (state.failed) return ;
-                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2182:13: ( EscapeSequence | ~ ( '\\\\' | '\"' ) )*
+                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2200:13: ( EscapeSequence | ~ ( '\\\\' | '\"' ) )*
                     loop8:
                     do {
                         int alt8=3;
@@ -577,14 +579,14 @@ public class DRLLexer extends Lexer {
 
                         switch (alt8) {
                     	case 1 :
-                    	    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2182:15: EscapeSequence
+                    	    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2200:15: EscapeSequence
                     	    {
                     	    mEscapeSequence(); if (state.failed) return ;
 
                     	    }
                     	    break;
                     	case 2 :
-                    	    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2182:32: ~ ( '\\\\' | '\"' )
+                    	    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2200:32: ~ ( '\\\\' | '\"' )
                     	    {
                     	    if ( (input.LA(1)>='\u0000' && input.LA(1)<='!')||(input.LA(1)>='#' && input.LA(1)<='[')||(input.LA(1)>=']' && input.LA(1)<='\uFFFF') ) {
                     	        input.consume();
@@ -613,13 +615,13 @@ public class DRLLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2183:8: ( '\\'' ( EscapeSequence | ~ ( '\\\\' | '\\'' ) )* '\\'' )
+                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2201:8: ( '\\'' ( EscapeSequence | ~ ( '\\\\' | '\\'' ) )* '\\'' )
                     {
-                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2183:8: ( '\\'' ( EscapeSequence | ~ ( '\\\\' | '\\'' ) )* '\\'' )
-                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2183:9: '\\'' ( EscapeSequence | ~ ( '\\\\' | '\\'' ) )* '\\''
+                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2201:8: ( '\\'' ( EscapeSequence | ~ ( '\\\\' | '\\'' ) )* '\\'' )
+                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2201:9: '\\'' ( EscapeSequence | ~ ( '\\\\' | '\\'' ) )* '\\''
                     {
                     match('\''); if (state.failed) return ;
-                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2183:14: ( EscapeSequence | ~ ( '\\\\' | '\\'' ) )*
+                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2201:14: ( EscapeSequence | ~ ( '\\\\' | '\\'' ) )*
                     loop9:
                     do {
                         int alt9=3;
@@ -635,14 +637,14 @@ public class DRLLexer extends Lexer {
 
                         switch (alt9) {
                     	case 1 :
-                    	    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2183:16: EscapeSequence
+                    	    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2201:16: EscapeSequence
                     	    {
                     	    mEscapeSequence(); if (state.failed) return ;
 
                     	    }
                     	    break;
                     	case 2 :
-                    	    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2183:33: ~ ( '\\\\' | '\\'' )
+                    	    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2201:33: ~ ( '\\\\' | '\\'' )
                     	    {
                     	    if ( (input.LA(1)>='\u0000' && input.LA(1)<='&')||(input.LA(1)>='(' && input.LA(1)<='[')||(input.LA(1)>=']' && input.LA(1)<='\uFFFF') ) {
                     	        input.consume();
@@ -683,8 +685,8 @@ public class DRLLexer extends Lexer {
     // $ANTLR start "HexDigit"
     public final void mHexDigit() throws RecognitionException {
         try {
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2187:10: ( ( '0' .. '9' | 'a' .. 'f' | 'A' .. 'F' ) )
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2187:12: ( '0' .. '9' | 'a' .. 'f' | 'A' .. 'F' )
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2205:10: ( ( '0' .. '9' | 'a' .. 'f' | 'A' .. 'F' ) )
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2205:12: ( '0' .. '9' | 'a' .. 'f' | 'A' .. 'F' )
             {
             if ( (input.LA(1)>='0' && input.LA(1)<='9')||(input.LA(1)>='A' && input.LA(1)<='F')||(input.LA(1)>='a' && input.LA(1)<='f') ) {
                 input.consume();
@@ -708,7 +710,7 @@ public class DRLLexer extends Lexer {
     // $ANTLR start "EscapeSequence"
     public final void mEscapeSequence() throws RecognitionException {
         try {
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2191:5: ( '\\\\' ( 'b' | 'B' | 't' | 'n' | 'f' | 'r' | '\\\"' | '\\'' | '\\\\' | '.' | 'o' | 'x' | 'a' | 'e' | 'c' | 'd' | 'D' | 's' | 'S' | 'w' | 'W' | 'p' | 'A' | 'G' | 'Z' | 'z' | 'Q' | 'E' | '*' | '[' | ']' | '(' | ')' | '$' | '^' | '{' | '}' | '?' | '+' | '-' | '&' | '|' ) | UnicodeEscape | OctalEscape )
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2209:5: ( '\\\\' ( 'b' | 'B' | 't' | 'n' | 'f' | 'r' | '\\\"' | '\\'' | '\\\\' | '.' | 'o' | 'x' | 'a' | 'e' | 'c' | 'd' | 'D' | 's' | 'S' | 'w' | 'W' | 'p' | 'A' | 'G' | 'Z' | 'z' | 'Q' | 'E' | '*' | '[' | ']' | '(' | ')' | '$' | '^' | '{' | '}' | '?' | '+' | '-' | '&' | '|' ) | UnicodeEscape | OctalEscape )
             int alt11=3;
             int LA11_0 = input.LA(1);
 
@@ -795,7 +797,7 @@ public class DRLLexer extends Lexer {
             }
             switch (alt11) {
                 case 1 :
-                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2191:9: '\\\\' ( 'b' | 'B' | 't' | 'n' | 'f' | 'r' | '\\\"' | '\\'' | '\\\\' | '.' | 'o' | 'x' | 'a' | 'e' | 'c' | 'd' | 'D' | 's' | 'S' | 'w' | 'W' | 'p' | 'A' | 'G' | 'Z' | 'z' | 'Q' | 'E' | '*' | '[' | ']' | '(' | ')' | '$' | '^' | '{' | '}' | '?' | '+' | '-' | '&' | '|' )
+                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2209:9: '\\\\' ( 'b' | 'B' | 't' | 'n' | 'f' | 'r' | '\\\"' | '\\'' | '\\\\' | '.' | 'o' | 'x' | 'a' | 'e' | 'c' | 'd' | 'D' | 's' | 'S' | 'w' | 'W' | 'p' | 'A' | 'G' | 'Z' | 'z' | 'Q' | 'E' | '*' | '[' | ']' | '(' | ')' | '$' | '^' | '{' | '}' | '?' | '+' | '-' | '&' | '|' )
                     {
                     match('\\'); if (state.failed) return ;
                     if ( input.LA(1)=='\"'||input.LA(1)=='$'||(input.LA(1)>='&' && input.LA(1)<='+')||(input.LA(1)>='-' && input.LA(1)<='.')||input.LA(1)=='?'||(input.LA(1)>='A' && input.LA(1)<='B')||(input.LA(1)>='D' && input.LA(1)<='E')||input.LA(1)=='G'||input.LA(1)=='Q'||input.LA(1)=='S'||input.LA(1)=='W'||(input.LA(1)>='Z' && input.LA(1)<='^')||(input.LA(1)>='a' && input.LA(1)<='f')||(input.LA(1)>='n' && input.LA(1)<='p')||(input.LA(1)>='r' && input.LA(1)<='t')||(input.LA(1)>='w' && input.LA(1)<='x')||(input.LA(1)>='z' && input.LA(1)<='}') ) {
@@ -812,14 +814,14 @@ public class DRLLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2195:9: UnicodeEscape
+                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2213:9: UnicodeEscape
                     {
                     mUnicodeEscape(); if (state.failed) return ;
 
                     }
                     break;
                 case 3 :
-                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2196:9: OctalEscape
+                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2214:9: OctalEscape
                     {
                     mOctalEscape(); if (state.failed) return ;
 
@@ -836,7 +838,7 @@ public class DRLLexer extends Lexer {
     // $ANTLR start "OctalEscape"
     public final void mOctalEscape() throws RecognitionException {
         try {
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2201:5: ( '\\\\' ( '0' .. '3' ) ( '0' .. '7' ) ( '0' .. '7' ) | '\\\\' ( '0' .. '7' ) ( '0' .. '7' ) | '\\\\' ( '0' .. '7' ) )
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2219:5: ( '\\\\' ( '0' .. '3' ) ( '0' .. '7' ) ( '0' .. '7' ) | '\\\\' ( '0' .. '7' ) ( '0' .. '7' ) | '\\\\' ( '0' .. '7' ) )
             int alt12=3;
             int LA12_0 = input.LA(1);
 
@@ -884,25 +886,25 @@ public class DRLLexer extends Lexer {
             }
             switch (alt12) {
                 case 1 :
-                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2201:9: '\\\\' ( '0' .. '3' ) ( '0' .. '7' ) ( '0' .. '7' )
+                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2219:9: '\\\\' ( '0' .. '3' ) ( '0' .. '7' ) ( '0' .. '7' )
                     {
                     match('\\'); if (state.failed) return ;
-                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2201:14: ( '0' .. '3' )
-                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2201:15: '0' .. '3'
+                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2219:14: ( '0' .. '3' )
+                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2219:15: '0' .. '3'
                     {
                     matchRange('0','3'); if (state.failed) return ;
 
                     }
 
-                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2201:25: ( '0' .. '7' )
-                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2201:26: '0' .. '7'
+                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2219:25: ( '0' .. '7' )
+                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2219:26: '0' .. '7'
                     {
                     matchRange('0','7'); if (state.failed) return ;
 
                     }
 
-                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2201:36: ( '0' .. '7' )
-                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2201:37: '0' .. '7'
+                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2219:36: ( '0' .. '7' )
+                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2219:37: '0' .. '7'
                     {
                     matchRange('0','7'); if (state.failed) return ;
 
@@ -912,18 +914,18 @@ public class DRLLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2202:9: '\\\\' ( '0' .. '7' ) ( '0' .. '7' )
+                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2220:9: '\\\\' ( '0' .. '7' ) ( '0' .. '7' )
                     {
                     match('\\'); if (state.failed) return ;
-                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2202:14: ( '0' .. '7' )
-                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2202:15: '0' .. '7'
+                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2220:14: ( '0' .. '7' )
+                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2220:15: '0' .. '7'
                     {
                     matchRange('0','7'); if (state.failed) return ;
 
                     }
 
-                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2202:25: ( '0' .. '7' )
-                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2202:26: '0' .. '7'
+                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2220:25: ( '0' .. '7' )
+                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2220:26: '0' .. '7'
                     {
                     matchRange('0','7'); if (state.failed) return ;
 
@@ -933,11 +935,11 @@ public class DRLLexer extends Lexer {
                     }
                     break;
                 case 3 :
-                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2203:9: '\\\\' ( '0' .. '7' )
+                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2221:9: '\\\\' ( '0' .. '7' )
                     {
                     match('\\'); if (state.failed) return ;
-                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2203:14: ( '0' .. '7' )
-                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2203:15: '0' .. '7'
+                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2221:14: ( '0' .. '7' )
+                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2221:15: '0' .. '7'
                     {
                     matchRange('0','7'); if (state.failed) return ;
 
@@ -957,8 +959,8 @@ public class DRLLexer extends Lexer {
     // $ANTLR start "UnicodeEscape"
     public final void mUnicodeEscape() throws RecognitionException {
         try {
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2208:5: ( '\\\\' 'u' HexDigit HexDigit HexDigit HexDigit )
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2208:9: '\\\\' 'u' HexDigit HexDigit HexDigit HexDigit
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2226:5: ( '\\\\' 'u' HexDigit HexDigit HexDigit HexDigit )
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2226:9: '\\\\' 'u' HexDigit HexDigit HexDigit HexDigit
             {
             match('\\'); if (state.failed) return ;
             match('u'); if (state.failed) return ;
@@ -980,10 +982,10 @@ public class DRLLexer extends Lexer {
         try {
             int _type = BOOL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2212:2: ( ( 'true' | 'false' ) )
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2212:4: ( 'true' | 'false' )
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2230:2: ( ( 'true' | 'false' ) )
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2230:4: ( 'true' | 'false' )
             {
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2212:4: ( 'true' | 'false' )
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2230:4: ( 'true' | 'false' )
             int alt13=2;
             int LA13_0 = input.LA(1);
 
@@ -1002,7 +1004,7 @@ public class DRLLexer extends Lexer {
             }
             switch (alt13) {
                 case 1 :
-                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2212:5: 'true'
+                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2230:5: 'true'
                     {
                     match("true"); if (state.failed) return ;
 
@@ -1010,7 +1012,7 @@ public class DRLLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2212:12: 'false'
+                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2230:12: 'false'
                     {
                     match("false"); if (state.failed) return ;
 
@@ -1036,8 +1038,8 @@ public class DRLLexer extends Lexer {
         try {
             int _type = ACCUMULATE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2216:2: ( 'accumulate' )
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2216:4: 'accumulate'
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2234:2: ( 'accumulate' )
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2234:4: 'accumulate'
             {
             match("accumulate"); if (state.failed) return ;
 
@@ -1057,8 +1059,8 @@ public class DRLLexer extends Lexer {
         try {
             int _type = COLLECT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2220:2: ( 'collect' )
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2220:4: 'collect'
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2238:2: ( 'collect' )
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2238:4: 'collect'
             {
             match("collect"); if (state.failed) return ;
 
@@ -1078,8 +1080,8 @@ public class DRLLexer extends Lexer {
         try {
             int _type = FROM;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2224:2: ( 'from' )
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2224:4: 'from'
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2242:2: ( 'from' )
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2242:4: 'from'
             {
             match("from"); if (state.failed) return ;
 
@@ -1099,8 +1101,8 @@ public class DRLLexer extends Lexer {
         try {
             int _type = NULL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2228:2: ( 'null' )
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2228:4: 'null'
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2246:2: ( 'null' )
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2246:4: 'null'
             {
             match("null"); if (state.failed) return ;
 
@@ -1120,8 +1122,8 @@ public class DRLLexer extends Lexer {
         try {
             int _type = OVER;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2232:2: ( 'over' )
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2232:4: 'over'
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2250:2: ( 'over' )
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2250:4: 'over'
             {
             match("over"); if (state.failed) return ;
 
@@ -1141,8 +1143,8 @@ public class DRLLexer extends Lexer {
         try {
             int _type = THEN;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2236:2: ( 'then' )
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2236:4: 'then'
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2254:2: ( 'then' )
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2254:4: 'then'
             {
             match("then"); if (state.failed) return ;
 
@@ -1162,8 +1164,8 @@ public class DRLLexer extends Lexer {
         try {
             int _type = WHEN;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2240:2: ( 'when' )
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2240:4: 'when'
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2258:2: ( 'when' )
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2258:4: 'when'
             {
             match("when"); if (state.failed) return ;
 
@@ -1183,8 +1185,8 @@ public class DRLLexer extends Lexer {
         try {
             int _type = APPROX;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2245:3: ( '~' )
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2245:5: '~'
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2263:3: ( '~' )
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2263:5: '~'
             {
             match('~'); if (state.failed) return ;
 
@@ -1203,8 +1205,8 @@ public class DRLLexer extends Lexer {
         try {
             int _type = CUT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2249:3: ( '!' )
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2249:5: '!'
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2267:3: ( '!' )
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2267:5: '!'
             {
             match('!'); if (state.failed) return ;
 
@@ -1223,8 +1225,8 @@ public class DRLLexer extends Lexer {
         try {
             int _type = AT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2253:4: ( '@' )
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2253:6: '@'
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2271:4: ( '@' )
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2271:6: '@'
             {
             match('@'); if (state.failed) return ;
 
@@ -1243,8 +1245,8 @@ public class DRLLexer extends Lexer {
         try {
             int _type = EQUALS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2257:2: ( '=' )
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2257:4: '='
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2275:2: ( '=' )
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2275:4: '='
             {
             match('='); if (state.failed) return ;
 
@@ -1263,8 +1265,8 @@ public class DRLLexer extends Lexer {
         try {
             int _type = SEMICOLON;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2261:2: ( ';' )
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2261:4: ';'
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2279:2: ( ';' )
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2279:4: ';'
             {
             match(';'); if (state.failed) return ;
 
@@ -1283,8 +1285,8 @@ public class DRLLexer extends Lexer {
         try {
             int _type = DOT_STAR;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2265:2: ( '.*' )
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2265:4: '.*'
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2283:2: ( '.*' )
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2283:4: '.*'
             {
             match(".*"); if (state.failed) return ;
 
@@ -1304,8 +1306,8 @@ public class DRLLexer extends Lexer {
         try {
             int _type = COLON;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2269:2: ( ':' )
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2269:4: ':'
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2287:2: ( ':' )
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2287:4: ':'
             {
             match(':'); if (state.failed) return ;
 
@@ -1324,8 +1326,8 @@ public class DRLLexer extends Lexer {
         try {
             int _type = EQUAL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2273:2: ( '==' )
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2273:4: '=='
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2291:2: ( '==' )
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2291:4: '=='
             {
             match("=="); if (state.failed) return ;
 
@@ -1345,8 +1347,8 @@ public class DRLLexer extends Lexer {
         try {
             int _type = NOT_EQUAL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2277:2: ( '!=' )
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2277:4: '!='
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2295:2: ( '!=' )
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2295:4: '!='
             {
             match("!="); if (state.failed) return ;
 
@@ -1366,8 +1368,8 @@ public class DRLLexer extends Lexer {
         try {
             int _type = GREATER;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2281:2: ( '>' )
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2281:4: '>'
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2299:2: ( '>' )
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2299:4: '>'
             {
             match('>'); if (state.failed) return ;
 
@@ -1386,8 +1388,8 @@ public class DRLLexer extends Lexer {
         try {
             int _type = GREATER_EQUAL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2285:2: ( '>=' )
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2285:4: '>='
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2303:2: ( '>=' )
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2303:4: '>='
             {
             match(">="); if (state.failed) return ;
 
@@ -1407,8 +1409,8 @@ public class DRLLexer extends Lexer {
         try {
             int _type = LESS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2289:2: ( '<' )
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2289:4: '<'
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2307:2: ( '<' )
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2307:4: '<'
             {
             match('<'); if (state.failed) return ;
 
@@ -1427,8 +1429,8 @@ public class DRLLexer extends Lexer {
         try {
             int _type = LESS_EQUAL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2293:2: ( '<=' )
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2293:4: '<='
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2311:2: ( '<=' )
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2311:4: '<='
             {
             match("<="); if (state.failed) return ;
 
@@ -1448,8 +1450,8 @@ public class DRLLexer extends Lexer {
         try {
             int _type = ARROW;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2297:2: ( '->' )
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2297:4: '->'
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2315:2: ( '->' )
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2315:4: '->'
             {
             match("->"); if (state.failed) return ;
 
@@ -1469,7 +1471,7 @@ public class DRLLexer extends Lexer {
         try {
             int _type = ID;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2301:2: ( ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '$' | '\\u00c0' .. '\\u00ff' ) ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' | '\\u00c0' .. '\\u00ff' )* | '`' ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '$' | '\\u00c0' .. '\\u00ff' ) ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' | '\\u00c0' .. '\\u00ff' )+ '`' )
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2319:2: ( ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '$' | '\\u00c0' .. '\\u00ff' ) ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' | '\\u00c0' .. '\\u00ff' )* | '`' ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '$' | '\\u00c0' .. '\\u00ff' ) ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' | '\\u00c0' .. '\\u00ff' )+ '`' )
             int alt16=2;
             int LA16_0 = input.LA(1);
 
@@ -1488,7 +1490,7 @@ public class DRLLexer extends Lexer {
             }
             switch (alt16) {
                 case 1 :
-                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2301:4: ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '$' | '\\u00c0' .. '\\u00ff' ) ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' | '\\u00c0' .. '\\u00ff' )*
+                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2319:4: ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '$' | '\\u00c0' .. '\\u00ff' ) ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' | '\\u00c0' .. '\\u00ff' )*
                     {
                     if ( input.LA(1)=='$'||(input.LA(1)>='A' && input.LA(1)<='Z')||input.LA(1)=='_'||(input.LA(1)>='a' && input.LA(1)<='z')||(input.LA(1)>='\u00C0' && input.LA(1)<='\u00FF') ) {
                         input.consume();
@@ -1500,7 +1502,7 @@ public class DRLLexer extends Lexer {
                         recover(mse);
                         throw mse;}
 
-                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2301:50: ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' | '\\u00c0' .. '\\u00ff' )*
+                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2319:50: ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' | '\\u00c0' .. '\\u00ff' )*
                     loop14:
                     do {
                         int alt14=2;
@@ -1538,7 +1540,7 @@ public class DRLLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2302:4: '`' ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '$' | '\\u00c0' .. '\\u00ff' ) ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' | '\\u00c0' .. '\\u00ff' )+ '`'
+                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2320:4: '`' ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '$' | '\\u00c0' .. '\\u00ff' ) ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' | '\\u00c0' .. '\\u00ff' )+ '`'
                     {
                     match('`'); if (state.failed) return ;
                     if ( input.LA(1)=='$'||(input.LA(1)>='A' && input.LA(1)<='Z')||input.LA(1)=='_'||(input.LA(1)>='a' && input.LA(1)<='z')||(input.LA(1)>='\u00C0' && input.LA(1)<='\u00FF') ) {
@@ -1551,7 +1553,7 @@ public class DRLLexer extends Lexer {
                         recover(mse);
                         throw mse;}
 
-                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2302:54: ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' | '\\u00c0' .. '\\u00ff' )+
+                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2320:54: ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' | '\\u00c0' .. '\\u00ff' )+
                     int cnt15=0;
                     loop15:
                     do {
@@ -1613,8 +1615,8 @@ public class DRLLexer extends Lexer {
         try {
             int _type = LEFT_PAREN;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2307:9: ( '(' )
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2307:11: '('
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2325:9: ( '(' )
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2325:11: '('
             {
             match('('); if (state.failed) return ;
 
@@ -1633,8 +1635,8 @@ public class DRLLexer extends Lexer {
         try {
             int _type = RIGHT_PAREN;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2311:9: ( ')' )
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2311:11: ')'
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2329:9: ( ')' )
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2329:11: ')'
             {
             match(')'); if (state.failed) return ;
 
@@ -1653,8 +1655,8 @@ public class DRLLexer extends Lexer {
         try {
             int _type = LEFT_SQUARE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2315:9: ( '[' )
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2315:11: '['
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2333:9: ( '[' )
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2333:11: '['
             {
             match('['); if (state.failed) return ;
 
@@ -1673,8 +1675,8 @@ public class DRLLexer extends Lexer {
         try {
             int _type = RIGHT_SQUARE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2319:9: ( ']' )
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2319:11: ']'
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2337:9: ( ']' )
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2337:11: ']'
             {
             match(']'); if (state.failed) return ;
 
@@ -1693,8 +1695,8 @@ public class DRLLexer extends Lexer {
         try {
             int _type = LEFT_CURLY;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2323:9: ( '{' )
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2323:11: '{'
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2341:9: ( '{' )
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2341:11: '{'
             {
             match('{'); if (state.failed) return ;
 
@@ -1713,8 +1715,8 @@ public class DRLLexer extends Lexer {
         try {
             int _type = RIGHT_CURLY;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2327:9: ( '}' )
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2327:11: '}'
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2345:9: ( '}' )
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2345:11: '}'
             {
             match('}'); if (state.failed) return ;
 
@@ -1733,8 +1735,8 @@ public class DRLLexer extends Lexer {
         try {
             int _type = COMMA;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2330:7: ( ',' )
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2330:9: ','
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2348:7: ( ',' )
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2348:9: ','
             {
             match(','); if (state.failed) return ;
 
@@ -1753,8 +1755,8 @@ public class DRLLexer extends Lexer {
         try {
             int _type = DOT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2333:5: ( '.' )
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2333:7: '.'
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2351:5: ( '.' )
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2351:7: '.'
             {
             match('.'); if (state.failed) return ;
 
@@ -1773,8 +1775,8 @@ public class DRLLexer extends Lexer {
         try {
             int _type = DOUBLE_AMPER;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2337:2: ( '&&' )
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2337:4: '&&'
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2355:2: ( '&&' )
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2355:4: '&&'
             {
             match("&&"); if (state.failed) return ;
 
@@ -1794,8 +1796,8 @@ public class DRLLexer extends Lexer {
         try {
             int _type = DOUBLE_PIPE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2341:2: ( '||' )
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2341:4: '||'
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2359:2: ( '||' )
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2359:4: '||'
             {
             match("||"); if (state.failed) return ;
 
@@ -1815,8 +1817,8 @@ public class DRLLexer extends Lexer {
         try {
             int _type = SINGLE_AMPER;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2345:3: ( '&' )
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2345:5: '&'
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2363:3: ( '&' )
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2363:5: '&'
             {
             match('&'); if (state.failed) return ;
 
@@ -1835,8 +1837,8 @@ public class DRLLexer extends Lexer {
         try {
             int _type = SINGLE_PIPE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2349:3: ( '|' )
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2349:5: '|'
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2367:3: ( '|' )
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2367:5: '|'
             {
             match('|'); if (state.failed) return ;
 
@@ -1855,11 +1857,11 @@ public class DRLLexer extends Lexer {
         try {
             int _type = SH_STYLE_SINGLE_LINE_COMMENT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2353:2: ( '#' ( options {greedy=false; } : . )* EOL )
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2353:4: '#' ( options {greedy=false; } : . )* EOL
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2371:2: ( '#' ( options {greedy=false; } : . )* EOL )
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2371:4: '#' ( options {greedy=false; } : . )* EOL
             {
             match('#'); if (state.failed) return ;
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2353:8: ( options {greedy=false; } : . )*
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2371:8: ( options {greedy=false; } : . )*
             loop17:
             do {
                 int alt17=2;
@@ -1878,7 +1880,7 @@ public class DRLLexer extends Lexer {
 
                 switch (alt17) {
             	case 1 :
-            	    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2353:35: .
+            	    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2371:35: .
             	    {
             	    matchAny(); if (state.failed) return ;
 
@@ -1910,12 +1912,12 @@ public class DRLLexer extends Lexer {
         try {
             int _type = C_STYLE_SINGLE_LINE_COMMENT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2359:2: ( '//' ( options {greedy=false; } : . )* EOL )
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2359:4: '//' ( options {greedy=false; } : . )* EOL
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2377:2: ( '//' ( options {greedy=false; } : . )* EOL )
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2377:4: '//' ( options {greedy=false; } : . )* EOL
             {
             match("//"); if (state.failed) return ;
 
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2359:9: ( options {greedy=false; } : . )*
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2377:9: ( options {greedy=false; } : . )*
             loop18:
             do {
                 int alt18=2;
@@ -1934,7 +1936,7 @@ public class DRLLexer extends Lexer {
 
                 switch (alt18) {
             	case 1 :
-            	    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2359:36: .
+            	    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2377:36: .
             	    {
             	    matchAny(); if (state.failed) return ;
 
@@ -1966,12 +1968,12 @@ public class DRLLexer extends Lexer {
         try {
             int _type = MULTI_LINE_COMMENT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2364:2: ( '/*' ( options {greedy=false; } : . )* '*/' )
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2364:4: '/*' ( options {greedy=false; } : . )* '*/'
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2382:2: ( '/*' ( options {greedy=false; } : . )* '*/' )
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2382:4: '/*' ( options {greedy=false; } : . )* '*/'
             {
             match("/*"); if (state.failed) return ;
 
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2364:9: ( options {greedy=false; } : . )*
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2382:9: ( options {greedy=false; } : . )*
             loop19:
             do {
                 int alt19=2;
@@ -1996,7 +1998,7 @@ public class DRLLexer extends Lexer {
 
                 switch (alt19) {
             	case 1 :
-            	    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2364:35: .
+            	    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2382:35: .
             	    {
             	    matchAny(); if (state.failed) return ;
 
@@ -2029,7 +2031,7 @@ public class DRLLexer extends Lexer {
         try {
             int _type = MISC;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2368:7: ( '$' | '%' | '^' | '*' | '_' | '-' | '+' | '?' | '/' | '\\'' | '\\\\' )
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2386:7: ( '$' | '%' | '^' | '*' | '_' | '-' | '+' | '?' | '/' | '\\'' | '\\\\' )
             // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:
             {
             if ( (input.LA(1)>='$' && input.LA(1)<='%')||input.LA(1)=='\''||(input.LA(1)>='*' && input.LA(1)<='+')||input.LA(1)=='-'||input.LA(1)=='/'||input.LA(1)=='?'||input.LA(1)=='\\'||(input.LA(1)>='^' && input.LA(1)<='_') ) {
@@ -2366,8 +2368,8 @@ public class DRLLexer extends Lexer {
 
     // $ANTLR start synpred1_DRL
     public final void synpred1_DRL_fragment() throws RecognitionException {   
-        // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2167:14: ( '\\r\\n' )
-        // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2167:16: '\\r\\n'
+        // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2185:14: ( '\\r\\n' )
+        // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DRL.g:2185:16: '\\r\\n'
         {
         match("\r\n"); if (state.failed) return ;
 

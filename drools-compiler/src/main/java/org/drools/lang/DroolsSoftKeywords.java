@@ -50,6 +50,7 @@ public class DroolsSoftKeywords {
 	public static final String AND = "and";
 	public static final String EQUIV = "equiv";
 	public static final String XOR = "xor";
+	public static final String IMPLIES = "implies";
 	public static final String EXISTS = "exists";
 	public static final String FORALL = "forall";
 	public static final String FORANY = "forany";

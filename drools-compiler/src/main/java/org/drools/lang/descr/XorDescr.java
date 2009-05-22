@@ -64,8 +64,8 @@ public class XorDescr extends BaseDescr
     }
 
     public void addOrMerge(final BaseDescr baseDescr) {
-        if ( baseDescr instanceof AndDescr ) {
-            this.descrs.addAll( ((AndDescr) baseDescr).getDescrs() );
+        if ( baseDescr instanceof XorDescr ) {
+            this.descrs.addAll( ((XorDescr) baseDescr).getDescrs() );
         } else {
             addDescr( baseDescr );
         }

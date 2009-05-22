@@ -1562,8 +1562,8 @@ public class PackageBuilder {
     		String cons = (String) r.getConsequence();
     		
     		
-    		int idx = cons.indexOf("inject");
-    		while (idx != -1) {
+    		int idx = cons.indexOf("ject")-2;
+    		while (idx >= 0) {
     			
     			int endIdx = cons.indexOf(';', idx);
     			
@@ -1595,6 +1595,7 @@ public class PackageBuilder {
         			}
     				
     			} else if (choice == 'I') {
+    				//injectId
     				idx = idx+2;
     				
     			
@@ -1618,6 +1619,7 @@ public class PackageBuilder {
     				
     				
     			} else {
+    				//Plain inject -> injectKey
     			
         			if (idx < 10 || (cons.charAt(idx-8) != '/' && cons.charAt(idx-9) != '/')) {
         				
@@ -1629,8 +1631,12 @@ public class PackageBuilder {
         					 ck = new ConstraintKey(tok.nextToken().replaceAll("\"", ""),
         							tok.nextToken().replaceAll("\"", ""),
         							tok.nextToken().replaceAll("\"", ""));
-        				else 
-        					ck = new ConstraintKey(tok.nextToken().replaceAll("\"", ""));
+        					
+        				else {
+        					String s = tok.nextToken();
+        					ck = new ConstraintKey(s.replaceAll("\"", ""));
+        				}
+        				        				
         			
         				Set<String> deps = ans.get(ck);
         				if (deps == null) {
@@ -1644,7 +1650,7 @@ public class PackageBuilder {
     			
     			
     		
-    			idx = cons.indexOf("inject",endIdx);
+    			idx = cons.indexOf("ject",endIdx)-2;
     		}
     		    		
     	}

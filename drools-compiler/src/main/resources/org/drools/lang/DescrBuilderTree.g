@@ -259,6 +259,11 @@ lhs	returns [BaseDescr baseDescr]
   { lhsList.add($dt1.baseDescr);
     lhsList.add($dt2.baseDescr);
     $baseDescr = factory.createXor($start, lhsList, attribs);  }  
+    
+  |  ^(start=VT_IMPLIES attribs=constraint_attributes? dt1=lhs dt2=lhs)
+  { lhsList.add($dt1.baseDescr);
+    lhsList.add($dt2.baseDescr);
+    $baseDescr = factory.createImplies($start, lhsList, attribs);  }  
 		
 		
 		

@@ -26,6 +26,7 @@ import org.drools.lang.descr.EqvDescr;
 import org.drools.lang.descr.ExistsDescr;
 import org.drools.lang.descr.ForAnyDescr;
 import org.drools.lang.descr.HedgeDescr;
+import org.drools.lang.descr.ImpliesDescr;
 import org.drools.lang.descr.NotDescr;
 import org.drools.lang.descr.OrDescr;
 import org.drools.lang.descr.XorDescr;
@@ -107,6 +108,8 @@ public class GroupElementBuilder
             return GroupElementFactory.newExistsInstance();
         } else if ( XorDescr.class.isAssignableFrom( descr ) ) {
             return GroupElementFactory.newXorInstance();
+        } else if ( ImpliesDescr.class.isAssignableFrom( descr ) ) {
+                return GroupElementFactory.newImpliesInstance();
         } else if ( EqvDescr.class.isAssignableFrom( descr ) ) {
             return GroupElementFactory.newEqvInstance();    
         } else if ( HedgeDescr.class.isAssignableFrom( descr)) {

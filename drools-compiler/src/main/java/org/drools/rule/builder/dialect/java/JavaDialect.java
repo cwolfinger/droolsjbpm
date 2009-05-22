@@ -47,6 +47,7 @@ import org.drools.lang.descr.ForallDescr;
 import org.drools.lang.descr.FromDescr;
 import org.drools.lang.descr.FunctionDescr;
 import org.drools.lang.descr.HedgeDescr;
+import org.drools.lang.descr.ImpliesDescr;
 import org.drools.lang.descr.NotDescr;
 import org.drools.lang.descr.OrDescr;
 import org.drools.lang.descr.PatternDescr;
@@ -201,6 +202,9 @@ public class JavaDialect
                       GE_BUILDER );
         
         builders.put( XorDescr.class,
+                GE_BUILDER );
+        
+        builders.put( ImpliesDescr.class,
                 GE_BUILDER );
         
         builders.put( EqvDescr.class,
