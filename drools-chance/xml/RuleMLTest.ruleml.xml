@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RuleML xmlns="http://www.ruleml.org/0.91/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.ruleml.org/0.91/xsd http://www.ruleml.org/0.91/xsd/naffologeq.xsd">
+    <Assert>
+        <Rulebase>
+            <oid>
+                <Data>org.drools.chance</Data>
+            </oid>
+            <Implies direction="forward">
+                <oid>
+                    <Data>Simple</Data>
+                </oid>
+                <Degree>
+                    <Data>( 0.7 )</Data>
+                </Degree>
+                <body>
+                    <And>
+                        <Atom>
+                            <oid>
+                                <Data>MsgId</Data>
+                            </oid>
+                            <Rel>Message</Rel>
+                            <Equals oriented="yes">
+                                <lhs>
+                                    <Var>Simple.$m</Var>
+                                </lhs>
+                                <rhs>
+                                    <Reify>
+                                        <And>
+                                            <Or>
+                                                <Atom>
+                                                    <op>
+                                                        <Rel>==</Rel>
+                                                    </op>
+                                                    <Var>Simple.$m.$s</Var>
+                                                    <Data xsi:type="xs:decimal">0</Data>
+                                                </Atom>
+                                                <Atom>
+                                                    <op>
+                                                        <Rel>==</Rel>
+                                                    </op>
+                                                    <slot>
+                                                        <Ind>message</Ind>
+                                                        <Var>Simple.$m</Var>
+                                                    </slot>
+                                                    <Data xsi:type="xs:string">Hello</Data>
+                                                </Atom>
+                                            </Or>
+                                        </And>
+                                    </Reify>
+                                </rhs>
+                            </Equals>
+                        </Atom>
+                    </And>
+                </body>
+                <head>
+                    <Atom>
+                        <Rel/>
+                        <Data>		System.out.println();&#13;
+</Data>
+                    </Atom>
+                </head>
+            </Implies>
+        </Rulebase>
+    </Assert>
+</RuleML>

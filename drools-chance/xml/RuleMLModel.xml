@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RuleML xmlns="http://www.ruleml.org/0.91/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.ruleml.org/0.91/xsd http://www.ruleml.org/0.91/xsd/naffologeq.xsd">
+    <oid><Data>test</Data></oid>
+    <Assert>
+		<Rulebase>
+                <oid><Data>org.drools.chance</Data></oid>
+                <Implies direction="forward">
+					<oid>
+						<Data xsi:type="xs:ID">Sample</Data>
+					</oid>
+					<degree>
+						<Data>( 0.7 )</Data>
+					</degree>
+					
+					<body>
+						<And>
+							<Atom>
+								<oid>
+									<Var>$m</Var>
+								</oid>
+								<op>
+									<Rel>Message</Rel>
+								</op>
+							</Atom>
+							
+						</And>
+					</body>
+					
+					<head>	
+							<Atom>
+								<op>
+									<Rel></Rel>
+								</op>
+								<Data>System.out.println();</Data>
+							</Atom>										
+					</head>
+					
+                </Implies>
+		</Rulebase>        
+    </Assert>
+
+</RuleML>
