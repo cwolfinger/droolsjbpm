@@ -240,7 +240,7 @@ public class AndConstraint extends AbstractCompositeConstraint {
 				cks[j] = this.alphaConstraints[j].getConstraintKey();
 			for (int j = 0; j < Nb; j++)
 				cks[Na+j] = this.betaConstraints[j].getConstraintKey();
-			String opStr = this.getOperator().getName();
+			String opStr = this.getOperator() == null ? "nil" : this.getOperator().getName();
 			singletonKey = new ConstraintKey( opStr , cks);
 		}
 		return singletonKey;
