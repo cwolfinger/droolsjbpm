@@ -70,7 +70,7 @@ tokens {
   VT_CUT;
   VT_PRIOR;
   VT_ARGS;
-  VT_TYPE;
+  VT_KIND;
 	
 
 	VK_DATE_EFFECTIVE;
@@ -131,7 +131,7 @@ tokens {
   VK_CONSTRID;
   
   VK_ARGS;
-  VK_TYPE;
+  VK_KIND;
 }
 
 @parser::header {
@@ -910,7 +910,7 @@ lhs_or
 	
 	
 	|	(lhs_and -> lhs_and) 
-		( (or_key  constr_parameters? |DOUBLE_PIPE)=> (value=or_key square_chunk? {orToken = $value.start;} 
+		( (or_key  constr_parameters? |DOUBLE_PIPE)=> (value=or_key constr_parameters? {orToken = $value.start;} 
 		  |pipe=DOUBLE_PIPE {orToken = $pipe; emit($DOUBLE_PIPE, DroolsEditorType.SYMBOL);}) 
 	{	emit(Location.LOCATION_LHS_BEGIN_OF_CONDITION_AND_OR);	}
 		lhs_and 
@@ -935,24 +935,23 @@ lhs_and
 	Token andToken = null;
 }	:	(LEFT_PAREN and_key square_chunk?)=> 
 		LEFT_PAREN {	emit($LEFT_PAREN, DroolsEditorType.SYMBOL);	} 
-			and=and_key
-			square_chunk?
+			and=and_key			
 			constr_parameters?
 	{	emit(Location.LOCATION_LHS_BEGIN_OF_CONDITION_AND_OR);	}
 			lhs_unary+ 
 		RIGHT_PAREN {	emit($RIGHT_PAREN, DroolsEditorType.SYMBOL);	}  // PREFIX
-		-> ^(VT_AND_PREFIX[$and.start] square_chunk? constr_parameters? lhs_unary+ RIGHT_PAREN)
+		-> ^(VT_AND_PREFIX[$and.start] constr_parameters? lhs_unary+ RIGHT_PAREN)
 		
 	|	
 	
 	(lhs_unary -> lhs_unary) 
-		( (and_key square_chunk? |DOUBLE_AMPER)=> 
-		( value=and_key constr_parameters? square_chunk? {andToken = $value.start; } 
+		( (and_key constr_parameters? |DOUBLE_AMPER)=> 
+		( value=and_key constr_parameters?  {andToken = $value.start; } 
 		  |amper=DOUBLE_AMPER {andToken = $amper; emit($DOUBLE_AMPER, DroolsEditorType.SYMBOL);}
 		) 
 	{	emit(Location.LOCATION_LHS_BEGIN_OF_CONDITION_AND_OR);	}
 		lhs_unary 
-		-> ^(VT_AND_INFIX[andToken] square_chunk? constr_parameters? $lhs_and  lhs_unary ) )*			  
+		-> ^(VT_AND_INFIX[andToken] constr_parameters? $lhs_and  lhs_unary ) )*			  
 	;
 
 lhs_unary
@@ -1602,7 +1601,7 @@ constr_parameters
 constr_attr
   :  
     c_param_id    
-    | c_param_type
+    | c_param_kind
     | c_param_args
     | c_param_cut
     | c_param_prior    
@@ -1616,9 +1615,9 @@ c_param_id
     cid=STRING    
   ;
 
-c_param_type
+c_param_kind
   :
-    type_key^
+    kind_key^
     EQUALS!
     type=STRING    
   ;  
@@ -2148,16 +2147,16 @@ kut_key
     ->  VK_CUT[$id]
   ;
   
-type_key  
-  : {(validateIdentifierKey(DroolsSoftKeywords.TYPE))}?=>  id=ID
+kind_key  
+  : {(validateIdentifierKey(DroolsSoftKeywords.KIND))}?=>  id=ID
   { emit($id, DroolsEditorType.KEYWORD);  }
-    ->  VK_TYPE[$id]
+    ->  VK_KIND[$id]
   ;  
 
 args_key  
   : {(validateIdentifierKey(DroolsSoftKeywords.ARGS))}?=>  id=ID
   { emit($id, DroolsEditorType.KEYWORD);  }
-    ->  VK_PARAMS[$id]
+    ->  VK_ARGS[$id]
   ;  
     
   

@@ -41,6 +41,10 @@ public class ImpliesDescr extends BaseDescr
                          baseDescr );
     }
 
+    public void addDescrFirst(final BaseDescr baseDescr) {    	    
+        this.descrs.add( 0 , baseDescr );
+    }
+    
     public void insertBeforeLast(final Class clazz,
                              final BaseDescr baseDescr) {
         if ( this.descrs.isEmpty() ) {

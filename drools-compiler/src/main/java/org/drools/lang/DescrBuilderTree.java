@@ -1,4 +1,4 @@
-// $ANTLR 3.1.1 /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DescrBuilderTree.g 2009-05-20 03:15:20
+// $ANTLR 3.1.1 /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DescrBuilderTree.g 2009-05-23 11:52:09
 
 	package org.drools.lang;
 
@@ -36,12 +36,11 @@ import java.util.ArrayList;
 
 public class DescrBuilderTree extends TreeParser {
     public static final String[] tokenNames = new String[] {
-        "<invalid>", "<EOR>", "<DOWN>", "<UP>", "VT_COMPILATION_UNIT", "VT_FUNCTION_IMPORT", "VT_FACT", "VT_CONSTRAINTS", "VT_LABEL", "VT_QUERY_ID", "VT_TEMPLATE_ID", "VT_TYPE_DECLARE_ID", "VT_RULE_ID", "VT_ENTRYPOINT_ID", "VT_SLOT_ID", "VT_SLOT", "VT_RULE_ATTRIBUTES", "VT_RHS_CHUNK", "VT_CURLY_CHUNK", "VT_SQUARE_CHUNK", "VT_PAREN_CHUNK", "VT_BEHAVIOR", "VT_AND_IMPLICIT", "VT_AND_PREFIX", "VT_OR_PREFIX", "VT_AND_INFIX", "VT_OR_INFIX", "VT_EQUIV", "VT_XOR", "VT_IMPLIES", "VT_ACCUMULATE_INIT_CLAUSE", "VT_ACCUMULATE_ID_CLAUSE", "VT_FROM_SOURCE", "VT_EXPRESSION_CHAIN", "VT_PATTERN", "VT_FACT_BINDING", "VT_FACT_OR", "VT_BIND_FIELD", "VT_FIELD", "VT_ACCESSOR_PATH", "VT_ACCESSOR_ELEMENT", "VT_DATA_TYPE", "VT_PATTERN_TYPE", "VT_PACKAGE_ID", "VT_IMPORT_ID", "VT_GLOBAL_ID", "VT_FUNCTION_ID", "VT_PARAM_LIST", "VT_CONSTRID", "VT_HEDGE", "VT_CONSTR_ATTRIBUTES", "VT_CUT", "VT_PRIOR", "VT_ARGS", "VT_TYPE", "VK_DATE_EFFECTIVE", "VK_DATE_EXPIRES", "VK_LOCK_ON_ACTIVE", "VK_NO_LOOP", "VK_AUTO_FOCUS", "VK_ACTIVATION_GROUP", "VK_AGENDA_GROUP", "VK_RULEFLOW_GROUP", "VK_DURATION", "VK_DIALECT", "VK_SALIENCE", "VK_ENABLED", "VK_ATTRIBUTES", "VK_RULE", "VK_EXTEND", "VK_IMPORT", "VK_PACKAGE", "VK_TEMPLATE", "VK_QUERY", "VK_DECLARE", "VK_FUNCTION", "VK_GLOBAL", "VK_EVAL", "VK_ENTRY_POINT", "VK_NOT", "VK_IN", "VK_OR", "VK_AND", "VK_EQUIV", "VK_XOR", "VK_IMPLIES", "VK_EXISTS", "VK_FORALL", "VK_FORANY", "VK_ACTION", "VK_REVERSE", "VK_RESULT", "VK_OPERATOR", "VK_END", "VK_INIT", "VK_SUBJECT", "VK_WEIGHT", "VK_CUT", "VK_APPROX", "VK_ENTAIL", "VK_PRIOR", "VK_FILTER", "VK_AT", "VK_CONSTRID", "VK_ARGS", "VK_TYPE", "SEMICOLON", "ID", "DOT", "DOT_STAR", "STRING", "LEFT_PAREN", "COMMA", "RIGHT_PAREN", "AT", "COLON", "EQUALS", "WHEN", "BOOL", "INT", "DOUBLE_PIPE", "DOUBLE_AMPER", "FROM", "OVER", "ACCUMULATE", "COLLECT", "SINGLE_PIPE", "SINGLE_AMPER", "ARROW", "EQUAL", "GREATER", "GREATER_EQUAL", "LESS", "LESS_EQUAL", "NOT_EQUAL", "FLOAT", "NULL", "LEFT_SQUARE", "RIGHT_SQUARE", "THEN", "LEFT_CURLY", "RIGHT_CURLY", "MISC", "APPROX", "EOL", "WS", "EscapeSequence", "HexDigit", "UnicodeEscape", "OctalEscape", "CUT", "SH_STYLE_SINGLE_LINE_COMMENT", "C_STYLE_SINGLE_LINE_COMMENT", "MULTI_LINE_COMMENT"
+        "<invalid>", "<EOR>", "<DOWN>", "<UP>", "VT_COMPILATION_UNIT", "VT_FUNCTION_IMPORT", "VT_FACT", "VT_CONSTRAINTS", "VT_LABEL", "VT_QUERY_ID", "VT_TEMPLATE_ID", "VT_TYPE_DECLARE_ID", "VT_RULE_ID", "VT_ENTRYPOINT_ID", "VT_SLOT_ID", "VT_SLOT", "VT_RULE_ATTRIBUTES", "VT_RHS_CHUNK", "VT_CURLY_CHUNK", "VT_SQUARE_CHUNK", "VT_PAREN_CHUNK", "VT_BEHAVIOR", "VT_AND_IMPLICIT", "VT_AND_PREFIX", "VT_OR_PREFIX", "VT_AND_INFIX", "VT_OR_INFIX", "VT_EQUIV", "VT_XOR", "VT_IMPLIES", "VT_ACCUMULATE_INIT_CLAUSE", "VT_ACCUMULATE_ID_CLAUSE", "VT_FROM_SOURCE", "VT_EXPRESSION_CHAIN", "VT_PATTERN", "VT_FACT_BINDING", "VT_FACT_OR", "VT_BIND_FIELD", "VT_FIELD", "VT_ACCESSOR_PATH", "VT_ACCESSOR_ELEMENT", "VT_DATA_TYPE", "VT_PATTERN_TYPE", "VT_PACKAGE_ID", "VT_IMPORT_ID", "VT_GLOBAL_ID", "VT_FUNCTION_ID", "VT_PARAM_LIST", "VT_CONSTRID", "VT_HEDGE", "VT_CONSTR_ATTRIBUTES", "VT_CUT", "VT_PRIOR", "VT_ARGS", "VT_KIND", "VK_DATE_EFFECTIVE", "VK_DATE_EXPIRES", "VK_LOCK_ON_ACTIVE", "VK_NO_LOOP", "VK_AUTO_FOCUS", "VK_ACTIVATION_GROUP", "VK_AGENDA_GROUP", "VK_RULEFLOW_GROUP", "VK_DURATION", "VK_DIALECT", "VK_SALIENCE", "VK_ENABLED", "VK_ATTRIBUTES", "VK_RULE", "VK_EXTEND", "VK_IMPORT", "VK_PACKAGE", "VK_TEMPLATE", "VK_QUERY", "VK_DECLARE", "VK_FUNCTION", "VK_GLOBAL", "VK_EVAL", "VK_ENTRY_POINT", "VK_NOT", "VK_IN", "VK_OR", "VK_AND", "VK_EQUIV", "VK_XOR", "VK_IMPLIES", "VK_EXISTS", "VK_FORALL", "VK_FORANY", "VK_ACTION", "VK_REVERSE", "VK_RESULT", "VK_OPERATOR", "VK_END", "VK_INIT", "VK_SUBJECT", "VK_WEIGHT", "VK_CUT", "VK_APPROX", "VK_ENTAIL", "VK_PRIOR", "VK_FILTER", "VK_AT", "VK_CONSTRID", "VK_ARGS", "VK_KIND", "SEMICOLON", "ID", "DOT", "DOT_STAR", "STRING", "LEFT_PAREN", "COMMA", "RIGHT_PAREN", "AT", "COLON", "EQUALS", "WHEN", "BOOL", "INT", "DOUBLE_PIPE", "DOUBLE_AMPER", "FROM", "OVER", "ACCUMULATE", "COLLECT", "SINGLE_PIPE", "SINGLE_AMPER", "ARROW", "EQUAL", "GREATER", "GREATER_EQUAL", "LESS", "LESS_EQUAL", "NOT_EQUAL", "FLOAT", "NULL", "LEFT_SQUARE", "RIGHT_SQUARE", "THEN", "LEFT_CURLY", "RIGHT_CURLY", "MISC", "APPROX", "EOL", "WS", "EscapeSequence", "HexDigit", "UnicodeEscape", "OctalEscape", "CUT", "SH_STYLE_SINGLE_LINE_COMMENT", "C_STYLE_SINGLE_LINE_COMMENT", "MULTI_LINE_COMMENT"
     };
     public static final int VT_ACCESSOR_ELEMENT=40;
     public static final int ACCUMULATE=124;
     public static final int VT_DATA_TYPE=41;
-    public static final int VK_TYPE=105;
     public static final int DOT_STAR=109;
     public static final int VK_APPROX=98;
     public static final int VK_OPERATOR=92;
@@ -49,7 +48,6 @@ public class DescrBuilderTree extends TreeParser {
     public static final int VK_FUNCTION=75;
     public static final int VK_GLOBAL=76;
     public static final int VK_AND=82;
-    public static final int VT_TYPE=54;
     public static final int EQUALS=116;
     public static final int SH_STYLE_SINGLE_LINE_COMMENT=151;
     public static final int VK_AUTO_FOCUS=59;
@@ -81,6 +79,7 @@ public class DescrBuilderTree extends TreeParser {
     public static final int NULL=136;
     public static final int BOOL=118;
     public static final int VK_ENTAIL=99;
+    public static final int VT_KIND=54;
     public static final int VK_QUERY=73;
     public static final int VK_SUBJECT=95;
     public static final int INT=119;
@@ -187,6 +186,7 @@ public class DescrBuilderTree extends TreeParser {
     public static final int LEFT_SQUARE=137;
     public static final int GREATER_EQUAL=131;
     public static final int OctalEscape=149;
+    public static final int VK_KIND=105;
     public static final int VK_INIT=94;
     public static final int STRING=110;
 
@@ -2314,7 +2314,7 @@ public class DescrBuilderTree extends TreeParser {
                 int alt31=2;
                 int LA31_0 = input.LA(1);
 
-                if ( (LA31_0==VK_CUT||LA31_0==VK_PRIOR||(LA31_0>=VK_CONSTRID && LA31_0<=VK_TYPE)) ) {
+                if ( (LA31_0==VK_CUT||LA31_0==VK_PRIOR||(LA31_0>=VK_CONSTRID && LA31_0<=VK_KIND)) ) {
                     alt31=1;
                 }
 
@@ -2360,7 +2360,7 @@ public class DescrBuilderTree extends TreeParser {
 
 
     // $ANTLR start "constr_attribute"
-    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DescrBuilderTree.g:221:1: constr_attribute returns [AttributeDescr attributeDescr] : ( ^(attrName= VK_CONSTRID value= STRING ) | ^(attrName= VK_ARGS value= STRING ) | ^(attrName= VK_TYPE value= STRING ) | ^(attrName= VK_CUT value= STRING ) | ^(attrName= VK_PRIOR value= STRING ) ) ;
+    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DescrBuilderTree.g:221:1: constr_attribute returns [AttributeDescr attributeDescr] : ( ^(attrName= VK_CONSTRID value= STRING ) | ^(attrName= VK_ARGS value= STRING ) | ^(attrName= VK_KIND value= STRING ) | ^(attrName= VK_CUT value= STRING ) | ^(attrName= VK_PRIOR value= STRING ) ) ;
     public final AttributeDescr constr_attribute() throws RecognitionException {
         AttributeDescr attributeDescr = null;
 
@@ -2368,10 +2368,10 @@ public class DescrBuilderTree extends TreeParser {
         DroolsTree value=null;
 
         try {
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DescrBuilderTree.g:222:3: ( ( ^(attrName= VK_CONSTRID value= STRING ) | ^(attrName= VK_ARGS value= STRING ) | ^(attrName= VK_TYPE value= STRING ) | ^(attrName= VK_CUT value= STRING ) | ^(attrName= VK_PRIOR value= STRING ) ) )
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DescrBuilderTree.g:222:5: ( ^(attrName= VK_CONSTRID value= STRING ) | ^(attrName= VK_ARGS value= STRING ) | ^(attrName= VK_TYPE value= STRING ) | ^(attrName= VK_CUT value= STRING ) | ^(attrName= VK_PRIOR value= STRING ) )
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DescrBuilderTree.g:222:3: ( ( ^(attrName= VK_CONSTRID value= STRING ) | ^(attrName= VK_ARGS value= STRING ) | ^(attrName= VK_KIND value= STRING ) | ^(attrName= VK_CUT value= STRING ) | ^(attrName= VK_PRIOR value= STRING ) ) )
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DescrBuilderTree.g:222:5: ( ^(attrName= VK_CONSTRID value= STRING ) | ^(attrName= VK_ARGS value= STRING ) | ^(attrName= VK_KIND value= STRING ) | ^(attrName= VK_CUT value= STRING ) | ^(attrName= VK_PRIOR value= STRING ) )
             {
-            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DescrBuilderTree.g:222:5: ( ^(attrName= VK_CONSTRID value= STRING ) | ^(attrName= VK_ARGS value= STRING ) | ^(attrName= VK_TYPE value= STRING ) | ^(attrName= VK_CUT value= STRING ) | ^(attrName= VK_PRIOR value= STRING ) )
+            // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DescrBuilderTree.g:222:5: ( ^(attrName= VK_CONSTRID value= STRING ) | ^(attrName= VK_ARGS value= STRING ) | ^(attrName= VK_KIND value= STRING ) | ^(attrName= VK_CUT value= STRING ) | ^(attrName= VK_PRIOR value= STRING ) )
             int alt32=5;
             switch ( input.LA(1) ) {
             case VK_CONSTRID:
@@ -2384,7 +2384,7 @@ public class DescrBuilderTree extends TreeParser {
                 alt32=2;
                 }
                 break;
-            case VK_TYPE:
+            case VK_KIND:
                 {
                 alt32=3;
                 }
@@ -2432,9 +2432,9 @@ public class DescrBuilderTree extends TreeParser {
                     }
                     break;
                 case 3 :
-                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DescrBuilderTree.g:225:5: ^(attrName= VK_TYPE value= STRING )
+                    // /home/davide/Projects/Eclipse_Drools/drools/drools-compiler/src/main/resources/org/drools/lang/DescrBuilderTree.g:225:5: ^(attrName= VK_KIND value= STRING )
                     {
-                    attrName=(DroolsTree)match(input,VK_TYPE,FOLLOW_VK_TYPE_in_constr_attribute1186); 
+                    attrName=(DroolsTree)match(input,VK_KIND,FOLLOW_VK_KIND_in_constr_attribute1186); 
 
                     match(input, Token.DOWN, null); 
                     value=(DroolsTree)match(input,STRING,FOLLOW_STRING_in_constr_attribute1190); 
@@ -5363,7 +5363,7 @@ public class DescrBuilderTree extends TreeParser {
     public static final BitSet FOLLOW_STRING_in_constr_attribute1159 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_VK_ARGS_in_constr_attribute1170 = new BitSet(new long[]{0x0000000000000004L});
     public static final BitSet FOLLOW_STRING_in_constr_attribute1174 = new BitSet(new long[]{0x0000000000000008L});
-    public static final BitSet FOLLOW_VK_TYPE_in_constr_attribute1186 = new BitSet(new long[]{0x0000000000000004L});
+    public static final BitSet FOLLOW_VK_KIND_in_constr_attribute1186 = new BitSet(new long[]{0x0000000000000004L});
     public static final BitSet FOLLOW_STRING_in_constr_attribute1190 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_VK_CUT_in_constr_attribute1203 = new BitSet(new long[]{0x0000000000000004L});
     public static final BitSet FOLLOW_STRING_in_constr_attribute1207 = new BitSet(new long[]{0x0000000000000008L});

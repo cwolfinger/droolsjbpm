@@ -23,6 +23,7 @@ public interface ConditionalElementDescr {
     public void insertBeforeLast(final Class<?> clazz ,final BaseDescr baseDescr );
     
     public void addDescr(BaseDescr baseDescr);
+    public void addDescrFirst(BaseDescr baseDescr);
     
     public void addOrMerge(final BaseDescr baseDescr);
     

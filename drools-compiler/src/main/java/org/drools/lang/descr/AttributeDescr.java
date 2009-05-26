@@ -45,4 +45,8 @@ public class AttributeDescr extends BaseDescr {
     public void setValue(final String value) {
         this.value = value;
     }
+    
+    public String toString() {
+    	return "[Attribute Descr : @"+this.name+"="+this.value+"]";
+    }
 }

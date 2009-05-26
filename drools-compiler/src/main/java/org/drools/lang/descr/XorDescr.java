@@ -19,6 +19,8 @@ package org.drools.lang.descr;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.drools.RuntimeDroolsException;
+
 public class XorDescr extends BaseDescr
     implements
     ConditionalElementDescr {
@@ -32,7 +34,18 @@ public class XorDescr extends BaseDescr
     }
 
     public void addDescr(final BaseDescr baseDescr) {
+    	if (this.descrs.size() >= 2)
+        	throw new RuntimeDroolsException("Xor is Binary");
+    	
         this.descrs.add( baseDescr );
+    }
+    
+
+    public void addDescrFirst(final BaseDescr baseDescr) {
+        if (this.descrs.size() >= 2)
+        	throw new RuntimeDroolsException("Xor is Binary");
+        
+        this.descrs.add( 0 , baseDescr );
     }
 
     public void insertDescr(int index,

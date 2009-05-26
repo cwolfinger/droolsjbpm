@@ -29,6 +29,9 @@ public class LiteralRestrictionDescr extends EvaluatorBasedRestrictionDescr {
     public static final int   TYPE_NUMBER      = 2;
     public static final int   TYPE_STRING      = 3;
     public static final int   TYPE_BOOLEAN     = 4;
+    public static final int   TYPE_OBJECT      = 5;
+    public static final int   TYPE_CLASS       = 99;
+    
 
     private static final long serialVersionUID = 400L;
     private int               type;

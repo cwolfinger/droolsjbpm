@@ -34,6 +34,10 @@ public class AndDescr extends BaseDescr
     public void addDescr(final BaseDescr baseDescr) {
         this.descrs.add( baseDescr );
     }
+    
+    public void addDescrFirst(final BaseDescr baseDescr) {
+        this.descrs.add( 0 , baseDescr );
+    }
 
     public void insertDescr(int index,
                             final BaseDescr baseDescr) {

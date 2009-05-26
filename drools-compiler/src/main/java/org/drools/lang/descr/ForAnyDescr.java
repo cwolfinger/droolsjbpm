@@ -45,6 +45,10 @@ public class ForAnyDescr extends BaseDescr
         // cast to make sure we are adding a pattern descriptor
         this.descriptors.add( baseDescr );
     }
+    
+    public void addDescrFirst(final BaseDescr baseDescr) {    	    
+        this.descriptors.add( 0 , baseDescr );
+    }
 
     public void insertBeforeLast(final Class clazz,
                                  final BaseDescr baseDescr) {

@@ -55,6 +55,10 @@ public class OrDescr extends BaseDescr
         this.descrs.add( baseDescr );
     }
 
+    
+    public void addDescrFirst(final BaseDescr baseDescr) {    	    
+        this.descrs.add( 0 , baseDescr );
+    }
 
     public List getDescrs() {
         return this.descrs;

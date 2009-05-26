@@ -222,7 +222,7 @@ constr_attribute returns [AttributeDescr attributeDescr]
   : (
     ^(attrName=VK_CONSTRID value=STRING) 
   | ^(attrName=VK_ARGS value=STRING)  
-  | ^(attrName=VK_TYPE value=STRING)   
+  | ^(attrName=VK_KIND value=STRING)   
   | ^(attrName=VK_CUT value=STRING)   
   | ^(attrName=VK_PRIOR value=STRING)   
   )

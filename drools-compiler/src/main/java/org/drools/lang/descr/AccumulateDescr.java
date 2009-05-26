@@ -123,6 +123,12 @@ public class AccumulateDescr extends PatternSourceDescr
     public void addDescr(final BaseDescr patternDescr) {
         throw new UnsupportedOperationException( "Can't add descriptors to " + this.getClass().getName() );
     }
+    
+    public void addDescrFirst(final BaseDescr baseDescr) {
+    	throw new UnsupportedOperationException( "Can't add descriptors to " + this.getClass().getName() );
+    }
+    
+    
 
     public void insertBeforeLast(final Class clazz ,final BaseDescr baseDescr ) {
         throw new UnsupportedOperationException( "Can't add descriptors to " + this.getClass().getName() );

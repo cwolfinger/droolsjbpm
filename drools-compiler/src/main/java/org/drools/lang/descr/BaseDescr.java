@@ -41,6 +41,8 @@ public class BaseDescr
     private boolean			  cutter		   = false;
     private String 			  params 		   = null;
     private String 			  label			   = null;
+    private String 			  prior			   = null;
+    
   
      
     public int getId() {
@@ -178,5 +180,19 @@ public class BaseDescr
 	public String getLabel() {
 		
 		return label;
+	}
+
+	/**
+	 * @param prior the prior to set
+	 */
+	public void setPrior(String prior) {
+		this.prior = prior;
+	}
+
+	/**
+	 * @return the prior
+	 */
+	public String getPrior() {
+		return prior;
 	}
 }

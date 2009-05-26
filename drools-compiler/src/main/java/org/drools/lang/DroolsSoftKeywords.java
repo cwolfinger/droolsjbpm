@@ -69,7 +69,7 @@ public class DroolsSoftKeywords {
     public static final String VERY = "very";
     public static final String CID = "id";
     public static final String CUT = "cut";
-    public static final String TYPE = "type";
+    public static final String KIND = "kind";
     public static final String ARGS = "args";
      	
 	

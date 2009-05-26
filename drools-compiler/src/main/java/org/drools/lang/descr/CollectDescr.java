@@ -66,8 +66,14 @@ public class CollectDescr extends PatternSourceDescr
     }
 
     public void addOrMerge(BaseDescr baseDescr) {
-        throw new UnsupportedOperationException( "Can't add descriptors to " + this.getClass().getName() );
+    	throw new UnsupportedOperationException( "Can't add descriptors to " + this.getClass().getName() );
     }
+    
+    public void addDescrFirst(final BaseDescr baseDescr) {
+    	throw new UnsupportedOperationException( "Can't add descriptors to " + this.getClass().getName() );
+    }
+    
+    
 
     public PatternDescr getInputPattern() {
         return this.inputPattern;

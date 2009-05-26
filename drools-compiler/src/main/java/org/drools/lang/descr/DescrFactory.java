@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.drools.RuntimeDroolsException;
+import org.drools.lang.DroolsSoftKeywords;
 import org.drools.lang.DroolsTree;
 
 /**
@@ -526,23 +527,28 @@ public class DescrFactory {
 	private void fillWithAttribs(BaseDescr descr, List<AttributeDescr> attribs) {
 		Map<String,String> atts = buildAttributes(attribs);
 		
-		String params = atts.get("args");
-		String id = atts.get("id");
-		String cutS = atts.get("cut");
+		String params = atts.get(DroolsSoftKeywords.ARGS);
+		
+		String id = atts.get(DroolsSoftKeywords.CID);
+		String cutS = atts.get(DroolsSoftKeywords.CUT);
 			boolean cutter = cutS == null ? false : Boolean.parseBoolean(cutS);
-		String type = atts.get("type");
-		String prior = atts.get("prior");
+		String type = atts.get(DroolsSoftKeywords.KIND);
+		String prior = atts.get(DroolsSoftKeywords.PRIOR);
 						
-		String p = params == null ? null : params;
+		String p = params == null ? null : "args:"+params;
 		if (p == null)
-			p = type;
+			if (type != null)
+				p = "kind:"+type;
 		else 
-			p+= type;
+			if (type != null)
+				p+= ",kind:"+type;
 			
 		descr.setParams(p);
 			
 		descr.setCutter(cutter);		
 		descr.setLabel(id);		
+		
+		descr.setPrior(prior);
 	}
 	
 	
@@ -1637,6 +1643,8 @@ public class DescrFactory {
 		fieldConstraint.setEndCharacter(aeList.get(aeList.size() - 1)
 				.getEndCharacter());
 
+		//fillWithAttribs(fieldConstraint, buildAttributes(ex aeList.get(0)))
+		
 		return fieldConstraint;
 	}
 
