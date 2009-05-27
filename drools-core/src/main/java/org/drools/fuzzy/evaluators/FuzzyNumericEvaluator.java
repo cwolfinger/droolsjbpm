@@ -56,7 +56,7 @@ public class FuzzyNumericEvaluator extends BaseImperfectEvaluator {
 	
 	
    
-    protected IDegree eval(Object left, Object right, IDegreeFactory factory) {
+    public IDegree eval(Object left, Object right, IDegreeFactory factory) {
     			
 		if (left == null) return factory.Unknown();
 		if (! (left instanceof Number))

@@ -2,6 +2,8 @@ package org.drools.fuzzy.evaluators;
 
 
 
+
+import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
@@ -19,8 +21,6 @@ import org.drools.base.evaluators.ImperfectEvaluatorDefinition;
 import org.drools.base.evaluators.Operator;
 import org.drools.base.evaluators.EvaluatorDefinition.Target;
 import org.drools.common.InternalWorkingMemory;
-import org.drools.degrees.IDegree;
-import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.rule.VariableRestriction.ObjectVariableContextEntry;
 import org.drools.rule.VariableRestriction.VariableContextEntry;
 import org.drools.spi.Evaluator;
@@ -36,10 +36,10 @@ import org.drools.spi.InternalReadAccessor;
 /**
  * 
  * @author sotty
-
+ 
  *
  */
-public class EqualsEvaluatorDefinition 
+public class EvalEvaluatorDefinition 
 	extends ImperfectAbstractEvaluatorDefinition {
 	
 	
@@ -51,11 +51,16 @@ public class EqualsEvaluatorDefinition
 	
 	
 	
-	public static final Operator   EQUALS         = Operator.addOperatorToRegistry( "equals",
+	public static final Operator   EVAL         = Operator.addOperatorToRegistry( "evaluates",
             										false );
 
-	private static final String[]  SUPPORTED_IDS = {EQUALS.getOperatorString()};
+	private static final String[]  SUPPORTED_IDS = {EVAL.getOperatorString()};
 
+	
+
+
+	
+	
 	
 	public Evaluator getEvaluator(ValueType type, String operatorId,
 			boolean isNegated, String parameterText, Target left, Target right) {
@@ -66,20 +71,20 @@ public class EqualsEvaluatorDefinition
         String key = isNegated + ":" + parameterText;
         Evaluator eval = this.cache.get( key );
         if ( eval == null ) {
-            eval = new EqualsEvaluator( type,
+            eval = new EvalEvaluator( type,
                                        isNegated,
                                        parameterText );
             this.cache.put( key,
                             eval );
         }
         return eval;
-                        
+        
+        
+        
 	}
 
-	
-	
 	/**
-	 * Operator is known as "equals"
+	 * Operator is known as "far"
 	 */
 	public String[] getEvaluatorIds() {
 		return SUPPORTED_IDS;
@@ -94,24 +99,7 @@ public class EqualsEvaluatorDefinition
 	
 	
 	
-	public class EqualsEvaluator extends BaseImperfectEvaluator {
-
-		
-		public EqualsEvaluator(ValueType type, boolean isNegated,
-				String parameterText) {
-			super(type, EqualsEvaluatorDefinition.EQUALS, parameterText);
-		}
-
-		@Override
-		public IDegree eval(Object left, Object right, IDegreeFactory factory) {
-			if (left == null || right == null)
-				return factory.Unknown();
-			return factory.fromBoolean(left.equals(right));
-		}
-				
-
-	}
-
+	
 	
 	
 	

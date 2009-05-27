@@ -23,7 +23,7 @@ import org.drools.spi.InternalReadAccessor;
 
 
 
-public class SeemsEvaluator 
+public class EvalEvaluator 
 	extends BaseImperfectEvaluator  {
 	
 	
@@ -31,15 +31,15 @@ public class SeemsEvaluator
 
 	
 	
-	public SeemsEvaluator() {		
+	public EvalEvaluator() {		
 		this(ValueType.OBJECT_TYPE,false,"");
 	}
 		
-	public SeemsEvaluator(final ValueType type,
+	public EvalEvaluator(final ValueType type,
             				final boolean isNegated,
             				final String parameters) {
 			super( type,
-                   SeemsEvaluatorDefinition.SEEMS,
+                   EvalEvaluatorDefinition.EVAL,
                    parameters);            
 	}
 	
@@ -51,9 +51,17 @@ public class SeemsEvaluator
 			InternalReadAccessor extractor, 			
 			Object object1, 
 			FieldValue value) {
-		
-    	Evaluator set = ((IDynamicEvaluable) object1).getPred(value.toString());    	
-    	return set.evaluate(workingMemory, factory, extractor, object1, new LongFieldImpl(1));		
+
+    	Object o = extractor.getValue(object1);
+    	if (o instanceof BaseImperfectEvaluator) {
+			BaseImperfectEvaluator evaluator = (BaseImperfectEvaluator) o;
+			
+			Object arg = value.getValue();
+			
+			return evaluator.eval(arg, arg, factory);
+		}	
+		return factory.Unknown();
+    	    	    		
 	}
     
 	
@@ -63,13 +71,17 @@ public class SeemsEvaluator
 			IDegreeFactory factory,
 			InternalReadAccessor leftExtractor, Object left,
 			InternalReadAccessor rightExtractor, Object right) {
-		
 
-		Object set = rightExtractor.getValue(right);
-			if (set == null) {
-				return factory.Unknown();
-			}
-		return ((Evaluator) set).evaluate(workingMemory, factory, leftExtractor, left, new LongFieldImpl(1));
+		Object o = leftExtractor.getValue(left);
+    	if (o instanceof BaseImperfectEvaluator) {
+			BaseImperfectEvaluator evaluator = (BaseImperfectEvaluator) o;
+			
+			Object arg = rightExtractor.getValue(right);
+			
+			return evaluator.eval(arg, arg, factory);
+		}	
+		return factory.Unknown();
+		
 								
 	}
 
@@ -77,6 +89,7 @@ public class SeemsEvaluator
 
 	@Override
 	public IDegree eval(Object left, Object right, IDegreeFactory factory) {
+		//shouldn't get here
 		return factory.Unknown();
 	}
 	
