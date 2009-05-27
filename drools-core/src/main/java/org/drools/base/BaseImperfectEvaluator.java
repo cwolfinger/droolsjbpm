@@ -131,7 +131,7 @@ public abstract class BaseImperfectEvaluator extends BaseEvaluator  {
 	
 	
 	
-	protected abstract IDegree eval(Object left, Object right, IDegreeFactory factory);
+	public abstract IDegree eval(Object left, Object right, IDegreeFactory factory);
 	
 	
 	public String toString() {
