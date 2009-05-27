@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RuleML xmlns="http://www.ruleml.org/0.91/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.ruleml.org/0.91/xsd http://www.ruleml.org/0.91/xsd/naffologeq.xsd">
+    <Assert>
+        <Rulebase>
+            <oid>
+                <Data>org.drools.chance</Data>
+            </oid>
+            <Forall>
+                <formula>
+                    <Implies direction="forward">
+                        <oid>
+                            <Data>Trigger</Data>
+                        </oid>
+                        <body>
+                            <And>
+                                <Atom>
+                                    <op>
+                                        <Rel>eval</Rel>
+                                    </op>
+                                    <Expr in="yes">
+                                        <Fun>eval</Fun>
+                                        <Data>true || false</Data>
+                                    </Expr>
+                                </Atom>
+                            </And>
+                        </body>
+                        <head>
+                            <Atom>
+                                <Rel/>
+                                <Data>writer.write("\n A Message with status = 0 will hold the message Hello!");&#13;
+			Message m = new Message();&#13;
+				m.setStatus(0);&#13;
+		&#13;
+		drools.inject(m,"org.drools.chance.Message.message","equals","Hello!",true);</Data>
+                            </Atom>
+                        </head>
+                    </Implies>
+                </formula>
+            </Forall>
+            <Forall>
+                <declare>
+                    <Var type="org.drools.chance.Message">Synch.$msgRef</Var>
+                </declare>
+                <formula>
+                    <Implies direction="forward">
+                        <oid>
+                            <Data>Synch</Data>
+                        </oid>
+                        <body>
+                            <And>
+                                <Atom>
+                                    <oid>
+                                        <Var>Synch.$msgRef</Var>
+                                    </oid>
+                                    <Rel>Message</Rel>
+                                    <Reify>
+                                        <And>
+                                            <Atom>
+                                                <op>
+                                                    <Rel>isA</Rel>
+                                                </op>
+                                                <slot>
+                                                    <Ind>class</Ind>
+                                                    <Var/>
+                                                </slot>
+                                                <Ind type="java.lang.Class">org.drools.chance.Message</Ind>
+                                            </Atom>
+                                            <Atom>
+                                                <op>
+                                                    <Rel>equals</Rel>
+                                                </op>
+                                                <slot>
+                                                    <Ind>message</Ind>
+                                                    <Var/>
+                                                </slot>
+                                                <Ind type="java.lang.String">Hello!</Ind>
+                                            </Atom>
+                                        </And>
+                                    </Reify>
+                                </Atom>
+                            </And>
+                        </body>
+                        <head>
+                            <Atom>
+                                <Rel/>
+                                <Data>writer.write("\n\nSynched rule fires at "+drools.getConsequenceDegree());&#13;
+		writer.write("\nDeclared message is "+$msgRef.getMessage()+ " but is thought to be Hello!");&#13;
+		writer.write("\n"+drools.getEvaluation().expand()+"\n\n");&#13;
+		&#13;
+		&#13;
+		Person p = new Person();&#13;
+			p.setName("davide");&#13;
+			//p.setAge(27);&#13;
+		&#13;
+		&#13;
+		Book b = new Book();&#13;
+			b.setTitle("Drools Manual");&#13;
+			//b.setOwner(p);				&#13;
+		writer.write("\n Now stating Davide owns a Drools Manual");&#13;
+		&#13;
+		//FIXME Until lexical analysis is done properly, args must be defined in two steps&#13;
+		Object[] args = new Object[] { p , b }; &#13;
+		drools.inject(args,"org.drools.chance.Book.owner","equals","$p");</Data>
+                            </Atom>
+                        </head>
+                    </Implies>
+                </formula>
+            </Forall>
+            <Forall>
+                <declare>
+                    <Var type="org.drools.chance.Book">BetaSynch.$b</Var>
+                </declare>
+                <declare>
+                    <Var type="int">BetaSynch.$p.$a</Var>
+                </declare>
+                <declare>
+                    <Var type="java.lang.String">BetaSynch.$p.$n</Var>
+                </declare>
+                <declare>
+                    <Var type="org.drools.chance.Person">BetaSynch.$p</Var>
+                </declare>
+                <formula>
+                    <Implies direction="forward">
+                        <oid>
+                            <Data>BetaSynch</Data>
+                        </oid>
+                        <body>
+                            <And>
+                                <Atom>
+                                    <oid>
+                                        <Var>BetaSynch.$p</Var>
+                                    </oid>
+                                    <Rel>Person</Rel>
+                                    <Reify>
+                                        <And>
+                                            <Atom>
+                                                <op>
+                                                    <Rel>isA</Rel>
+                                                </op>
+                                                <slot>
+                                                    <Ind>class</Ind>
+                                                    <Var/>
+                                                </slot>
+                                                <Ind type="java.lang.Class">org.drools.chance.Person</Ind>
+                                            </Atom>
+                                            <Atom>
+                                                <op>
+                                                    <Rel>==</Rel>
+                                                </op>
+                                                <slot>
+                                                    <Ind>name</Ind>
+                                                    <Var>BetaSynch.$p.$n</Var>
+                                                </slot>
+                                                <Ind type="java.lang.String">davide</Ind>
+                                            </Atom>
+                                            <Or>
+                                                <Atom>
+                                                    <op>
+                                                        <Rel>&gt;</Rel>
+                                                    </op>
+                                                    <slot>
+                                                        <Ind>age</Ind>
+                                                        <Var>BetaSynch.$p.$a</Var>
+                                                    </slot>
+                                                    <Ind type="java.lang.Number">25</Ind>
+                                                </Atom>
+                                                <Atom>
+                                                    <op>
+                                                        <Rel>&lt;</Rel>
+                                                    </op>
+                                                    <slot>
+                                                        <Ind>age</Ind>
+                                                        <Var>BetaSynch.$p.$a</Var>
+                                                    </slot>
+                                                    <Ind type="java.lang.Number">18</Ind>
+                                                </Atom>
+                                            </Or>
+                                        </And>
+                                    </Reify>
+                                </Atom>
+                                <Atom>
+                                    <oid>
+                                        <Var>BetaSynch.$b</Var>
+                                    </oid>
+                                    <Rel>Book</Rel>
+                                    <Reify>
+                                        <And>
+                                            <Atom>
+                                                <op>
+                                                    <Rel>isA</Rel>
+                                                </op>
+                                                <slot>
+                                                    <Ind>class</Ind>
+                                                    <Var/>
+                                                </slot>
+                                                <Ind type="java.lang.Class">org.drools.chance.Book</Ind>
+                                            </Atom>
+                                            <Atom>
+                                                <op>
+                                                    <Rel>equals</Rel>
+                                                </op>
+                                                <slot>
+                                                    <Ind>owner</Ind>
+                                                    <Var/>
+                                                </slot>
+                                                <Var>BetaSynch.$p</Var>
+                                            </Atom>
+                                        </And>
+                                    </Reify>
+                                </Atom>
+                            </And>
+                        </body>
+                        <head>
+                            <Atom>
+                                <Rel/>
+                                <Data>writer.write("\n\n\nBook has no a-priori known owner\n");&#13;
+		writer.write("Book.owner = "+$b.getOwner()+"\n");&#13;
+		writer.write("but is ack'd as being "+$n+"("+$a+")\n");&#13;
+		writer.write("Info comes from rule, evaluation is "+drools.getConsequenceDegree()+"\n");&#13;
+		writer.write("\n"+drools.getEvaluation().expand()+"\n");&#13;
+		&#13;
+		&#13;
+		&#13;
+		writer.write("\n\nSo, an exceptional exercise will be done\n\n");&#13;
+		Exercise e = new Exercise();&#13;
+			e.setTopic("Rule Programming");&#13;
+		drools.inject(e,"Exceptional");</Data>
+                            </Atom>
+                        </head>
+                    </Implies>
+                </formula>
+            </Forall>
+            <Forall>
+                <declare>
+                    <Var type="java.lang.String">Exceptional.$e.$t</Var>
+                </declare>
+                <declare>
+                    <Var type="org.drools.chance.Exercise">Exceptional.$e</Var>
+                </declare>
+                <formula>
+                    <Implies direction="forward">
+                        <oid>
+                            <Data>Exceptional</Data>
+                        </oid>
+                        <degree>
+                            <Data>(0)</Data>
+                        </degree>
+                        <body>
+                            <And>
+                                <Atom>
+                                    <oid>
+                                        <Var>Exceptional.$e</Var>
+                                    </oid>
+                                    <Rel>Exercise</Rel>
+                                    <Reify>
+                                        <And>
+                                            <Atom>
+                                                <op>
+                                                    <Rel>isA</Rel>
+                                                </op>
+                                                <slot>
+                                                    <Ind>class</Ind>
+                                                    <Var/>
+                                                </slot>
+                                                <Ind type="java.lang.Class">org.drools.chance.Exercise</Ind>
+                                            </Atom>
+                                            <Atom>
+                                                <op>
+                                                    <Rel/>
+                                                </op>
+                                                <slot>
+                                                    <Ind>topic</Ind>
+                                                    <Var>Exceptional.$e.$t</Var>
+                                                </slot>
+                                            </Atom>
+                                        </And>
+                                    </Reify>
+                                </Atom>
+                            </And>
+                        </body>
+                        <head>
+                            <Atom>
+                                <Rel/>
+                                <Data>writer.write("\nEx "+ $t +" can be done? Answer is " + drools.getConsequenceDegree());	&#13;
+		writer.write(drools.getEvaluation().expand());</Data>
+                            </Atom>
+                        </head>
+                    </Implies>
+                </formula>
+            </Forall>
+        </Rulebase>
+    </Assert>
+</RuleML>

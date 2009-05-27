@@ -1,0 +1,17 @@
+Implication Eval Record info(1.0) for args L : Foo1 1	Foo2 1	 
+AND{
+(0@11) : 1.0 dotAnd(lukImp(dotAnd(==(class,org.drools.chance.impliesTest.Foo1),random(org.drools.chance.impliesTest.Foo1.this,null)),dotAnd(==(class,org.drools.chance.impliesTest.Foo2),random(org.drools.chance.impliesTest.Foo2.this,null)))) [EVAL 1.0,]
+(0@12) : 1.0 TestImplication [EVAL 0.0,PRIOR 1.0,]
+}
+
+(0@13) : 1.0 minAnd(dotAnd(lukImp(dotAnd(==(class,org.drools.chance.impliesTest.Foo1),random(org.drools.chance.impliesTest.Foo1.this,null)),dotAnd(==(class,org.drools.chance.impliesTest.Foo2),random(org.drools.chance.impliesTest.Foo2.this,null)))),TestImplication) [EVAL 1.0,]
+	(0@11) : 1.0 dotAnd(lukImp(dotAnd(==(class,org.drools.chance.impliesTest.Foo1),random(org.drools.chance.impliesTest.Foo1.this,null)),dotAnd(==(class,org.drools.chance.impliesTest.Foo2),random(org.drools.chance.impliesTest.Foo2.this,null)))) [EVAL 1.0,]
+		(0@10) : 1.0 lukImp(dotAnd(==(class,org.drools.chance.impliesTest.Foo1),random(org.drools.chance.impliesTest.Foo1.this,null)),dotAnd(==(class,org.drools.chance.impliesTest.Foo2),random(org.drools.chance.impliesTest.Foo2.this,null))) [EVAL 1.0,]
+			(1@1) : 0.055090718 dotAnd(==(class,org.drools.chance.impliesTest.Foo1),random(org.drools.chance.impliesTest.Foo1.this,null)) [EVAL 0.055090718,]
+				(1@3) : 1.0 ==(class,org.drools.chance.impliesTest.Foo1) [EVAL 1.0,]
+				(1@4) : 0.055090718 random(org.drools.chance.impliesTest.Foo1.this,null) [EVAL 0.055090718,]
+			(1@1) : 0.43586797 dotAnd(==(class,org.drools.chance.impliesTest.Foo2),random(org.drools.chance.impliesTest.Foo2.this,null)) [EVAL 0.43586797,]
+				(1@7) : 1.0 ==(class,org.drools.chance.impliesTest.Foo2) [EVAL 1.0,]
+				(1@8) : 0.43586797 random(org.drools.chance.impliesTest.Foo2.this,null) [EVAL 0.43586797,]
+	(0@12) : 1.0 TestImplication [EVAL 0.0,PRIOR 1.0,]
+

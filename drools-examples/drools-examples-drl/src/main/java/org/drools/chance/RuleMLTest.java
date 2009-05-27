@@ -48,14 +48,13 @@ public class RuleMLTest extends AbstractChanceTest {
 		
 		RuleMLTest test = new RuleMLTest();
 			test.setRuleFileName("RuleMLTest.drl");
-			test.setSilent(true);			
-			test.run();
-			
+			test.setSilent(! true);			
+			test.run();			
 	}
 	
 
 	public void act() {
-		
+								
 	}
 
 	

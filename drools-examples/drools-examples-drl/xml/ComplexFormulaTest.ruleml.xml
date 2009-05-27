@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RuleML xmlns="http://www.ruleml.org/0.91/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.ruleml.org/0.91/xsd http://www.ruleml.org/0.91/xsd/naffologeq.xsd">
+    <Assert>
+        <Rulebase>
+            <oid>
+                <Data>org.drools.chance</Data>
+            </oid>
+            <Implies direction="forward">
+                <oid>
+                    <Data>TestOpDegs</Data>
+                </oid>
+                <body>
+                    <And>
+                        <Or>
+                            <Atom>
+                                <Rel>Message</Rel>
+                                <Equals oriented="yes">
+                                    <lhs>
+                                        <Var>TestOpDegs.Message</Var>
+                                    </lhs>
+                                    <rhs>
+                                        <Reify>
+                                            <And>
+                                                <Atom>
+                                                    <op>
+                                                        <Rel>==</Rel>
+                                                    </op>
+                                                    <slot>
+                                                        <Ind>status</Ind>
+                                                        <Var>TestOpDegs.Message</Var>
+                                                    </slot>
+                                                    <Data xsi:type="xs:decimal">0</Data>
+                                                </Atom>
+                                                <Atom>
+                                                    <op>
+                                                        <Rel>==</Rel>
+                                                    </op>
+                                                    <slot>
+                                                        <Ind>status</Ind>
+                                                        <Var>TestOpDegs.Message</Var>
+                                                    </slot>
+                                                    <Data xsi:type="xs:decimal">1</Data>
+                                                </Atom>
+                                            </And>
+                                        </Reify>
+                                    </rhs>
+                                </Equals>
+                            </Atom>
+                            <Atom>
+                                <Rel>Message</Rel>
+                                <Equals oriented="yes">
+                                    <lhs>
+                                        <Var>TestOpDegs.Message</Var>
+                                    </lhs>
+                                    <rhs>
+                                        <Reify>
+                                            <And>
+                                                <Neg>
+                                                    <Atom>
+                                                        <op>
+                                                            <Rel>random</Rel>
+                                                        </op>
+                                                        <slot>
+                                                            <Ind>status</Ind>
+                                                            <Var>TestOpDegs.Message</Var>
+                                                        </slot>
+                                                        <Data xsi:type="xs:decimal">2</Data>
+                                                    </Atom>
+                                                </Neg>
+                                            </And>
+                                        </Reify>
+                                    </rhs>
+                                </Equals>
+                            </Atom>
+                        </Or>
+                        <Neg>
+                            <And>
+                                <Atom>
+                                    <Rel>Message</Rel>
+                                    <Equals oriented="yes">
+                                        <lhs>
+                                            <Var>TestOpDegs.Message</Var>
+                                        </lhs>
+                                        <rhs>
+                                            <Reify>
+                                                <And>
+                                                    <Atom>
+                                                        <op>
+                                                            <Rel>random</Rel>
+                                                        </op>
+                                                        <slot>
+                                                            <Ind>status</Ind>
+                                                            <Var>TestOpDegs.Message</Var>
+                                                        </slot>
+                                                        <Data xsi:type="xs:decimal">3</Data>
+                                                    </Atom>
+                                                </And>
+                                            </Reify>
+                                        </rhs>
+                                    </Equals>
+                                </Atom>
+                                <Atom>
+                                    <Rel>Message</Rel>
+                                    <Equals oriented="yes">
+                                        <lhs>
+                                            <Var>TestOpDegs.Message</Var>
+                                        </lhs>
+                                        <rhs>
+                                            <Reify>
+                                                <And>
+                                                    <Atom>
+                                                        <op>
+                                                            <Rel>random</Rel>
+                                                        </op>
+                                                        <slot>
+                                                            <Ind>status</Ind>
+                                                            <Var>TestOpDegs.Message</Var>
+                                                        </slot>
+                                                        <Data xsi:type="xs:decimal">4</Data>
+                                                    </Atom>
+                                                </And>
+                                            </Reify>
+                                        </rhs>
+                                    </Equals>
+                                </Atom>
+                            </And>
+                        </Neg>
+                        <Atom>
+                            <Rel>Message</Rel>
+                            <Equals oriented="yes">
+                                <lhs>
+                                    <Var>TestOpDegs.Message</Var>
+                                </lhs>
+                                <rhs>
+                                    <Reify>
+                                        <And>
+                                            <Atom>
+                                                <op>
+                                                    <Rel>random</Rel>
+                                                </op>
+                                                <slot>
+                                                    <Ind>status</Ind>
+                                                    <Var>TestOpDegs.Message</Var>
+                                                </slot>
+                                                <Data xsi:type="xs:decimal">5</Data>
+                                            </Atom>
+                                        </And>
+                                    </Reify>
+                                </rhs>
+                            </Equals>
+                        </Atom>
+                    </And>
+                </body>
+                <head>
+                    <Atom>
+                        <Rel/>
+                        <Data>	&#13;
+		System.out.println("Degrees test " + drools.getEvaluation().expand());		&#13;
+		&#13;
+		writer.write("Degrees test " + drools.getEvaluation().expand());&#13;
+		&#13;
+		System.out.println("Final output " + drools.getConsequenceDegree());&#13;
+</Data>
+                    </Atom>
+                </head>
+            </Implies>
+        </Rulebase>
+    </Assert>
+</RuleML>

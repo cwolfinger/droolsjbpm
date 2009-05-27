@@ -100,7 +100,7 @@ public abstract class AbstractChanceTest {
 				DrlParser parser = new DrlParser();
 	    		PackageDescr pkD = parser.parse(drl);
 				
-				System.out.println(getDumper().dump(pkD,"xml/"+this.getClass().getSimpleName()+".ruleml.xml"));
+				System.out.println(getDumper().dump(pkD,this.getKBuilderConf(),"xml/"+this.getClass().getSimpleName()+".ruleml.xml"));
 			} catch (Exception e) {
 				e.printStackTrace();
 				throw new RuntimeException("XML Dumping failed");

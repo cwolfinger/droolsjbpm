@@ -11,13 +11,30 @@ declare Message
 	message : String
 end
 
-
-rule "Simple"
-
+rule "RuleId"
 	prior ( 0.7 )
 
 	when
-		$m : Message( $s : status == 0 || message == "Hello" ) @(id="MsgId")		
+		$m : Message( 
+						$s : status 
+						== @(id="idBndOp" prior="0.4" args="tolerance(0.1)" kind="b"  cut="true")  
+						0 
+					|| 
+						( 
+							message 
+							== @(id="idFreeOp" prior="0.4" kind="a" cut="true" ) 
+							"Hello" 
+						&& 
+							$msg : message 
+						)
+			 		) @(id="idCls" prior="0.1" args="z" kind="Prod" cut="true")
+			  	
+			  
+			 or  @(id="idCE" prior="0.4" kind="Max" cut="true")	
+			  		
+			 Message( 
+			 			$sjoin : status  >  $s 
+			 		) @(id="idCls2" prior="0.4" kind="Lukas" cut="true") 
 	then
 		System.out.println();
 end

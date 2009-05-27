@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RuleML xmlns="http://www.ruleml.org/0.91/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.ruleml.org/0.91/xsd http://www.ruleml.org/0.91/xsd/naffologeq.xsd">
+    <oid>
+        <Data>org.drools.DRL</Data>
+    </oid>
+    <Assert>
+        <Rulebase>
+            <oid>
+                <Data>org.drools.chance</Data>
+            </oid>
+            <Forall>
+                <declare>
+                    <Var type="int">RuleId.Message.$sjoin</Var>
+                </declare>
+                <declare>
+                    <Var type="java.lang.String">RuleId.$m.$msg</Var>
+                </declare>
+                <declare>
+                    <Var type="org.drools.chance.Message">RuleId.$m</Var>
+                </declare>
+                <declare>
+                    <Var type="int">RuleId.$m.$s</Var>
+                </declare>
+                <declare>
+                    <Var type="org.drools.chance.Message">RuleId.Message</Var>
+                </declare>
+                <formula>
+                    <Implies direction="forward">
+                        <oid>
+                            <Data>RuleId</Data>
+                        </oid>
+                        <!--
+<degree>
+    <Data>( 0.7 )</Data>
+</degree>
+-->
+                        <body>
+                            <And>
+                                <Or>
+                                    <oid>
+                                        <Data>idCE</Data>
+                                    </oid>
+                                    <!--unsupported attribute - 
+<cut/>
+-->
+                                    <!--unsupported attribute - 
+<kind>kind:Max</kind>
+-->
+                                    <!--
+<degree>
+    <Data>0.4</Data>
+</degree>
+-->
+                                    <Atom>
+                                        <oid>
+                                            <Var>RuleId.$m</Var>
+                                        </oid>
+                                        <Rel>Message</Rel>
+                                        <Reify>
+                                            <And>
+                                                <Atom>
+                                                    <oid>
+                                                        <Data>idCls</Data>
+                                                    </oid>
+                                                    <!--unsupported attribute - 
+<cut/>
+-->
+                                                    <!--unsupported attribute - 
+<kind>args:z</kind>
+-->
+                                                    <!--
+<degree>
+    <Data>0.1</Data>
+</degree>
+-->
+                                                    <op>
+                                                        <Rel>isA</Rel>
+                                                    </op>
+                                                    <slot>
+                                                        <Ind>class</Ind>
+                                                        <Var/>
+                                                    </slot>
+                                                    <Ind type="java.lang.Class">org.drools.chance.Message</Ind>
+                                                </Atom>
+                                                <Or>
+                                                    <Atom>
+                                                        <oid>
+                                                            <Data>idBndOp</Data>
+                                                        </oid>
+                                                        <!--unsupported attribute - 
+<cut/>
+-->
+                                                        <!--unsupported attribute - 
+<kind>args:tolerance(0.1)</kind>
+-->
+                                                        <!--
+<degree>
+    <Data>0.4</Data>
+</degree>
+-->
+                                                        <op>
+                                                            <Rel>==</Rel>
+                                                        </op>
+                                                        <slot>
+                                                            <Ind>status</Ind>
+                                                            <Var>RuleId.$m.$s</Var>
+                                                        </slot>
+                                                        <Ind type="java.lang.Number">0</Ind>
+                                                    </Atom>
+                                                    <And>
+                                                        <Atom>
+                                                            <oid>
+                                                                <Data>idFreeOp</Data>
+                                                            </oid>
+                                                            <!--unsupported attribute - 
+<cut/>
+-->
+                                                            <!--unsupported attribute - 
+<kind>kind:a</kind>
+-->
+                                                            <!--
+<degree>
+    <Data>0.4</Data>
+</degree>
+-->
+                                                            <op>
+                                                                <Rel>==</Rel>
+                                                            </op>
+                                                            <slot>
+                                                                <Ind>message</Ind>
+                                                                <Var/>
+                                                            </slot>
+                                                            <Ind type="java.lang.String">Hello</Ind>
+                                                        </Atom>
+                                                        <Atom>
+                                                            <op>
+                                                                <Rel/>
+                                                            </op>
+                                                            <slot>
+                                                                <Ind>message</Ind>
+                                                                <Var>RuleId.$m.$msg</Var>
+                                                            </slot>
+                                                        </Atom>
+                                                    </And>
+                                                </Or>
+                                            </And>
+                                        </Reify>
+                                    </Atom>
+                                    <Atom>
+                                        <oid>
+                                            <Var>RuleId.Message</Var>
+                                        </oid>
+                                        <Rel>Message</Rel>
+                                        <Reify>
+                                            <And>
+                                                <Atom>
+                                                    <oid>
+                                                        <Data>idCls2</Data>
+                                                    </oid>
+                                                    <!--unsupported attribute - 
+<cut/>
+-->
+                                                    <!--unsupported attribute - 
+<kind>kind:Lukas</kind>
+-->
+                                                    <!--
+<degree>
+    <Data>0.4</Data>
+</degree>
+-->
+                                                    <op>
+                                                        <Rel>isA</Rel>
+                                                    </op>
+                                                    <slot>
+                                                        <Ind>class</Ind>
+                                                        <Var/>
+                                                    </slot>
+                                                    <Ind type="java.lang.Class">org.drools.chance.Message</Ind>
+                                                </Atom>
+                                                <Atom>
+                                                    <op>
+                                                        <Rel>&gt;</Rel>
+                                                    </op>
+                                                    <slot>
+                                                        <Ind>status</Ind>
+                                                        <Var>RuleId.Message.$sjoin</Var>
+                                                    </slot>
+                                                    <Var>RuleId.$m.$s</Var>
+                                                </Atom>
+                                            </And>
+                                        </Reify>
+                                    </Atom>
+                                </Or>
+                            </And>
+                        </body>
+                        <head>
+                            <Atom>
+                                <Rel/>
+                                <Data>System.out.println();</Data>
+                            </Atom>
+                        </head>
+                    </Implies>
+                </formula>
+            </Forall>
+        </Rulebase>
+    </Assert>
+</RuleML>

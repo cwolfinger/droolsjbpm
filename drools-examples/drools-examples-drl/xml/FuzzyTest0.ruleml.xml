@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RuleML xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.ruleml.org/0.91/xsd/naffologeq.xsd" xsi:schemaLocation="http://www.ruleml.org/0.91/xsd http://www.ruleml.org/0.91/xsd/naffologeq.xsd">
+    <Assert>
+        <RuleBase>
+            <oid>
+                <Data xs:type="xsi:string">org.drools.examples.chance.fuzzyTest</Data>
+            </oid>
+            <Implies direction="forward">
+                <oid>
+                    <Data>Hot v1</Data>
+                </oid>
+                <body>
+                    <And>
+                        <Atom>
+                            <Rel>Room</Rel>
+                            <Equals oriented="yes">
+                                <lhs>
+                                    <Var>Hot v1.$r</Var>
+                                </lhs>
+                                <rhs>
+                                    <Reify>
+                                        <And>
+                                            <Atom>
+                                                <op>
+                                                    <Rel>hot</Rel>
+                                                </op>
+                                                <slot>
+                                                    <Ind>temperature</Ind>
+                                                    <Var>Hot v1.$r</Var>
+                                                </slot>
+                                            </Atom>
+                                        </And>
+                                    </Reify>
+                                </rhs>
+                            </Equals>
+                        </Atom>
+                    </And>
+                </body>
+                <head/>
+            </Implies>
+            <Implies direction="forward">
+                <oid>
+                    <Data>Hot v2</Data>
+                </oid>
+                <body>
+                    <And>
+                        <Atom>
+                            <Rel>Room</Rel>
+                            <Equals oriented="yes">
+                                <lhs>
+                                    <Var>Hot v2.$r</Var>
+                                </lhs>
+                                <rhs>
+                                    <Reify>
+                                        <And>
+                                            <Atom>
+                                                <op>
+                                                    <Rel>seems</Rel>
+                                                </op>
+                                                <slot>
+                                                    <Ind>temperature</Ind>
+                                                    <Var>Hot v2.$r</Var>
+                                                </slot>
+                                                <Expr>
+                                                    <Fun>getHot</Fun>
+                                                    <Var>Hot v2.$r</Var>
+                                                </Expr>
+                                            </Atom>
+                                        </And>
+                                    </Reify>
+                                </rhs>
+                            </Equals>
+                        </Atom>
+                    </And>
+                </body>
+                <head/>
+            </Implies>
+            <Implies direction="forward">
+                <oid>
+                    <Data>Hot v3</Data>
+                </oid>
+                <body>
+                    <And>
+                        <Atom>
+                            <Rel>Room</Rel>
+                            <Equals oriented="yes">
+                                <lhs>
+                                    <Var>Hot v3.$r</Var>
+                                </lhs>
+                                <rhs>
+                                    <Reify>
+                                        <And>
+                                            <Atom>
+                                                <op>
+                                                    <Rel>seems</Rel>
+                                                </op>
+                                                <slot>
+                                                    <Ind>temperature</Ind>
+                                                    <Var>Hot v3.$r</Var>
+                                                </slot>
+                                                <Data xsi:type="xs:string">warm</Data>
+                                            </Atom>
+                                        </And>
+                                    </Reify>
+                                </rhs>
+                            </Equals>
+                        </Atom>
+                    </And>
+                </body>
+                <head/>
+            </Implies>
+        </RuleBase>
+    </Assert>
+</RuleML>
