@@ -143,7 +143,7 @@ public class ImpliesTest1
 		private Evaluator flyEvaluator = new BaseImperfectEvaluator(ValueType.BOOLEAN_TYPE, FLIES, "") {
 
 			@Override
-			protected IDegree eval(Object left, Object right, IDegreeFactory factory) {
+			public IDegree eval(Object left, Object right, IDegreeFactory factory) {
 				if (left instanceof Bird) {
 					Boolean b = ((Bird) left).getIsFlier();
 					if (b == null)

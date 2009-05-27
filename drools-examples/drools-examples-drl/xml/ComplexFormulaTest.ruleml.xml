@@ -1,35 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <RuleML xmlns="http://www.ruleml.org/0.91/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.ruleml.org/0.91/xsd http://www.ruleml.org/0.91/xsd/naffologeq.xsd">
+    <oid>
+        <Data>org.drools.DRL</Data>
+    </oid>
     <Assert>
         <Rulebase>
             <oid>
                 <Data>org.drools.chance</Data>
             </oid>
-            <Implies direction="forward">
-                <oid>
-                    <Data>TestOpDegs</Data>
-                </oid>
-                <body>
-                    <And>
-                        <Or>
-                            <Atom>
-                                <Rel>Message</Rel>
-                                <Equals oriented="yes">
-                                    <lhs>
-                                        <Var>TestOpDegs.Message</Var>
-                                    </lhs>
-                                    <rhs>
+            <Forall>
+                <declare>
+                    <Var type="org.drools.chance.Message">TestOpDegs.Message_1</Var>
+                </declare>
+                <declare>
+                    <Var type="org.drools.chance.Message">TestOpDegs.Message_3</Var>
+                </declare>
+                <declare>
+                    <Var type="org.drools.chance.Message">TestOpDegs.Message_2</Var>
+                </declare>
+                <declare>
+                    <Var type="org.drools.chance.Message">TestOpDegs.Message_4</Var>
+                </declare>
+                <declare>
+                    <Var type="org.drools.chance.Message">TestOpDegs.Message</Var>
+                </declare>
+                <formula>
+                    <Implies direction="forward">
+                        <oid>
+                            <Data>TestOpDegs</Data>
+                        </oid>
+                        <body>
+                            <And>
+                                <Or>
+                                    <Atom>
+                                        <oid>
+                                            <Var>TestOpDegs.Message</Var>
+                                        </oid>
+                                        <Rel>Message</Rel>
                                         <Reify>
                                             <And>
                                                 <Atom>
                                                     <op>
-                                                        <Rel>==</Rel>
+                                                        <Rel>isA</Rel>
                                                     </op>
                                                     <slot>
-                                                        <Ind>status</Ind>
-                                                        <Var>TestOpDegs.Message</Var>
+                                                        <Ind>class</Ind>
+                                                        <Var/>
                                                     </slot>
-                                                    <Data xsi:type="xs:decimal">0</Data>
+                                                    <Ind type="java.lang.Class">org.drools.chance.Message</Ind>
                                                 </Atom>
                                                 <Atom>
                                                     <op>
@@ -37,24 +55,40 @@
                                                     </op>
                                                     <slot>
                                                         <Ind>status</Ind>
-                                                        <Var>TestOpDegs.Message</Var>
+                                                        <Var/>
                                                     </slot>
-                                                    <Data xsi:type="xs:decimal">1</Data>
+                                                    <Ind type="java.lang.Number">0</Ind>
+                                                </Atom>
+                                                <Atom>
+                                                    <op>
+                                                        <Rel>==</Rel>
+                                                    </op>
+                                                    <slot>
+                                                        <Ind>status</Ind>
+                                                        <Var/>
+                                                    </slot>
+                                                    <Ind type="java.lang.Number">1</Ind>
                                                 </Atom>
                                             </And>
                                         </Reify>
-                                    </rhs>
-                                </Equals>
-                            </Atom>
-                            <Atom>
-                                <Rel>Message</Rel>
-                                <Equals oriented="yes">
-                                    <lhs>
-                                        <Var>TestOpDegs.Message</Var>
-                                    </lhs>
-                                    <rhs>
+                                    </Atom>
+                                    <Atom>
+                                        <oid>
+                                            <Var>TestOpDegs.Message_1</Var>
+                                        </oid>
+                                        <Rel>Message</Rel>
                                         <Reify>
                                             <And>
+                                                <Atom>
+                                                    <op>
+                                                        <Rel>isA</Rel>
+                                                    </op>
+                                                    <slot>
+                                                        <Ind>class</Ind>
+                                                        <Var/>
+                                                    </slot>
+                                                    <Ind type="java.lang.Class">org.drools.chance.Message</Ind>
+                                                </Atom>
                                                 <Neg>
                                                     <Atom>
                                                         <op>
@@ -62,108 +96,124 @@
                                                         </op>
                                                         <slot>
                                                             <Ind>status</Ind>
-                                                            <Var>TestOpDegs.Message</Var>
+                                                            <Var/>
                                                         </slot>
-                                                        <Data xsi:type="xs:decimal">2</Data>
+                                                        <Ind type="java.lang.Number">2</Ind>
                                                     </Atom>
                                                 </Neg>
                                             </And>
                                         </Reify>
-                                    </rhs>
-                                </Equals>
-                            </Atom>
-                        </Or>
-                        <Neg>
-                            <And>
-                                <Atom>
-                                    <Rel>Message</Rel>
-                                    <Equals oriented="yes">
-                                        <lhs>
-                                            <Var>TestOpDegs.Message</Var>
-                                        </lhs>
-                                        <rhs>
+                                    </Atom>
+                                </Or>
+                                <Neg>
+                                    <And>
+                                        <Atom>
+                                            <oid>
+                                                <Var>TestOpDegs.Message_2</Var>
+                                            </oid>
+                                            <Rel>Message</Rel>
                                             <Reify>
                                                 <And>
+                                                    <Atom>
+                                                        <op>
+                                                            <Rel>isA</Rel>
+                                                        </op>
+                                                        <slot>
+                                                            <Ind>class</Ind>
+                                                            <Var/>
+                                                        </slot>
+                                                        <Ind type="java.lang.Class">org.drools.chance.Message</Ind>
+                                                    </Atom>
                                                     <Atom>
                                                         <op>
                                                             <Rel>random</Rel>
                                                         </op>
                                                         <slot>
                                                             <Ind>status</Ind>
-                                                            <Var>TestOpDegs.Message</Var>
+                                                            <Var/>
                                                         </slot>
-                                                        <Data xsi:type="xs:decimal">3</Data>
+                                                        <Ind type="java.lang.Number">3</Ind>
                                                     </Atom>
                                                 </And>
                                             </Reify>
-                                        </rhs>
-                                    </Equals>
-                                </Atom>
-                                <Atom>
-                                    <Rel>Message</Rel>
-                                    <Equals oriented="yes">
-                                        <lhs>
-                                            <Var>TestOpDegs.Message</Var>
-                                        </lhs>
-                                        <rhs>
+                                        </Atom>
+                                        <Atom>
+                                            <oid>
+                                                <Var>TestOpDegs.Message_3</Var>
+                                            </oid>
+                                            <Rel>Message</Rel>
                                             <Reify>
                                                 <And>
+                                                    <Atom>
+                                                        <op>
+                                                            <Rel>isA</Rel>
+                                                        </op>
+                                                        <slot>
+                                                            <Ind>class</Ind>
+                                                            <Var/>
+                                                        </slot>
+                                                        <Ind type="java.lang.Class">org.drools.chance.Message</Ind>
+                                                    </Atom>
                                                     <Atom>
                                                         <op>
                                                             <Rel>random</Rel>
                                                         </op>
                                                         <slot>
                                                             <Ind>status</Ind>
-                                                            <Var>TestOpDegs.Message</Var>
+                                                            <Var/>
                                                         </slot>
-                                                        <Data xsi:type="xs:decimal">4</Data>
+                                                        <Ind type="java.lang.Number">4</Ind>
                                                     </Atom>
                                                 </And>
                                             </Reify>
-                                        </rhs>
-                                    </Equals>
-                                </Atom>
-                            </And>
-                        </Neg>
-                        <Atom>
-                            <Rel>Message</Rel>
-                            <Equals oriented="yes">
-                                <lhs>
-                                    <Var>TestOpDegs.Message</Var>
-                                </lhs>
-                                <rhs>
+                                        </Atom>
+                                    </And>
+                                </Neg>
+                                <Atom>
+                                    <oid>
+                                        <Var>TestOpDegs.Message_4</Var>
+                                    </oid>
+                                    <Rel>Message</Rel>
                                     <Reify>
                                         <And>
+                                            <Atom>
+                                                <op>
+                                                    <Rel>isA</Rel>
+                                                </op>
+                                                <slot>
+                                                    <Ind>class</Ind>
+                                                    <Var/>
+                                                </slot>
+                                                <Ind type="java.lang.Class">org.drools.chance.Message</Ind>
+                                            </Atom>
                                             <Atom>
                                                 <op>
                                                     <Rel>random</Rel>
                                                 </op>
                                                 <slot>
                                                     <Ind>status</Ind>
-                                                    <Var>TestOpDegs.Message</Var>
+                                                    <Var/>
                                                 </slot>
-                                                <Data xsi:type="xs:decimal">5</Data>
+                                                <Ind type="java.lang.Number">5</Ind>
                                             </Atom>
                                         </And>
                                     </Reify>
-                                </rhs>
-                            </Equals>
-                        </Atom>
-                    </And>
-                </body>
-                <head>
-                    <Atom>
-                        <Rel/>
-                        <Data>	&#13;
-		System.out.println("Degrees test " + drools.getEvaluation().expand());		&#13;
+                                </Atom>
+                            </And>
+                        </body>
+                        <head>
+                            <Atom>
+                                <Rel/>
+                                <Data>System.out.println("Degrees test " + drools.getEvaluation().expand());		&#13;
 		&#13;
 		writer.write("Degrees test " + drools.getEvaluation().expand());&#13;
 		&#13;
-		System.out.println("Final output " + drools.getConsequenceDegree());&#13;
-</Data>
-                    </Atom>
-                </head>
-            </Implies>
+		System.out.println("Final output " + drools.getConsequenceDegree());</Data>
+                            </Atom>
+                        </head>
+                    </Implies>
+                </formula>
+            </Forall>
         </Rulebase>
     </Assert>
 </RuleML>

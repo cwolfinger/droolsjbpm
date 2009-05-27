@@ -10,3 +10,7 @@ Evaluator from temp domain, requires a method in Room
 
 Room is warm in degree 0.25
 Evaluator from temp domain, runtime call (no method in room)
+
+
+Room is hot in degree 0.75
+Room returns Evaluator via getHot(), which is dynamically called on temp.

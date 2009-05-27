@@ -28,7 +28,7 @@ rule "Hot v2"
 		writer.write("Evaluator from temp domain, requires a method in Room\n");
 end
 
-rule "Hot v3"
+rule "Hot v3 (Warm)"
 	when 
 		$r : Room( temperature ~seems "warm" )		
 	then
@@ -37,3 +37,16 @@ rule "Hot v3"
 		writer.write("Room is warm in degree "+drools.getConsequenceDegree()+"\n");
 		writer.write("Evaluator from temp domain, runtime call (no method in room)\n");
 end
+
+rule "Hot v4"
+	when 
+		$r : Room( hot ~evaluates temperature )		
+	then
+		
+		writer.write("\n\n");
+		writer.write("Room is hot in degree "+drools.getConsequenceDegree()+"\n");
+		writer.write("Room returns Evaluator via getHot(), which is dynamically called on temp.");
+end
+
+
+

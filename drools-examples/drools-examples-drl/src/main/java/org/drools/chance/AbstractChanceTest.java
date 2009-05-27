@@ -130,6 +130,7 @@ public abstract class AbstractChanceTest {
 		getKBuilderConf().setProperty("drools.evaluator.stop", "org.drools.chance.fuzzyTest.SpeedDomain");
 		
 		getKBuilderConf().setProperty("drools.evaluator.seems", "org.drools.fuzzy.evaluators.SeemsEvaluatorDefinition");
+		getKBuilderConf().setProperty("drools.evaluator.evaluates", "org.drools.fuzzy.evaluators.EvalEvaluatorDefinition");
 		
 		getKBuilderConf().setProperty("drools.evaluator.random", "org.drools.fuzzy.evaluators.RandomEvaluatorDefinition");
 		

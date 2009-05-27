@@ -1,65 +1,101 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<RuleML xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.ruleml.org/0.91/xsd/naffologeq.xsd" xsi:schemaLocation="http://www.ruleml.org/0.91/xsd http://www.ruleml.org/0.91/xsd/naffologeq.xsd">
+<RuleML xmlns="http://www.ruleml.org/0.91/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.ruleml.org/0.91/xsd http://www.ruleml.org/0.91/xsd/naffologeq.xsd">
+    <oid>
+        <Data>org.drools.DRL</Data>
+    </oid>
     <Assert>
-        <RuleBase>
+        <Rulebase>
             <oid>
-                <Data xs:type="xsi:string">org.drools.examples.chance.fuzzyTest</Data>
+                <Data>org.drools.examples.chance.fuzzyTest</Data>
             </oid>
-            <Implies direction="forward">
-                <oid>
-                    <Data>Hot v1</Data>
-                </oid>
-                <body>
-                    <And>
-                        <Atom>
-                            <Rel>Room</Rel>
-                            <Equals oriented="yes">
-                                <lhs>
-                                    <Var>Hot v1.$r</Var>
-                                </lhs>
-                                <rhs>
+            <Forall>
+                <declare>
+                    <Var type="org.drools.chance.fuzzyTest.Room">Hot v1.$r</Var>
+                </declare>
+                <formula>
+                    <Implies direction="forward">
+                        <oid>
+                            <Data>Hot v1</Data>
+                        </oid>
+                        <body>
+                            <And>
+                                <Atom>
+                                    <oid>
+                                        <Var>Hot v1.$r</Var>
+                                    </oid>
+                                    <Rel>Room</Rel>
                                     <Reify>
                                         <And>
+                                            <Atom>
+                                                <op>
+                                                    <Rel>isA</Rel>
+                                                </op>
+                                                <slot>
+                                                    <Ind>class</Ind>
+                                                    <Var/>
+                                                </slot>
+                                                <Ind type="java.lang.Class">org.drools.chance.fuzzyTest.Room</Ind>
+                                            </Atom>
                                             <Atom>
                                                 <op>
                                                     <Rel>hot</Rel>
                                                 </op>
                                                 <slot>
                                                     <Ind>temperature</Ind>
-                                                    <Var>Hot v1.$r</Var>
+                                                    <Var/>
                                                 </slot>
                                             </Atom>
                                         </And>
                                     </Reify>
-                                </rhs>
-                            </Equals>
-                        </Atom>
-                    </And>
-                </body>
-                <head/>
-            </Implies>
-            <Implies direction="forward">
-                <oid>
-                    <Data>Hot v2</Data>
-                </oid>
-                <body>
-                    <And>
-                        <Atom>
-                            <Rel>Room</Rel>
-                            <Equals oriented="yes">
-                                <lhs>
-                                    <Var>Hot v2.$r</Var>
-                                </lhs>
-                                <rhs>
+                                </Atom>
+                            </And>
+                        </body>
+                        <head>
+                            <Atom>
+                                <Rel/>
+                                <Data>writer.write("\n\n");&#13;
+		writer.write("Room is hot in degree "+drools.getConsequenceDegree()+"\n");&#13;
+		writer.write("Evaluator is called directly\n");</Data>
+                            </Atom>
+                        </head>
+                    </Implies>
+                </formula>
+            </Forall>
+            <Forall>
+                <declare>
+                    <Var type="org.drools.chance.fuzzyTest.Room">Hot v2.$r</Var>
+                </declare>
+                <formula>
+                    <Implies direction="forward">
+                        <oid>
+                            <Data>Hot v2</Data>
+                        </oid>
+                        <body>
+                            <And>
+                                <Atom>
+                                    <oid>
+                                        <Var>Hot v2.$r</Var>
+                                    </oid>
+                                    <Rel>Room</Rel>
                                     <Reify>
                                         <And>
+                                            <Atom>
+                                                <op>
+                                                    <Rel>isA</Rel>
+                                                </op>
+                                                <slot>
+                                                    <Ind>class</Ind>
+                                                    <Var/>
+                                                </slot>
+                                                <Ind type="java.lang.Class">org.drools.chance.fuzzyTest.Room</Ind>
+                                            </Atom>
                                             <Atom>
                                                 <op>
                                                     <Rel>seems</Rel>
                                                 </op>
                                                 <slot>
                                                     <Ind>temperature</Ind>
-                                                    <Var>Hot v2.$r</Var>
+                                                    <Var/>
                                                 </slot>
                                                 <Expr>
                                                     <Fun>getHot</Fun>
@@ -68,47 +104,131 @@
                                             </Atom>
                                         </And>
                                     </Reify>
-                                </rhs>
-                            </Equals>
-                        </Atom>
-                    </And>
-                </body>
-                <head/>
-            </Implies>
-            <Implies direction="forward">
-                <oid>
-                    <Data>Hot v3</Data>
-                </oid>
-                <body>
-                    <And>
-                        <Atom>
-                            <Rel>Room</Rel>
-                            <Equals oriented="yes">
-                                <lhs>
-                                    <Var>Hot v3.$r</Var>
-                                </lhs>
-                                <rhs>
+                                </Atom>
+                            </And>
+                        </body>
+                        <head>
+                            <Atom>
+                                <Rel/>
+                                <Data>writer.write("\n\n");			             &#13;
+		writer.write("Room is hot in degree "+drools.getConsequenceDegree()+"\n");&#13;
+		writer.write("Evaluator from temp domain, requires a method in Room\n");</Data>
+                            </Atom>
+                        </head>
+                    </Implies>
+                </formula>
+            </Forall>
+            <Forall>
+                <declare>
+                    <Var type="org.drools.chance.fuzzyTest.Room">Hot v3 (Warm).$r</Var>
+                </declare>
+                <formula>
+                    <Implies direction="forward">
+                        <oid>
+                            <Data>Hot v3 (Warm)</Data>
+                        </oid>
+                        <body>
+                            <And>
+                                <Atom>
+                                    <oid>
+                                        <Var>Hot v3 (Warm).$r</Var>
+                                    </oid>
+                                    <Rel>Room</Rel>
                                     <Reify>
                                         <And>
+                                            <Atom>
+                                                <op>
+                                                    <Rel>isA</Rel>
+                                                </op>
+                                                <slot>
+                                                    <Ind>class</Ind>
+                                                    <Var/>
+                                                </slot>
+                                                <Ind type="java.lang.Class">org.drools.chance.fuzzyTest.Room</Ind>
+                                            </Atom>
                                             <Atom>
                                                 <op>
                                                     <Rel>seems</Rel>
                                                 </op>
                                                 <slot>
                                                     <Ind>temperature</Ind>
-                                                    <Var>Hot v3.$r</Var>
+                                                    <Var/>
                                                 </slot>
-                                                <Data xsi:type="xs:string">warm</Data>
+                                                <Ind type="java.lang.String">warm</Ind>
                                             </Atom>
                                         </And>
                                     </Reify>
-                                </rhs>
-                            </Equals>
-                        </Atom>
-                    </And>
-                </body>
-                <head/>
-            </Implies>
-        </RuleBase>
+                                </Atom>
+                            </And>
+                        </body>
+                        <head>
+                            <Atom>
+                                <Rel/>
+                                <Data>writer.write("\n\n");&#13;
+		writer.write("Room is warm in degree "+drools.getConsequenceDegree()+"\n");&#13;
+		writer.write("Evaluator from temp domain, runtime call (no method in room)\n");</Data>
+                            </Atom>
+                        </head>
+                    </Implies>
+                </formula>
+            </Forall>
+            <Forall>
+                <declare>
+                    <Var type="org.drools.chance.fuzzyTest.Room">Hot v4.$r</Var>
+                </declare>
+                <formula>
+                    <Implies direction="forward">
+                        <oid>
+                            <Data>Hot v4</Data>
+                        </oid>
+                        <body>
+                            <And>
+                                <Atom>
+                                    <oid>
+                                        <Var>Hot v4.$r</Var>
+                                    </oid>
+                                    <Rel>Room</Rel>
+                                    <Reify>
+                                        <And>
+                                            <Atom>
+                                                <op>
+                                                    <Rel>isA</Rel>
+                                                </op>
+                                                <slot>
+                                                    <Ind>class</Ind>
+                                                    <Var/>
+                                                </slot>
+                                                <Ind type="java.lang.Class">org.drools.chance.fuzzyTest.Room</Ind>
+                                            </Atom>
+                                            <Atom>
+                                                <op>
+                                                    <Rel>evaluates</Rel>
+                                                </op>
+                                                <slot>
+                                                    <Ind>hot</Ind>
+                                                    <Var/>
+                                                </slot>
+                                                <Expr>
+                                                    <Fun>getTemperature</Fun>
+                                                    <Var>Hot v4.$r</Var>
+                                                </Expr>
+                                            </Atom>
+                                        </And>
+                                    </Reify>
+                                </Atom>
+                            </And>
+                        </body>
+                        <head>
+                            <Atom>
+                                <Rel/>
+                                <Data>writer.write("\n\n");&#13;
+		writer.write("Room is hot in degree "+drools.getConsequenceDegree()+"\n");&#13;
+		writer.write("Room returns Evaluator via getHot(), which is dynamically called on temp.");</Data>
+                            </Atom>
+                        </head>
+                    </Implies>
+                </formula>
+            </Forall>
+        </Rulebase>
     </Assert>
 </RuleML>
