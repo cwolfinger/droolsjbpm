@@ -18,7 +18,6 @@ import org.drools.reteoo.Evaluation;
 import org.drools.reteoo.ImperfectAgendaItem;
 import org.drools.spi.Activation;
 
-import sun.security.x509.AVA;
 
 public class ImperfectAgendaGroup implements InternalAgendaGroup {
 	

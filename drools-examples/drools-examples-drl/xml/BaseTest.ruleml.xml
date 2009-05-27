@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <RuleML xmlns="http://www.ruleml.org/0.91/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.ruleml.org/0.91/xsd http://www.ruleml.org/0.91/xsd/naffologeq.xsd">
+    <oid>
+        <Data>org.drools.DRL</Data>
+    </oid>
     <Assert>
         <Rulebase>
             <oid>
@@ -56,6 +59,9 @@
                                     <Reify>
                                         <And>
                                             <Atom>
+                                                <oid>
+                                                    <Data>MsgId</Data>
+                                                </oid>
                                                 <op>
                                                     <Rel>isA</Rel>
                                                 </op>
@@ -242,9 +248,11 @@
                         <oid>
                             <Data>Exceptional</Data>
                         </oid>
-                        <degree>
-                            <Data>(0)</Data>
-                        </degree>
+                        <!--
+<degree>
+    <Data>(0)</Data>
+</degree>
+-->
                         <body>
                             <And>
                                 <Atom>
