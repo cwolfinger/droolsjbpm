@@ -1,0 +1,86 @@
+Rule without cut fires 
+Eval Record info(1.0) for args L : Message 31	 
+AND{
+(31@20) : 0.07029788 dotAnd(dotAnd(==(class,org.drools.chance.Message)),dotAnd(==(class,org.drools.chance.Message),random(org.drools.chance.Message.status,null),Object ==(org.drools.chance.Message.this,$m))) [EVAL 0.07029788,]
+(31@21) : 1.0 TestCut 2 [EVAL 0.0,PRIOR 1.0,]
+}
+
+(31@22) : 0.07029788 minAnd(dotAnd(dotAnd(==(class,org.drools.chance.Message)),dotAnd(==(class,org.drools.chance.Message),random(org.drools.chance.Message.status,null),Object ==(org.drools.chance.Message.this,$m))),TestCut 2) [EVAL 0.07029788,]
+	(31@20) : 0.07029788 dotAnd(dotAnd(==(class,org.drools.chance.Message)),dotAnd(==(class,org.drools.chance.Message),random(org.drools.chance.Message.status,null),Object ==(org.drools.chance.Message.this,$m))) [EVAL 0.07029788,]
+		(31@1) : 1.0 dotAnd(==(class,org.drools.chance.Message)) [EVAL 1.0,]
+			(31@3) : 1.0 ==(class,org.drools.chance.Message) [EVAL 1.0,]
+		(31@1) : 0.07029788 dotAnd(==(class,org.drools.chance.Message),random(org.drools.chance.Message.status,null),Object ==(org.drools.chance.Message.this,$m)) [EVAL 0.07029788,]
+			(31@3) : 1.0 ==(class,org.drools.chance.Message) [EVAL 1.0,]
+			(31@8) : 0.07029788 random(org.drools.chance.Message.status,null) [EVAL 0.07029788,]
+			(31@19) : 1.0 Object ==(org.drools.chance.Message.this,$m) [EVAL 1.0,]
+	(31@21) : 1.0 TestCut 2 [EVAL 0.0,PRIOR 1.0,]
+
+Rule with cut fires 
+Eval Record info(1.0) for args L : Message 32	 
+AND{
+(32@10) : 0.91325086 dotAnd(dotAnd(==(class,org.drools.chance.Message),Integer >(org.drools.chance.Message.status,0)),dotAnd(==(class,org.drools.chance.Message),random(org.drools.chance.Message.status,null),Object ==(org.drools.chance.Message.this,$m))) [EVAL 0.91325086,]
+(32@11) : 1.0 TestCut 1 [EVAL 0.0,PRIOR 1.0,]
+}
+
+(32@12) : 0.91325086 minAnd(dotAnd(dotAnd(==(class,org.drools.chance.Message),Integer >(org.drools.chance.Message.status,0)),dotAnd(==(class,org.drools.chance.Message),random(org.drools.chance.Message.status,null),Object ==(org.drools.chance.Message.this,$m))),TestCut 1) [EVAL 0.91325086,]
+	(32@10) : 0.91325086 dotAnd(dotAnd(==(class,org.drools.chance.Message),Integer >(org.drools.chance.Message.status,0)),dotAnd(==(class,org.drools.chance.Message),random(org.drools.chance.Message.status,null),Object ==(org.drools.chance.Message.this,$m))) [EVAL 0.91325086,]
+		(32@1) : 1.0 dotAnd(==(class,org.drools.chance.Message),Integer >(org.drools.chance.Message.status,0)) [EVAL 1.0,]
+			(32@3) : 1.0 ==(class,org.drools.chance.Message) [EVAL 1.0,]
+			(32@4) : 1.0 Integer >(org.drools.chance.Message.status,0) [EVAL 1.0,]
+		(32@1) : 0.91325086 dotAnd(==(class,org.drools.chance.Message),random(org.drools.chance.Message.status,null),Object ==(org.drools.chance.Message.this,$m)) [EVAL 0.91325086,]
+			(32@3) : 1.0 ==(class,org.drools.chance.Message) [EVAL 1.0,]
+			(32@8) : 0.91325086 random(org.drools.chance.Message.status,null) [EVAL 0.91325086,]
+			(32@9) : 1.0 Object ==(org.drools.chance.Message.this,$m) [EVAL 1.0,]
+	(32@11) : 1.0 TestCut 1 [EVAL 0.0,PRIOR 1.0,]
+
+Rule without cut fires 
+Eval Record info(1.0) for args L : Message 31	Message 32	 
+AND{
+(63@20) : 0.0 dotAnd(dotAnd(==(class,org.drools.chance.Message)),dotAnd(==(class,org.drools.chance.Message),random(org.drools.chance.Message.status,null),Object ==(org.drools.chance.Message.this,$m))) [EVAL 0.0,]
+(63@21) : 1.0 TestCut 2 [EVAL 0.0,PRIOR 1.0,]
+}
+
+(63@22) : 0.0 minAnd(dotAnd(dotAnd(==(class,org.drools.chance.Message)),dotAnd(==(class,org.drools.chance.Message),random(org.drools.chance.Message.status,null),Object ==(org.drools.chance.Message.this,$m))),TestCut 2) [EVAL 0.0,]
+	(63@20) : 0.0 dotAnd(dotAnd(==(class,org.drools.chance.Message)),dotAnd(==(class,org.drools.chance.Message),random(org.drools.chance.Message.status,null),Object ==(org.drools.chance.Message.this,$m))) [EVAL 0.0,]
+		(31@1) : 1.0 dotAnd(==(class,org.drools.chance.Message)) [EVAL 1.0,]
+			(31@3) : 1.0 ==(class,org.drools.chance.Message) [EVAL 1.0,]
+		(63@1) : 0.0 dotAnd(==(class,org.drools.chance.Message),random(org.drools.chance.Message.status,null),Object ==(org.drools.chance.Message.this,$m)) [EVAL 0.0,]
+			(32@3) : 1.0 ==(class,org.drools.chance.Message) [EVAL 1.0,]
+			(32@8) : 0.91325086 random(org.drools.chance.Message.status,null) [EVAL 0.91325086,]
+			(63@19) : 0.0 Object ==(org.drools.chance.Message.this,$m) [EVAL 0.0,]
+	(63@21) : 1.0 TestCut 2 [EVAL 0.0,PRIOR 1.0,]
+
+Rule without cut fires 
+Eval Record info(1.0) for args L : Message 32	 
+AND{
+(32@20) : 0.91325086 dotAnd(dotAnd(==(class,org.drools.chance.Message)),dotAnd(==(class,org.drools.chance.Message),random(org.drools.chance.Message.status,null),Object ==(org.drools.chance.Message.this,$m))) [EVAL 0.91325086,]
+(32@21) : 1.0 TestCut 2 [EVAL 0.0,PRIOR 1.0,]
+}
+
+(32@22) : 0.91325086 minAnd(dotAnd(dotAnd(==(class,org.drools.chance.Message)),dotAnd(==(class,org.drools.chance.Message),random(org.drools.chance.Message.status,null),Object ==(org.drools.chance.Message.this,$m))),TestCut 2) [EVAL 0.91325086,]
+	(32@20) : 0.91325086 dotAnd(dotAnd(==(class,org.drools.chance.Message)),dotAnd(==(class,org.drools.chance.Message),random(org.drools.chance.Message.status,null),Object ==(org.drools.chance.Message.this,$m))) [EVAL 0.91325086,]
+		(32@1) : 1.0 dotAnd(==(class,org.drools.chance.Message)) [EVAL 1.0,]
+			(32@3) : 1.0 ==(class,org.drools.chance.Message) [EVAL 1.0,]
+		(32@1) : 0.91325086 dotAnd(==(class,org.drools.chance.Message),random(org.drools.chance.Message.status,null),Object ==(org.drools.chance.Message.this,$m)) [EVAL 0.91325086,]
+			(32@3) : 1.0 ==(class,org.drools.chance.Message) [EVAL 1.0,]
+			(32@8) : 0.91325086 random(org.drools.chance.Message.status,null) [EVAL 0.91325086,]
+			(32@19) : 1.0 Object ==(org.drools.chance.Message.this,$m) [EVAL 1.0,]
+	(32@21) : 1.0 TestCut 2 [EVAL 0.0,PRIOR 1.0,]
+
+Rule without cut fires 
+Eval Record info(1.0) for args L : Message 32	Message 31	 
+AND{
+(63@20) : 0.0 dotAnd(dotAnd(==(class,org.drools.chance.Message)),dotAnd(==(class,org.drools.chance.Message),random(org.drools.chance.Message.status,null),Object ==(org.drools.chance.Message.this,$m))) [EVAL 0.0,]
+(63@21) : 1.0 TestCut 2 [EVAL 0.0,PRIOR 1.0,]
+}
+
+(63@22) : 0.0 minAnd(dotAnd(dotAnd(==(class,org.drools.chance.Message)),dotAnd(==(class,org.drools.chance.Message),random(org.drools.chance.Message.status,null),Object ==(org.drools.chance.Message.this,$m))),TestCut 2) [EVAL 0.0,]
+	(63@20) : 0.0 dotAnd(dotAnd(==(class,org.drools.chance.Message)),dotAnd(==(class,org.drools.chance.Message),random(org.drools.chance.Message.status,null),Object ==(org.drools.chance.Message.this,$m))) [EVAL 0.0,]
+		(32@1) : 1.0 dotAnd(==(class,org.drools.chance.Message)) [EVAL 1.0,]
+			(32@3) : 1.0 ==(class,org.drools.chance.Message) [EVAL 1.0,]
+		(63@1) : 0.0 dotAnd(==(class,org.drools.chance.Message),random(org.drools.chance.Message.status,null),Object ==(org.drools.chance.Message.this,$m)) [EVAL 0.0,]
+			(31@3) : 1.0 ==(class,org.drools.chance.Message) [EVAL 1.0,]
+			(31@8) : 0.07029788 random(org.drools.chance.Message.status,null) [EVAL 0.07029788,]
+			(63@19) : 0.0 Object ==(org.drools.chance.Message.this,$m) [EVAL 0.0,]
+	(63@21) : 1.0 TestCut 2 [EVAL 0.0,PRIOR 1.0,]
+

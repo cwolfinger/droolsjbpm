@@ -1,0 +1,35 @@
+Existential check 1.0
+Eval Record info(1.0) for args L :  
+AND{
+(0@10) : 1.0 dotAnd(-exists()) [EVAL 1.0,]
+(0@11) : 1.0 Test Forall 1 [EVAL 0.0,PRIOR 1.0,]
+}
+
+(0@12) : 1.0 minAnd(dotAnd(-exists())Test Forall 1) [EVAL 1.0,]
+	(0@10) : 1.0 dotAnd(-exists()) [EVAL 1.0,]
+		(0@9) : 1.0 -exists() [EVAL 1.0,]
+	(0@11) : 1.0 Test Forall 1 [EVAL 0.0,PRIOR 1.0,]
+
+
+Existential check 0.0
+Eval Record info(1.0) for args L :  
+AND{
+(0@10) : 0.0 dotAnd(-exists()) [EVAL 0.0,]
+(0@11) : 1.0 Test Forall 1 [EVAL 0.0,PRIOR 1.0,]
+}
+
+(0@12) : 0.0 minAnd(dotAnd(-exists())Test Forall 1) [EVAL 0.0,]
+	(0@10) : 0.0 dotAnd(-exists()) [EVAL 0.0,]
+		(30@9) : 0.0 -exists() [EVAL 0.0,]
+			(31@1) : 0.0 -dotAnd(==(class,org.drools.chance.Message),Integer <(org.drools.chance.Message.status,2)) [EVAL 0.0,]
+				(31@6) : 1.0 ==(class,org.drools.chance.Message) [EVAL 1.0,]
+				(31@7) : 1.0 Integer <(org.drools.chance.Message.status,2) [EVAL 1.0,]
+			(32@1) : 0.0 -dotAnd(==(class,org.drools.chance.Message),Integer <(org.drools.chance.Message.status,2)) [EVAL 0.0,]
+				(32@6) : 1.0 ==(class,org.drools.chance.Message) [EVAL 1.0,]
+				(32@7) : 1.0 Integer <(org.drools.chance.Message.status,2) [EVAL 1.0,]
+			(33@1) : 1.0 -dotAnd(==(class,org.drools.chance.Message),Integer <(org.drools.chance.Message.status,2)) [EVAL 1.0,]
+				(33@6) : 1.0 ==(class,org.drools.chance.Message) [EVAL 1.0,]
+				(33@7) : 0.0 Integer <(org.drools.chance.Message.status,2) [EVAL 0.0,]
+	(0@11) : 1.0 Test Forall 1 [EVAL 0.0,PRIOR 1.0,]
+
+

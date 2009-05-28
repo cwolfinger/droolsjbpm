@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RuleML xmlns="http://www.ruleml.org/0.91/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.ruleml.org/0.91/xsd http://www.ruleml.org/0.91/xsd/naffologeq.xsd">
+    <oid>
+        <Data>org.drools.DRL</Data>
+    </oid>
+    <Assert>
+        <Rulebase>
+            <oid>
+                <Data>org.drools.chance</Data>
+            </oid>
+            <Forall>
+                <declare>
+                    <Var type="org.drools.chance.Message">Test Join.n</Var>
+                </declare>
+                <declare>
+                    <Var type="org.drools.chance.Message">Test Join.m</Var>
+                </declare>
+                <formula>
+                    <Implies direction="forward">
+                        <oid>
+                            <Data>Test Join</Data>
+                        </oid>
+                        <body>
+                            <And>
+                                <Atom>
+                                    <oid>
+                                        <Var>Test Join.m</Var>
+                                    </oid>
+                                    <Rel>Message</Rel>
+                                    <Reify>
+                                        <And>
+                                            <Atom>
+                                                <op>
+                                                    <Rel>isA</Rel>
+                                                </op>
+                                                <slot>
+                                                    <Ind>class</Ind>
+                                                    <Var/>
+                                                </slot>
+                                                <Ind type="java.lang.Class">org.drools.chance.Message</Ind>
+                                            </Atom>
+                                            <Atom>
+                                                <op>
+                                                    <Rel>==</Rel>
+                                                </op>
+                                                <slot>
+                                                    <Ind>status</Ind>
+                                                    <Var/>
+                                                </slot>
+                                                <Ind type="java.lang.Number">0</Ind>
+                                            </Atom>
+                                        </And>
+                                    </Reify>
+                                </Atom>
+                                <Atom>
+                                    <oid>
+                                        <Var>Test Join.n</Var>
+                                    </oid>
+                                    <Rel>Message</Rel>
+                                    <Reify>
+                                        <And>
+                                            <Atom>
+                                                <op>
+                                                    <Rel>isA</Rel>
+                                                </op>
+                                                <slot>
+                                                    <Ind>class</Ind>
+                                                    <Var/>
+                                                </slot>
+                                                <Ind type="java.lang.Class">org.drools.chance.Message</Ind>
+                                            </Atom>
+                                            <Atom>
+                                                <op>
+                                                    <Rel>==</Rel>
+                                                </op>
+                                                <slot>
+                                                    <Ind>status</Ind>
+                                                    <Var/>
+                                                </slot>
+                                                <Ind type="java.lang.Number">1</Ind>
+                                            </Atom>
+                                        </And>
+                                    </Reify>
+                                </Atom>
+                            </And>
+                        </body>
+                        <head>
+                            <Atom>
+                                <Rel/>
+                                <Data>writer.write("\n\n Tested couple "+m.getMessage() + " " + n.getMessage() +"\n");
+		writer.write("Simple Join check "+drools.getConsequenceDegree()+"\n");
+		System.out.println("Existential check "+drools.getConsequenceDegree()+"\n");</Data>
+                            </Atom>
+                        </head>
+                    </Implies>
+                </formula>
+            </Forall>
+        </Rulebase>
+    </Assert>
+</RuleML>

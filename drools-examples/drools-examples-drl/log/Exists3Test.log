@@ -1,0 +1,81 @@
+
+
+ Conditional join with existence
+	 Rule triggered for M1
+Existential check 0.0
+Eval Record info(1.0) for args L : Message 32	Message 31	 
+AND{
+(63@9) : 0.0 dotAnd(dotAnd(==(class,org.drools.chance.Message),Integer ==(org.drools.chance.Message.status,0)),exists()) [EVAL 0.0,]
+(32@10) : 1.0 Test Exist 5 [EVAL 0.0,PRIOR 1.0,]
+}
+
+(63@11) : 0.0 minAnd(dotAnd(dotAnd(==(class,org.drools.chance.Message),Integer ==(org.drools.chance.Message.status,0)),exists())Test Exist 5) [EVAL 0.0,]
+	(63@9) : 0.0 dotAnd(dotAnd(==(class,org.drools.chance.Message),Integer ==(org.drools.chance.Message.status,0)),exists()) [EVAL 0.0,]
+		(32@1) : 0.0 dotAnd(==(class,org.drools.chance.Message),Integer ==(org.drools.chance.Message.status,0)) [EVAL 0.0,]
+			(32@3) : 1.0 ==(class,org.drools.chance.Message) [EVAL 1.0,]
+			(32@4) : 0.0 Integer ==(org.drools.chance.Message.status,0) [EVAL 0.0,]
+		(63@8) : 0.0 exists() [EVAL 0.0,]
+			(63@1) : 0.0 dotAnd(==(class,org.drools.chance.Message),Integer >(org.drools.chance.Message.status,$s)) [EVAL 0.0,]
+				(31@3) : 1.0 ==(class,org.drools.chance.Message) [EVAL 1.0,]
+				(63@8) : 0.0 Integer >(org.drools.chance.Message.status,$s) [EVAL 0.0,]
+			(32@1) : 0.0 dotAnd(==(class,org.drools.chance.Message),Integer >(org.drools.chance.Message.status,$s)) [EVAL 0.0,]
+				(32@3) : 1.0 ==(class,org.drools.chance.Message) [EVAL 1.0,]
+				(32@8) : 0.0 Integer >(org.drools.chance.Message.status,$s) [EVAL 0.0,]
+	(32@10) : 1.0 Test Exist 5 [EVAL 0.0,PRIOR 1.0,]
+
+
+
+
+ Conditional join with existence
+	 Rule triggered for M0
+Existential check 1.0
+Eval Record info(1.0) for args L : Message 31	 
+AND{
+(31@9) : 1.0 dotAnd(dotAnd(==(class,org.drools.chance.Message),Integer ==(org.drools.chance.Message.status,0)),exists()) [EVAL 1.0,]
+(31@10) : 1.0 Test Exist 5 [EVAL 0.0,PRIOR 1.0,]
+}
+
+(31@11) : 1.0 minAnd(dotAnd(dotAnd(==(class,org.drools.chance.Message),Integer ==(org.drools.chance.Message.status,0)),exists())Test Exist 5) [EVAL 1.0,]
+	(31@9) : 1.0 dotAnd(dotAnd(==(class,org.drools.chance.Message),Integer ==(org.drools.chance.Message.status,0)),exists()) [EVAL 1.0,]
+		(31@1) : 1.0 dotAnd(==(class,org.drools.chance.Message),Integer ==(org.drools.chance.Message.status,0)) [EVAL 1.0,]
+			(31@3) : 1.0 ==(class,org.drools.chance.Message) [EVAL 1.0,]
+			(31@4) : 1.0 Integer ==(org.drools.chance.Message.status,0) [EVAL 1.0,]
+		(63@8) : 1.0 exists() [EVAL 1.0,]
+			(31@1) : 0.0 dotAnd(==(class,org.drools.chance.Message),Integer >(org.drools.chance.Message.status,$s)) [EVAL 0.0,]
+				(31@3) : 1.0 ==(class,org.drools.chance.Message) [EVAL 1.0,]
+				(31@8) : 0.0 Integer >(org.drools.chance.Message.status,$s) [EVAL 0.0,]
+			(63@1) : 1.0 dotAnd(==(class,org.drools.chance.Message),Integer >(org.drools.chance.Message.status,$s)) [EVAL 1.0,]
+				(32@3) : 1.0 ==(class,org.drools.chance.Message) [EVAL 1.0,]
+				(63@8) : 1.0 Integer >(org.drools.chance.Message.status,$s) [EVAL 1.0,]
+	(31@10) : 1.0 Test Exist 5 [EVAL 0.0,PRIOR 1.0,]
+
+
+
+
+ Conditional join with existence
+	 Rule triggered for M2
+Existential check 0.0
+Eval Record info(1.0) for args L : Message 33	Message 32	Message 31	 
+AND{
+(30@9) : 0.0 dotAnd(dotAnd(==(class,org.drools.chance.Message),Integer ==(org.drools.chance.Message.status,0)),exists()) [EVAL 0.0,]
+(33@10) : 1.0 Test Exist 5 [EVAL 0.0,PRIOR 1.0,]
+}
+
+(30@11) : 0.0 minAnd(dotAnd(dotAnd(==(class,org.drools.chance.Message),Integer ==(org.drools.chance.Message.status,0)),exists())Test Exist 5) [EVAL 0.0,]
+	(30@9) : 0.0 dotAnd(dotAnd(==(class,org.drools.chance.Message),Integer ==(org.drools.chance.Message.status,0)),exists()) [EVAL 0.0,]
+		(33@1) : 0.0 dotAnd(==(class,org.drools.chance.Message),Integer ==(org.drools.chance.Message.status,0)) [EVAL 0.0,]
+			(33@3) : 1.0 ==(class,org.drools.chance.Message) [EVAL 1.0,]
+			(33@4) : 0.0 Integer ==(org.drools.chance.Message.status,0) [EVAL 0.0,]
+		(30@8) : 0.0 exists() [EVAL 0.0,]
+			(1@1) : 0.0 dotAnd(==(class,org.drools.chance.Message),Integer >(org.drools.chance.Message.status,$s)) [EVAL 0.0,]
+				(32@3) : 1.0 ==(class,org.drools.chance.Message) [EVAL 1.0,]
+				(1@8) : 0.0 Integer >(org.drools.chance.Message.status,$s) [EVAL 0.0,]
+			(62@1) : 0.0 dotAnd(==(class,org.drools.chance.Message),Integer >(org.drools.chance.Message.status,$s)) [EVAL 0.0,]
+				(31@3) : 1.0 ==(class,org.drools.chance.Message) [EVAL 1.0,]
+				(62@8) : 0.0 Integer >(org.drools.chance.Message.status,$s) [EVAL 0.0,]
+			(33@1) : 0.0 dotAnd(==(class,org.drools.chance.Message),Integer >(org.drools.chance.Message.status,$s)) [EVAL 0.0,]
+				(33@3) : 1.0 ==(class,org.drools.chance.Message) [EVAL 1.0,]
+				(33@8) : 0.0 Integer >(org.drools.chance.Message.status,$s) [EVAL 0.0,]
+	(33@10) : 1.0 Test Exist 5 [EVAL 0.0,PRIOR 1.0,]
+
+
