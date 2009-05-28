@@ -1,0 +1,23 @@
+package org.drools.chance;
+
+import java.io.FileWriter;
+
+declare Message
+	status : int @key
+	message : String
+end
+
+global FileWriter writer;
+
+
+
+rule "Test Join"	
+	when
+		
+			m: Message(status == 0)			
+			n : Message(status == 1)					
+	then
+		writer.write("\n\n Tested couple "+m.getMessage() + " " + n.getMessage() +"\n");
+		writer.write("Simple Join check "+drools.getConsequenceDegree()+"\n");
+		System.out.println("Existential check "+drools.getConsequenceDegree()+"\n");	
+end

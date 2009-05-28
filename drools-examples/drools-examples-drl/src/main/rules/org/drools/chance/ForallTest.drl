@@ -1,0 +1,22 @@
+package org.drools.chance;
+
+import java.io.FileWriter;
+
+declare Message
+	status : int @key
+	message : String
+end
+
+global FileWriter writer;
+
+rule "Test Forall 1"	
+	when
+		forall (
+					Message( status < 2 )					
+		)
+	then
+		
+		writer.write("Existential check "+drools.getConsequenceDegree()+"\n"+drools.getEvaluation().expand()+"\n\n");
+		System.out.println("Existential check "+drools.getConsequenceDegree());
+			
+end

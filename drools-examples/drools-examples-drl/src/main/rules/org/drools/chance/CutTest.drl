@@ -1,0 +1,33 @@
+package org.drools.chance;
+
+import java.io.FileWriter;
+
+declare Message
+	status : int @key
+	message : String
+end
+
+global FileWriter writer;
+
+	
+
+rule "TestCut 1"
+	when
+		$m : Message( status > @(cut="true") 0  ) 
+		Message( this ==  @(cut="true") $m , $s : status ~random )  
+	then
+		writer.write("Rule with cut fires \n");
+		writer.write(drools.getEvaluation().expand() + "\n");
+end
+		
+
+
+
+rule "TestCut 2"
+	when
+		$m : Message( status > 0)
+		Message( this == $m , status ~random )
+	then
+		writer.write("Rule without cut fires \n");
+		writer.write(drools.getEvaluation().expand() + "\n");
+end
