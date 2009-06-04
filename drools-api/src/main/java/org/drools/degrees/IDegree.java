@@ -7,6 +7,8 @@ public interface IDegree {
 	
 	public SimpleDegree getDegree();
 	
+	public float getValue();
+	
 	public float getConfidence(boolean cwa);
 	
 }
