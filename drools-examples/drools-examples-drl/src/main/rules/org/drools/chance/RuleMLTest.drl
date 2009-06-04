@@ -1,42 +1,45 @@
 package org.drools.chance;
+ 
 
 import java.io.FileWriter;
+
+
+declare Message
+	status : int @key
+	message : String
+end
 
 
 global FileWriter writer;
 
 
-declare Message
-	status	: int	@key
-	message : String
-end
 
-rule "RuleId"
-	prior ( 0.7 )
+rule "Test"
 
-	when
-		$m : Message( 
-						$s : status 
-						== @(id="idBndOp" prior="0.4" args="tolerance(0.1)" kind="b"  cut="true")  
-						0 
-					|| 
-						( 
-							message 
-							== @(id="idFreeOp" prior="0.4" kind="a" cut="true" ) 
-							"Hello" 
-						&& 
-							$msg : message 
-						)
-			 		) @(id="idCls" prior="0.1" args="z" kind="Prod" cut="true")
-			  	
-			  
-			 or  @(id="idCE" prior="0.4" kind="Max" cut="true")	
-			  		
-			 Message( 
-			 			$sjoin : status  >  $s 
-			 		) @(id="idCls2" prior="0.4" kind="Lukas" cut="true") 
+	when	
+		(
+			$msg : Message( $stat: status == 0 && status == 1 )
+			or 
+			(	
+				Message(status ~random && (message random || status random))
+				and
+				Message(status ~random )
+			)
+		)
+		
+		
+		not (Message(status ~random )
+			and
+			Message(status ~random )
+			)
+				
+		Message( $sjust : status )
+		
+		Message( status > $stat )
+		
+		Message( status == status , status > $msg.status )
+		
+		
 	then
 		System.out.println();
 end
-
-

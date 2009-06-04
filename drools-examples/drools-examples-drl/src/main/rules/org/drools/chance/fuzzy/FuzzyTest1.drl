@@ -12,7 +12,7 @@ global FileWriter writer;
 
 rule "Cold"
 	when 
-		$r : Room( temperature ~cold )		
+		$r : Room( temperature ~cold)		
 	then
 		drools.inject(new Fan(),"org.drools.chance.fuzzyTest.Fan.speed","seems","stop");	              
 end

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <RuleML xmlns="http://www.ruleml.org/0.91/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.ruleml.org/0.91/xsd http://www.ruleml.org/0.91/xsd/naffologeq.xsd">
     <oid>
         <Data>org.drools.DRL</Data>
@@ -34,7 +34,7 @@
                                                     <Rel>isA</Rel>
                                                 </op>
                                                 <slot>
-                                                    <Ind>class</Ind>
+                                                    <Ind type="java.lang.Class">class</Ind>
                                                     <Var/>
                                                 </slot>
                                                 <Ind type="java.lang.Class">org.drools.chance.Message</Ind>
@@ -44,7 +44,7 @@
                                                     <Rel>==</Rel>
                                                 </op>
                                                 <slot>
-                                                    <Ind>status</Ind>
+                                                    <Ind type="int">status</Ind>
                                                     <Var/>
                                                 </slot>
                                                 <Ind type="java.lang.Number">0</Ind>
@@ -64,7 +64,7 @@
                                                     <Rel>isA</Rel>
                                                 </op>
                                                 <slot>
-                                                    <Ind>class</Ind>
+                                                    <Ind type="java.lang.Class">class</Ind>
                                                     <Var/>
                                                 </slot>
                                                 <Ind type="java.lang.Class">org.drools.chance.Message</Ind>
@@ -74,7 +74,7 @@
                                                     <Rel>==</Rel>
                                                 </op>
                                                 <slot>
-                                                    <Ind>status</Ind>
+                                                    <Ind type="int">status</Ind>
                                                     <Var/>
                                                 </slot>
                                                 <Ind type="java.lang.Number">1</Ind>

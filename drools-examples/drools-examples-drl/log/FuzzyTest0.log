@@ -9,8 +9,49 @@ Evaluator from temp domain, requires a method in Room
 
 
 Room is warm in degree 0.25
+Room is warm in degree Eval Record info(1.0) for args L : Room 47	 
+AND{
+(47@21) : 0.25 dotAnd(dotAnd(==(class,org.drools.chance.fuzzyTest.Room),seems(org.drools.chance.fuzzyTest.Room.temperature,warm))) [EVAL 0.25,]
+(47@22) : 1.0 Hot v3 (Warm) [EVAL 0.0,PRIOR 1.0,]
+}
+
+(47@23) : 0.25 minAnd(dotAnd(dotAnd(==(class,org.drools.chance.fuzzyTest.Room),seems(org.drools.chance.fuzzyTest.Room.temperature,warm))),Hot v3 (Warm)) [EVAL 0.25,]
+	(47@21) : 0.25 dotAnd(dotAnd(==(class,org.drools.chance.fuzzyTest.Room),seems(org.drools.chance.fuzzyTest.Room.temperature,warm))) [EVAL 0.25,]
+		(47@1) : 0.25 dotAnd(==(class,org.drools.chance.fuzzyTest.Room),seems(org.drools.chance.fuzzyTest.Room.temperature,warm)) [EVAL 0.25,]
+			(47@3) : 1.0 ==(class,org.drools.chance.fuzzyTest.Room) [EVAL 1.0,]
+			(47@18) : 0.25 seems(org.drools.chance.fuzzyTest.Room.temperature,warm) [EVAL 0.25,]
+	(47@22) : 1.0 Hot v3 (Warm) [EVAL 0.0,PRIOR 1.0,]
+
 Evaluator from temp domain, runtime call (no method in room)
 
 
 Room is hot in degree 0.75
+Room returns Evaluator via getHot(), which is dynamically called on temp.
+
+Room is hot in degree 0.0
+Evaluator is called directly
+
+
+Room is hot in degree 0.0
+Evaluator from temp domain, requires a method in Room
+
+
+Room is warm in degree 0.13
+Room is warm in degree Eval Record info(1.0) for args L : Room 47	 
+AND{
+(47@21) : 0.13 dotAnd(dotAnd(==(class,org.drools.chance.fuzzyTest.Room),seems(org.drools.chance.fuzzyTest.Room.temperature,warm))) [EVAL 0.13,]
+(47@22) : 1.0 Hot v3 (Warm) [EVAL 0.0,PRIOR 1.0,]
+}
+
+(47@23) : 0.13 minAnd(dotAnd(dotAnd(==(class,org.drools.chance.fuzzyTest.Room),seems(org.drools.chance.fuzzyTest.Room.temperature,warm))),Hot v3 (Warm)) [EVAL 0.13,]
+	(47@21) : 0.13 dotAnd(dotAnd(==(class,org.drools.chance.fuzzyTest.Room),seems(org.drools.chance.fuzzyTest.Room.temperature,warm))) [EVAL 0.13,]
+		(47@1) : 0.13 dotAnd(==(class,org.drools.chance.fuzzyTest.Room),seems(org.drools.chance.fuzzyTest.Room.temperature,warm)) [EVAL 0.13,]
+			(47@3) : 1.0 ==(class,org.drools.chance.fuzzyTest.Room) [EVAL 1.0,]
+			(47@18) : 0.13 seems(org.drools.chance.fuzzyTest.Room.temperature,warm) [EVAL 0.13,]
+	(47@22) : 1.0 Hot v3 (Warm) [EVAL 0.0,PRIOR 1.0,]
+
+Evaluator from temp domain, runtime call (no method in room)
+
+
+Room is hot in degree 0.0
 Room returns Evaluator via getHot(), which is dynamically called on temp.

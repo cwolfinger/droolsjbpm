@@ -1,239 +1,325 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<RuleML xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.ruleml.org/0.91/xsd http://www.ruleml.org/0.91/xsd/naffologeq.xsd">
+<RuleML xmlns="http://www.ruleml.org/0.91/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.ruleml.org/0.91/xsd http://www.ruleml.org/0.91/xsd/naffologeq.xsd">
+    <oid>
+        <Data>org.drools.DRL</Data>
+    </oid>
     <Assert>
-        <RuleBase>
-            <oid>org.drools.examples.chance</oid>
-            <Implies direction="forward">
-                <oid>Cold</oid>
-                <body>
-                    <And>
-                        <op>
+        <Rulebase>
+            <oid>
+                <Data>org.drools.examples.chance</Data>
+            </oid>
+            <Forall>
+                <declare>
+                    <Var type="org.drools.chance.fuzzyTest.Room">Cold.$r</Var>
+                </declare>
+                <formula>
+                    <Implies direction="forward">
+                        <oid>
+                            <Data>Cold</Data>
+                        </oid>
+                        <body>
+                            <And>
+                                <Atom>
+                                    <oid>
+                                        <Var>Cold.$r</Var>
+                                    </oid>
+                                    <Rel>Room</Rel>
+                                    <Reify>
+                                        <And>
+                                            <Atom>
+                                                <op>
+                                                    <Rel>isA</Rel>
+                                                </op>
+                                                <slot>
+                                                    <Ind>class</Ind>
+                                                    <Var/>
+                                                </slot>
+                                                <Ind type="java.lang.Class">org.drools.chance.fuzzyTest.Room</Ind>
+                                            </Atom>
+                                            <Atom>
+                                                <op>
+                                                    <Rel>cold</Rel>
+                                                </op>
+                                                <slot>
+                                                    <Ind>temperature</Ind>
+                                                    <Var/>
+                                                </slot>
+                                            </Atom>
+                                        </And>
+                                    </Reify>
+                                </Atom>
+                            </And>
+                        </body>
+                        <head>
                             <Atom>
-                                <Var>Cold.$r</Var>
+                                <Rel/>
+                                <Data>drools.inject(new Fan(),"org.drools.chance.fuzzyTest.Fan.speed","seems","stop");</Data>
                             </Atom>
-                        </op>
-                    </And>
-                </body>
-                <head/>
-            </Implies>
-            <Implies direction="forward">
-                <oid>Warm</oid>
-                <body>
-                    <And>
-                        <op>
+                        </head>
+                    </Implies>
+                </formula>
+            </Forall>
+            <Forall>
+                <declare>
+                    <Var type="org.drools.chance.fuzzyTest.Room">Warm.$r</Var>
+                </declare>
+                <formula>
+                    <Implies direction="forward">
+                        <oid>
+                            <Data>Warm</Data>
+                        </oid>
+                        <body>
+                            <And>
+                                <Atom>
+                                    <oid>
+                                        <Var>Warm.$r</Var>
+                                    </oid>
+                                    <Rel>Room</Rel>
+                                    <Reify>
+                                        <And>
+                                            <Atom>
+                                                <op>
+                                                    <Rel>isA</Rel>
+                                                </op>
+                                                <slot>
+                                                    <Ind>class</Ind>
+                                                    <Var/>
+                                                </slot>
+                                                <Ind type="java.lang.Class">org.drools.chance.fuzzyTest.Room</Ind>
+                                            </Atom>
+                                            <Atom>
+                                                <op>
+                                                    <Rel>warm</Rel>
+                                                </op>
+                                                <slot>
+                                                    <Ind>temperature</Ind>
+                                                    <Var/>
+                                                </slot>
+                                            </Atom>
+                                        </And>
+                                    </Reify>
+                                </Atom>
+                            </And>
+                        </body>
+                        <head>
                             <Atom>
-                                <Var>Warm.$r</Var>
+                                <Rel/>
+                                <Data>drools.inject(new Fan(),"org.drools.chance.fuzzyTest.Fan.speed","seems","slow");</Data>
                             </Atom>
-                        </op>
-                    </And>
-                </body>
-                <head/>
-            </Implies>
-            <Implies direction="forward">
-                <oid>Hot</oid>
-                <body>
-                    <And>
-                        <op>
+                        </head>
+                    </Implies>
+                </formula>
+            </Forall>
+            <Forall>
+                <declare>
+                    <Var type="org.drools.chance.fuzzyTest.Room">Hot.$r</Var>
+                </declare>
+                <formula>
+                    <Implies direction="forward">
+                        <oid>
+                            <Data>Hot</Data>
+                        </oid>
+                        <body>
+                            <And>
+                                <Atom>
+                                    <oid>
+                                        <Var>Hot.$r</Var>
+                                    </oid>
+                                    <Rel>Room</Rel>
+                                    <Reify>
+                                        <And>
+                                            <Atom>
+                                                <op>
+                                                    <Rel>isA</Rel>
+                                                </op>
+                                                <slot>
+                                                    <Ind>class</Ind>
+                                                    <Var/>
+                                                </slot>
+                                                <Ind type="java.lang.Class">org.drools.chance.fuzzyTest.Room</Ind>
+                                            </Atom>
+                                            <Atom>
+                                                <op>
+                                                    <Rel>hot</Rel>
+                                                </op>
+                                                <slot>
+                                                    <Ind>temperature</Ind>
+                                                    <Var/>
+                                                </slot>
+                                            </Atom>
+                                        </And>
+                                    </Reify>
+                                </Atom>
+                            </And>
+                        </body>
+                        <head>
                             <Atom>
-                                <Var>Hot.$r</Var>
+                                <Rel/>
+                                <Data>drools.inject(new Fan(),"org.drools.chance.fuzzyTest.Fan.speed","seems","fast");</Data>
                             </Atom>
-                        </op>
-                    </And>
-                </body>
-                <head/>
-            </Implies>
-            <Implies direction="forward">
-                <oid>Fan1</oid>
-                <body>
-                    <And>
-                        <op>
+                        </head>
+                    </Implies>
+                </formula>
+            </Forall>
+            <Forall>
+                <declare>
+                    <Var type="org.drools.chance.fuzzyTest.Fan">Fan1.$f</Var>
+                </declare>
+                <formula>
+                    <Implies direction="forward">
+                        <oid>
+                            <Data>Fan1</Data>
+                        </oid>
+                        <body>
+                            <And>
+                                <Atom>
+                                    <oid>
+                                        <Var>Fan1.$f</Var>
+                                    </oid>
+                                    <Rel>Fan</Rel>
+                                    <Reify>
+                                        <And>
+                                            <Atom>
+                                                <op>
+                                                    <Rel>isA</Rel>
+                                                </op>
+                                                <slot>
+                                                    <Ind>class</Ind>
+                                                    <Var/>
+                                                </slot>
+                                                <Ind type="java.lang.Class">org.drools.chance.fuzzyTest.Fan</Ind>
+                                            </Atom>
+                                            <Atom>
+                                                <op>
+                                                    <Rel>seems</Rel>
+                                                </op>
+                                                <slot>
+                                                    <Ind>speed</Ind>
+                                                    <Var/>
+                                                </slot>
+                                                <Ind type="java.lang.String">fast</Ind>
+                                            </Atom>
+                                        </And>
+                                    </Reify>
+                                </Atom>
+                            </And>
+                        </body>
+                        <head>
                             <Atom>
-                                <Var>Fan1.$f</Var>
+                                <Rel/>
+                                <Data>$f.setSpeed("fast",drools.getConsequenceDegree());&#13;
+		writer.write("\n\n ********** Set speed to fast ****** \n\n" + drools.getConsequenceDegree());</Data>
                             </Atom>
-                        </op>
-                    </And>
-                </body>
-                <head/>
-            </Implies>
-            <Implies direction="forward">
-                <oid>Fan2</oid>
-                <body>
-                    <And>
-                        <op>
+                        </head>
+                    </Implies>
+                </formula>
+            </Forall>
+            <Forall>
+                <declare>
+                    <Var type="org.drools.chance.fuzzyTest.Fan">Fan2.$f</Var>
+                </declare>
+                <formula>
+                    <Implies direction="forward">
+                        <oid>
+                            <Data>Fan2</Data>
+                        </oid>
+                        <body>
+                            <And>
+                                <Atom>
+                                    <oid>
+                                        <Var>Fan2.$f</Var>
+                                    </oid>
+                                    <Rel>Fan</Rel>
+                                    <Reify>
+                                        <And>
+                                            <Atom>
+                                                <op>
+                                                    <Rel>isA</Rel>
+                                                </op>
+                                                <slot>
+                                                    <Ind>class</Ind>
+                                                    <Var/>
+                                                </slot>
+                                                <Ind type="java.lang.Class">org.drools.chance.fuzzyTest.Fan</Ind>
+                                            </Atom>
+                                            <Atom>
+                                                <op>
+                                                    <Rel>seems</Rel>
+                                                </op>
+                                                <slot>
+                                                    <Ind>speed</Ind>
+                                                    <Var/>
+                                                </slot>
+                                                <Ind type="java.lang.String">slow</Ind>
+                                            </Atom>
+                                        </And>
+                                    </Reify>
+                                </Atom>
+                            </And>
+                        </body>
+                        <head>
                             <Atom>
-                                <Var>Fan2.$f</Var>
+                                <Rel/>
+                                <Data>$f.setSpeed("slow",drools.getConsequenceDegree());&#13;
+		writer.write("\n\n ********** Set speed to slow ****** \n\n" + drools.getConsequenceDegree());</Data>
                             </Atom>
-                        </op>
-                    </And>
-                </body>
-                <head/>
-            </Implies>
-            <Implies direction="forward">
-                <oid>Fan3</oid>
-                <body>
-                    <And>
-                        <op>
+                        </head>
+                    </Implies>
+                </formula>
+            </Forall>
+            <Forall>
+                <declare>
+                    <Var type="org.drools.chance.fuzzyTest.Fan">Fan3.$f</Var>
+                </declare>
+                <formula>
+                    <Implies direction="forward">
+                        <oid>
+                            <Data>Fan3</Data>
+                        </oid>
+                        <body>
+                            <And>
+                                <Atom>
+                                    <oid>
+                                        <Var>Fan3.$f</Var>
+                                    </oid>
+                                    <Rel>Fan</Rel>
+                                    <Reify>
+                                        <And>
+                                            <Atom>
+                                                <op>
+                                                    <Rel>isA</Rel>
+                                                </op>
+                                                <slot>
+                                                    <Ind>class</Ind>
+                                                    <Var/>
+                                                </slot>
+                                                <Ind type="java.lang.Class">org.drools.chance.fuzzyTest.Fan</Ind>
+                                            </Atom>
+                                            <Atom>
+                                                <op>
+                                                    <Rel>seems</Rel>
+                                                </op>
+                                                <slot>
+                                                    <Ind>speed</Ind>
+                                                    <Var/>
+                                                </slot>
+                                                <Ind type="java.lang.String">stop</Ind>
+                                            </Atom>
+                                        </And>
+                                    </Reify>
+                                </Atom>
+                            </And>
+                        </body>
+                        <head>
                             <Atom>
-                                <Var>Fan3.$f</Var>
+                                <Rel/>
+                                <Data>$f.setSpeed("stop",drools.getConsequenceDegree());&#13;
+		writer.write("\n\n ********** Set speed to stop ****** \n\n" + drools.getConsequenceDegree());</Data>
                             </Atom>
-                        </op>
-                    </And>
-                </body>
-                <head/>
-            </Implies>
-            <Equals>
-                <lhs>
-                    <Var>Fan3.$f</Var>
-                </lhs>
-                <rhs>
-                    <Reify>
-                        <Atom>
-                            <Rel>Fan</Rel>
-                            <Reify>
-                                <And>
-                                    <Atom>
-                                        <op>
-                                            <Rel>seems</Rel>
-                                        </op>
-                                        <slot>
-                                            <Ind>speed</Ind>
-                                            <Var>Fan3.$f</Var>
-                                        </slot>
-                                        <Data xsi:type="xs:string">stop</Data>
-                                    </Atom>
-                                </And>
-                            </Reify>
-                        </Atom>
-                    </Reify>
-                </rhs>
-            </Equals>
-            <Equals>
-                <lhs>
-                    <Var>Fan1.$f</Var>
-                </lhs>
-                <rhs>
-                    <Reify>
-                        <Atom>
-                            <Rel>Fan</Rel>
-                            <Reify>
-                                <And>
-                                    <Atom>
-                                        <op>
-                                            <Rel>seems</Rel>
-                                        </op>
-                                        <slot>
-                                            <Ind>speed</Ind>
-                                            <Var>Fan1.$f</Var>
-                                        </slot>
-                                        <Data xsi:type="xs:string">fast</Data>
-                                    </Atom>
-                                </And>
-                            </Reify>
-                        </Atom>
-                    </Reify>
-                </rhs>
-            </Equals>
-            <Equals>
-                <lhs>
-                    <Var>Warm.$r</Var>
-                </lhs>
-                <rhs>
-                    <Reify>
-                        <Atom>
-                            <Rel>Room</Rel>
-                            <Reify>
-                                <And>
-                                    <Atom>
-                                        <op>
-                                            <Rel>warm</Rel>
-                                        </op>
-                                        <slot>
-                                            <Ind>temperature</Ind>
-                                            <Var>Warm.$r</Var>
-                                        </slot>
-                                    </Atom>
-                                </And>
-                            </Reify>
-                        </Atom>
-                    </Reify>
-                </rhs>
-            </Equals>
-            <Equals>
-                <lhs>
-                    <Var>Hot.$r</Var>
-                </lhs>
-                <rhs>
-                    <Reify>
-                        <Atom>
-                            <Rel>Room</Rel>
-                            <Reify>
-                                <And>
-                                    <Atom>
-                                        <op>
-                                            <Rel>hot</Rel>
-                                        </op>
-                                        <slot>
-                                            <Ind>temperature</Ind>
-                                            <Var>Hot.$r</Var>
-                                        </slot>
-                                    </Atom>
-                                </And>
-                            </Reify>
-                        </Atom>
-                    </Reify>
-                </rhs>
-            </Equals>
-            <Equals>
-                <lhs>
-                    <Var>Fan2.$f</Var>
-                </lhs>
-                <rhs>
-                    <Reify>
-                        <Atom>
-                            <Rel>Fan</Rel>
-                            <Reify>
-                                <And>
-                                    <Atom>
-                                        <op>
-                                            <Rel>seems</Rel>
-                                        </op>
-                                        <slot>
-                                            <Ind>speed</Ind>
-                                            <Var>Fan2.$f</Var>
-                                        </slot>
-                                        <Data xsi:type="xs:string">slow</Data>
-                                    </Atom>
-                                </And>
-                            </Reify>
-                        </Atom>
-                    </Reify>
-                </rhs>
-            </Equals>
-            <Equals>
-                <lhs>
-                    <Var>Cold.$r</Var>
-                </lhs>
-                <rhs>
-                    <Reify>
-                        <Atom>
-                            <Rel>Room</Rel>
-                            <Reify>
-                                <And>
-                                    <Atom>
-                                        <op>
-                                            <Rel>cold</Rel>
-                                        </op>
-                                        <slot>
-                                            <Ind>temperature</Ind>
-                                            <Var>Cold.$r</Var>
-                                        </slot>
-                                    </Atom>
-                                </And>
-                            </Reify>
-                        </Atom>
-                    </Reify>
-                </rhs>
-            </Equals>
-        </RuleBase>
+                        </head>
+                    </Implies>
+                </formula>
+            </Forall>
+        </Rulebase>
     </Assert>
 </RuleML>

@@ -10,19 +10,19 @@
             </oid>
             <Forall>
                 <declare>
-                    <Var type="org.drools.chance.Message">TestOpDegs.Message_1</Var>
+                    <Var type="org.drools.chance.Message">TestOpDegs.$message_1</Var>
                 </declare>
                 <declare>
-                    <Var type="org.drools.chance.Message">TestOpDegs.Message_3</Var>
+                    <Var type="org.drools.chance.Message">TestOpDegs.$message_3</Var>
                 </declare>
                 <declare>
-                    <Var type="org.drools.chance.Message">TestOpDegs.Message_2</Var>
+                    <Var type="org.drools.chance.Message">TestOpDegs.$message</Var>
                 </declare>
                 <declare>
-                    <Var type="org.drools.chance.Message">TestOpDegs.Message_4</Var>
+                    <Var type="org.drools.chance.Message">TestOpDegs.$message_4</Var>
                 </declare>
                 <declare>
-                    <Var type="org.drools.chance.Message">TestOpDegs.Message</Var>
+                    <Var type="org.drools.chance.Message">TestOpDegs.$message_2</Var>
                 </declare>
                 <formula>
                     <Implies direction="forward">
@@ -34,7 +34,7 @@
                                 <Or>
                                     <Atom>
                                         <oid>
-                                            <Var>TestOpDegs.Message</Var>
+                                            <Var>TestOpDegs.$message</Var>
                                         </oid>
                                         <Rel>Message</Rel>
                                         <Reify>
@@ -74,7 +74,7 @@
                                     </Atom>
                                     <Atom>
                                         <oid>
-                                            <Var>TestOpDegs.Message_1</Var>
+                                            <Var>TestOpDegs.$message_1</Var>
                                         </oid>
                                         <Rel>Message</Rel>
                                         <Reify>
@@ -109,7 +109,7 @@
                                     <And>
                                         <Atom>
                                             <oid>
-                                                <Var>TestOpDegs.Message_2</Var>
+                                                <Var>TestOpDegs.$message_2</Var>
                                             </oid>
                                             <Rel>Message</Rel>
                                             <Reify>
@@ -139,7 +139,7 @@
                                         </Atom>
                                         <Atom>
                                             <oid>
-                                                <Var>TestOpDegs.Message_3</Var>
+                                                <Var>TestOpDegs.$message_3</Var>
                                             </oid>
                                             <Rel>Message</Rel>
                                             <Reify>
@@ -171,7 +171,7 @@
                                 </Neg>
                                 <Atom>
                                     <oid>
-                                        <Var>TestOpDegs.Message_4</Var>
+                                        <Var>TestOpDegs.$message_4</Var>
                                     </oid>
                                     <Rel>Message</Rel>
                                     <Reify>
