@@ -2,19 +2,19 @@ package org.drools.degrees;
 
 public class SimpleDegree extends Degree {
 	
-	private float value;
+	private double value;
 
 	/**
 	 * @param degree the degree to set
 	 */
-	public void setValue(float value) {
+	public void setValue(double value) {
 		this.value = value;
 	}
 
 	/**
 	 * @return the degree
 	 */
-	public float getValue() {
+	public double getValue() {
 		return value;
 	}
 
@@ -42,7 +42,7 @@ public class SimpleDegree extends Degree {
 	
 	
 	
-	public SimpleDegree(float degree) {
+	public SimpleDegree(double degree) {
 		this.value = degree;
 	}
 	
@@ -53,7 +53,7 @@ public class SimpleDegree extends Degree {
 		return value > 0;
 	}
 
-	public SimpleDegree getDegree() {
+	public SimpleDegree asSimpleDegree() {
 		return this;
 	}
 
@@ -62,8 +62,8 @@ public class SimpleDegree extends Degree {
 		return ""+value;
 	}
 
-	public float getConfidence(boolean cwa) {
-		return Math.abs(this.value - UNKNOWN(cwa).getDegree().value);
+	public double getConfidence(boolean cwa) {
+		return Math.abs(this.value - UNKNOWN(cwa).getValue());
 	}
 	
 }

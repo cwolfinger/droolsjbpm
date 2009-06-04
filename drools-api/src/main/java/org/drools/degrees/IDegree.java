@@ -5,10 +5,10 @@ public interface IDegree {
 	
 	public boolean toBoolean();
 	
-	public SimpleDegree getDegree();
+	public SimpleDegree asSimpleDegree();
 	
-	public float getValue();
+	public double getValue();
 	
-	public float getConfidence(boolean cwa);
+	public double getConfidence(boolean cwa);
 	
 }
