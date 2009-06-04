@@ -1,9 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-  <classpathentry kind="src" path="src/main/java"/>
-  <classpathentry kind="src" path="src/main/rules" excluding="**/*.java"/>
-  <classpathentry kind="src" path="src/test/java" output="target/test-classes"/>
-  <classpathentry kind="src" path="src/test/resources" output="target/test-classes" including="**" excluding="**/*.java"/>
-  <classpathentry kind="output" path="target/classes"/>
-  <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-  <classpathentry kind="con" path="org.maven.ide.eclipse.MAVEN2_CLASSPATH_CONTAINER"/>
+	<classpathentry kind="src" path="src/main/java"/>
+	<classpathentry excluding="**/*.java|org/drools/chance/Bayesian/|org/drools/chance/impl/|org/drools/chance/fuzzy/|org/drools/chance/" kind="src" path="src/main/rules"/>
+	<classpathentry kind="src" output="target/test-classes" path="src/test/java"/>
+	<classpathentry excluding="**/*.java" including="**" kind="src" output="target/test-classes" path="src/test/resources"/>
+	<classpathentry kind="src" path="src/main/rules/org/drools/chance/Bayesian"/>
+	<classpathentry kind="src" path="src/main/rules/org/drools/chance/impl"/>
+	<classpathentry kind="src" path="src/main/rules/org/drools/chance/fuzzy"/>
+	<classpathentry excluding="Bayesian/|impl/|fuzzy/" kind="src" path="src/main/rules/org/drools/chance"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.maven.ide.eclipse.MAVEN2_CLASSPATH_CONTAINER"/>
+	<classpathentry kind="output" path="target/classes"/>
 </classpath>

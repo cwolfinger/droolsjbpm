@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <RuleML xmlns="http://www.ruleml.org/0.91/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.ruleml.org/0.91/xsd http://www.ruleml.org/0.91/xsd/naffologeq.xsd">
     <oid>
         <Data>org.drools.DRL</Data>
@@ -31,7 +31,7 @@
                                                     <Rel>isA</Rel>
                                                 </op>
                                                 <slot>
-                                                    <Ind>class</Ind>
+                                                    <Ind type="java.lang.Class">class</Ind>
                                                     <Var/>
                                                 </slot>
                                                 <Ind type="java.lang.Class">org.drools.chance.fuzzyTest.Room</Ind>
@@ -41,7 +41,7 @@
                                                     <Rel>cold</Rel>
                                                 </op>
                                                 <slot>
-                                                    <Ind>temperature</Ind>
+                                                    <Ind type="java.lang.Object">temperature</Ind>
                                                     <Var/>
                                                 </slot>
                                             </Atom>
@@ -82,7 +82,7 @@
                                                     <Rel>isA</Rel>
                                                 </op>
                                                 <slot>
-                                                    <Ind>class</Ind>
+                                                    <Ind type="java.lang.Class">class</Ind>
                                                     <Var/>
                                                 </slot>
                                                 <Ind type="java.lang.Class">org.drools.chance.fuzzyTest.Room</Ind>
@@ -92,7 +92,7 @@
                                                     <Rel>warm</Rel>
                                                 </op>
                                                 <slot>
-                                                    <Ind>temperature</Ind>
+                                                    <Ind type="java.lang.Object">temperature</Ind>
                                                     <Var/>
                                                 </slot>
                                             </Atom>
@@ -133,7 +133,7 @@
                                                     <Rel>isA</Rel>
                                                 </op>
                                                 <slot>
-                                                    <Ind>class</Ind>
+                                                    <Ind type="java.lang.Class">class</Ind>
                                                     <Var/>
                                                 </slot>
                                                 <Ind type="java.lang.Class">org.drools.chance.fuzzyTest.Room</Ind>
@@ -143,7 +143,7 @@
                                                     <Rel>hot</Rel>
                                                 </op>
                                                 <slot>
-                                                    <Ind>temperature</Ind>
+                                                    <Ind type="java.lang.Object">temperature</Ind>
                                                     <Var/>
                                                 </slot>
                                             </Atom>
@@ -184,7 +184,7 @@
                                                     <Rel>isA</Rel>
                                                 </op>
                                                 <slot>
-                                                    <Ind>class</Ind>
+                                                    <Ind type="java.lang.Class">class</Ind>
                                                     <Var/>
                                                 </slot>
                                                 <Ind type="java.lang.Class">org.drools.chance.fuzzyTest.Fan</Ind>
@@ -194,7 +194,7 @@
                                                     <Rel>seems</Rel>
                                                 </op>
                                                 <slot>
-                                                    <Ind>speed</Ind>
+                                                    <Ind type="java.lang.Object">speed</Ind>
                                                     <Var/>
                                                 </slot>
                                                 <Ind type="java.lang.String">fast</Ind>
@@ -237,7 +237,7 @@
                                                     <Rel>isA</Rel>
                                                 </op>
                                                 <slot>
-                                                    <Ind>class</Ind>
+                                                    <Ind type="java.lang.Class">class</Ind>
                                                     <Var/>
                                                 </slot>
                                                 <Ind type="java.lang.Class">org.drools.chance.fuzzyTest.Fan</Ind>
@@ -247,7 +247,7 @@
                                                     <Rel>seems</Rel>
                                                 </op>
                                                 <slot>
-                                                    <Ind>speed</Ind>
+                                                    <Ind type="java.lang.Object">speed</Ind>
                                                     <Var/>
                                                 </slot>
                                                 <Ind type="java.lang.String">slow</Ind>
@@ -290,7 +290,7 @@
                                                     <Rel>isA</Rel>
                                                 </op>
                                                 <slot>
-                                                    <Ind>class</Ind>
+                                                    <Ind type="java.lang.Class">class</Ind>
                                                     <Var/>
                                                 </slot>
                                                 <Ind type="java.lang.Class">org.drools.chance.fuzzyTest.Fan</Ind>
@@ -300,7 +300,7 @@
                                                     <Rel>seems</Rel>
                                                 </op>
                                                 <slot>
-                                                    <Ind>speed</Ind>
+                                                    <Ind type="java.lang.Object">speed</Ind>
                                                     <Var/>
                                                 </slot>
                                                 <Ind type="java.lang.String">stop</Ind>

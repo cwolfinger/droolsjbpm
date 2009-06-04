@@ -7,15 +7,15 @@ import java.io.ObjectOutput;
 import org.drools.base.ValueType;
 import org.drools.base.evaluators.EvaluatorDefinition;
 import org.drools.base.evaluators.Operator;
+import org.drools.fuzzy.FuzzyRealDomain;
 import org.drools.fuzzy.FuzzySet;
 import org.drools.fuzzy.NumericDomainFuzzySet;
-import org.drools.fuzzy.RealDomain;
 import org.drools.fuzzy.evaluators.FuzzyNumericEvaluator;
 import org.drools.fuzzy.evaluators.membership.TriangleMembership;
 import org.drools.spi.Evaluator;
 
 
-public class SpeedDomain extends RealDomain {
+public class SpeedDomain extends FuzzyRealDomain {
 	
 	
 	public static final String STOP = "stop";

@@ -1,6 +1,5 @@
 package org.drools.chance.fuzzyTest;
 
-import org.drools.fuzzy.RealDomain;
 import org.drools.fuzzy.evaluators.IDynamicEvaluable;
 import org.drools.spi.Evaluator;
 
