@@ -2,7 +2,6 @@ grammar DRL;
 
 options {
 	output=AST;
-	//backtrack=true;
 }
 
 tokens {
@@ -36,7 +35,6 @@ tokens {
 	VT_OR_INFIX;
 	VT_EQUIV;
 	VT_XOR;
-	VT_IMPLIES;
 
 	VT_ACCUMULATE_INIT_CLAUSE;
 	VT_ACCUMULATE_ID_CLAUSE;
@@ -62,19 +60,12 @@ tokens {
 	
 	VT_CONSTRID;
 	
-	
+	VT_CUT;
 	VT_HEDGE;
 	
-	VT_CONSTR_ATTRIBUTES;
-  
-  VT_CONSTRID;  
-  VT_CUT;
-  VT_PRIOR;
-  VT_ARGS;
-  VT_KIND;
-  
-  
-  VT_CONSEQUENCES;
+	VT_PRIOR;
+	VT_PARAMS;
+	VT_TYPE;
 	
 
 	VK_DATE_EFFECTIVE;
@@ -107,7 +98,6 @@ tokens {
 	VK_AND;
 	VK_EQUIV;
 	VK_XOR;
-	VK_IMPLIES;
 	VK_EXISTS;
 	VK_FORALL;
 	VK_FORANY;
@@ -122,20 +112,19 @@ tokens {
 	VK_WEIGHT;
 	
 	
+	VK_CUT;
 	
-  VK_CUT;
-  
-  VK_APPROX;
-  
-  VK_ENTAIL;
-  VK_PRIOR;
-  VK_FILTER;
-  
-  VK_AT;
-  VK_CONSTRID;
-  
-  VK_ARGS;
-  VK_KIND;
+	VK_APPROX;
+	
+	VK_ENTAIL;
+	VK_PRIOR;
+	VK_FILTER;
+	
+	VK_AT;
+	VK_CONSTRID;
+	
+	VK_PARAMS;
+	VK_TYPE;
 }
 
 @parser::header {
@@ -623,7 +612,7 @@ decl_metadata
 		paren_chunk?
 		-> ^(AT ID paren_chunk?)
 	;
- 
+
 decl_field
 	:	ID	{	emit($ID, DroolsEditorType.IDENTIFIER);	}
 		decl_field_initialization? 
@@ -872,53 +861,43 @@ lhs	:	lhs_or
 lhs_or
 @init{
 	Token orToken = null;
-}	:	(LEFT_PAREN or_key constr_parameters?)=> 
+}	:	(LEFT_PAREN or_key square_chunk?)=> 
 		LEFT_PAREN  {	emit($LEFT_PAREN, DroolsEditorType.SYMBOL);	}
-			or=or_key				
-			constr_parameters?
+			or=or_key	
+			square_chunk?		
 	{	emit(Location.LOCATION_LHS_BEGIN_OF_CONDITION_AND_OR);	}
 			lhs_and+ 
 		RIGHT_PAREN {	emit($RIGHT_PAREN, DroolsEditorType.SYMBOL);	} // PREFIX 
-		-> ^(VT_OR_PREFIX[$or.start] constr_parameters? lhs_and+ RIGHT_PAREN)
+		-> ^(VT_OR_PREFIX[$or.start] square_chunk? lhs_and+ RIGHT_PAREN)
 	
 	
-	| (LEFT_PAREN equiv_key constr_parameters?)=> 
+	| (LEFT_PAREN equiv_key square_chunk?)=> 
     LEFT_PAREN  { emit($LEFT_PAREN, DroolsEditorType.SYMBOL); }
-      equiv=equiv_key      
-      constr_parameters?
+      equiv=equiv_key
+      square_chunk?
   { emit(Location.LOCATION_LHS_BEGIN_OF_CONDITION_AND_OR);  }
       lhs_and
       lhs_and      
     RIGHT_PAREN { emit($RIGHT_PAREN, DroolsEditorType.SYMBOL);  } // PREFIX 
-    -> ^(VT_EQUIV[$equiv.start] constr_parameters? lhs_and lhs_and RIGHT_PAREN)
+    -> ^(VT_EQUIV[$equiv.start] square_chunk? lhs_and lhs_and RIGHT_PAREN)
 	
-	| (LEFT_PAREN xor_key constr_parameters?)=> 
+	| (LEFT_PAREN xor_key square_chunk?)=> 
     LEFT_PAREN  { emit($LEFT_PAREN, DroolsEditorType.SYMBOL); }
-      xor=xor_key      
-      constr_parameters?
+      xor=xor_key
+      square_chunk?
   { emit(Location.LOCATION_LHS_BEGIN_OF_CONDITION_AND_OR);  }
       lhs_and
       lhs_and      
     RIGHT_PAREN { emit($RIGHT_PAREN, DroolsEditorType.SYMBOL);  } // PREFIX 
-    -> ^(VT_XOR[$xor.start] constr_parameters? lhs_and lhs_and RIGHT_PAREN)
-    
-  | (LEFT_PAREN implies_key constr_parameters?)=> 
-    LEFT_PAREN  { emit($LEFT_PAREN, DroolsEditorType.SYMBOL); }
-      implies=implies_key      
-      constr_parameters?
-  { emit(Location.LOCATION_LHS_BEGIN_OF_CONDITION_AND_OR);  }
-      lhs_and
-      lhs_and      
-    RIGHT_PAREN { emit($RIGHT_PAREN, DroolsEditorType.SYMBOL);  } // PREFIX 
-    -> ^(VT_IMPLIES[$implies.start] constr_parameters? lhs_and lhs_and RIGHT_PAREN)  
+    -> ^(VT_XOR[$xor.start] square_chunk? lhs_and lhs_and RIGHT_PAREN)
 	
 	
 	|	(lhs_and -> lhs_and) 
-		( (or_key  constr_parameters? |DOUBLE_PIPE)=> (value=or_key constr_parameters? {orToken = $value.start;} 
+		( (or_key square_chunk? |DOUBLE_PIPE)=> (value=or_key square_chunk? {orToken = $value.start;} 
 		  |pipe=DOUBLE_PIPE {orToken = $pipe; emit($DOUBLE_PIPE, DroolsEditorType.SYMBOL);}) 
 	{	emit(Location.LOCATION_LHS_BEGIN_OF_CONDITION_AND_OR);	}
 		lhs_and 
-		-> ^(VT_OR_INFIX[orToken]  constr_parameters? $lhs_or lhs_and))*
+		-> ^(VT_OR_INFIX[orToken] square_chunk? $lhs_or lhs_and))*
 		
 	|  hedge lhs_or
 	   -> ^(hedge lhs_or)	
@@ -939,23 +918,23 @@ lhs_and
 	Token andToken = null;
 }	:	(LEFT_PAREN and_key square_chunk?)=> 
 		LEFT_PAREN {	emit($LEFT_PAREN, DroolsEditorType.SYMBOL);	} 
-			and=and_key			
-			constr_parameters?
+			and=and_key
+			square_chunk?
 	{	emit(Location.LOCATION_LHS_BEGIN_OF_CONDITION_AND_OR);	}
 			lhs_unary+ 
 		RIGHT_PAREN {	emit($RIGHT_PAREN, DroolsEditorType.SYMBOL);	}  // PREFIX
-		-> ^(VT_AND_PREFIX[$and.start] constr_parameters? lhs_unary+ RIGHT_PAREN)
+		-> ^(VT_AND_PREFIX[$and.start] square_chunk? lhs_unary+ RIGHT_PAREN)
 		
 	|	
 	
 	(lhs_unary -> lhs_unary) 
-		( (and_key constr_parameters? |DOUBLE_AMPER)=> 
-		( value=and_key constr_parameters?  {andToken = $value.start; } 
+		( (and_key square_chunk? |DOUBLE_AMPER)=> 
+		( value=and_key square_chunk? {andToken = $value.start; } 
 		  |amper=DOUBLE_AMPER {andToken = $amper; emit($DOUBLE_AMPER, DroolsEditorType.SYMBOL);}
 		) 
 	{	emit(Location.LOCATION_LHS_BEGIN_OF_CONDITION_AND_OR);	}
 		lhs_unary 
-		-> ^(VT_AND_INFIX[andToken] constr_parameters? $lhs_and  lhs_unary ) )*			  
+		-> ^(VT_AND_INFIX[andToken] square_chunk? $lhs_and  lhs_unary ) )*			  
 	;
 
 lhs_unary
@@ -1210,9 +1189,11 @@ expression_chain
 
 	
 lhs_pattern
-  : fact_binding -> ^(VT_PATTERN fact_binding) //^(VT_CUT cut_key)?
-  | fact  -> ^(VT_PATTERN fact) //^(VT_CUT cut_key)?     
+  : fact_binding cut_key? -> ^(VT_PATTERN fact_binding) //^(VT_CUT cut_key)?
+  | fact cut_key? -> ^(VT_PATTERN fact) //^(VT_CUT cut_key)?     
   ;
+	
+
 	
 
   
@@ -1225,6 +1206,9 @@ fact_binding
  		)
  	-> ^(VT_FACT_BINDING label fact? fact_binding_expression? RIGHT_PAREN?)
 	;
+
+
+
 
 fact_binding_expression
 @init{
@@ -1241,15 +1225,15 @@ fact
 	{	emit(Location.LOCATION_LHS_INSIDE_CONDITION_START);	}
 			constraints? 
 		RIGHT_PAREN {	isFailedOnConstraints = false;	}
-		 constr_parameters? 
+		
+		
+		
+		   
 	{	if ($RIGHT_PAREN.text.equals(")") ){ //WORKAROUND FOR ANTLR BUG!
 			emit($RIGHT_PAREN, DroolsEditorType.SYMBOL);
 			emit(Location.LOCATION_LHS_BEGIN_OF_CONDITION);
 		}	}
-		
-		
-		
-	->	^(VT_FACT pattern_type constraints? constr_parameters? RIGHT_PAREN)
+	->	^(VT_FACT pattern_type constraints?  RIGHT_PAREN)
 	;
 finally {
 	if (isEditorInterfaceEnabled && isFailedOnConstraints && input.LA(1) == EOF && input.get(input.index() - 1).getType() == WS){
@@ -1258,6 +1242,65 @@ finally {
 		}
 	}
 }
+
+
+  
+constr_param_set
+ :   
+  LESS
+    constr_param+
+  GREATER
+  ;
+
+constr_param
+  :
+    c_param_id
+    | c_param_type
+    | c_param_args
+    | c_param_cut
+    | c_param_prior  
+  ;
+
+
+c_param_id
+  :
+    id_key
+    EQUALS
+    id=STRING
+    -> ^(VT_CONSTRID id)
+  ;
+
+c_param_type
+  :
+    type_key
+    EQUALS
+    type=STRING
+    -> ^(VT_TYPE type)
+  ;  
+
+c_param_cut
+  :
+    cut_key
+    EQUALS
+    kut=STRING
+    -> ^(VT_CUT kut)
+  ;
+
+c_param_args
+  :
+    params_key
+    EQUALS
+    pms=STRING
+    -> ^(VT_ARGS pms)
+  ;
+  
+c_param_prior
+  :
+    prior_key
+    EQUALS
+    pri=STRING
+    -> ^(VT_PRIOR pri)
+  ;  
 
 constraints
 	:	constraint ( COMMA! 
@@ -1269,40 +1312,33 @@ constraint
 	:	or_constr
 	;
 
-
-
-
 or_constr
-  :             
+	:		          
      or_constr_config
           
         (DOUBLE_PIPE^                        
          and_constr
         )*
         
-  ;
-   
+	;
+	
 or_constr_config
   :     
     (and_constr SINGLE_PIPE) =>
       and_constr
          SINGLE_PIPE
-           //square_chunk?
-           //constr_identifier? 
-           //cut?
-           constr_parameters             
+           square_chunk?
+           constr_identifier? 
+           //cut?             
            and_constr
-      -> ^(SINGLE_PIPE 
-            // square_chunk? ^(VT_CONSTRID constr_identifier)? cut?
-            constr_parameters? 
-            and_constr and_constr)
+      -> ^(SINGLE_PIPE square_chunk? ^(VT_CONSTRID constr_identifier)? and_constr and_constr)
     |
     and_constr      
-  ;     
+  ;   	
 
 and_constr
 
-  :       
+	:	 	 	  
           and_constr_config
           
           (DOUBLE_AMPER^                         
@@ -1310,82 +1346,23 @@ and_constr
           )*
                 
            
-  ;
-  
+	;
+	
 and_constr_config
   :     
     (unary_constr SINGLE_AMPER) =>
       unary_constr
          SINGLE_AMPER
-           //square_chunk?
-           //constr_identifier?
-           //cut?
-           constr_parameters?                 
+           square_chunk?
+           constr_identifier?
+           //cut?                 
            unary_constr           
-      -> ^(SINGLE_AMPER 
-            // square_chunk? ^(VT_CONSTRID constr_identifier)? cut?
-            constr_parameters? 
-            unary_constr unary_constr)
+      -> ^(SINGLE_AMPER square_chunk?  ^(VT_CONSTRID constr_identifier)? unary_constr unary_constr)
     |
     unary_constr      
-  ;      
-
-
-
-/*
-or_constr
-	:		          
-                      
-     (
-        and_constr  
-          (SINGLE_PIPE
-           square_chunk?
-           constr_parameters?                 
-           and_constr
-          )
-          (DOUBLE_PIPE                         
-           and_constr
-          )*
-                
-        -> ^(SINGLE_PIPE constr_parameters? and_constr+)
-     
-     |
-     
-      and_constr
-        (DOUBLE_PIPE^                         
-         and_constr
-        )*
-        
-     )                  
-	;
-
-and_constr
-
-	:	 	 
-	   	          
-     (
-          unary_constr   
-          (SINGLE_AMPER
-           square_chunk?
-           constr_parameters?                 
-           unary_constr
-          )
-          (DOUBLE_AMPER                         
-           unary_constr
-          )*
-                
-          -> ^(SINGLE_AMPER constr_parameters? unary_constr+)
-     
-     |
-        unary_constr
-        (DOUBLE_AMPER^                         
-         unary_constr
-        )*
-     )   
-	;
-
-*/
-
+  ;        
+      
+	
 
 unary_constr
 options { k=2; }
@@ -1411,12 +1388,19 @@ field_constraint
 	boolean isArrow = false;
 }	:	label accessor_path 
 		( or_restr_connective | arw=ARROW {	emit($ARROW, DroolsEditorType.SYMBOL);	} paren_chunk {isArrow = true;})?
-		//cut_key?
+		cut_key?
 		-> {isArrow}? ^(VT_BIND_FIELD label ^(VT_FIELD accessor_path)) ^(VK_EVAL[$arw] paren_chunk)?
-		-> ^(VT_BIND_FIELD label ^(VT_FIELD accessor_path or_restr_connective? ))
-	|	accessor_path or_restr_connective 
-		-> ^(VT_FIELD accessor_path or_restr_connective )
+		-> ^(VT_BIND_FIELD label ^(VT_FIELD accessor_path or_restr_connective? ^(VT_CUT cut_key)?))
+	|	accessor_path or_restr_connective cut_key?
+		-> ^(VT_FIELD accessor_path or_restr_connective ^(VT_CUT cut_key)?)
 	;
+
+/*
+cut
+  : cut_key
+  -> ^(VT_CUT cut_key)
+  ;
+  */
 
 label
 	:	value=ID {	emit($ID, DroolsEditorType.IDENTIFIER_VARIABLE);	} 
@@ -1456,10 +1440,10 @@ constraint_expression
 options{
 k=3;
 }	:	compound_operator
-	|	simple_operator ans=constr_parameters? expression_value
-	   -> ^(simple_operator expression_value) ^(constr_parameters)?
-	| custom_operator ans=constr_parameters? expression_value?
-	   -> ^(custom_operator expression_value?) ^(constr_parameters)?
+	|	op=simple_operator ans=constr_identifier? val=expression_value
+	 -> ^(simple_operator expression_value) ^(VT_CONSTRID constr_identifier)? 
+	| custom_operator ans=constr_identifier? expression_value?
+	 -> ^(custom_operator expression_value?) ^(VT_CONSTRID constr_identifier)?
 	|	LEFT_PAREN! {	emit($LEFT_PAREN, DroolsEditorType.SYMBOL);	} 
 			or_restr_connective 
 		RIGHT_PAREN {	emit($RIGHT_PAREN, DroolsEditorType.SYMBOL);	} 
@@ -1512,57 +1496,58 @@ simple_operator
 }
 	:	
 	   ( 
-		    EQUAL^ {	emit($EQUAL, DroolsEditorType.SYMBOL);	} //ans=constr_parameters?
+		    EQUAL^ {	emit($EQUAL, DroolsEditorType.SYMBOL);	} //ans=constr_identifier?
 		    { emit(Location.LOCATION_LHS_INSIDE_CONDITION_ARGUMENT);
 		    } 		    		   
         //expression_value
         
         
-	   |	GREATER^ {	emit($GREATER, DroolsEditorType.SYMBOL);	} //ans=constr_parameters?
+	   |	GREATER^ {	emit($GREATER, DroolsEditorType.SYMBOL);	} //ans=constr_identifier?
 	      { emit(Location.LOCATION_LHS_INSIDE_CONDITION_ARGUMENT);  
 	      
 	      }
         //expression_value
         
-	   |	GREATER_EQUAL^ {	emit($GREATER_EQUAL, DroolsEditorType.SYMBOL);	} //ans=constr_parameters?
+	   |	GREATER_EQUAL^ {	emit($GREATER_EQUAL, DroolsEditorType.SYMBOL);	} //ans=constr_identifier?
 	      {  emit(Location.LOCATION_LHS_INSIDE_CONDITION_ARGUMENT);
 	      
 	      }
         //expression_value
 	   
-	   |	LESS^ {	emit($LESS, DroolsEditorType.SYMBOL);	} //ans=constr_parameters?
+	   |	LESS^ {	emit($LESS, DroolsEditorType.SYMBOL);	} //ans=constr_identifier?
 	      {  emit(Location.LOCATION_LHS_INSIDE_CONDITION_ARGUMENT);
 	      
 	      }
         //expression_value 
 	   
-	   |	LESS_EQUAL^ {	emit($LESS_EQUAL, DroolsEditorType.SYMBOL);	} //ans=constr_parameters?
+	   |	LESS_EQUAL^ {	emit($LESS_EQUAL, DroolsEditorType.SYMBOL);	} //ans=constr_identifier?
 	      { emit(Location.LOCATION_LHS_INSIDE_CONDITION_ARGUMENT);
 	      
 	      }
         //expression_value
 	   
-	   |	NOT_EQUAL^ {	emit($NOT_EQUAL, DroolsEditorType.SYMBOL);	} //ans=constr_parameters?
+	   |	NOT_EQUAL^ {	emit($NOT_EQUAL, DroolsEditorType.SYMBOL);	} //ans=constr_identifier?
 	      { emit(Location.LOCATION_LHS_INSIDE_CONDITION_ARGUMENT);
 	      
 	      }
         //expression_value
-	   
-	   
+	   	  
 	   )	   	 	      	
 	;
 
-
 custom_operator
-  :  
-     not_key?
-     approx_symb? operator_key^
-     square_chunk?      
-     { emit(Location.LOCATION_LHS_INSIDE_CONDITION_ARGUMENT);  
+  :     not_key?
+        approx_symb? operator_key^
+        square_chunk? 
+        //ans=constr_identifier?
+        { emit(Location.LOCATION_LHS_INSIDE_CONDITION_ARGUMENT);  
         
-    }        
-  ;
+        }
+        //expression_value?
 
+  ;
+  
+  
 //Simple Syntax Sugar
 compound_operator 
 @init { if ( state.backtracking==0 ) emit(Location.LOCATION_LHS_INSIDE_CONDITION_OPERATOR); }
@@ -1581,74 +1566,10 @@ finally {
 		emit(true, Location.LOCATION_LHS_INSIDE_CONDITION_OPERATOR);
 	}	}
 	
-	
-	
-/*	
-constr_parameters
-  : AT!
-      
+constr_identifier
+  : AT id=ID
+    -> VK_AT[$id]       
   ;	
-  */
-  
-constr_parameters
- :   
-  AT!
-  LEFT_PAREN!
-    constr_attr*
-  RIGHT_PAREN!  
-  -> ^(VT_CONSTR_ATTRIBUTES constr_attr*)
-  ;
-
-
-
-
-constr_attr
-  :  
-    c_param_id    
-    | c_param_kind
-    | c_param_args
-    | c_param_cut
-    | c_param_prior    
-  ;
-
-
-c_param_id
-  :
-    id_key^
-    EQUALS!
-    cid=STRING    
-  ;
-
-c_param_kind
-  :
-    kind_key^
-    EQUALS!
-    type=STRING    
-  ;  
-
-c_param_cut
-  :
-    kut_key^
-    EQUALS!
-    kut=STRING     
-  ;
-
-c_param_args
-  :
-    args_key^
-    EQUALS!
-    pms=STRING    
-  ;
-  
-c_param_prior
-  :
-    prior_key^
-    EQUALS! 
-    pri=STRING    
-  ;    
-  
-  
-  
 
 operator_key
 	:      {(isPluggableEvaluator(false))}? => id=ID
@@ -1717,15 +1638,12 @@ accessor_element
 	-> ^(VT_ACCESSOR_ELEMENT ID square_chunk*)
 	;
 
-
-
 rhs_chunk
 @init{
 	String text = "";
 }	:	rc=rhs_chunk_data {text = $rc.text;}
 	-> VT_RHS_CHUNK[$rc.start,text]
 	;
-
 
 rhs_chunk_data
 	:	THEN 
@@ -1737,803 +1655,6 @@ rhs_chunk_data
 		end_key 
 		SEMICOLON? {	emit($SEMICOLON, DroolsEditorType.KEYWORD);	}
 	;
-
-
-/*
-rhs_chunk_java
-  :
-    j_blockStatement*
-  ;
-
-
-j_block 
-    :   LEFT_CURLY
-        ( j_blockStatement )*
-        RIGHT_CURLY
-    ;
-
-j_blockStatement 
-    :   j_localVariableDeclarationStatement
-    |   j_classOrInterfaceDeclaration
-    |   j_statement
-    ;
-
-    
-j_statement 
-    :   j_block
-            
-    |   ('assert'
-        )
-        j_expression (COLON j_expression)? SEMICOLON
-    |   'assert'  j_expression (COLON j_expression)? SEMICOLON            
-    |   'if' j_parExpression statement ('else' j_statement)?          
-    |   j_forstatement
-    |   'while' j_parExpression j_statement
-    |   'do' j_statement 'while' j_parExpression SEMICOLON
-    |   j_trystatement
-    |   'switch' j_parExpression LEFT_CURLY j_switchBlockStatementGroups RIGHT_CURLY
-    |   'synchronized' j_parExpression j_block
-    |   'return' (j_expression )? SEMICOLON
-    |   'throw' j_expression SEMICOLON
-    |   'break'
-            (ID
-            )? SEMICOLON
-    |   'continue'
-            (ID
-            )? SEMICOLON
-    |   j_expression  SEMICOLON     
-    |   ID COLON j_statement
-    |   SEMICOLON
-
-    ;
-    
-j_localVariableDeclarationStatement 
-    :   j_localVariableDeclaration
-        SEMICOLON
-    ;
-
-j_localVariableDeclaration 
-    :   j_variableModifiers j_type
-        j_variableDeclarator
-        (',' j_variableDeclarator
-        )*
-    ;
-    
-j_variableModifiers 
-    :   (   'final'
-        //|   j_annotation            //No annotations allowed
-        )*
-    ;
-    
-j_type 
-    :   j_classOrInterfaceType
-        ('[' ']'
-        )*
-    |   j_primitiveType
-        ('[' ']'
-        )*
-    ;
-
-
-j_classOrInterfaceType 
-    :   ID
-        (j_typeArguments
-        )?
-        ('.' ID
-            (j_typeArguments
-            )?
-        )*
-    ;
-
-j_primitiveType  
-    :   'boolean'
-    |   'char'
-    |   'byte'
-    |   'short'
-    |   'int'
-    |   'long'
-    |   'float'
-    |   'double'
-    ;
-
-j_typeArguments 
-    :   '<' j_typeArgument
-        (',' j_typeArgument
-        )* 
-        '>'
-    ;
-
-j_typeArgument 
-    :   j_type
-    |   '?'
-        (
-            ('extends'
-            |'super'
-            )
-            j_type
-        )?
-    ;
-    
-j_variableDeclarator 
-    :   ID
-        ('[' ']'
-        )*
-        ('=' j_variableInitializer
-        )?
-    ;
-
-j_variableInitializer 
-    :   j_arrayInitializer
-    |   j_expression
-    ;
-
-j_arrayInitializer 
-    :   '{' 
-            (j_variableInitializer
-                (',' j_variableInitializer
-                )*
-            )? 
-            (',')? 
-        '}'             
-    ;
-    
-    
-    
-    
-    
-j_expression 
-    :   j_conditionalExpression
-        (j_assignmentOperator j_expression
-        )?
-    ;
-
-j_parExpression 
-    :   '(' j_expression ')'
-    ;
-    
-j_expressionList 
-    :   j_expression
-        (',' j_expression
-        )*
-    ;    
-    
-j_assignmentOperator 
-    :   '='
-    |   '+='
-    |   '-='
-    |   '*='
-    |   '/='
-    |   '&='
-    |   '|='
-    |   '^='
-    |   '%='
-    |    '<' '<' '='
-    |    '>' '>' '>' '='
-    |    '>' '>' '='
-    ;
-
-
-j_conditionalExpression 
-    :   j_conditionalOrExpression
-        ('?' j_expression ':' j_conditionalExpression
-        )?
-    ;
-
-j_conditionalOrExpression 
-    :   j_conditionalAndExpression
-        ('||' j_conditionalAndExpression
-        )*
-    ;
-
-j_conditionalAndExpression 
-    :   j_inclusiveOrExpression
-        ('&&' j_inclusiveOrExpression
-        )*
-    ;
-
-j_inclusiveOrExpression 
-    :   j_exclusiveOrExpression
-        ('|' j_exclusiveOrExpression
-        )*
-    ;
-
-j_exclusiveOrExpression 
-    :   j_andExpression
-        ('^' j_andExpression
-        )*
-    ;
-
-j_andExpression 
-    :   j_equalityExpression
-        ('&' j_equalityExpression
-        )*
-    ;
-
-j_equalityExpression 
-    :   j_instanceOfExpression
-        (   
-            (   '=='
-            |   '!='
-            )
-            j_instanceOfExpression
-        )*
-    ;
-
-j_instanceOfExpression 
-    :   j_relationalExpression
-        ('instanceof' j_type
-        )?
-    ;
-
-j_relationalExpression 
-    :   j_shiftExpression
-        (j_relationalOp j_shiftExpression
-        )*
-    ;
-
-j_relationalOp 
-    :    '<' '='
-    |    '>' '='
-    |   '<'
-    |   '>'
-    ;
-
-j_shiftExpression 
-    :   j_additiveExpression
-        (j_shiftOp j_additiveExpression
-        )*
-    ;
-
-
-j_shiftOp 
-    :    '<' '<'
-    |    '>' '>' '>'
-    |    '>' '>'
-    ;
-
-
-j_additiveExpression 
-    :   j_multiplicativeExpression
-        (   
-            (   '+'
-            |   '-'
-            )
-            j_multiplicativeExpression
-         )*
-    ;
-
-j_multiplicativeExpression 
-    :
-        j_unaryExpression
-        (   
-            (   '*'
-            |   '/'
-            |   '%'
-            )
-            j_unaryExpression
-        )*
-    ;
-
-
-j_unaryExpression 
-    :   '+'  j_unaryExpression
-    |   '-' j_unaryExpression
-    |   '++' j_unaryExpression
-    |   '--' j_unaryExpression
-    |   j_unaryExpressionNotPlusMinus
-    ;
-
-j_unaryExpressionNotPlusMinus 
-    :   '~' j_unaryExpression
-    |   '!' j_unaryExpression
-    |   j_castExpression
-    |   j_primary
-        (j_selector
-        )*
-        (   '++'
-        |   '--'
-        )?
-    ;
-
-j_castExpression 
-    :   '(' j_primitiveType ')' j_unaryExpression
-    |   '(' j_type ')' j_unaryExpressionNotPlusMinus
-    ;
-    
-    
-j_forstatement 
-    :   
-        // enhanced for loop
-        'for' '(' j_variableModifiers j_type ID ':' 
-        j_expression ')' j_statement
-            
-        // normal for loop
-    |   'for' '(' 
-                (j_forInit
-                )? ';' 
-                (j_expression
-                )? ';' 
-                (j_expressionList
-                )? ')' j_statement
-    ;
-
-j_forInit 
-    :   j_localVariableDeclaration
-    |   j_expressionList
-    ;
-    
-    
-j_primary 
-    :   j_parExpression            
-    |   'this'
-        ('.' ID
-        )*
-        (j_identifierSuffix
-        )?
-    |   ID   ('.' ID
-        )*
-        (j_identifierSuffix
-        )?
-    |   'super'
-        j_superSuffix
-    |   j_literal
-    |   j_creator
-    |   j_primitiveType
-        ('[' ']'
-        )*
-        '.' 'class'
-    |   'void' '.' 'class'
-    ;
-
-j_creator 
-    :   'new' j_nonWildcardTypeArguments j_classOrInterfaceType j_classCreatorRest
-    |   'new' j_classOrInterfaceType j_classCreatorRest
-    |   j_arrayCreator
-    ;
-    
-    
-j_superSuffix  
-    :   j_arguments
-    |   '.' (j_typeArguments
-        )?
-        ID
-        (j_arguments
-        )?
-    ;
-
-
-j_identifierSuffix 
-    :   ('[' ']'
-        )+
-        '.' 'class'
-    |   ('[' j_expression ']'
-        )+
-    |   j_arguments
-    |   '.' 'class'
-    |   '.' j_nonWildcardTypeArguments ID j_arguments
-    |   '.' 'this'
-    |   '.' 'super' j_arguments
-    |   j_innerCreator
-    ;
-   
-j_arrayCreator 
-    :   'new' j_createdName
-        '[' ']'
-        ('[' ']'
-        )*
-        j_arrayInitializer
-
-    |   'new' j_createdName
-        '[' j_expression
-        ']'
-        (   '[' j_expression
-            ']'
-        )*
-        ('[' ']'
-        )*
-    ;
-
-j_createdName 
-    :   j_classOrInterfaceType
-    |   j_primitiveType
-    ;
-
-j_innerCreator  
-    :   '.' 'new'
-        (j_nonWildcardTypeArguments
-        )?
-        ID
-        (j_typeArguments
-        )?
-        j_classCreatorRest
-    ;
-
-
-j_classCreatorRest 
-    :   j_arguments
-        (j_classBody
-        )?
-    ;
-
-
-j_nonWildcardTypeArguments 
-    :   '<' j_typeList
-        '>'
-    ;
-
-j_arguments 
-    :   '(' (j_expressionList
-        )? ')'
-    ;
-
-j_literal 
-    :   INT
-    |   J_LONGLITERAL
-    |   FLOAT
-    |   J_DOUBLELITERAL
-    |   EscapeSequence
-    |   STRING
-    |   BOOL
-    |   NULL
-    ;
-    
-    
-j_classBody 
-    :   '{' 
-        (j_classBodyDeclaration
-        )* 
-        '}'
-    ;
-
-j_interfaceBody 
-    :   '{' 
-        (j_interfaceBodyDeclaration
-        )* 
-        '}'
-    ;
-
-j_classBodyDeclaration 
-    :   ';'
-    |   ('static'
-        )? 
-        j_block
-    |   j_memberDecl
-    ;
-
-j_memberDecl 
-    :    j_fieldDeclaration
-    |    j_methodDeclaration
-    |    j_classDeclaration
-    |    j_interfaceDeclaration
-    ;
-
-
-j_methodDeclaration 
-    :
-        
-         j_modifiers
-        (j_typeParameters
-        )?
-        ID
-        j_formalParameters
-        ('throws' j_qualifiedNameList
-        )?
-        '{' 
-        (j_explicitConstructorInvocation
-        )?
-        (j_blockStatement
-        )*
-        '}'
-    |   j_modifiers
-        (j_typeParameters
-        )?
-        (j_type
-        |   'void'
-        )
-        ID
-        j_formalParameters
-        ('[' ']'
-        )*
-        ('throws' j_qualifiedNameList
-        )?            
-        (        
-            j_block
-        |   ';' 
-        )
-    ;
-
-
-j_fieldDeclaration 
-    :   j_modifiers
-        j_type
-        j_variableDeclarator
-        (',' j_variableDeclarator
-        )*
-        ';'
-    ;
-
-j_interfaceBodyDeclaration 
-    :
-        j_interfaceFieldDeclaration
-    |   j_interfaceMethodDeclaration
-    |   j_interfaceDeclaration
-    |   j_classDeclaration
-    |   ';'
-    ;
-
-j_interfaceMethodDeclaration 
-    :   j_modifiers
-        (j_typeParameters
-        )?
-        (j_type
-        |'void'
-        )
-        ID
-        j_formalParameters
-        ('[' ']'
-        )*
-        ('throws' j_qualifiedNameList
-        )? ';'
-    ;
-
-
-j_interfaceFieldDeclaration 
-    :   j_modifiers j_type j_variableDeclarator
-        (',' j_variableDeclarator
-        )*
-        ';'
-    ;
-
-j_interfaceDeclaration 
-    :   j_normalInterfaceDeclaration
-    //|   annotationTypeDeclaration
-    ;
-    
-j_normalInterfaceDeclaration 
-    :   j_modifiers 'interface' ID
-        (j_typeParameters
-        )?
-        ('extends' j_typeList
-        )?
-        j_interfaceBody
-    ;
-
-j_typeList 
-    :   j_type
-        (',' j_type
-        )*
-    ;
-
-j_formalParameters 
-    :   '('
-        (j_formalParameterDecls
-        )? 
-        ')'
-    ;
-
-j_formalParameterDecls 
-    :   j_ellipsisParameterDecl
-    |   j_normalParameterDecl
-        (',' j_normalParameterDecl
-        )*
-    |   (j_normalParameterDecl
-        ','
-        )+ 
-        j_ellipsisParameterDecl
-    ;
-
-j_normalParameterDecl 
-    :   j_variableModifiers j_type ID
-        ('[' ']'
-        )*
-    ;
-
-j_ellipsisParameterDecl 
-    :   j_variableModifiers
-        j_type  '...'
-        ID
-    ;
-
-
-j_explicitConstructorInvocation 
-    :   (j_nonWildcardTypeArguments
-        )?     
-        ('this'
-        |'super'
-        )
-        j_arguments ';'
-
-    |   j_primary
-        '.'
-        (j_nonWildcardTypeArguments
-        )?
-        'super'
-        j_arguments ';'
-    ;
-
-j_qualifiedName 
-    :   ID
-        ('.' ID
-        )*
-    ;
-
-j_modifiers  
-    :
-    (    //annotation
-        // |   
-        'public'
-    |   'protected'
-    |   'private'
-    |   'static'
-    |   'abstract'
-    |   'final'
-    |   'native'
-    |   'synchronized'
-    |   'transient'
-    |   'volatile'
-    |   'strictfp'
-    )*
-    ;
-
-j_qualifiedNameList 
-    :   j_qualifiedName
-        (',' j_qualifiedName
-        )*
-    ;
-
-
-
-j_selector  
-    :   '.' ID
-        (j_arguments
-        )?
-    |   '.' 'this'
-    |   '.' 'super'
-        j_superSuffix
-    |   j_innerCreator
-    |   '[' j_expression ']'
-    ;
-
-
-j_typeParameters 
-    :   '<'
-            j_typeParameter
-            (',' j_typeParameter
-            )*
-        '>'
-    ;
-
-j_typeParameter 
-    :   ID
-        ('extends' j_typeBound
-        )?
-    ;
-
-
-j_typeBound 
-    :   j_type
-        ('&' j_type
-        )*
-    ;
-
-
-j_classDeclaration 
-    :   j_normalClassDeclaration
-    |   j_enumDeclaration
-    ;
-
-j_normalClassDeclaration 
-    :   j_modifiers  'class' ID
-        (j_typeParameters
-        )?
-        ('extends' j_type
-        )?
-        ('implements' j_typeList
-        )?            
-        j_classBody
-    ;
-
-
-j_enumDeclaration 
-    :   j_modifiers 
-        ('enum'
-        ) 
-        ID
-        ('implements' j_typeList
-        )?
-        j_enumBody
-    ;
-    
-    
-j_enumBody 
-    :   '{'
-        (j_enumConstants
-        )? 
-        ','? 
-        (j_enumBodyDeclarations
-        )? 
-        '}'
-    ;
-
-j_enumConstants 
-    :   j_enumConstant
-        (',' j_enumConstant
-        )*
-    ;
-
-
-j_enumConstant 
-    :   
-        // (annotations)?
-        ID
-        (j_arguments
-        )?
-        (j_classBody
-        )?        
-    ;
-
-j_enumBodyDeclarations 
-    :   ';' 
-        (j_classBodyDeclaration
-        )*
-    ;
-
-
-j_classOrInterfaceDeclaration 
-    :    j_classDeclaration
-    |   j_interfaceDeclaration
-    ;
-    
-    
-j_trystatement 
-    :   'try' j_block
-        (   j_catches 'finally' j_block
-        |   j_catches
-        |   'finally' j_block
-        )
-     ;
-     
-j_catches 
-    :   j_catchClause
-        (j_catchClause
-        )*
-    ;
-
-j_catchClause 
-    :   'catch' '(' j_formalParameter
-        ')' j_block 
-    ;
-
-j_formalParameter 
-    :   j_variableModifiers j_type ID
-        ('[' ']'
-        )*
-    ;
-     
-     
-j_switchBlockStatementGroups 
-    :   (j_switchBlockStatementGroup )*
-    ;
-
-j_switchBlockStatementGroup 
-    :
-        j_switchLabel
-        (j_blockStatement
-        )*
-    ;
-
-j_switchLabel 
-    :   'case' j_expression ':'
-    |   'default' ':'
-    ;
-     
-     
-
-*/
-
-
-
-
 
 curly_chunk
 @init{
@@ -2584,6 +1705,12 @@ paren_chunk_data[boolean isRecursive]
 			}	
 		}	
 	;
+
+
+
+
+
+
 
 square_chunk
 @init{
@@ -2845,13 +1972,7 @@ xor_key
   : {(validateIdentifierKey(DroolsSoftKeywords.XOR))}?=>  id=ID
   { emit($id, DroolsEditorType.KEYWORD);  }
     ->  VK_XOR[$id]
-  ;
-  
-implies_key
-  : {(validateIdentifierKey(DroolsSoftKeywords.IMPLIES))}?=>  id=ID
-  { emit($id, DroolsEditorType.KEYWORD);  }
-    ->  VK_IMPLIES[$id]
-  ;      
+  ;  
 	
 
 exists_key
@@ -2926,65 +2047,47 @@ very_key
   : {(validateIdentifierKey(DroolsSoftKeywords.VERY))}?=>  id=ID
   { emit($id, DroolsEditorType.KEYWORD);  }
     ->  VK_VERY[$id]
-  ;   	
-	
-/*	
-cut_key
-  : CUT -> VK_CUT
   ;
-*/  
-
-
-
-
-
+  
   
 id_key
   : {(validateIdentifierKey(DroolsSoftKeywords.CID))}?=>  id=ID
   { emit($id, DroolsEditorType.KEYWORD);  }
     ->  VK_CONSTRID[$id]
-  ;           
+  ;          	
   
-kut_key  
+cut_key  
   : {(validateIdentifierKey(DroolsSoftKeywords.CUT))}?=>  id=ID
   { emit($id, DroolsEditorType.KEYWORD);  }
     ->  VK_CUT[$id]
   ;
   
-kind_key  
-  : {(validateIdentifierKey(DroolsSoftKeywords.KIND))}?=>  id=ID
+type_key  
+  : {(validateIdentifierKey(DroolsSoftKeywords.TYPE))}?=>  id=ID
   { emit($id, DroolsEditorType.KEYWORD);  }
-    ->  VK_KIND[$id]
+    ->  VK_TYPE[$id]
   ;  
 
-args_key  
-  : {(validateIdentifierKey(DroolsSoftKeywords.ARGS))}?=>  id=ID
+params_key  
+  : {(validateIdentifierKey(DroolsSoftKeywords.PARAMS))}?=>  id=ID
   { emit($id, DroolsEditorType.KEYWORD);  }
-    ->  VK_ARGS[$id]
+    ->  VK_PARAMS[$id]
   ;  
-    
   
+  
+  
+	
+	
 
-
-
+  
+//constr_id_key
+//  : AT -> VK_AT
+//  ;  
 	
 approx_symb
   : APPROX -> VK_APPROX
   ;	
   
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	
 
@@ -3131,8 +2234,6 @@ ARROW
 	:	'->'
 	;
 
-
-
 ID	
 	:	('a'..'z'|'A'..'Z'|'_'|'$'|'\u00c0'..'\u00ff')('a'..'z'|'A'..'Z'|'_'|'0'..'9'|'\u00c0'..'\u00ff')*
 	|	'`' ('a'..'z'|'A'..'Z'|'_'|'$'|'\u00c0'..'\u00ff')('a'..'z'|'A'..'Z'|'_'|'0'..'9'|'\u00c0'..'\u00ff')+ '`'
@@ -3204,104 +2305,7 @@ MULTI_LINE_COMMENT
 MISC 	:
 		'$' | '%' | '^' | '*' | '_' | '-' | '+'  | '?' | '/' | '\'' | '\\' 
 	;
-
 	
-
-
-/*
-	 
-
-J_LONGLITERAL
-    :   J_IntegerNumber J_LongSuffix
-    ;
-
-    
-J_INTLITERAL
-    :   J_IntegerNumber 
-    ;
-    
-fragment
-J_IntegerNumber
-    :   '0' 
-    |   '1'..'9' ('0'..'9')*    
-    |   '0' ('0'..'7')+         
-    |   J_HexPrefix J_HexDigit+        
-    ;
-
-fragment
-J_HexPrefix
-    :   '0x' | '0X'
-    ;
-        
-fragment
-J_HexDigit
-    :   ('0'..'9'|'a'..'f'|'A'..'F')
-    ;
-
-fragment
-J_LongSuffix
-    :   'l' | 'L'
-    ;
-
-
-fragment
-J_NonIntegerNumber
-    :   ('0' .. '9')+ '.' ('0' .. '9')* J_Exponent?  
-    |   '.' ( '0' .. '9' )+ J_Exponent?  
-    |   ('0' .. '9')+ J_Exponent  
-    |   ('0' .. '9')+ 
-    |   
-        J_HexPrefix (J_HexDigit )* 
-        (    () 
-        |    ('.' (J_HexDigit )* ) 
-        ) 
-        ( 'p' | 'P' ) 
-        ( '+' | '-' )? 
-        ( '0' .. '9' )+
-        ;
-        
-fragment 
-J_Exponent    
-    :   ( 'e' | 'E' ) ( '+' | '-' )? ( '0' .. '9' )+ 
-    ;
-    
-fragment 
-J_FloatSuffix
-    :   'f' | 'F' 
-    ;     
-
-fragment
-J_DoubleSuffix
-    :   'd' | 'D'
-    ;
-        
-J_DOUBLELITERAL
-    :   J_NonIntegerNumber J_DoubleSuffix?
-    ;
-
-
-
-
-
-fragment
-J_EscapeSequence 
-    :   '\\' (
-                 'b' 
-             |   't' 
-             |   'n' 
-             |   'f' 
-             |   'r' 
-             |   '\"' 
-             |   '\'' 
-             |   '\\' 
-             |       
-                 ('0'..'3') ('0'..'7') ('0'..'7')
-             |       
-                 ('0'..'7') ('0'..'7') 
-             |       
-                 ('0'..'7')
-             )          
-    ;     
-
-	  
-*/
+DBL_QUOTE :
+    '"'
+  ;	

@@ -129,26 +129,12 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 /**
- * This utility will take a AST of a rule package, and emit XML. This can be
- * used in porting from DRL to XML.
  * 
- * @author <a href="mailto:jayaramcs@gmail.com">Author Jayaram C S</a>
  */
 public class RuleMLDumper extends ReflectiveVisitor implements
 		PackageDescrDumper, DroolsDescrVisitor {
 
-	static final String JAXP_SCHEMA_LANGUAGE = "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
 
-	static final String W3C_XML_SCHEMA = "http://www.w3.org/2001/XMLSchema";
-
-	static final String JAXP_SCHEMA_SOURCE = "http://java.sun.com/xml/jaxp/properties/schemaSource";
-
-	static final String NAFFOLOGEQ = "naffologeq";
-
-	static final DocumentBuilderFactory naffologeqFactory = DocumentBuilderFactory
-			.newInstance();
-
-	static final Map<String, DocumentBuilderFactory> validators = new HashMap<String, DocumentBuilderFactory>();
 
 	private DocumentBuilderFactory doxFactory = DocumentBuilderFactory
 			.newInstance();
@@ -209,115 +195,7 @@ public class RuleMLDumper extends ReflectiveVisitor implements
 			x.printStackTrace();
 		}
 	}
-
-	// public void test() {
-	//		
-	// for (String lang : validators.keySet()) {
-	//			
-	// DocumentBuilderFactory factory = validators.get(lang);
-	//			
-	//									
-	// ByteArrayOutputStream bos = new ByteArrayOutputStream();
-	// format(dox, bos);
-	// ByteArrayInputStream bs = new ByteArrayInputStream(
-	// bos.toByteArray()
-	// );
-	//				
-	// try {
-	//					
-	// DocumentBuilder dob = factory.newDocumentBuilder();
-	// dob.setErrorHandler(new ErrorHandler () {
-	//
-	// public void error(SAXParseException exception)
-	// throws SAXException {
-	// System.err.println("Error");
-	// exception.printStackTrace();
-	//								
-	// }
-	//
-	// public void fatalError(SAXParseException exception)
-	// throws SAXException {
-	// System.err.println("Fatal Error");
-	// exception.printStackTrace();
-	//								
-	// }
-	//
-	// public void warning(SAXParseException exception)
-	// throws SAXException {
-	// System.err.println("Warning");
-	// exception.printStackTrace();
-	// }
-	//							
-	// });
-	// dob.parse(bs);
-	// System.out.println(lang.toUpperCase()+ "\t\t\t\t true\n");
-	//					
-	// } catch (SAXException e) {
-	//					
-	// System.out.println(lang.toUpperCase()+ "\t\t\t\t false\n");
-	// System.out.println(e.toString());
-	//					
-	// } catch (IOException e) {
-	// //
-	// System.out.println(e.toString());
-	// } catch (ParserConfigurationException e) {
-	// System.out.println(e.toString());
-	//				
-	// }
-	//											
-	//			  
-	// }
-	//		
-	// }
-
-	// public void test2(String schemaId) {
-	//		
-	//		
-	// String resLoc = "org/ruleml/"+schemaId+".xsd";
-	// URL schemaURL = null;
-	// try {
-	//			
-	// schemaURL = ((ClassPathResource)
-	// ResourceFactory.newClassPathResource(resLoc)).getURL();
-	//			
-	// } catch (IOException e) {
-	// //
-	// e.printStackTrace();
-	// }
-	//		
-	// ByteArrayOutputStream bos = new ByteArrayOutputStream();
-	// format(dox, bos);
-	// ByteArrayInputStream bs = new ByteArrayInputStream(
-	// bos.toByteArray()
-	// );
-	//		
-	//		
-	// Schema schema = null;
-	// try {
-	// String language = XMLConstants.W3C_XML_SCHEMA_NS_URI;
-	// SchemaFactory factory = SchemaFactory.newInstance(language);
-	// schema = factory.newSchema(schemaURL);
-	// } catch (Exception e) {
-	// e.printStackTrace();
-	// }
-	//
-	// try {
-	// Validator validator = schema.newValidator();
-	// SAXSource source = new SAXSource(
-	// new InputSource(bs));
-	//
-	//
-	// validator.validate(source);
-	// System.out.println();
-	// System.out.println("Validation passed.");
-	//
-	// } catch (Exception e) {
-	// // catching all validation exceptions
-	// System.out.println();
-	// System.out.println(e.toString());
-	// }
-	//			  			  			  			    	
-	// }
+	
 
 	public synchronized String dump(InputStream drl, InputStream config) {
 
@@ -497,7 +375,8 @@ public class RuleMLDumper extends ReflectiveVisitor implements
 		if (descr.getIdentifier() != null) {
 			varName = context.getRuleName() + "." + descr.getIdentifier();
 		} else {
-			varName = context.getRuleName() + "." + context.getClassType();
+			String vtype = "$"+context.getClassType().toLowerCase();
+			varName = context.getRuleName() + "." + vtype;
 		}
 
 		varName = context.trySetCurrentObjectVariable(varName);
@@ -574,6 +453,7 @@ public class RuleMLDumper extends ReflectiveVisitor implements
 
 			Element slot = dox.createElement("slot");
 			Element field = dox.createElement("Ind");
+				field.setAttribute("type",context.getCurrentFieldType());
 			field.setTextContent(context.getCurrentField());
 			slot.appendChild(field);
 
@@ -881,7 +761,10 @@ public class RuleMLDumper extends ReflectiveVisitor implements
 		// visitChildren(elassert,packageDescr.getFunctions());
 		// visitChildren(elassert,packageDescr.getGlobals());
 		visitChildren(elassert, packageDescr.getImports());
+		
 		visitChildren(elassert, packageDescr.getTypeDeclarations());
+			context.setCurrDeclarations(packageDescr.getTypeDeclarations());
+		
 		visitChildren(ruleBase, packageDescr.getRules());
 
 		elassert.appendChild(ruleBase);
@@ -1145,6 +1028,7 @@ public class RuleMLDumper extends ReflectiveVisitor implements
 
 		Element slot = dox.createElement("slot");
 		Element field = dox.createElement("Ind");
+			field.setAttribute("type",context.getCurrentFieldType());
 		field.setTextContent(context.getCurrentField());
 		slot.appendChild(field);
 
@@ -1233,7 +1117,9 @@ public class RuleMLDumper extends ReflectiveVisitor implements
 		return (string == null || string.trim().length() == 0);
 	}
 
-	public void visitTypeDeclarationDescr(TypeDeclarationDescr descr) {
+	public void visitTypeDeclarationDescr(TypeDeclarationDescr descr) {		
+		
+		
 		context.mapClass(descr.getTypeName(), context.getPackageName() + "."
 				+ descr.getTypeName());
 
@@ -1316,6 +1202,8 @@ public class RuleMLDumper extends ReflectiveVisitor implements
 
 		private KnowledgeBase kBase;
 
+		private List<TypeDeclarationDescr> currDeclarations;
+
 		public String validateVariable(String id) {
 			if (variables.containsKey(id)) {
 
@@ -1333,9 +1221,11 @@ public class RuleMLDumper extends ReflectiveVisitor implements
 				}
 				return validateVariable(id);
 			}
+									
 			return id;
 		}
 
+		
 		public String getMappedClass(String objectType) {
 			return this.classMap.get(objectType);
 		}
@@ -1436,6 +1326,7 @@ public class RuleMLDumper extends ReflectiveVisitor implements
 		 *            the currentObjectVariable to set
 		 */
 		public String trySetCurrentObjectVariable(String currentObjectVariable) {
+						
 			String name = validateVariable(currentObjectVariable);
 			this.currentObjectVariable = name;
 
@@ -1465,6 +1356,49 @@ public class RuleMLDumper extends ReflectiveVisitor implements
 		public String getCurrentField() {
 			return currentField;
 		}
+		
+		public String getCurrentFieldType() {
+			if (getCurrentField().equals("class"))
+				return "java.lang.Class";
+			
+			List<TypeDeclarationDescr> candidates = getCurrDeclarations();
+			
+			String getterName = getCurrentField();
+				getterName = "get" + getterName.substring(0,1).toUpperCase() + getterName.substring(1);
+				
+			
+			for (TypeDeclarationDescr type : candidates) {
+				if (type.getTypeName().equals(getClassType())) {					
+					TypeFieldDescr field = type.getFields().get(getCurrentField());
+					return field.getPattern().getObjectType();
+				}
+				
+			} 
+
+			
+				try {							
+					String className = getPackageName()+"."+getClassType();
+					Class klass = Class.forName(className);	
+					Method getter = klass.getMethod(getterName);
+					return getter.getReturnType().getName();
+				} catch (Exception e) {			
+					return Object.class.getName();
+				}
+			
+			
+			
+		}
+
+
+		private List<TypeDeclarationDescr> getCurrDeclarations() {
+			return currDeclarations;
+		}
+		
+		
+		private void setCurrDeclarations(List<TypeDeclarationDescr> declars) {
+			currDeclarations = declars;
+		}
+
 
 		/**
 		 * @param currentFieldVariable

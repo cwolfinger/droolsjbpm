@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.drools.compiler.TypeDeclarationError;
 import org.drools.lang.descr.AccumulateDescr;
 import org.drools.lang.descr.AndDescr;
 import org.drools.lang.descr.AttributeDescr;
@@ -48,6 +49,8 @@ import org.drools.lang.descr.QueryDescr;
 import org.drools.lang.descr.RestrictionConnectiveDescr;
 import org.drools.lang.descr.ReturnValueRestrictionDescr;
 import org.drools.lang.descr.RuleDescr;
+import org.drools.lang.descr.TypeDeclarationDescr;
+import org.drools.lang.descr.TypeFieldDescr;
 import org.drools.lang.descr.VariableRestrictionDescr;
 import org.drools.util.ReflectiveVisitor;
 
@@ -64,6 +67,9 @@ public class DrlDumper extends ReflectiveVisitor
     private static final String eol          = System.getProperty( "line.separator" );
     private String              template;
     private boolean             needsBracket = false;
+    
+    private boolean				inPattern = false;
+    private int					dep = 0;
 
     public synchronized String dump(final PackageDescr packageDescr) {
         this.drlDump = new StringBuffer();
@@ -76,12 +82,37 @@ public class DrlDumper extends ReflectiveVisitor
     }
 
     public void visitAndDescr(final AndDescr descr) {
-        this.template = new String();
-        if ( !descr.getDescrs().isEmpty() ) {
-            this.template = processDescrList( descr.getDescrs() );
-        } else {
-            this.template = "";
-        }
+    	dep++;
+    	StringBuilder sb = new StringBuilder();
+    	
+    	if (! inPattern) {
+    		for (int j = 0; j < dep+1; j++)
+        		sb.append("\t");
+    		sb.append("( and ").append(DrlDumper.eol);
+    	
+    		Iterator iterator = descr.getDescrs().iterator();
+    		while (iterator.hasNext()) {    	
+    			visit( iterator.next() );
+    			sb.append(this.template);            
+    		}
+    		for (int j = 0; j < dep+1; j++)
+        		sb.append("\t");
+    		sb.append(")"+DrlDumper.eol);
+    		this.template = sb.toString();
+    	} else {
+    		if ( !descr.getDescrs().isEmpty() ) {
+              this.template = processDescrList( descr.getDescrs() );
+    		} else {
+    			this.template = "";
+    		}    		
+    	}
+    	dep--;
+//        this.template = new String();
+//        if ( !descr.getDescrs().isEmpty() ) {
+//            this.template = processDescrList( descr.getDescrs() );
+//        } else {
+//            this.template = "";
+//        }
     }
     
     private static Set needsQuotes = new HashSet();
@@ -122,8 +153,10 @@ public class DrlDumper extends ReflectiveVisitor
     }
 
     public void visitPatternDescr(final PatternDescr descr) {
-        StringBuffer buf = new StringBuffer();
-        buf.append( "\t\t" );
+    	inPattern = true;
+        StringBuilder buf = new StringBuilder();
+        for (int j = 0; j < dep+2; j++)
+    		buf.append("\t");
         if ( descr.getIdentifier() != null ) {
             buf.append(  descr.getIdentifier() );
             buf.append( " : " );
@@ -134,7 +167,7 @@ public class DrlDumper extends ReflectiveVisitor
         if ( !descr.getConstraint().getDescrs().isEmpty() ) {
             buf.append( processColoumnConstraintList( descr.getConstraint().getDescrs() ) );
         }
-        buf.append( " )" );
+        buf.append( " )" ).append(DrlDumper.eol);
         if( descr.getSource() != null ) {
             buf.append( " from " );
             this.template = buf.toString();
@@ -142,6 +175,7 @@ public class DrlDumper extends ReflectiveVisitor
             buf.append( this.template );
         }
         this.template = buf.toString();
+        inPattern = false;
     }
 
     public void visitEvalDescr(final EvalDescr descr) {
@@ -210,8 +244,14 @@ public class DrlDumper extends ReflectiveVisitor
     }
 
     public void visitFieldBindingDescr(final FieldBindingDescr descr) {
-        this.template = new String();
-        this.template = descr.getIdentifier() + " : " + descr.getFieldName();
+//        this.template = new String();
+//        this.template = descr.getIdentifier() + " : " + descr.getFieldName();
+    	if (descr.getFieldConstraint() != null) {
+    		visit(descr.getFieldConstraint());    	
+    		this.template = descr.getIdentifier() + " : " + this.template;
+    	} else {
+    		this.template = descr.getIdentifier() + " : " + descr.getFieldName();
+    	}
     }
 
     public void visitFunctionDescr(final FunctionDescr functionDescr) {
@@ -237,7 +277,10 @@ public class DrlDumper extends ReflectiveVisitor
                 text = "\"" + text + "\"";
             }
         } else if( descr.getType() == LiteralRestrictionDescr.TYPE_STRING ) {
-            text = "\"" + text + "\"";
+        	if (text.length() == 0)
+        		text = "";
+        	else 
+        		text = "\"" + text + "\"";
         }
         this.template = descr.getEvaluator() + " " + text;
     }
@@ -253,21 +296,41 @@ public class DrlDumper extends ReflectiveVisitor
     }
 
     public void visitNotDescr(final NotDescr descr) {
-        this.template = new String();
-        if ( !descr.getDescrs().isEmpty() ) {
-            this.template = "\t   not ( " + processDescrList( descr.getDescrs() ) +")";
-        } else {
-            this.template = "";
-        }
+    	dep++;    	
+    	StringBuilder sb = new StringBuilder();
+    	if (! inPattern) {
+	    	for (int j = 0; j < dep+1; j++)
+	    		sb.append("\t");
+	    	
+	    	sb.append("not ( ").append(DrlDumper.eol);
+	    		sb.append(processDescrList(descr.getDescrs()));
+	    	
+	    	for (int j = 0; j < dep+1; j++)
+		    	sb.append("\t");	
+	    	sb.append(")").append(DrlDumper.eol);
+	    	
+	    	this.template = sb.toString();
+    	} else {
+    		// Shouldn't be here...
+    	}
+//        this.template = new String();
+//        if ( !descr.getDescrs().isEmpty() ) {
+//            this.template = "\t   not ( " + processDescrList( descr.getDescrs() ) +")";
+//        } else {
+//            this.template = "";
+//        }
+        dep--;
     }
 
     public void visitOrDescr(final OrDescr descr) {
+    	dep++;
         this.template = new String();
         if ( !descr.getDescrs().isEmpty() ) {
             this.template = processOrDescrList( descr.getDescrs() );
         } else {
             this.template = " ";
         }
+        dep--;
     }
 
     public void visitPackageDescr(final PackageDescr packageDescr) {
@@ -278,6 +341,10 @@ public class DrlDumper extends ReflectiveVisitor
         if ( packageDescr.getImports() != null ) {
             appendDrlDump( processImportsList( packageDescr.getImports() ) );
         }
+        if ( packageDescr.getTypeDeclarations() != null ) {
+            appendDrlDump( processTypeDeclarationList( packageDescr.getTypeDeclarations() ) );
+        }
+        
         if ( packageDescr.getGlobals() != null ) {
             appendDrlDump( processGlobalsList( packageDescr.getGlobals() ) );
         }
@@ -323,9 +390,9 @@ public class DrlDumper extends ReflectiveVisitor
 
         	final RuleDescr ruleDescr = (RuleDescr) ruleobj;
             String rule = "rule \"" + ruleDescr.getName() + "\" " + DrlDumper.eol;
-            final String attribute = processAttribute( ruleDescr.getAttributes().values() );
+            final String attribute = ruleDescr.getAttributes() != null ? processAttribute( ruleDescr.getAttributes().values() ) : "";
             String lhs = "";
-            if ( !ruleDescr.getLhs().getDescrs().isEmpty() ) {
+            if ( ruleDescr.getLhs() != null && !ruleDescr.getLhs().getDescrs().isEmpty() ) {
                 lhs = "\t when" + DrlDumper.eol + processDescrList( ruleDescr.getLhs().getDescrs() ) + DrlDumper.eol;
             } else {
 
@@ -350,6 +417,34 @@ public class DrlDumper extends ReflectiveVisitor
     }
 
     private String processOrDescrList(final List descr) {
+    	if (! inPattern) {
+	    	StringBuilder sb = new StringBuilder();
+	    	for (int j = 0; j < dep+1; j++)
+	    		sb.append("\t");
+	    	sb.append("( or ").append(DrlDumper.eol);
+	    	
+	    	for ( final Iterator iterator = descr.iterator(); iterator.hasNext(); ) {
+	            visit( iterator.next() );
+	            sb.append(this.template);            
+	        }
+	    	for (int j = 0; j < dep+1; j++)
+	    		sb.append("\t");
+	    	sb.append(")"+DrlDumper.eol);
+	    	
+	    	return sb.toString();
+    	} else {
+    		StringBuilder sb = new StringBuilder("( ");
+    		
+    		for ( final Iterator iterator = descr.iterator(); iterator.hasNext(); ) {
+                visit( iterator.next() );
+                sb.append(this.template);
+                if (iterator.hasNext()) 
+                	sb.append(" || ");
+                
+            }	
+    		return sb.toString();
+    	}
+    	/*
         String descrString = "";
         for ( final Iterator iterator = descr.iterator(); iterator.hasNext(); ) {
             visit( iterator.next() );
@@ -362,6 +457,7 @@ public class DrlDumper extends ReflectiveVisitor
         }
         return descrString.substring( 0,
                                       descrString.length() - 4 );
+        */
     }
 
     private String processColoumnConstraintList(final List descr) {
@@ -437,7 +533,7 @@ public class DrlDumper extends ReflectiveVisitor
             if ( obj.getClass().equals( PatternDescr.class ) || obj.getClass().equals( CollectDescr.class ) ) {
                 descrString += DrlDumper.eol;
             } else if ( ite.hasNext() ) {
-                descrString += " && ";
+                descrString += inPattern ? " && " : DrlDumper.eol;
             }
         }
         return descrString;
@@ -521,6 +617,41 @@ public class DrlDumper extends ReflectiveVisitor
 
     private void appendDrlDump(final String temp) {
         this.drlDump.append( temp );
+    }
+    
+    
+    
+    
+    private String processTypeDeclarationList(final List typeDeclarations) {
+        String typeList = "";
+
+        for ( final Iterator it = typeDeclarations.iterator(); it.hasNext(); ) {
+            final TypeDeclarationDescr typeDescr = (TypeDeclarationDescr) it.next(); 
+            visit(typeDescr); 
+            typeList += this.template;
+        }
+        return typeList + DrlDumper.eol;
+    }
+    
+    public void visitTypeDeclarationDescr(final TypeDeclarationDescr typeDescr) {
+        StringBuilder sb = new StringBuilder("declare ");
+        	String fullName = typeDescr.getTypeName();
+        	int idx = fullName.lastIndexOf('.');
+        	String simpleName = idx < 0 ? fullName : fullName.substring(idx+1);
+        
+        sb.append(simpleName).append(DrlDumper.eol);
+        
+        	for (TypeFieldDescr field : typeDescr.getFields().values()) {
+        		sb.append("\t");
+        		sb.append(field.getFieldName());
+        		sb.append(" : ");
+        		sb.append(field.getPattern().getObjectType());
+        		sb.append(DrlDumper.eol);
+        	}
+        
+        sb.append("end").append(DrlDumper.eol);
+        
+        this.template = sb.toString();
     }
 
 }

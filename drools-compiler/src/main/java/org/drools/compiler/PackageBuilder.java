@@ -16,6 +16,7 @@ package org.drools.compiler;
  * limitations under the License.
  */
 
+
 import java.beans.IntrospectionException;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -278,6 +279,10 @@ public class PackageBuilder {
         final PackageDescr pkg = parser.parse( reader );
         this.results.addAll( parser.getErrors() );
         if ( !parser.hasErrors() ) {
+        	        	
+        	System.out.println(this.getClass().toString()+" HACKED TO DO LEXICAL ANALYSIS");
+            pkg.setDependencies(doLexicalAnalysis(pkg));
+        	
             addPackage( pkg );
         }
         this.resource = null;
