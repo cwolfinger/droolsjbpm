@@ -15,7 +15,7 @@ public class SimpleVeryModifier implements IDegreeCombiner {
 	public IDegree eval(IDegree[] args, IDegreeFactory factory) {
 		if (args == null || args.length == 0)
 			return factory == null ? SimpleDegree.UNKNOWN(true) : factory.Unknown();		
-		float arg = args[0].getDegree().getValue();
+		double arg = args[0].getValue();
 		
 		
 		return new SimpleDegree(arg*arg);
@@ -24,7 +24,7 @@ public class SimpleVeryModifier implements IDegreeCombiner {
 	public IDegree eval(Collection<? extends IDegree> args, IDegreeFactory factory) {
 		if (args == null || args.size() == 0)
 			return factory == null ? SimpleDegree.UNKNOWN(true) : factory.Unknown();		
-		float arg = args.iterator().next().getDegree().getValue();
+		double arg = args.iterator().next().getValue();
 		
 		
 		return new SimpleDegree(arg*arg);

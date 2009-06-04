@@ -16,8 +16,8 @@ public class IntervalLukasImplicationOperator implements IDegreeCombiner {
 	public IDegree eval(IDegree[] args, IDegreeFactory factory) {		
 		if (args == null || args.length < 2)
 			return factory == null ? IntervalDegreeFactory.UNKNOWN : factory.Unknown();		
-		float low = 0;
-		float upp = 0;
+		double low = 0;
+		double upp = 0;
 		
 		IntervalDegree prem = (IntervalDegree) args[0];
 		IntervalDegree conc = (IntervalDegree) args[1];
@@ -31,8 +31,8 @@ public class IntervalLukasImplicationOperator implements IDegreeCombiner {
 	public IDegree eval(Collection<? extends IDegree> args, IDegreeFactory factory) {
 		if (args == null || args.size() == 0)
 			return factory == null ? IntervalDegreeFactory.UNKNOWN : factory.Unknown();		
-		float low = 0;
-		float upp = 0;
+		double low = 0;
+		double upp = 0;
 		
 		Iterator<? extends IDegree> iter = args.iterator();
 		IntervalDegree prem = (IntervalDegree) iter.next();

@@ -17,11 +17,11 @@ public class SimpleDoubleMPOperator implements IDegreeCombiner {
 		IDegree prem = args[0];
 		IDegree impl = args[1];
 		
-		//float mp1 = Math.min(prem.getDegree().getValue(),impl.getDegree().getValue());
-		//float mp2 = 1 - Math.min(1 - prem.getDegree().getValue(),impl.getDegree().getValue());
+		//double mp1 = Math.min(prem.getValue(),impl.getValue());
+		//double mp2 = 1 - Math.min(1 - prem.getValue(),impl.getValue());
 	
-		float mp1 = prem.getDegree().getValue()*impl.getDegree().getValue();
-		float mp2 = 1 - (1 - prem.getDegree().getValue())*(impl.getDegree().getValue());
+		double mp1 = prem.getValue()*impl.getValue();
+		double mp2 = 1 - (1 - prem.getValue())*(impl.getValue());
 		
 		return new SimpleDegree(Math.min(mp1, mp2));
 		                    
@@ -35,11 +35,11 @@ public class SimpleDoubleMPOperator implements IDegreeCombiner {
 		IDegree prem = iter.next();
 		IDegree impl = iter.next();
 		
-		//float mp1 = Math.min(prem.getDegree().getValue(),impl.getDegree().getValue());
-		//float mp2 = 1 - Math.min(1 - prem.getDegree().getValue(),impl.getDegree().getValue());
+		//double mp1 = Math.min(prem.getValue(),impl.getValue());
+		//double mp2 = 1 - Math.min(1 - prem.getValue(),impl.getValue());
 	
-		float mp1 = prem.getDegree().getValue()*impl.getDegree().getValue();
-		float mp2 = 1 - (1 - prem.getDegree().getValue())*(impl.getDegree().getValue());
+		double mp1 = prem.getValue()*impl.getValue();
+		double mp2 = 1 - (1 - prem.getValue())*(impl.getValue());
 		
 		return new SimpleDegree(Math.min(mp1, mp2));
 	}

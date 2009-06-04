@@ -15,7 +15,7 @@ public class SimpleDiscountStrategy implements IDiscountStrategy {
 	}
 
 	public IDegree[] discount(IDegree[] args, boolean[] flags, IDegreeFactory factory) {
-		float confMax = 0;
+		double confMax = 0;
 		
 		IDegree[] ans = new IDegree[args.length];
 		
@@ -25,10 +25,10 @@ public class SimpleDiscountStrategy implements IDiscountStrategy {
 		}
 		
 		for (int j = 0; j < args.length; j++) {
-			//float weak = Math.max(0 , confMax - args[j].getConfidence());
+			//double weak = Math.max(0 , confMax - args[j].getConfidence());
 			
-			float strength;
-			float c0 = args[j].getConfidence(factory.isClosedWorldAssumption());
+			double strength;
+			double c0 = args[j].getConfidence(factory.isClosedWorldAssumption());
 			if (flags[j]) {
 				//weaken weaker defeaters
 				strength = 1 - (confMax - c0);

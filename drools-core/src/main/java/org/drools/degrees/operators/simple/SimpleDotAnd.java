@@ -17,7 +17,7 @@ public class SimpleDotAnd implements IDegreeCombiner {
 			return factory == null ? SimpleDegree.UNKNOWN(true) : factory.Unknown();		
 		float ans = 1;
 		for (IDegree deg : args) {
-			SimpleDegree d = deg.getDegree();				
+			SimpleDegree d = deg.asSimpleDegree();				
 				ans *= d.getValue();
 		}
 		

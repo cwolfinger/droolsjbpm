@@ -23,23 +23,23 @@ public abstract class FuzzySet implements IDegree {
 		return name;
 	}
 	
-	public float getConfidence(boolean cwa) {		
+	public double getConfidence(boolean cwa) {		
 		return 1;
 	}
 	
 	
 	
-	public float getValue() {
+	public double getValue() {
 		return -99;
 	}
 	
-	public SimpleDegree getDegree() {
+	public SimpleDegree asSimpleDegree() {
 		// TODO Defuzzify here
 		return null;
 	}
 
 	public boolean toBoolean() {
-		return getDegree().toBoolean();
+		return asSimpleDegree().toBoolean();
 	}
 
 }

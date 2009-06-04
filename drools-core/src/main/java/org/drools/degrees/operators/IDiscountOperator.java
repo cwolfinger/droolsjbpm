@@ -4,6 +4,6 @@ import org.drools.degrees.IDegree;
 
 public interface IDiscountOperator extends IDegreeCombiner {
 	
-	public IDegree discount(IDegree arg, float strength);
+	public IDegree discount(IDegree arg, double strength);
 
 }

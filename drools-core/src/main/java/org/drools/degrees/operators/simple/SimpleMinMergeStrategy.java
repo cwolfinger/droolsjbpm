@@ -30,9 +30,9 @@ public class SimpleMinMergeStrategy implements IMergeStrategy {
 		}
 		
 		
-		float val = factory.Unknown().getDegree().getValue();
+		double val = factory.Unknown().getValue();
 		for (IDegree deg : args) {				
-				val = Math.min(val,deg.getDegree().getValue());		
+				val = Math.min(val,deg.getValue());		
 		}
 		
 		return new SimpleDegree(val);

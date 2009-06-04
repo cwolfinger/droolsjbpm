@@ -17,7 +17,7 @@ public class SimpleLukasOr implements IDegreeCombiner {
 			return factory == null ? SimpleDegree.UNKNOWN(true) : factory.Unknown();		
 		float ans = 0;
 		for (IDegree deg : args) {
-			SimpleDegree d = deg.getDegree();				
+			SimpleDegree d = deg.asSimpleDegree();
 				ans += d.getValue();
 		}
 		
@@ -30,7 +30,7 @@ public class SimpleLukasOr implements IDegreeCombiner {
 
 		float ans = 0;
 		for (IDegree deg : args) {
-			SimpleDegree d = deg.getDegree();				
+			SimpleDegree d = deg.asSimpleDegree();			
 				ans += d.getValue();
 		}
 		

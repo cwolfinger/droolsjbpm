@@ -15,8 +15,8 @@ import org.drools.degrees.operators.IDiscountOperator;
 public class IntervalDiscountOperator implements IDiscountOperator {
 
 	
-	public IDegree discount(IDegree arg, float strength) {
-		float alfa = strength;
+	public IDegree discount(IDegree arg, double strength) {
+		double alfa = strength;
 		IntervalDegree ival = (IntervalDegree) arg;
 		return new IntervalDegree(ival.getTau()*alfa, 1 - ival.getPhi()*alfa);	
 	}
@@ -26,8 +26,8 @@ public class IntervalDiscountOperator implements IDiscountOperator {
 			return factory == null ? IntervalDegreeFactory.UNKNOWN : factory.Unknown();
 		
 		IntervalDegree ival = (IntervalDegree) args[0];
-		SimpleDegree disc = args[1].getDegree();
-		float alfa = disc.getValue();	
+		SimpleDegree disc = args[1].asSimpleDegree();
+		double alfa = disc.getValue();	
 		
 		return new IntervalDegree(ival.getTau()*alfa, 1 - ival.getPhi()*alfa);
 		
@@ -39,8 +39,8 @@ public class IntervalDiscountOperator implements IDiscountOperator {
 		Iterator<? extends IDegree> iter= args.iterator();
 		
 		IntervalDegree ival = (IntervalDegree) iter.next();
-		SimpleDegree disc = iter.next().getDegree();
-		float alfa = disc.getValue();	
+		SimpleDegree disc = iter.next().asSimpleDegree();
+		double alfa = disc.getValue();	
 		
 		
 		return new IntervalDegree(ival.getTau()*alfa, 1 - ival.getPhi()*alfa);

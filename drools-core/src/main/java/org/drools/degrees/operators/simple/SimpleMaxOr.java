@@ -15,9 +15,9 @@ public class SimpleMaxOr implements IDegreeCombiner {
 	public IDegree eval(IDegree[] args, IDegreeFactory factory) {
 		if (args == null || args.length == 0)
 			return factory == null ? SimpleDegree.UNKNOWN(true) : factory.Unknown();		
-		float ans = 0;
+		double ans = 0;
 		for (IDegree deg : args) {
-			SimpleDegree d = deg.getDegree();				
+			SimpleDegree d = deg.asSimpleDegree();				
 				ans = Math.max(ans,d.getValue());
 		}
 		
@@ -27,9 +27,9 @@ public class SimpleMaxOr implements IDegreeCombiner {
 	public IDegree eval(Collection<? extends IDegree> args, IDegreeFactory factory) {
 		if (args == null || args.size() == 0)
 			return factory == null ? SimpleDegree.UNKNOWN(true) : factory.Unknown();		
-		float ans = 0;
+		double ans = 0;
 		for (IDegree deg : args) {
-			SimpleDegree d = deg.getDegree();				
+			SimpleDegree d = deg.asSimpleDegree();	
 				ans = Math.max(ans,d.getValue());
 		}
 		

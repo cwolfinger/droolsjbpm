@@ -170,7 +170,7 @@ public class SimpleDegreeFactory implements IDegreeFactory {
 	}
 
 	public IDiscountOperator getDiscountOperator() {
-		return new SimpleDiscountOperator(this.Unknown().getDegree());
+		return new SimpleDiscountOperator(this.Unknown().asSimpleDegree());
 	}
 
 	public IDegreeCombiner getDoubleMPOperator() {

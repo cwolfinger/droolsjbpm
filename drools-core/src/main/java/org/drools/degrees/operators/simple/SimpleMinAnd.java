@@ -14,9 +14,9 @@ public class SimpleMinAnd implements IDegreeCombiner {
 	public IDegree eval(IDegree[] args, IDegreeFactory factory) {
 		if (args == null || args.length == 0)
 			return factory == null ? SimpleDegree.UNKNOWN(true) : factory.Unknown();		
-		float ans = 1;
+		double ans = 1;
 		for (IDegree deg : args) {
-			SimpleDegree d = deg.getDegree();				
+			SimpleDegree d = deg.asSimpleDegree();	
 				ans = Math.min(ans,d.getValue());
 		}
 		

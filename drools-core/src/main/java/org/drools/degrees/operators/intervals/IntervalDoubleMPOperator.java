@@ -21,8 +21,8 @@ public class IntervalDoubleMPOperator implements IDegreeCombiner {
 		IntervalDegree prem = (IntervalDegree) args[0];
 		IntervalDegree impl = (IntervalDegree) args[1];
 		
-		float tau = Math.min(prem.getTau(),impl.getTau());
-		float phi = Math.min(prem.getPhi(),impl.getTau());
+		double tau = Math.min(prem.getTau(),impl.getTau());
+		double phi = Math.min(prem.getPhi(),impl.getTau());
 			
 		return new IntervalDegree(tau, 1-phi);
 		                    
@@ -36,8 +36,8 @@ public class IntervalDoubleMPOperator implements IDegreeCombiner {
 		IntervalDegree prem = (IntervalDegree) iter.next();
 		IntervalDegree impl = (IntervalDegree) iter.next();
 		
-		float tau = Math.min(prem.getTau(),impl.getTau());
-		float phi = Math.min(prem.getPhi(),impl.getTau());
+		double tau = Math.min(prem.getTau(),impl.getTau());
+		double phi = Math.min(prem.getPhi(),impl.getTau());
 			
 		return new IntervalDegree(tau, 1-phi);
 	}

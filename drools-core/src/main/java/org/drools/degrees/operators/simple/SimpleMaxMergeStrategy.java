@@ -28,9 +28,9 @@ public class SimpleMaxMergeStrategy implements IMergeStrategy {
 		}
 		
 		
-		float val = factory.Unknown().getDegree().getValue();
+		double val = factory.Unknown().getValue();
 		for (IDegree deg : args) {					
-				val = Math.max(val,deg.getDegree().getValue());		
+				val = Math.max(val,deg.getValue());		
 		}
 		
 		

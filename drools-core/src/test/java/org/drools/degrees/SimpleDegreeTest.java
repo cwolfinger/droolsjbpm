@@ -89,9 +89,9 @@ public class SimpleDegreeTest {
 
 	@Test
 	public void testGetDegree() {
-		assertEquals(s1,s1.getDegree());
-		assertTrue(s3.getDegree() instanceof IDegree );
-		assertTrue(s5.getDegree() instanceof SimpleDegree);
+		assertEquals(s1,s1.asSimpleDegree());
+		assertTrue(s3.asSimpleDegree() instanceof IDegree );
+		assertTrue(s5.asSimpleDegree() instanceof SimpleDegree);
 	}
 
 	@Test

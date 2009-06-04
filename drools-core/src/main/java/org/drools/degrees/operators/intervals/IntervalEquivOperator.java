@@ -20,7 +20,7 @@ public class IntervalEquivOperator implements IDegreeCombiner {
 		if (a1.getUpp() < a2.getLow() || a2.getUpp() < a1.getLow())
 			return IntervalDegreeFactory.FALSE;
 		
-		float maxDist = Math.max(a2.getUpp()-a1.getLow(),a1.getUpp()-a2.getLow());
+		double maxDist = Math.max(a2.getUpp()-a1.getLow(),a1.getUpp()-a2.getLow());
 		return new IntervalDegree(1-maxDist,1);
 		
 	}		
@@ -35,7 +35,7 @@ public class IntervalEquivOperator implements IDegreeCombiner {
 		if (a1.getUpp() < a2.getLow() || a2.getUpp() < a1.getLow())
 			return IntervalDegreeFactory.FALSE;
 		
-		float maxDist = Math.max(a2.getUpp()-a1.getLow(),a1.getUpp()-a2.getLow());
+		double maxDist = Math.max(a2.getUpp()-a1.getLow(),a1.getUpp()-a2.getLow());
 		return new IntervalDegree(1-maxDist,1);
 	}
 

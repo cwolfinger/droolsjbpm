@@ -14,8 +14,8 @@ public class SimpleXor implements IDegreeCombiner {
 	
 	public IDegree eval(IDegree[] args, IDegreeFactory factory) {	
 		return new SimpleDegree( Math.abs(
-						args[0].getDegree().getValue() 
-						- args[1].getDegree().getValue())
+						args[0].getValue() 
+						- args[1].getValue())
 						);
 	}
 
@@ -29,8 +29,8 @@ public class SimpleXor implements IDegreeCombiner {
 		SimpleDegree a2 = (SimpleDegree) iter.next();
 		
 		return new SimpleDegree( Math.abs(
-				a1.getDegree().getValue() 
-				- a2.getDegree().getValue())
+				a1.getValue() 
+				- a2.getValue())
 				);			
 	}
 

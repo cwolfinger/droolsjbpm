@@ -1,13 +1,17 @@
 package org.drools.fuzzy;
 
 import org.drools.base.ValueType;
+import org.drools.bayesian.IDomain;
+import org.drools.bayesian.RealDomain;
 import org.drools.degrees.IDegree;
 
 
 
-public abstract class RealDomain extends FuzzyDomain {
+public abstract class FuzzyRealDomain extends FuzzyDomain  {
 	
 	private Double value;
+	
+	private RealDomain domain;
 	
 	
 	public Double getValue() {
@@ -30,9 +34,8 @@ public abstract class RealDomain extends FuzzyDomain {
 	
 	
 	public void setValue(String op, IDegree deg) {
-		System.out.println(this.getClass()+" WARNING : NEED TO IMPLEMENT Alpha-Cuts AND SET UNION");
 		double refVal = ((NumericDomainFuzzySet) this.getGranule(op)).defuzzify().doubleValue(); 
-		double wgt = deg.getDegree().getValue();
+		double wgt = deg.getValue();
 		
 		setValueBit(refVal*wgt); 
 	}
@@ -42,6 +45,8 @@ public abstract class RealDomain extends FuzzyDomain {
 		
 		return type.isNumber();
 	}
+
+	
 
 
 }

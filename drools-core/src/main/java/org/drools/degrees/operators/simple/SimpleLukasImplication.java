@@ -16,7 +16,7 @@ public class SimpleLukasImplication implements IDegreeCombiner {
 	public IDegree eval(IDegree[] args, IDegreeFactory factory) {
 		if (args == null || args.length < 2)
 			return factory == null ? SimpleDegree.UNKNOWN(true) : factory.Unknown();		
-		float ans = 1 - args[0].getDegree().getValue() + args[1].getDegree().getValue();
+		double ans = 1 - args[0].getValue() + args[1].getValue();
 		
 		
 		return new SimpleDegree(Math.min(1,ans));
@@ -26,7 +26,7 @@ public class SimpleLukasImplication implements IDegreeCombiner {
 		if (args == null || args.size() < 2)
 			return factory == null ? SimpleDegree.UNKNOWN(true) : factory.Unknown();		
 		Iterator<? extends IDegree> iter = args.iterator();
-		float ans = 1 - iter.next().getDegree().getValue() + iter.next().getDegree().getValue();
+		double ans = 1 - iter.next().getValue() + iter.next().getValue();
 		
 		
 		return new SimpleDegree(Math.min(1,ans));

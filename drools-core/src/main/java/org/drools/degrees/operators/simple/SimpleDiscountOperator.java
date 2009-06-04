@@ -17,13 +17,13 @@ public class SimpleDiscountOperator implements IDiscountOperator {
 		this.unk = unk;
 	}
 	
-	public IDegree discount(IDegree source, float strength) {
-		float val = (1-strength)*unk.getValue() + strength*source.getDegree().getValue();
+	public IDegree discount(IDegree source, double strength) {
+		double val = (1-strength)*unk.getValue() + strength*source.getValue();
 		return new SimpleDegree(val);
 	}
 
 	public IDegree eval(IDegree[] args, IDegreeFactory factory) {
-		return discount(args[0], args[1].getDegree().getValue());
+		return discount(args[0], args[1].getValue());
 	}
 
 	public IDegree eval(Collection<? extends IDegree> args,
@@ -31,7 +31,7 @@ public class SimpleDiscountOperator implements IDiscountOperator {
 		Iterator<? extends IDegree> iter = args.iterator();
 		IDegree arg = iter.next();
 		IDegree wgt = iter.next();
-		return discount(arg, wgt.getDegree().getValue());
+		return discount(arg, wgt.getValue());
 	}
 
 	public String getName() {

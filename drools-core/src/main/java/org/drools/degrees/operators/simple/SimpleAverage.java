@@ -19,7 +19,7 @@ public final class SimpleAverage implements IDegreeCombiner {
 		float ans = 0;
 		int n = 0;
 		for (IDegree deg : args) {
-			SimpleDegree d = deg.getDegree();				
+			SimpleDegree d = deg.asSimpleDegree();				
 				ans += d.getValue();
 				n++;
 		}

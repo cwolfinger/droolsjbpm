@@ -15,8 +15,8 @@ public class IntervalIntersectionOperator implements IDegreeCombiner {
 	public IDegree eval(IDegree[] args, IDegreeFactory factory) {
 		if (args == null || args.length == 0)
 			return factory == null ? IntervalDegreeFactory.UNKNOWN : factory.Unknown();		
-		float tau = 0;
-		float phi = 0;
+		double tau = 0;
+		double phi = 0;
 		for (IDegree deg : args) {
 			IntervalDegree ival = (IntervalDegree) deg;
 			if (ival == null) 
@@ -30,8 +30,8 @@ public class IntervalIntersectionOperator implements IDegreeCombiner {
 	public IDegree eval(Collection<? extends IDegree> args, IDegreeFactory factory) {
 		if (args == null || args.size() == 0)
 			return factory == null ? IntervalDegreeFactory.UNKNOWN : factory.Unknown();		
-		float tau = 0;
-		float phi = 0;
+		double tau = 0;
+		double phi = 0;
 		for (IDegree deg : args) {
 			IntervalDegree ival = (IntervalDegree) deg;
 			if (ival == null) 

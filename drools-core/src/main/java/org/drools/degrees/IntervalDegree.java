@@ -3,23 +3,23 @@ package org.drools.degrees;
 public class IntervalDegree implements IDegree {
 	
 	
-	private float tau;
-	private float phi;
+	private double tau;
+	private double phi;
 
 	
-	public IntervalDegree(float low, float upp) {
+	public IntervalDegree(double low, double upp) {
 		this.setTau(low);
 		this.setPhi(1.0f-upp);
 	}
 
 	
 	
-	public SimpleDegree getDegree() {
+	public SimpleDegree asSimpleDegree() {
 		return new SimpleDegree(getTau());
 	}
 
 	
-	public float getValue() {
+	public double getValue() {
 		return getTau();
 	}
 	
@@ -37,7 +37,7 @@ public class IntervalDegree implements IDegree {
 	/**
 	 * @param phi the phi to set
 	 */
-	protected void setPhi(float phi) {
+	protected void setPhi(double phi) {
 		this.phi = phi;
 	}
 
@@ -46,7 +46,7 @@ public class IntervalDegree implements IDegree {
 	/**
 	 * @return the phi
 	 */
-	public float getPhi() {
+	public double getPhi() {
 		return phi;
 	}
 
@@ -55,7 +55,7 @@ public class IntervalDegree implements IDegree {
 	/**
 	 * @param tau the tau to set
 	 */
-	protected void setTau(float tau) {
+	protected void setTau(double tau) {
 		this.tau = tau;
 	}
 
@@ -64,22 +64,22 @@ public class IntervalDegree implements IDegree {
 	/**
 	 * @return the tau
 	 */
-	public float getTau() {
+	public double getTau() {
 		return tau;
 	}
 	
 	
-	public float getLow() {
+	public double getLow() {
 		return getTau();
 	}
 	
-	public float getUpp() {
+	public double getUpp() {
 		return 1.0f - getPhi();
 	}
 
 	
 	public int hashCode() {
-		return new Float(getLow()).hashCode()^new Float(getUpp()).hashCode();
+		return new Double(getLow()).hashCode()^new Double(getUpp()).hashCode();
 	}
 	
 	public boolean equals(Object other) {
@@ -97,7 +97,7 @@ public class IntervalDegree implements IDegree {
 
 
 
-	public float getConfidence(boolean cwa) {
+	public double getConfidence(boolean cwa) {
 		return phi+tau;
 	}
 	
