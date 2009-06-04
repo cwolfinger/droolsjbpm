@@ -17,7 +17,7 @@ public class SimpleFilterStrategy extends ImperfectFilterStrategy {
 	public SimpleFilterStrategy() { }
 	
 	@Override
-	public int doTry(Evaluation eval) {
+	public IFilterStrategy.filterOptions doTry(Evaluation eval) {
 		//return eval.getDegree().toBoolean() ? PASS : DROP;
 		System.out.println(this.getClass()+" : "+eval.getInfoRate());
 		
@@ -28,14 +28,14 @@ public class SimpleFilterStrategy extends ImperfectFilterStrategy {
 //			return HOLD;
 //		else 
 //			return DROP;
-		return eval.getInfoRate() == 1.0f? PASS : HOLD;
+		return eval.getInfoRate() == 1.0f? IFilterStrategy.filterOptions.PASS : IFilterStrategy.filterOptions.HOLD;
 		
 		
 	}
 
 	@Override
 	public boolean isAllowed(Evaluation eval) {
-		return doTry(eval) == PASS;
+		return doTry(eval) == filterOptions.PASS;
 	}
 
 }

@@ -105,15 +105,17 @@ public class JoinNode extends BetaNode implements IGammaNode, Observer {
         	
         	this.constraints.buildEvaluationTemplates(this.id,context.getRule().getDependencies(), factory);
         	
-        	Collection<ConstraintKey> keys = this.constraints.getAllConstraintKeys();
-        	for (ConstraintKey key : keys)
-        		context.getRuleBase().getRete().indexGammaNode(key,this);
+        	
         	
         	if (context.isCutter()) {
         		this.isCutter = true;
         		context.setCutter(false);
         	}
         	this.isCutter = this.isCutter || this.constraints.isCutter();
+        	
+        	Collection<ConstraintKey> keys = this.constraints.getAllConstraintKeys();
+        	for (ConstraintKey key : keys)
+        		context.getRuleBase().getRete().indexGammaNode(key,this);
         }
         System.out.println(this.getClass().getName() + "(id "+id+") constructor hacked to add filter strategy");
         
@@ -262,21 +264,21 @@ public class JoinNode extends BetaNode implements IGammaNode, Observer {
         	System.out.println("Situation at join eval"+mainRecord.expand());        		        		        		        	
 	        		        	        		        		        		        	
         	
-        	int verdict;
+        	IFilterStrategy.filterOptions verdict;
         	
         	//if (this.isCutter && mainRecord.getDegree().equals(factory.False()))
         	if (doCut)
-        		verdict = IFilterStrategy.DROP;
+        		verdict = IFilterStrategy.filterOptions.DROP;
         	else 
         		verdict = this.filterStrat.doTry(mainRecord); 
         	
         	
         	switch (verdict) {
-        		case IFilterStrategy.DROP : 
+        		case DROP : 
         			System.out.println("Beta FAIL at assertTuple: DROP record");
         			continue;
 			
-        		case IFilterStrategy.HOLD : //TODO: HOLD
+        		case HOLD : //TODO: HOLD
         			System.out.println("HOLD RULES @JOIN NODE"+this.getId());
         			System.out.println("Situation is "+mainRecord.expand());
         			
@@ -289,7 +291,7 @@ public class JoinNode extends BetaNode implements IGammaNode, Observer {
         			continue;
         			//break;
 			
-        		case IFilterStrategy.PASS : 
+        		case PASS : 
         			System.out.println("Beta PASS at assertTuple: propagate record");
         			this.sink.propagateAssertLeftTuple( leftTuple,
                             propRightTuple,
@@ -475,21 +477,21 @@ public class JoinNode extends BetaNode implements IGammaNode, Observer {
         	
         	System.out.println("Situation at join eval"+mainRecord.expand());        		        		        		        	
         		
-        	int verdict;
+        	IFilterStrategy.filterOptions verdict;
         	
         	//if (this.isCutter && mainRecord.getDegree().equals(factory.False()))
         	if (doCut)
-        		verdict = IFilterStrategy.DROP;
+        		verdict = IFilterStrategy.filterOptions.DROP;
         	else 
         		verdict = this.filterStrat.doTry(mainRecord); 
         	
         	
         	switch (verdict) {
-        		case IFilterStrategy.DROP :
+        		case DROP :
         			System.out.println("Beta DROP at assertobject");
         			return;
 			
-        		case IFilterStrategy.HOLD : //TODO: HOLD
+        		case HOLD : //TODO: HOLD
         			System.out.println("HOLD RULES @JOIN NODE"+this.getId());
         			System.out.println("Situation is "+mainRecord.expand());
         			
@@ -502,7 +504,7 @@ public class JoinNode extends BetaNode implements IGammaNode, Observer {
         			
         			break;
 			
-        		case IFilterStrategy.PASS : 
+        		case PASS : 
         			System.out.println("Beta PASS at assertObjecf: propagate record");
         			this.sink.propagateAssertLeftTuple( leftTuple,
                             propRightTuple,
@@ -541,24 +543,24 @@ public class JoinNode extends BetaNode implements IGammaNode, Observer {
 		
 		System.out.println("**************************************************************UPDATE @JOIN NODE");
 		
-		int verdict;
+		IFilterStrategy.filterOptions verdict;
     	
     	if (this.isCutter && record.getDegree().equals(record.getFactory().False()))
-    		verdict = IFilterStrategy.DROP;
+    		verdict = IFilterStrategy.filterOptions.DROP;
     	else 
     		verdict = this.filterStrat.doTry(record); 
     	
     	
     	switch (verdict) {
-		case IFilterStrategy.DROP : 
+		case DROP : 
 			record.deleteObserver(this);
 			return;
 		
-		case IFilterStrategy.HOLD : 
+		case HOLD : 
 			//do nothing
 			return;
 		
-		case IFilterStrategy.PASS :
+		case PASS :
 			//go on
 			record.deleteObserver(this);
 			//throw new RuntimeException("Awakened objeect");

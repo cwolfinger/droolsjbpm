@@ -284,8 +284,9 @@ public class Rete extends ObjectSource
 			this.constraintIds.put(key.getAlias(), key);
 		}
 		else {
-			if (! node.equals(constraintIndex.get(key)))
-				throw new RuntimeDroolsException("Found duplicate key: "+key+" this may be a know issue");
+			IGammaNode prevNode = constraintIndex.get(key); 
+			if (! node.equals(prevNode))
+				System.out.println("WARNING: Found duplicate key: "+key+" this may be a know issue");
 		}
 	}
 	

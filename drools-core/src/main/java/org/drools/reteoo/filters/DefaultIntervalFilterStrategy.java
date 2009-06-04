@@ -22,7 +22,7 @@ public class DefaultIntervalFilterStrategy implements IFilterStrategy {
 	 * @deprecated
 	 * Testing purposes
 	 */
-	public int doTry(Evaluation eval) {
+	public IFilterStrategy.filterOptions doTry(Evaluation eval) {
 		/*
 		System.out.println(""+eval.getInfoRate());
 		
@@ -34,13 +34,13 @@ public class DefaultIntervalFilterStrategy implements IFilterStrategy {
 			return DROP;
 			*/
 		
-		return (eval.getInfoRate() == 1) ? PASS : HOLD;
+		return (eval.getInfoRate() == 1) ? IFilterStrategy.filterOptions.PASS : IFilterStrategy.filterOptions.HOLD;
 		
 	}
 
 	
 	public boolean isAllowed(Evaluation eval) {
-		return doTry(eval) == PASS;
+		return doTry(eval) == IFilterStrategy.filterOptions.PASS;
 	}
 
 }

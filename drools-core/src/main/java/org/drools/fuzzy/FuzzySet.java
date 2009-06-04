@@ -29,6 +29,10 @@ public abstract class FuzzySet implements IDegree {
 	
 	
 	
+	public float getValue() {
+		return -99;
+	}
+	
 	public SimpleDegree getDegree() {
 		// TODO Defuzzify here
 		return null;

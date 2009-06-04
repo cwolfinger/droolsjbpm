@@ -18,8 +18,8 @@ public class FuzzyFilterStrategy extends ImperfectFilterStrategy {
 	}
 
 	@Override
-	public int doTry(final Evaluation eval) {
-		return (eval.getInfoRate() == 1.0) ? PASS : HOLD;
+	public IFilterStrategy.filterOptions doTry(final Evaluation eval) {
+		return (eval.getInfoRate() == 1.0) ? IFilterStrategy.filterOptions.PASS : IFilterStrategy.filterOptions.HOLD;
 	}
 
 	@Override

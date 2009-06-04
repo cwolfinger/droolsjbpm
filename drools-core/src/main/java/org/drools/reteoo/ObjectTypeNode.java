@@ -664,26 +664,26 @@ public class ObjectTypeNode extends ObjectSource
 		
 		System.out.println("Type evaluation trial "+record.expand());
 		
-		int verdict;
+		IFilterStrategy.filterOptions verdict;
     	
     	if (record.getDegree().equals(factory.False())) {
     		//TypeNode is implicitly cutter
-    		verdict = IFilterStrategy.DROP;    		
+    		verdict = IFilterStrategy.filterOptions.DROP;    		
     	} else if (record == null) {
     		//InitialFact is passed
-    		verdict = IFilterStrategy.PASS;
+    		verdict = IFilterStrategy.filterOptions.PASS;
     	} else {
     		//Normal test
     		verdict = this.filterStrat.doTry(record); 
     	}
     	
     	switch (verdict) {
-			case IFilterStrategy.DROP : 
+			case DROP : 
 				//time to die
 				System.out.println("Type FAIL : DROP record");
 				return;
 			
-			case IFilterStrategy.HOLD : 
+			case HOLD : 
 				System.out.println("WARNING::::::::::::::::::::::::::: OBJECT HELD AT TYPE NODE "+this.getConstraintKey());
 				System.out.println("Situation is "+record.expand());
 					record.setFactHandle(factHandle);
@@ -694,7 +694,7 @@ public class ObjectTypeNode extends ObjectSource
 				//wait for more1
 				return;
 			
-			case IFilterStrategy.PASS :
+			case PASS :
 				//go on
 				System.out.println("Alpha PASS ");
 				this.sink.propagateAssertObject(factHandle,
@@ -715,24 +715,24 @@ public class ObjectTypeNode extends ObjectSource
 		EvalRecord record = (EvalRecord) watcher;
 		System.out.println("**************************************************************UPDATE @ALPHA NODE");
 				
-				int verdict;
+				IFilterStrategy.filterOptions verdict;
 
 				if (record.getDegree().equals(record.getFactory().False()))
-					verdict = IFilterStrategy.DROP;
+					verdict = IFilterStrategy.filterOptions.DROP;
 				else 
 					verdict = this.filterStrat.doTry(record); 
 
 
 				switch (verdict) {
-				case IFilterStrategy.DROP : 
+				case DROP : 
 					record.deleteObserver(this);
 					return;
 				
-				case IFilterStrategy.HOLD : 
+				case HOLD : 
 					//do nothing
 					return;
 				
-				case IFilterStrategy.PASS :
+				case PASS :
 					//go on
 					record.deleteObserver(this);
 					//throw new RuntimeException("Awakened objeect");

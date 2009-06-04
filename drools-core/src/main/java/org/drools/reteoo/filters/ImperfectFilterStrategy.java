@@ -11,19 +11,19 @@ public abstract class ImperfectFilterStrategy implements IFilterStrategy {
 	public abstract boolean isAllowed(final Evaluation eval);
 	
 	
-	public abstract int doTry(final Evaluation eval);
+	public abstract IFilterStrategy.filterOptions doTry(final Evaluation eval);
 	
 	
 	public boolean drop(final Evaluation eval) {
-		return doTry(eval) == DROP;
+		return doTry(eval) == IFilterStrategy.filterOptions.DROP;
 	}
 	
 	public boolean pass(final Evaluation eval) {
-		return doTry(eval) == PASS;
+		return doTry(eval) == IFilterStrategy.filterOptions.PASS;
 	}
 	
 	public boolean hold(final Evaluation eval) {
-		return doTry(eval) == HOLD;
+		return doTry(eval) == IFilterStrategy.filterOptions.HOLD;
 	}
 	
 	

@@ -19,6 +19,10 @@ public class IntervalDegree implements IDegree {
 	}
 
 	
+	public float getValue() {
+		return getTau();
+	}
+	
 	//TODO : Consider... beware...
 	public boolean toBoolean() {
 		return getUpp() > 0.5;

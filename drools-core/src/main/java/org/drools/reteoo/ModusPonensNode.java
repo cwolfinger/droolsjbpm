@@ -127,9 +127,9 @@ public class ModusPonensNode extends JoinNode {
         	        		        		        	        		        		        		        	
         		
         	switch (this.filterStrat.doTry(mpRecord)) {
-        		case IFilterStrategy.DROP : return;
+        		case DROP : return;
 			
-        		case IFilterStrategy.HOLD : //TODO: HOLD
+        		case HOLD : //TODO: HOLD
         			System.out.println("HOLD RULES @MP NODE"+this.getId());
         			System.out.println("Situation is "+mpRecord.expand());
         			
@@ -144,7 +144,7 @@ public class ModusPonensNode extends JoinNode {
         			
         			break;
 			
-        		case IFilterStrategy.PASS : 
+        		case PASS : 
         			//IN CASE, RULES ARE RECALLED ANYWAY!!!
         			if (mpRecord.getLeftTuple() == null || ! mpRecord.getLeftTuple().equals(leftTuple))
         				mpRecord.addObserver(this);
@@ -200,15 +200,15 @@ public class ModusPonensNode extends JoinNode {
 		
 		System.out.println("**************************************************************UPDATE @MP NODE");
 		switch (this.filterStrat.doTry(record)) {
-		case IFilterStrategy.DROP : 
+		case DROP : 
 			//record.deleteObserver(this);
 			return;
 		
-		case IFilterStrategy.HOLD : 
+		case HOLD : 
 			//do nothing
 			return;
 		
-		case IFilterStrategy.PASS :
+		case PASS :
 			//go on
 			//record.deleteObserver(this);
 			//throw new RuntimeException("Awakened objeect");

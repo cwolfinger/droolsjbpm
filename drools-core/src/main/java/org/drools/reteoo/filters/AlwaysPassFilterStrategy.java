@@ -17,14 +17,14 @@ public class AlwaysPassFilterStrategy extends ImperfectFilterStrategy {
 	public AlwaysPassFilterStrategy() { }
 	
 	@Override
-	public int doTry(Evaluation eval) {
-		return PASS;
+	public IFilterStrategy.filterOptions doTry(Evaluation eval) {
+		return filterOptions.PASS;
 		
 	}
 
 	@Override
 	public boolean isAllowed(Evaluation eval) {
-		return doTry(eval) == PASS;
+		return doTry(eval) == filterOptions.PASS;
 	}
 
 }
