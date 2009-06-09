@@ -390,7 +390,7 @@ abstract public class AbstractRuleBase
      * @throws FactException
      * @throws InvalidPatternException
      */
-    public synchronized void addPackage(final Package newPkg) throws PackageIntegrationException {
+    public void addPackage(final Package newPkg) throws PackageIntegrationException {
         newPkg.checkValidity();
         synchronized ( this.pkgs ) {
             final Package pkg = (Package) this.pkgs.get( newPkg.getName() );
@@ -532,16 +532,18 @@ abstract public class AbstractRuleBase
         }
     }
 
-    private synchronized void addRule(final Package pkg,
+    private void addRule(final Package pkg,
                                       final Rule rule) throws InvalidPatternException {
-        this.eventSupport.fireBeforeRuleAdded( pkg,
-                                               rule );
-        if ( !rule.isValid() ) {
-            throw new IllegalArgumentException( "The rule called " + rule.getName() + " is not valid. Check for compile errors reported." );
+        synchronized ( this.pkgs ) {
+            this.eventSupport.fireBeforeRuleAdded( pkg,
+                                                   rule );
+            if ( !rule.isValid() ) {
+                throw new IllegalArgumentException( "The rule called " + rule.getName() + " is not valid. Check for compile errors reported." );
+            }
+            addRule( rule );
+            this.eventSupport.fireAfterRuleAdded( pkg,
+                                                  rule );
         }
-        addRule( rule );
-        this.eventSupport.fireAfterRuleAdded( pkg,
-                                              rule );
     }
 
     protected abstract void addRule(final Rule rule) throws InvalidPatternException;
@@ -651,11 +653,14 @@ abstract public class AbstractRuleBase
 
     private void removeRule(final Package pkg,
                             final Rule rule) {
-        this.eventSupport.fireBeforeRuleRemoved( pkg,
-                                                 rule );
-        removeRule( rule );
-        this.eventSupport.fireAfterRuleRemoved( pkg,
-                                                rule );
+        synchronized ( this.pkgs ) {
+            this.eventSupport.fireBeforeRuleRemoved( pkg,
+                                                     rule );
+            
+            removeRule( rule );
+            this.eventSupport.fireAfterRuleRemoved( pkg,
+                                                    rule );
+        }
     }
 
     protected abstract void removeRule(Rule rule);
@@ -686,7 +691,7 @@ abstract public class AbstractRuleBase
         }
     }
 
-    public synchronized void addProcess(final Process process) {
+    public void addProcess(final Process process) {
         synchronized ( this.pkgs ) {
             this.processes.put( process.getId(),
                                 process );
@@ -694,7 +699,7 @@ abstract public class AbstractRuleBase
 
     }
 
-    public synchronized void removeProcess(final String id) {
+    public void removeProcess(final String id) {
         synchronized ( this.pkgs ) {
             this.processes.remove( id );
         }
@@ -712,8 +717,10 @@ abstract public class AbstractRuleBase
 		return objenesis;
 	}
 
-	protected synchronized void addStatefulSession(final StatefulSession statefulSession) {
-        this.statefulSessions.add( statefulSession );
+	protected void addStatefulSession(final StatefulSession statefulSession) {
+        synchronized ( this.statefulSessions ) {
+            this.statefulSessions.add( statefulSession );
+        }
     }
 
     public Package getPackage(final String name) {
