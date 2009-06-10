@@ -768,6 +768,7 @@ rule_attribute
 	| prior
 	| entail_mode
 	| filter
+	| kind
 	;
 finally {
 	if (isEditorInterfaceEnabled && isFailed) {
@@ -857,7 +858,10 @@ filter
   { emit($STRING, DroolsEditorType.STRING_CONST ); }
   ;
 
-
+kind
+  : kind_key^ { emit(Location.LOCATION_RULE_HEADER_KEYWORD);  } STRING
+  { emit($STRING, DroolsEditorType.STRING_CONST ); }
+  ;
 
 
 
@@ -1272,63 +1276,104 @@ constraint
 
 
 
+//or_constr
+//  :             
+//     or_constr_config
+//          
+//        (DOUBLE_PIPE^                        
+//         and_constr
+//        )*
+//        
+//  ;
+//   
+//or_constr_config
+//  :     
+//    (and_constr SINGLE_PIPE) =>
+//      and_constr
+//         SINGLE_PIPE
+//           //square_chunk?
+//           //constr_identifier? 
+//           //cut?
+//           constr_parameters             
+//           and_constr
+//      -> ^(SINGLE_PIPE 
+//            // square_chunk? ^(VT_CONSTRID constr_identifier)? cut?
+//            constr_parameters? 
+//            and_constr and_constr)
+//    |
+//    and_constr      
+//  ;     
+
+
+//
+//and_constr
+//  :       
+//          and_constr_config          
+//          (DOUBLE_AMPER^                        
+//           unary_constr
+//          )*                        
+//  ;
+//  
+//and_constr_config
+//  :     
+//    (unary_constr SINGLE_AMPER) =>
+//      unary_constr
+//         SINGLE_AMPER
+//           //square_chunk?
+//           //constr_identifier?
+//           //cut?
+//           constr_parameters?                 
+//           unary_constr           
+//      -> ^(SINGLE_AMPER 
+//            // square_chunk? ^(VT_CONSTRID constr_identifier)? cut?
+//            constr_parameters? 
+//            unary_constr unary_constr)
+//    |
+//    unary_constr      
+//  ;      
+
+
+
+
+
 or_constr
-  :             
-     or_constr_config
+  :              
+         and_constr          
           
-        (DOUBLE_PIPE^                        
-         and_constr
-        )*
+          (DOUBLE_PIPE^
+            constr_parameters?
+            or_constr_follow
+          )?
         
   ;
    
-or_constr_config
-  :     
-    (and_constr SINGLE_PIPE) =>
-      and_constr
-         SINGLE_PIPE
-           //square_chunk?
-           //constr_identifier? 
-           //cut?
-           constr_parameters             
-           and_constr
-      -> ^(SINGLE_PIPE 
-            // square_chunk? ^(VT_CONSTRID constr_identifier)? cut?
-            constr_parameters? 
-            and_constr and_constr)
-    |
-    and_constr      
-  ;     
+or_constr_follow
+  : and_constr
+    (DOUBLE_PIPE^
+      or_constr_follow
+    )?
+  ;
+
 
 and_constr
-
-  :       
-          and_constr_config
+  :                 
+          unary_constr          
           
-          (DOUBLE_AMPER^                         
-           unary_constr
-          )*
-                
-           
+          (DOUBLE_AMPER^
+            constr_parameters?
+            and_constr_follow
+          )?
+       //-> ^(VT_AND_RESTR constr_parameters? unary_constr and_constr_follow?)                           
   ;
   
-and_constr_config
-  :     
-    (unary_constr SINGLE_AMPER) =>
-      unary_constr
-         SINGLE_AMPER
-           //square_chunk?
-           //constr_identifier?
-           //cut?
-           constr_parameters?                 
-           unary_constr           
-      -> ^(SINGLE_AMPER 
-            // square_chunk? ^(VT_CONSTRID constr_identifier)? cut?
-            constr_parameters? 
-            unary_constr unary_constr)
-    |
-    unary_constr      
-  ;      
+and_constr_follow
+  : unary_constr
+    (DOUBLE_AMPER^
+      and_constr_follow
+    )?
+  ;
+
+
 
 
 
@@ -2745,6 +2790,13 @@ filter_key
   ;
 
 
+kind_key
+  : {(validateIdentifierKey(DroolsSoftKeywords.KIND))}?=>  id=ID
+  { emit($id, DroolsEditorType.KEYWORD);  }
+    ->  VK_KIND[$id]
+  ;
+
+
 salience_key
 	:	{(validateIdentifierKey(DroolsSoftKeywords.SALIENCE))}?=>  id=ID
 	{	emit($id, DroolsEditorType.KEYWORD);	}
@@ -2950,12 +3002,7 @@ kut_key
   { emit($id, DroolsEditorType.KEYWORD);  }
     ->  VK_CUT[$id]
   ;
-  
-kind_key  
-  : {(validateIdentifierKey(DroolsSoftKeywords.KIND))}?=>  id=ID
-  { emit($id, DroolsEditorType.KEYWORD);  }
-    ->  VK_KIND[$id]
-  ;  
+    
 
 args_key  
   : {(validateIdentifierKey(DroolsSoftKeywords.ARGS))}?=>  id=ID

@@ -232,6 +232,12 @@ public class PatternBuilder
         
         if (patternDescr.getLabel() != null)
         	pattern.setLabel(patternDescr.getLabel());
+        
+        if (patternDescr.getParams() != null)
+        	pattern.setParams(patternDescr.getParams());
+        
+        if (patternDescr.getPrior() != null)
+        	pattern.setPrior(patternDescr.getPrior());
 
         return pattern;
     }

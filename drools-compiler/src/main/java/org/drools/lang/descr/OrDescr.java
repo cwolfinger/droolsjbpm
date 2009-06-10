@@ -65,7 +65,7 @@ public class OrDescr extends BaseDescr
     }
 
     public void addOrMerge(final BaseDescr baseDescr) {
-        if( baseDescr instanceof OrDescr ) {
+        if( baseDescr instanceof OrDescr && ! overrides(this,baseDescr)) {
             this.descrs.addAll( ((OrDescr)baseDescr).getDescrs() );
         } else {
             this.descrs.add( baseDescr );

@@ -207,6 +207,7 @@ rule_attribute returns [AttributeDescr attributeDescr]
 	| ^(attrName=VK_PRIOR value=VT_PAREN_CHUNK)
 	| ^(attrName=VK_ENTAIL value=STRING)
 	| ^(attrName=VK_FILTER value=STRING)
+	| ^(attrName=VK_KIND value=STRING)
 	)
 	{	$attributeDescr = factory.createAttribute($attrName, $value);	}
 	;
@@ -412,7 +413,7 @@ fact_expression returns [BaseDescr descr]
 	|	^((DOUBLE_PIPE | SINGLE_PIPE)  attribs=constraint_attributes? left=fact_expression right=fact_expression )
 	{	$descr = factory.createOrRestrictionConnective($left.descr, $right.descr, attribs); }	
 	  
-	|	^((DOUBLE_AMPER | SINGLE_AMPER) attribs=constraint_attributes? left=fact_expression right=fact_expression )
+	|	^(( DOUBLE_AMPER | SINGLE_AMPER) left=fact_expression attribs=constraint_attributes? right=fact_expression )
 	{	$descr = factory.createAndRestrictionConnective($left.descr, $right.descr, attribs); 
 		
 	} 

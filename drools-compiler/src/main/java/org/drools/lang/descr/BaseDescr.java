@@ -195,4 +195,19 @@ public class BaseDescr
 	public String getPrior() {
 		return prior;
 	}
+	
+	public boolean overrides(BaseDescr master, BaseDescr slave) {
+		boolean testCut = master.isCutter() == slave.isCutter();
+		
+		boolean testLabel = (master.getLabel() == null && slave.getLabel() == null)
+						    || (master.getLabel() != null && master.getLabel().equals(slave.getLabel()));
+		
+		boolean testPrior = (master.getPrior() == null && slave.getPrior() == null)
+	    					|| (master.getPrior() != null && master.getPrior().equals(slave.getPrior()));
+		
+		boolean testParams = (master.getParams() == null && slave.getParams() == null)
+	    					|| (master.getParams() != null && master.getParams().equals(slave.getParams()));
+		
+		return ! (testCut && testLabel && testPrior && testParams);
+	}
 }

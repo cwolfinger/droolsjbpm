@@ -68,7 +68,7 @@ public class AndDescr extends BaseDescr
     }
 
     public void addOrMerge(final BaseDescr baseDescr) {
-        if ( baseDescr instanceof AndDescr ) {
+        if ( baseDescr instanceof AndDescr && ! overrides(this,baseDescr) ) {
             this.descrs.addAll( ((AndDescr) baseDescr).getDescrs() );
         } else {
             addDescr( baseDescr );

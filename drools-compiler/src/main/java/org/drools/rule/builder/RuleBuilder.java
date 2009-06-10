@@ -134,6 +134,8 @@ public class RuleBuilder {
             	rule.setEntailMode(attributeDescr.getValue());
             } else if ( name.equals( "filter_str" ) ) {
             	rule.setFilterStrategy(attributeDescr.getValue());
+            } else if ( name.equals( "kind" ) ) {
+            	rule.setModusPonensKind(attributeDescr.getValue());
             }
             
         }
