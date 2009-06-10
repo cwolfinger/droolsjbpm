@@ -15,7 +15,11 @@ public class FuzzyTest0 extends AbstractChanceTest {
 		FactHandle handle = getSession().insert(r);				
 		getSession().fireAllRules();
 		
+		this.log("|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||");
+		
 		getSession().retract(handle);
+		
+		
 		
 		r.setTemperature(11.3);
 		
@@ -23,8 +27,8 @@ public class FuzzyTest0 extends AbstractChanceTest {
 		getSession().fireAllRules();
 		
 
-		getSession().insert(new Double(37.0));
-		getSession().fireAllRules();
+//		getSession().insert(new Double(37.0));
+//		getSession().fireAllRules();
 	}
 
 	

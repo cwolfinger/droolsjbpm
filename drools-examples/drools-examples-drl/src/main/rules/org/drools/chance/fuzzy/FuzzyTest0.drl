@@ -9,6 +9,11 @@ import java.io.FileWriter;
 global FileWriter writer;
 
 
+
+
+
+
+
 rule "Hot v1"
 	when 
 		$r : Room( temperature ~hot )		
@@ -31,9 +36,10 @@ rule "Hot v2"
 end
 
 
+
 rule "Hot v3 (Warm)"
 	when 
-		$r : Room( temperature ~seems "warm" && temperature ~seems "hot")		
+		$r : Room( $w: temperature ~seems "warm" && @(kind="Prod")  $h: temperature ~seems "hot")		
 	then
 		
 		writer.write("\n\n");
