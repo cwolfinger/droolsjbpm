@@ -1091,32 +1091,43 @@ public class DescrFactory {
 		pattern.setEndCharacter(dataType.getEndCharacter());
 		pattern.setObjectType(dataType.getText());
 
+//		if (null != exprList && exprList.size() > 0) {
+//			
+//			if (exprList.size() == 1) {
+//				if (exprList.get(0) instanceof FieldBindingDescr
+//						&& ((FieldBindingDescr) exprList.get(0))
+//								.getFieldConstraint().getRestriction()
+//								.getRestrictions().size() > 0) {
+//					pattern.getConstraint().addDescr(exprList.get(0));
+//					pattern.getConstraint().addDescr(
+//							((FieldBindingDescr) exprList.get(0))
+//									.getFieldConstraint());
+//				} else {
+//					pattern.getConstraint().addOrMerge(exprList.get(0));
+//				}
+//			} else {
+//				for (BaseDescr constraint : exprList) {
+//					pattern.getConstraint().addDescr(constraint);
+//					if (constraint instanceof FieldBindingDescr
+//							&& ((FieldBindingDescr) constraint)
+//									.getFieldConstraint().getRestriction()
+//									.getRestrictions().size() > 0) {
+//						pattern.getConstraint().addDescr(
+//								((FieldBindingDescr) constraint)
+//										.getFieldConstraint());
+//					}
+//				}
+//			}
+			
 		if (null != exprList && exprList.size() > 0) {
 			if (exprList.size() == 1) {
-				if (exprList.get(0) instanceof FieldBindingDescr
-						&& ((FieldBindingDescr) exprList.get(0))
-								.getFieldConstraint().getRestriction()
-								.getRestrictions().size() > 0) {
-					pattern.getConstraint().addDescr(exprList.get(0));
-					pattern.getConstraint().addDescr(
-							((FieldBindingDescr) exprList.get(0))
-									.getFieldConstraint());
-				} else {
-					pattern.getConstraint().addOrMerge(exprList.get(0));
-				}
+                pattern.getConstraint().addOrMerge(exprList.get(0));
 			} else {
 				for (BaseDescr constraint : exprList) {
 					pattern.getConstraint().addDescr(constraint);
-					if (constraint instanceof FieldBindingDescr
-							&& ((FieldBindingDescr) constraint)
-									.getFieldConstraint().getRestriction()
-									.getRestrictions().size() > 0) {
-						pattern.getConstraint().addDescr(
-								((FieldBindingDescr) constraint)
-										.getFieldConstraint());
-					}
 				}
 			}
+									
 			pattern.setEndCharacter(exprList.get(exprList.size() - 1)
 					.getEndCharacter());
 		}
@@ -1210,7 +1221,12 @@ public class DescrFactory {
 	 */
 	public FieldConstraintDescr setupFieldConstraint(
 			FieldConstraintDescr field, BaseDescr descr) {
-		return setupFieldConstraint(field, descr, new ArrayList<AttributeDescr>());
+		//return setupFieldConstraint(field, descr, new ArrayList<AttributeDescr>());
+		if (null != descr && descr instanceof RestrictionDescr) {
+			field.getRestriction().addOrMerge((RestrictionDescr) descr);
+		}
+		return field;
+
 	}
 	
 	public FieldConstraintDescr setupFieldConstraint(

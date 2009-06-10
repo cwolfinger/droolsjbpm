@@ -34,26 +34,38 @@ public class EqvDescr extends BaseDescr
     }
 
     public void addDescr(final BaseDescr baseDescr) {
-    	if (this.descrs.size() >= 2)
-        	throw new RuntimeDroolsException("Eqv is Binary");
-    	
         this.descrs.add( baseDescr );
-    }
-    
-    public void addDescrFirst(final BaseDescr baseDescr) {
-    	if (this.descrs.size() >= 2)
-        	throw new RuntimeDroolsException("Eqv is Binary");
-    	
-        this.descrs.add( 0 , baseDescr );
+        if( baseDescr instanceof FieldBindingDescr ) {
+            FieldBindingDescr fbd = (FieldBindingDescr) baseDescr;
+            if( fbd.getFieldConstraint() != null ) {
+                this.descrs.add( fbd.getFieldConstraint() );
+                fbd.setFieldConstraint( null );
+            }
+        }
     }
 
-        
     public void insertDescr(int index,
                             final BaseDescr baseDescr) {
+        if( baseDescr instanceof FieldBindingDescr ) {
+            FieldBindingDescr fbd = (FieldBindingDescr) baseDescr;
+            if( fbd.getFieldConstraint() != null ) {
+                this.descrs.add(index, fbd.getFieldConstraint() );
+                fbd.setFieldConstraint( null );
+            }
+        }
         this.descrs.add( index,
                          baseDescr );
     }
 
+    
+    public void addDescrFirst(final BaseDescr baseDescr) {
+//    	if (this.descrs.size() >= 2)
+//        	throw new RuntimeDroolsException("Eqv is Binary");
+    	
+        this.descrs.add( 0 , baseDescr );
+    }
+
+      
     public void insertBeforeLast(final Class clazz,
                              final BaseDescr baseDescr) {
         if ( this.descrs.isEmpty() ) {
@@ -77,8 +89,11 @@ public class EqvDescr extends BaseDescr
     }
 
     public void addOrMerge(final BaseDescr baseDescr) {
-        if ( baseDescr instanceof EqvDescr ) {
-            this.descrs.addAll( ((EqvDescr) baseDescr).getDescrs() );
+        if ( baseDescr instanceof EqvDescr && ! overrides(this,baseDescr)) {
+        	for( BaseDescr descr : (List<BaseDescr>)((EqvDescr) baseDescr).getDescrs() ) {
+                addDescr( descr );
+            }
+            //this.descrs.addAll( ((EqvDescr) baseDescr).getDescrs() );
         } else {
             addDescr( baseDescr );
         }

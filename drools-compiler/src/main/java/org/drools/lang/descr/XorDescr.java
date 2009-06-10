@@ -34,26 +34,39 @@ public class XorDescr extends BaseDescr
     }
 
     public void addDescr(final BaseDescr baseDescr) {
-    	if (this.descrs.size() >= 2)
-        	throw new RuntimeDroolsException("Xor is Binary");
-    	
         this.descrs.add( baseDescr );
-    }
-    
-
-    public void addDescrFirst(final BaseDescr baseDescr) {
-        if (this.descrs.size() >= 2)
-        	throw new RuntimeDroolsException("Xor is Binary");
-        
-        this.descrs.add( 0 , baseDescr );
+        if( baseDescr instanceof FieldBindingDescr ) {
+            FieldBindingDescr fbd = (FieldBindingDescr) baseDescr;
+            if( fbd.getFieldConstraint() != null ) {
+                this.descrs.add( fbd.getFieldConstraint() );
+                fbd.setFieldConstraint( null );
+            }
+        }
     }
 
     public void insertDescr(int index,
                             final BaseDescr baseDescr) {
+        if( baseDescr instanceof FieldBindingDescr ) {
+            FieldBindingDescr fbd = (FieldBindingDescr) baseDescr;
+            if( fbd.getFieldConstraint() != null ) {
+                this.descrs.add(index, fbd.getFieldConstraint() );
+                fbd.setFieldConstraint( null );
+            }
+        }
         this.descrs.add( index,
                          baseDescr );
     }
 
+   
+
+    public void addDescrFirst(final BaseDescr baseDescr) {
+//        if (this.descrs.size() >= 2)
+//        	throw new RuntimeDroolsException("Xor is Binary");
+        
+        this.descrs.add( 0 , baseDescr );
+    }
+
+   
     public void insertBeforeLast(final Class clazz,
                              final BaseDescr baseDescr) {
         if ( this.descrs.isEmpty() ) {
@@ -77,8 +90,11 @@ public class XorDescr extends BaseDescr
     }
 
     public void addOrMerge(final BaseDescr baseDescr) {
-        if ( baseDescr instanceof XorDescr ) {
-            this.descrs.addAll( ((XorDescr) baseDescr).getDescrs() );
+        if ( baseDescr instanceof XorDescr && ! overrides(this,baseDescr)) {
+//        	this.descrs.addAll( ((XorDescr) baseDescr).getDescrs() );
+        	for( BaseDescr descr : (List<BaseDescr>)((XorDescr) baseDescr).getDescrs() ) {
+                addDescr( descr );
+            }            
         } else {
             addDescr( baseDescr );
         }

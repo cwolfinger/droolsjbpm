@@ -47,18 +47,32 @@ public class OrDescr extends BaseDescr
         addDescr( baseDescr );
     }
     
-    public void insertDescr(int index, final BaseDescr baseDescr) {
-        this.descrs.add( index, baseDescr );
-    }    
+       
 
     public void addDescr(final BaseDescr baseDescr) {
         this.descrs.add( baseDescr );
+        if( baseDescr instanceof FieldBindingDescr ) {
+            FieldBindingDescr fbd = (FieldBindingDescr) baseDescr;
+            if( fbd.getFieldConstraint() != null ) {
+                this.descrs.add( fbd.getFieldConstraint() );
+                fbd.setFieldConstraint( null );
+            }
+        }
     }
 
-    
-    public void addDescrFirst(final BaseDescr baseDescr) {    	    
-        this.descrs.add( 0 , baseDescr );
+    public void insertDescr(int index,
+                            final BaseDescr baseDescr) {
+        if( baseDescr instanceof FieldBindingDescr ) {
+            FieldBindingDescr fbd = (FieldBindingDescr) baseDescr;
+            if( fbd.getFieldConstraint() != null ) {
+                this.descrs.add(index, fbd.getFieldConstraint() );
+                fbd.setFieldConstraint( null );
+            }
+        }
+        this.descrs.add( index,
+                         baseDescr );
     }
+
 
     public List getDescrs() {
         return this.descrs;
@@ -66,11 +80,21 @@ public class OrDescr extends BaseDescr
 
     public void addOrMerge(final BaseDescr baseDescr) {
         if( baseDescr instanceof OrDescr && ! overrides(this,baseDescr)) {
-            this.descrs.addAll( ((OrDescr)baseDescr).getDescrs() );
+           // this.descrs.addAll( ((OrDescr)baseDescr).getDescrs() );
+        	for( BaseDescr descr : (List<BaseDescr>)((OrDescr) baseDescr).getDescrs() ) {
+                addDescr( descr );
+            }
         } else {
             this.descrs.add( baseDescr );
         }
     }
+
+	public void addDescrFirst(BaseDescr baseDescr) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
     
     
 }

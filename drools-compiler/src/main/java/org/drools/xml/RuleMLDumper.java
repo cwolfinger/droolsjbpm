@@ -428,43 +428,43 @@ public class RuleMLDumper extends ReflectiveVisitor implements
 
 	public void visitFieldBindingDescr(final FieldBindingDescr descr) {
 
-		String varName = context.currentObjectVariable + "."
-				+ descr.getIdentifier();
-
-		context.setCurrentField(descr.getFieldConstraint().getFieldName());
-		context.trySetCurrentFieldVariable(varName);
-
-		// bypass the fieldConstraint
-		List<? extends BaseDescr> list = checkListType(descr
-				.getFieldConstraint().getRestrictions());
-			
-//			for (BaseDescr d : list) {
-//				inheritDecorations(d,descr);
-//			}
-		
-		if (list.size() > 0) {
-			visitChildren(context.getCurrentElement(), list);
-		} else {
-			// Unconstrained field binding		Object( $var : field )
-			Element atom = dox.createElement("Atom");
-				decorateWithAttribs(atom,descr);
-			Element rel = dox.createElement("Rel");
-			attachAsOp(atom, rel);
-
-			Element slot = dox.createElement("slot");
-			Element field = dox.createElement("Ind");
-				field.setAttribute("type",context.getCurrentFieldType());
-			field.setTextContent(context.getCurrentField());
-			slot.appendChild(field);
-
-			Element value = dox.createElement("Var");
-			value.setTextContent(context.getCurrentFieldVariable());
-			slot.appendChild(value);
-
-			atom.appendChild(slot);
-
-			context.getCurrentElement().appendChild(atom);
-		}
+//		String varName = context.currentObjectVariable + "."
+//				+ descr.getIdentifier();
+//
+//		context.setCurrentField(descr.getFieldConstraint().getFieldName());
+//		context.trySetCurrentFieldVariable(varName);
+//
+//		// bypass the fieldConstraint
+//		List<? extends BaseDescr> list = checkListType(descr
+//				.getFieldConstraint().getRestrictions());
+//			
+////			for (BaseDescr d : list) {
+////				inheritDecorations(d,descr);
+////			}
+//		
+//		if (list.size() > 0) {
+//			visitChildren(context.getCurrentElement(), list);
+//		} else {
+//			// Unconstrained field binding		Object( $var : field )
+//			Element atom = dox.createElement("Atom");
+//				decorateWithAttribs(atom,descr);
+//			Element rel = dox.createElement("Rel");
+//			attachAsOp(atom, rel);
+//
+//			Element slot = dox.createElement("slot");
+//			Element field = dox.createElement("Ind");
+//				field.setAttribute("type",context.getCurrentFieldType());
+//			field.setTextContent(context.getCurrentField());
+//			slot.appendChild(field);
+//
+//			Element value = dox.createElement("Var");
+//			value.setTextContent(context.getCurrentFieldVariable());
+//			slot.appendChild(value);
+//
+//			atom.appendChild(slot);
+//
+//			context.getCurrentElement().appendChild(atom);
+//		}
 
 	}
 
