@@ -65,7 +65,7 @@ public class ConstraintKey {
 		if (other == null) return false;
 		if (other instanceof ConstraintKey) {
 			ConstraintKey otherK = (ConstraintKey) other;
-			return this.key.equals(otherK.key) || this.alias.equals(otherK.alias);
+			return this.key.equals(otherK.key) || (this.alias.length() > 0 && this.alias.equals(otherK.alias));
 		}
 		else 
 			return false;		
@@ -97,6 +97,8 @@ public class ConstraintKey {
 		else 
 			return key;
 	}
+
+	
 
 
 }

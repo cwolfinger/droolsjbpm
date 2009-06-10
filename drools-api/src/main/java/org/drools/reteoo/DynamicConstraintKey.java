@@ -44,4 +44,9 @@ public class DynamicConstraintKey extends ConstraintKey {
 		System.out.println("KEY EXPANDED "+arg+" into "+key);
 	}
 
+	public void replaceOp(String string) {
+		this.op = string;
+		this.key = this.op + this.key.substring(this.key.indexOf('('));
+	}
+	
 }
