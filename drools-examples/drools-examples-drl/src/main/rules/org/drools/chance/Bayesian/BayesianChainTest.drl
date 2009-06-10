@@ -1,0 +1,223 @@
+package org.drools.chance.BayesianTest
+
+import org.drools.bayesian.BooleanDomain;
+import java.io.FileWriter;
+
+
+
+
+declare Quake
+	flag : BooleanDomain @key 
+end
+
+declare QuakeActions
+end
+
+declare Burglar
+	flag : BooleanDomain @key
+end
+
+declare BurglarActions
+end
+
+declare Alarm
+	id : int @key
+end
+
+declare AlarmActions
+end
+
+
+declare John
+	id : int @key
+end
+
+declare JohnActions
+end
+
+
+declare Mary
+	id : int @key
+end
+
+declare MaryActions
+end
+
+
+global FileWriter writer;
+
+
+
+
+
+rule "pi:Quake->Alarm"
+	
+	prior ( [0.9 0.1 ; 0.1 0.9] )
+
+	when
+		(or @( args="pi:Quake->Alarm" )
+		Quake ( flag random )
+		) 
+	then
+		writer.write("Message : Quake->Alarm " +drools.getConsequenceDegree()+"\n\n");
+		
+		Alarm alarm = new Alarm();
+			alarm.setId(0);
+			drools.inject(alarm,"class","==","org.drools.chance.BayesianTest.Alarm");
+		insertLogical(alarm);
+			
+end
+
+
+rule "lambda:Quake->Alarm"
+	prior ( [0.9 0.1 ; 0.1 0.9] )
+	when
+		(or @( args="lambda:Quake->Alarm" )
+		Alarm ( )
+		)	
+	then
+		writer.write("Message : Alarm->Quake  " +drools.getConsequenceDegree()+"\n\n");
+		
+		drools.injectKey(new Quake(),"org.drools.chance.BayesianTest.Quake.flag","random",null);	
+end
+
+
+
+
+rule "pi:Alarm->John"
+	
+	prior ( [0.999 0.001 ; 0.001 0.999] )
+
+	when
+		(or @( args="pi:Alarm->John" )
+		Alarm()
+		) 
+	then
+		writer.write("Message : Alarm->John " + drools.getConsequenceDegree() + "\n\n");
+		
+		John john = new John();
+			john.setId(0);
+			drools.inject(john,"class","==","org.drools.chance.BayesianTest.John");
+		insertLogical(john);
+end
+
+rule "lambda:Alarm->John"
+	prior ( [0.999 0.001 ; 0.001 0.999] )
+
+	when
+		(or @( args="lambda:Alarm->John" )
+		John ( )
+		)	
+	then
+		writer.write("Message : John->Alarm " + drools.getConsequenceDegree() + "\n\n");
+		Alarm alarm = new Alarm();
+			alarm.setId(0);		
+		drools.injectKey(alarm,"class","==","org.drools.chance.BayesianTest.Alarm");	
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*************************************************************************************************/
+
+
+
+
+
+
+rule "Quake"
+	prior ( [1 0 ; 0 1] )		
+	when		
+		Quake ( flag random ) 
+	then			
+			if (drools.getEvaluation().getInfoRate() == 1.0) {
+				QuakeActions qa = new QuakeActions();
+				drools.inject(qa,"class","==","org.drools.chance.BayesianTest.QuakeActions");
+					insertLogical(qa);
+			}
+end
+
+rule "Quake_Actions"
+	prior ( [1 0 ; 0 1] )		
+	when
+		QuakeActions (  ) 
+	then		
+			writer.write("Quake c1" + drools.getConsequenceDegree() + "\n\n");
+			//writer.write(drools.getEvaluation().expand());
+			System.out.println(drools.getEvaluation().expand());
+end
+
+
+
+
+
+rule "Alarm"
+	prior ( [1 0 ; 0 1] )		
+	when
+		Alarm (  ) 
+	then		
+		if (drools.getEvaluation().getInfoRate() == 1.0) {
+				AlarmActions aa = new AlarmActions();
+				drools.inject(aa,"class","==","org.drools.chance.BayesianTest.AlarmActions");
+					insertLogical(aa);
+		}
+		
+end
+	
+	
+
+rule "Alarm_Actions"
+	prior ( [1 0 ; 0 1] )		
+	when
+		AlarmActions (  ) 
+	then		
+			writer.write("Alarm c1 " + drools.getConsequenceDegree() + "\n\n");
+			//writer.write(drools.getEvaluation().expand());
+			System.out.println(drools.getEvaluation().expand());
+end
+
+
+
+rule "John"
+	prior ( [1 0 ; 0 1] )		
+	when
+		John (  ) 
+	then		
+		if (drools.getEvaluation().getInfoRate() == 1.0) {
+				JohnActions ja = new JohnActions();
+				drools.inject(ja,"class","==","org.drools.chance.BayesianTest.JohnActions");
+					insertLogical(ja);
+		}
+		
+end
+	
+	
+
+rule "John_Actions"
+	prior ( [1 0 ; 0 1] )		
+	when
+		JohnActions (  ) 
+	then		
+			writer.write("John c1 " + drools.getConsequenceDegree() + "\n\n");
+			//writer.write(drools.getEvaluation().expand());
+			System.out.println(drools.getEvaluation().expand());
+end
+
+	
+
+
+

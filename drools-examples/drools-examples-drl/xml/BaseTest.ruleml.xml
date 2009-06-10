@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <RuleML xmlns="http://www.ruleml.org/0.91/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.ruleml.org/0.91/xsd http://www.ruleml.org/0.91/xsd/naffologeq.xsd">
     <oid>
         <Data>org.drools.DRL</Data>
@@ -114,10 +114,10 @@
             </Forall>
             <Forall>
                 <declare>
-                    <Var type="org.drools.chance.Book">BetaSynch.$b</Var>
+                    <Var type="int">BetaSynch.$p.$a</Var>
                 </declare>
                 <declare>
-                    <Var type="int">BetaSynch.$p.$a</Var>
+                    <Var type="org.drools.chance.Book">BetaSynch.$b</Var>
                 </declare>
                 <declare>
                     <Var type="java.lang.String">BetaSynch.$p.$n</Var>

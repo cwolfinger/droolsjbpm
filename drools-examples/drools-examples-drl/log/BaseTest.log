@@ -5,16 +5,16 @@ Synched rule fires at 1.0
 Declared message is null but is thought to be Hello!
 Eval Record info(1.0) for args L : Message 31	 
 AND{
-(31@13) : 1.0 dotAnd(dotAnd(==(class,org.drools.chance.Message),equals(org.drools.chance.Message.message,Hello!))) [EVAL 1.0,]
-(31@14) : 1.0 Synch [EVAL 0.0,PRIOR 1.0,]
+(31@13) : 1.0/1.0 dotAnd(dotAnd(==(class,org.drools.chance.Message),equals(org.drools.chance.Message.message,Hello!))) [EVAL 1.0,PRIOR o,]
+(31@14) : 1.0/1.0 Synch [EVAL 0.0,PRIOR 1.0,]
 }
 
-(31@15) : 1.0 minAnd(dotAnd(dotAnd(==(class,org.drools.chance.Message),equals(org.drools.chance.Message.message,Hello!))),Synch) [EVAL 1.0,]
-	(31@13) : 1.0 dotAnd(dotAnd(==(class,org.drools.chance.Message),equals(org.drools.chance.Message.message,Hello!))) [EVAL 1.0,]
-		(31@1) : 1.0 dotAnd(==(class,org.drools.chance.Message),equals(org.drools.chance.Message.message,Hello!)) [EVAL 1.0,]
-			(31@10) : 1.0 ==(class,org.drools.chance.Message) [EVAL 1.0,]
-			(31@11) : 1.0 equals(org.drools.chance.Message.message,Hello!) [Trigger 1.0,EVAL 0.0,]
-	(31@14) : 1.0 Synch [EVAL 0.0,PRIOR 1.0,]
+(31@15) : 1.0/1.0 minAnd(dotAnd(dotAnd(==(class,org.drools.chance.Message),equals(org.drools.chance.Message.message,Hello!))),Synch) [EVAL 1.0,PRIOR o,]
+	(31@13) : 1.0/1.0 dotAnd(dotAnd(==(class,org.drools.chance.Message),equals(org.drools.chance.Message.message,Hello!))) [EVAL 1.0,PRIOR o,]
+		(31@1) : 1.0/1.0 dotAnd(==(class,org.drools.chance.Message),equals(org.drools.chance.Message.message,Hello!)) [EVAL 1.0,PRIOR o,]
+			(31@10) : 1.0/1.0 ==(class,org.drools.chance.Message) [EVAL 1.0,PRIOR o,]
+			(31@11) : 1.0/1.0 equals(org.drools.chance.Message.message,Hello!) [EVAL 0.0,Trigger 1.0,PRIOR o,]
+	(31@14) : 1.0/1.0 Synch [EVAL 0.0,PRIOR 1.0,]
 
 
 
@@ -28,20 +28,20 @@ Info comes from rule, evaluation is 1.0
 
 Eval Record info(1.0) for args L : Person -1338851184	Book -1616370320	 
 AND{
-(798680544@24) : 1.0 dotAnd(dotAnd(==(class,org.drools.chance.Person),String ==(org.drools.chance.Person.name,davide),or(Integer >(org.drools.chance.Person.age,25),Integer <(org.drools.chance.Person.age,18))),dotAnd(==(class,org.drools.chance.Book),equals(org.drools.chance.Book.owner,$p))) [EVAL 1.0,]
-(798680544@25) : 1.0 BetaSynch [EVAL 0.0,PRIOR 1.0,]
+(798680544@24) : 1.0/1.0 dotAnd(dotAnd(==(class,org.drools.chance.Person),String ==(org.drools.chance.Person.name,davide),or(Integer >(org.drools.chance.Person.age,25),Integer <(org.drools.chance.Person.age,18))),dotAnd(==(class,org.drools.chance.Book),equals(org.drools.chance.Book.owner,$p))) [EVAL 1.0,PRIOR o,]
+(798680544@25) : 1.0/1.0 BetaSynch [EVAL 0.0,PRIOR 1.0,]
 }
 
-(798680544@26) : 1.0 minAnd(dotAnd(dotAnd(==(class,org.drools.chance.Person),String ==(org.drools.chance.Person.name,davide),or(Integer >(org.drools.chance.Person.age,25),Integer <(org.drools.chance.Person.age,18))),dotAnd(==(class,org.drools.chance.Book),equals(org.drools.chance.Book.owner,$p))),BetaSynch) [EVAL 1.0,]
-	(798680544@24) : 1.0 dotAnd(dotAnd(==(class,org.drools.chance.Person),String ==(org.drools.chance.Person.name,davide),or(Integer >(org.drools.chance.Person.age,25),Integer <(org.drools.chance.Person.age,18))),dotAnd(==(class,org.drools.chance.Book),equals(org.drools.chance.Book.owner,$p))) [EVAL 1.0,]
-		(-1338851184@1) : 1.0 dotAnd(==(class,org.drools.chance.Person),String ==(org.drools.chance.Person.name,davide),or(Integer >(org.drools.chance.Person.age,25),Integer <(org.drools.chance.Person.age,18))) [EVAL 1.0,]
-			(-1338851184@17) : 1.0 ==(class,org.drools.chance.Person) [EVAL 1.0,]
-			(-1338851184@18) : 1.0 String ==(org.drools.chance.Person.name,davide) [EVAL 1.0,]
-			(-1338851184@19) : 1.0 or(Integer >(org.drools.chance.Person.age,25),Integer <(org.drools.chance.Person.age,18)) [EVAL 1.0,]
-		(798680544@1) : 1.0 dotAnd(==(class,org.drools.chance.Book),equals(org.drools.chance.Book.owner,$p)) [EVAL 1.0,]
-			(-1616370320@22) : 1.0 ==(class,org.drools.chance.Book) [EVAL 1.0,]
-			(798680544@23) : 1.0 equals(org.drools.chance.Book.owner,$p) [Synch 1.0,EVAL 0.0,]
-	(798680544@25) : 1.0 BetaSynch [EVAL 0.0,PRIOR 1.0,]
+(798680544@26) : 1.0/1.0 minAnd(dotAnd(dotAnd(==(class,org.drools.chance.Person),String ==(org.drools.chance.Person.name,davide),or(Integer >(org.drools.chance.Person.age,25),Integer <(org.drools.chance.Person.age,18))),dotAnd(==(class,org.drools.chance.Book),equals(org.drools.chance.Book.owner,$p))),BetaSynch) [EVAL 1.0,PRIOR o,]
+	(798680544@24) : 1.0/1.0 dotAnd(dotAnd(==(class,org.drools.chance.Person),String ==(org.drools.chance.Person.name,davide),or(Integer >(org.drools.chance.Person.age,25),Integer <(org.drools.chance.Person.age,18))),dotAnd(==(class,org.drools.chance.Book),equals(org.drools.chance.Book.owner,$p))) [EVAL 1.0,PRIOR o,]
+		(-1338851184@1) : 1.0/1.0 dotAnd(==(class,org.drools.chance.Person),String ==(org.drools.chance.Person.name,davide),or(Integer >(org.drools.chance.Person.age,25),Integer <(org.drools.chance.Person.age,18))) [EVAL 1.0,PRIOR o,]
+			(-1338851184@17) : 1.0/1.0 ==(class,org.drools.chance.Person) [EVAL 1.0,PRIOR o,]
+			(-1338851184@18) : 1.0/1.0 String ==(org.drools.chance.Person.name,davide) [EVAL 1.0,PRIOR o,]
+			(-1338851184@19) : 1.0/1.0 or(Integer >(org.drools.chance.Person.age,25),Integer <(org.drools.chance.Person.age,18)) [EVAL 1.0,PRIOR o,]
+		(798680544@1) : 1.0/1.0 dotAnd(==(class,org.drools.chance.Book),equals(org.drools.chance.Book.owner,$p)) [EVAL 1.0,PRIOR o,]
+			(-1616370320@22) : 1.0/1.0 ==(class,org.drools.chance.Book) [EVAL 1.0,PRIOR o,]
+			(798680544@23) : 1.0/1.0 equals(org.drools.chance.Book.owner,$p) [Synch 1.0,EVAL 0.0,PRIOR o,]
+	(798680544@25) : 1.0/1.0 BetaSynch [EVAL 0.0,PRIOR 1.0,]
 
 
 
@@ -50,36 +50,36 @@ So, an exceptional exercise will be done
 
 Ex Algebra can be done? Answer is 0.0Eval Record info(0.75) for args L : Exercise 748374823	 
 AND{
-(748374823@30) : 1.0 dotAnd(dotAnd(==(class,org.drools.chance.Exercise))) [EVAL 1.0,]
-(748374823@31) : 0.0 Exceptional [EVAL 0.0,PRIOR 0.0,]
+(748374823@30) : 1.0/1.0 dotAnd(dotAnd(==(class,org.drools.chance.Exercise))) [EVAL 1.0,PRIOR o,]
+(748374823@31) : 0.0/0.5 Exceptional [BetaSynch o,EVAL 0.0,PRIOR 0.0,]
 }
 
-(748374823@32) : 0.0 minAnd(dotAnd(dotAnd(==(class,org.drools.chance.Exercise))),Exceptional) [EVAL 0.0,]
-	(748374823@30) : 1.0 dotAnd(dotAnd(==(class,org.drools.chance.Exercise))) [EVAL 1.0,]
-		(748374823@1) : 1.0 dotAnd(==(class,org.drools.chance.Exercise)) [EVAL 1.0,]
-			(748374823@28) : 1.0 ==(class,org.drools.chance.Exercise) [EVAL 1.0,]
-	(748374823@31) : 0.0 Exceptional [EVAL 0.0,PRIOR 0.0,]
+(748374823@32) : 0.0/0.75 minAnd(dotAnd(dotAnd(==(class,org.drools.chance.Exercise))),Exceptional) [EVAL 0.0,PRIOR o,]
+	(748374823@30) : 1.0/1.0 dotAnd(dotAnd(==(class,org.drools.chance.Exercise))) [EVAL 1.0,PRIOR o,]
+		(748374823@1) : 1.0/1.0 dotAnd(==(class,org.drools.chance.Exercise)) [EVAL 1.0,PRIOR o,]
+			(748374823@28) : 1.0/1.0 ==(class,org.drools.chance.Exercise) [EVAL 1.0,PRIOR o,]
+	(748374823@31) : 0.0/0.5 Exceptional [BetaSynch o,EVAL 0.0,PRIOR 0.0,]
 
 Ex Norse Grammar can be done? Answer is 0.0Eval Record info(0.75) for args L : Exercise -69566135	 
 AND{
-(-69566135@30) : 1.0 dotAnd(dotAnd(==(class,org.drools.chance.Exercise))) [EVAL 1.0,]
-(-69566135@31) : 0.0 Exceptional [EVAL 0.0,PRIOR 0.0,]
+(-69566135@30) : 1.0/1.0 dotAnd(dotAnd(==(class,org.drools.chance.Exercise))) [EVAL 1.0,PRIOR o,]
+(-69566135@31) : 0.0/0.5 Exceptional [BetaSynch o,EVAL 0.0,PRIOR 0.0,]
 }
 
-(-69566135@32) : 0.0 minAnd(dotAnd(dotAnd(==(class,org.drools.chance.Exercise))),Exceptional) [EVAL 0.0,]
-	(-69566135@30) : 1.0 dotAnd(dotAnd(==(class,org.drools.chance.Exercise))) [EVAL 1.0,]
-		(-69566135@1) : 1.0 dotAnd(==(class,org.drools.chance.Exercise)) [EVAL 1.0,]
-			(-69566135@28) : 1.0 ==(class,org.drools.chance.Exercise) [EVAL 1.0,]
-	(-69566135@31) : 0.0 Exceptional [EVAL 0.0,PRIOR 0.0,]
+(-69566135@32) : 0.0/0.75 minAnd(dotAnd(dotAnd(==(class,org.drools.chance.Exercise))),Exceptional) [EVAL 0.0,PRIOR o,]
+	(-69566135@30) : 1.0/1.0 dotAnd(dotAnd(==(class,org.drools.chance.Exercise))) [EVAL 1.0,PRIOR o,]
+		(-69566135@1) : 1.0/1.0 dotAnd(==(class,org.drools.chance.Exercise)) [EVAL 1.0,PRIOR o,]
+			(-69566135@28) : 1.0/1.0 ==(class,org.drools.chance.Exercise) [EVAL 1.0,PRIOR o,]
+	(-69566135@31) : 0.0/0.5 Exceptional [BetaSynch o,EVAL 0.0,PRIOR 0.0,]
 
 Ex Rule Programming can be done? Answer is 1.0Eval Record info(1.0) for args L : Exercise 1260975572	 
 AND{
-(1260975572@30) : 1.0 dotAnd(dotAnd(==(class,org.drools.chance.Exercise))) [EVAL 1.0,]
-(1260975572@31) : 1.0 Exceptional [BetaSynch 1.0,EVAL 0.0,PRIOR 0.0,]
+(1260975572@30) : 1.0/1.0 dotAnd(dotAnd(==(class,org.drools.chance.Exercise))) [EVAL 1.0,PRIOR o,]
+(1260975572@31) : 1.0/1.0 Exceptional [BetaSynch 1.0,EVAL 0.0,PRIOR 0.0,]
 }
 
-(1260975572@32) : 1.0 minAnd(dotAnd(dotAnd(==(class,org.drools.chance.Exercise))),Exceptional) [EVAL 1.0,]
-	(1260975572@30) : 1.0 dotAnd(dotAnd(==(class,org.drools.chance.Exercise))) [EVAL 1.0,]
-		(1260975572@1) : 1.0 dotAnd(==(class,org.drools.chance.Exercise)) [EVAL 1.0,]
-			(1260975572@28) : 1.0 ==(class,org.drools.chance.Exercise) [EVAL 1.0,]
-	(1260975572@31) : 1.0 Exceptional [BetaSynch 1.0,EVAL 0.0,PRIOR 0.0,]
+(1260975572@32) : 1.0/1.0 minAnd(dotAnd(dotAnd(==(class,org.drools.chance.Exercise))),Exceptional) [EVAL 1.0,PRIOR o,]
+	(1260975572@30) : 1.0/1.0 dotAnd(dotAnd(==(class,org.drools.chance.Exercise))) [EVAL 1.0,PRIOR o,]
+		(1260975572@1) : 1.0/1.0 dotAnd(==(class,org.drools.chance.Exercise)) [EVAL 1.0,PRIOR o,]
+			(1260975572@28) : 1.0/1.0 ==(class,org.drools.chance.Exercise) [EVAL 1.0,PRIOR o,]
+	(1260975572@31) : 1.0/1.0 Exceptional [BetaSynch 1.0,EVAL 0.0,PRIOR 0.0,]

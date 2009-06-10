@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <RuleML xmlns="http://www.ruleml.org/0.91/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.ruleml.org/0.91/xsd http://www.ruleml.org/0.91/xsd/naffologeq.xsd">
     <oid>
         <Data>org.drools.DRL</Data>
@@ -10,28 +10,34 @@
             </oid>
             <Forall>
                 <declare>
-                    <Var type="org.drools.chance.Message">TestOpDegs.$message_1</Var>
+                    <Var type="org.drools.chance.Message">TestOpDegs.$message_4</Var>
                 </declare>
                 <declare>
                     <Var type="org.drools.chance.Message">TestOpDegs.$message_3</Var>
                 </declare>
                 <declare>
-                    <Var type="org.drools.chance.Message">TestOpDegs.$message</Var>
-                </declare>
-                <declare>
-                    <Var type="org.drools.chance.Message">TestOpDegs.$message_4</Var>
-                </declare>
-                <declare>
                     <Var type="org.drools.chance.Message">TestOpDegs.$message_2</Var>
+                </declare>
+                <declare>
+                    <Var type="org.drools.chance.Message">TestOpDegs.$message_1</Var>
+                </declare>
+                <declare>
+                    <Var type="org.drools.chance.Message">TestOpDegs.$message</Var>
                 </declare>
                 <formula>
                     <Implies direction="forward">
+                        <!--
+<kind>Lukas</kind>
+-->
                         <oid>
                             <Data>TestOpDegs</Data>
                         </oid>
                         <body>
                             <And>
                                 <Or>
+                                    <!--unsupported attribute - 
+<kind>kind:Lukas</kind>
+-->
                                     <Atom>
                                         <oid>
                                             <Var>TestOpDegs.$message</Var>
@@ -40,35 +46,63 @@
                                         <Reify>
                                             <And>
                                                 <Atom>
+                                                    <!--unsupported attribute - 
+<kind>kind:Min</kind>
+-->
+                                                    <!--
+<degree>
+    <Data>0.04444</Data>
+</degree>
+-->
                                                     <op>
                                                         <Rel>isA</Rel>
                                                     </op>
                                                     <slot>
-                                                        <Ind>class</Ind>
+                                                        <Ind type="java.lang.Class">class</Ind>
                                                         <Var/>
                                                     </slot>
                                                     <Ind type="java.lang.Class">org.drools.chance.Message</Ind>
                                                 </Atom>
-                                                <Atom>
-                                                    <op>
-                                                        <Rel>==</Rel>
-                                                    </op>
-                                                    <slot>
-                                                        <Ind>status</Ind>
-                                                        <Var/>
-                                                    </slot>
-                                                    <Ind type="java.lang.Number">0</Ind>
-                                                </Atom>
-                                                <Atom>
-                                                    <op>
-                                                        <Rel>==</Rel>
-                                                    </op>
-                                                    <slot>
-                                                        <Ind>status</Ind>
-                                                        <Var/>
-                                                    </slot>
-                                                    <Ind type="java.lang.Number">1</Ind>
-                                                </Atom>
+                                                <And>
+                                                    <!--unsupported attribute - 
+<kind>kind:Lukas</kind>
+-->
+                                                    <Atom>
+                                                        <op>
+                                                            <Rel>==</Rel>
+                                                        </op>
+                                                        <slot>
+                                                            <Ind type="int">status</Ind>
+                                                            <Var/>
+                                                        </slot>
+                                                        <Ind type="java.lang.Number">0</Ind>
+                                                    </Atom>
+                                                    <And>
+                                                        <!--unsupported attribute - 
+<kind>kind:Prod</kind>
+-->
+                                                        <Atom>
+                                                            <op>
+                                                                <Rel>random</Rel>
+                                                            </op>
+                                                            <slot>
+                                                                <Ind type="int">status</Ind>
+                                                                <Var/>
+                                                            </slot>
+                                                            <Ind type="java.lang.Number">1</Ind>
+                                                        </Atom>
+                                                        <Atom>
+                                                            <op>
+                                                                <Rel>random</Rel>
+                                                            </op>
+                                                            <slot>
+                                                                <Ind type="int">status</Ind>
+                                                                <Var/>
+                                                            </slot>
+                                                            <Ind type="java.lang.Number">-1</Ind>
+                                                        </Atom>
+                                                    </And>
+                                                </And>
                                             </And>
                                         </Reify>
                                     </Atom>
@@ -84,7 +118,7 @@
                                                         <Rel>isA</Rel>
                                                     </op>
                                                     <slot>
-                                                        <Ind>class</Ind>
+                                                        <Ind type="java.lang.Class">class</Ind>
                                                         <Var/>
                                                     </slot>
                                                     <Ind type="java.lang.Class">org.drools.chance.Message</Ind>
@@ -95,7 +129,7 @@
                                                             <Rel>random</Rel>
                                                         </op>
                                                         <slot>
-                                                            <Ind>status</Ind>
+                                                            <Ind type="int">status</Ind>
                                                             <Var/>
                                                         </slot>
                                                         <Ind type="java.lang.Number">2</Ind>
@@ -107,6 +141,9 @@
                                 </Or>
                                 <Neg>
                                     <And>
+                                        <!--unsupported attribute - 
+<kind>kind:Lukas</kind>
+-->
                                         <Atom>
                                             <oid>
                                                 <Var>TestOpDegs.$message_2</Var>
@@ -119,7 +156,7 @@
                                                             <Rel>isA</Rel>
                                                         </op>
                                                         <slot>
-                                                            <Ind>class</Ind>
+                                                            <Ind type="java.lang.Class">class</Ind>
                                                             <Var/>
                                                         </slot>
                                                         <Ind type="java.lang.Class">org.drools.chance.Message</Ind>
@@ -129,7 +166,7 @@
                                                             <Rel>random</Rel>
                                                         </op>
                                                         <slot>
-                                                            <Ind>status</Ind>
+                                                            <Ind type="int">status</Ind>
                                                             <Var/>
                                                         </slot>
                                                         <Ind type="java.lang.Number">3</Ind>
@@ -149,7 +186,7 @@
                                                             <Rel>isA</Rel>
                                                         </op>
                                                         <slot>
-                                                            <Ind>class</Ind>
+                                                            <Ind type="java.lang.Class">class</Ind>
                                                             <Var/>
                                                         </slot>
                                                         <Ind type="java.lang.Class">org.drools.chance.Message</Ind>
@@ -159,7 +196,7 @@
                                                             <Rel>random</Rel>
                                                         </op>
                                                         <slot>
-                                                            <Ind>status</Ind>
+                                                            <Ind type="int">status</Ind>
                                                             <Var/>
                                                         </slot>
                                                         <Ind type="java.lang.Number">4</Ind>
@@ -177,11 +214,19 @@
                                     <Reify>
                                         <And>
                                             <Atom>
+                                                <!--unsupported attribute - 
+<kind>kind:Lukas</kind>
+-->
+                                                <!--
+<degree>
+    <Data>0.99321</Data>
+</degree>
+-->
                                                 <op>
                                                     <Rel>isA</Rel>
                                                 </op>
                                                 <slot>
-                                                    <Ind>class</Ind>
+                                                    <Ind type="java.lang.Class">class</Ind>
                                                     <Var/>
                                                 </slot>
                                                 <Ind type="java.lang.Class">org.drools.chance.Message</Ind>
@@ -191,10 +236,20 @@
                                                     <Rel>random</Rel>
                                                 </op>
                                                 <slot>
-                                                    <Ind>status</Ind>
+                                                    <Ind type="int">status</Ind>
                                                     <Var/>
                                                 </slot>
                                                 <Ind type="java.lang.Number">5</Ind>
+                                            </Atom>
+                                            <Atom>
+                                                <op>
+                                                    <Rel>random</Rel>
+                                                </op>
+                                                <slot>
+                                                    <Ind type="int">status</Ind>
+                                                    <Var/>
+                                                </slot>
+                                                <Ind type="java.lang.Number">6</Ind>
                                             </Atom>
                                         </And>
                                     </Reify>

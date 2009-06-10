@@ -12,21 +12,25 @@ global FileWriter writer;
 
 rule "TestOpDegs"	
 
-	
+	kind "Lukas"
 
 	when
 		
-		(Message( status == 0 && status == 1 )
-		or 
-		Message(status not ~random 2))
+		
+		(
+		Message( status == 0 && @( kind="Lukas" ) (status random 1 && @( kind="Prod" ) status random -1)) @( kind="Min" prior="0.04444")
+		or @( kind="Lukas" )
+		Message(status not ~random 2)
+		)
 		
 		
 		not (Message(status ~random 3)
-			and
+			and @( kind="Lukas" )
 			Message(status ~random 4)
 			)
 				
-		Message(status ~random 5)
+				
+		Message(status ~random 5 , status ~random 6) @( kind="Lukas" prior="0.99321")
 		
 									
 	then
