@@ -9,10 +9,11 @@ import org.drools.degrees.SimpleDegree;
 import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.degrees.factory.IntervalDegreeFactory;
 import org.drools.degrees.factory.SimpleDegreeFactory;
+import org.drools.degrees.operators.AbstractOperator;
 import org.drools.degrees.operators.IDegreeCombiner;
 import org.drools.time.Interval;
 
-public class IntervalDoubleMPOperator implements IDegreeCombiner {
+public class IntervalDoubleMPOperator extends AbstractOperator  implements IDegreeCombiner {
 
 	public IDegree eval(IDegree[] args, IDegreeFactory factory) {
 		if (args == null || args.length < 2)

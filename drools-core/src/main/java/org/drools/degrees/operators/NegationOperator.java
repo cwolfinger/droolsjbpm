@@ -5,7 +5,7 @@ import java.util.Collection;
 import org.drools.degrees.IDegree;
 import org.drools.degrees.factory.IDegreeFactory;
 
-public abstract  class NegationOperator implements IDegreeCombiner {
+public abstract  class NegationOperator extends AbstractOperator  implements IDegreeCombiner {
 	
 	
 	

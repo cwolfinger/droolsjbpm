@@ -40,6 +40,7 @@ import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.common.NodeMemory;
 import org.drools.common.PropagationContextImpl;
+import org.drools.degrees.IDegree;
 import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.reteoo.ReteooWorkingMemory.WorkingMemoryReteExpireAction;
 import org.drools.reteoo.builder.BuildContext;
@@ -111,11 +112,15 @@ public class ObjectTypeNode extends ObjectSource
 
 	private GammaMemory gamma; 
 	
-	private String		label;
+
 
 	private IFilterStrategy 	filterStrat;
 
 	private ConstraintKey singletonKey;
+
+	private String		label;
+	
+////	
 
 
     public ObjectTypeNode() {
@@ -421,7 +426,12 @@ public class ObjectTypeNode extends ObjectSource
      * Uses he hashCode() of the underlying ObjectType implementation.
      */
     public int hashCode() {
-        return this.objectType.hashCode() ^ this.source.hashCode();
+        int code = this.objectType.hashCode() ^ this.source.hashCode();
+//        if (this.getParams() != null)
+//        	code ^= this.getParams().hashCode();
+//        if (this.getPrior() != null)
+//        	code ^= this.getPrior().hashCode();
+        return code;
     }
 
     public boolean equals(final Object object) {
@@ -435,9 +445,14 @@ public class ObjectTypeNode extends ObjectSource
 
         final ObjectTypeNode other = (ObjectTypeNode) object;
 
-        return this.objectType.equals( other.objectType ) && this.source.equals( other.source );
+        return this.objectType.equals( other.objectType ) 
+        	   && this.source.equals( other.source );
+        
+//        	   && (compareConfig(this.getParams(),other.getParams()))
+//        	   && (compareConfig(this.getPrior(),other.getPrior()));
     }
 
+    
     /**
      * @inheritDoc
      */
@@ -604,7 +619,7 @@ public class ObjectTypeNode extends ObjectSource
 			PropagationContext context,
 			InternalWorkingMemory workingMemory, IDegreeFactory factory,
 			EvalRecord record) {
-		
+				
 		
 		if ( context.getType() == PropagationContext.MODIFICATION && this.skipOnModify && context.getDormantActivations() == 0 ) {
             // we do this after the shadowproxy update, just so that its up to date for the future
@@ -711,6 +726,25 @@ public class ObjectTypeNode extends ObjectSource
 
 	
 
+//	private EvalRecord buildRecordOnTheFly(IDegreeFactory factory) {
+//		EvalRecord record = new EvalRecord(
+//									this.getId(),
+//									factory.getAndOperator(this.getParams()),
+//									factory.getMergeStrategy(),
+//									factory.getNullHandlingStrategy(),
+//									factory,
+//									new ArgList());
+//		if (getPrior() != null) {
+//			IDegree priorDeg = factory.buildDegree(getPrior());
+//			if (priorDeg != null)
+//				record.addDegree(Evaluation.PRIOR, priorDeg, 1.0, false);
+//		}
+//		
+//		
+//		
+//		return record;
+//	}
+
 	public void update(Observable watcher, Object arg) {
 		EvalRecord record = (EvalRecord) watcher;
 		System.out.println("**************************************************************UPDATE @ALPHA NODE");
@@ -796,7 +830,31 @@ public class ObjectTypeNode extends ObjectSource
 	public String getLabel() {
 		return label;
 	}
-	
+
+//	public void setParams(String params) {
+//		this.params = params;
+//	}
+//
+//	public String getParams() {
+//		return params;
+//	}
+//
+//	public void setCutter(boolean isCutter) {
+//		this.isCutter = isCutter;
+//	}
+//
+//	public boolean isCutter() {
+//		return isCutter;
+//	}
+//
+//	public void setPrior(String prior) {
+//		this.prior = prior;
+//	}
+//
+//	public String getPrior() {
+//		return prior;
+//	}
+//	
 	
 	
 }

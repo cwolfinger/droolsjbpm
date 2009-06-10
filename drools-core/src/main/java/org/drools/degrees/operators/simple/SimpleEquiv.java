@@ -9,9 +9,10 @@ import org.drools.degrees.SimpleDegree;
 import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.degrees.factory.IntervalDegreeFactory;
 import org.drools.degrees.factory.SimpleDegreeFactory;
+import org.drools.degrees.operators.AbstractOperator;
 import org.drools.degrees.operators.IDegreeCombiner;
 
-public class SimpleEquiv implements IDegreeCombiner {
+public class SimpleEquiv extends AbstractOperator  implements IDegreeCombiner {
 
 	
 	public IDegree eval(IDegree[] args, IDegreeFactory factory) {	

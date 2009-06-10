@@ -16,7 +16,7 @@ import org.drools.degrees.operators.IMergeStrategy;
 import org.drools.degrees.operators.INullHandlingStrategy;
 
 
-public class Evaluation extends Observable {
+public class Evaluation extends Droobservable {
 
 	
 	public static final String EVAL = "EVAL";
@@ -29,7 +29,7 @@ public class Evaluation extends Observable {
 	
 	private Map<String,IDegree> degrees;
 	private int totDegrees;
-	private Map<String,Float> confidence;
+	private Map<String,Double> confidence;
 	private Map<String,Boolean> killer;
 	
 	private IDegree aggDegree;
@@ -53,14 +53,14 @@ public class Evaluation extends Observable {
 			deps = Collections.emptySet();
 		this.nodeId = id;
 		this.degrees = new HashMap<String,IDegree>();
-		this.confidence = new HashMap<String,Float>();
+		this.confidence = new HashMap<String,Double>();
 		this.killer = new HashMap<String,Boolean>();
 		
 			this.degrees.put(PRIOR, null);	
 			this.degrees.put(EVAL, null);
 			for (String s : deps) {
 				this.degrees.put(s, null);
-				confidence.put(s,new Float(0));
+				confidence.put(s,new Double(0));
 				killer.put(s,false);
 			}
 			totDegrees = 2+deps.size();			
@@ -111,7 +111,7 @@ public class Evaluation extends Observable {
 		this.addDegrees(other.degrees, other.confidence, other.killer);
 	}
 
-	private void addDegrees(Map<String, IDegree> moreDegrees, Map<String, Float> conf, Map<String, Boolean> killer) {
+	private void addDegrees(Map<String, IDegree> moreDegrees, Map<String, Double> conf, Map<String, Boolean> killer) {
 		boolean newContrib = false;
 		
 		for (String source : moreDegrees.keySet()) {
@@ -152,14 +152,14 @@ public class Evaluation extends Observable {
 	
 	}
 	
-	public boolean addDegree(String source, IDegree evalDeg, float wgt, boolean immediateUpdate) {
+	public boolean addDegree(String source, IDegree evalDeg, double wgt, boolean immediateUpdate) {
 		return addDegree(source, evalDeg, wgt, false, immediateUpdate);
 	}
 		
-	public boolean addDegree(String source, IDegree evalDeg, float wgt, boolean isKiller, boolean immediateUpdate) {
+	public boolean addDegree(String source, IDegree evalDeg, double wgt, boolean isKiller, boolean immediateUpdate) {
 		boolean newContrib = false;
 		boolean rateIncr = false;
-		Float prevConf;
+		Double prevConf;
 		
 		if (evalDeg == null) {
 			/*
@@ -172,7 +172,7 @@ public class Evaluation extends Observable {
 			prevConf = confidence.get(source);
 			System.out.println(prevConf);
 				confidence.put(source, wgt);
-			rateIncr = prevConf == null ? true : prevConf.floatValue() < wgt;
+			rateIncr = prevConf == null ? true : prevConf.doubleValue() < wgt;
 			
 						
 			IDegree oldVal = getDegreeBit(source);
@@ -224,8 +224,8 @@ public class Evaluation extends Observable {
 		
 	}
 	
-	protected void setInfoRate(String source, float delta) {
-		confidence.put(source,new Float(delta));
+	protected void setInfoRate(String source, double delta) {
+		confidence.put(source,new Double(delta));
 	}
 	
 	
@@ -259,6 +259,11 @@ public class Evaluation extends Observable {
 		return degrees.get(source);
 	}
 	
+	public Collection<String> getDegreeBitSources() {
+		return this.degrees.keySet();
+	}
+	
+	
 	protected IDegree mergeDegrees() {
 		IDegree[] bits = new IDegree[this.totDegrees];
 		boolean[] killerFlags = new boolean[this.totDegrees];
@@ -284,7 +289,7 @@ public class Evaluation extends Observable {
 	
 	
 	public String toString() {
-		return "("+this.args.hashCode()+"@"+this.nodeId + ") : " + this.aggDegree  + " " + this.key +" "+ this.getBitS();
+		return "("+this.args.hashCode()+"@"+this.nodeId + ") : " + this.aggDegree +"/"+ this.getInfoRate() + " " + this.key +" "+ this.getBitS();
 	}
 	
 	public String expand() {
@@ -340,9 +345,9 @@ public class Evaluation extends Observable {
 	/**
 	 * @return the infoRate
 	 */
-	public float getInfoRate() {
+	public double getInfoRate() {
 		//Prior injection can't be controlled!
-		float info = 0;
+		double info = 0;
 		for (String s : confidence.keySet())
 			info += confidence.get(s);
 		
@@ -357,6 +362,8 @@ public class Evaluation extends Observable {
 		for (String s : degrees.keySet()) {
 			if (degrees.get(s) != null)
 				sb.append(s+" " + this.degrees.get(s) +",");
+			else
+				sb.append(s+" " + "o" + ",");
 		}
 		return sb.append("]").toString();
 	}

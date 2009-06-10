@@ -6,9 +6,10 @@ import java.util.Iterator;
 import org.drools.degrees.IDegree;
 import org.drools.degrees.SimpleDegree;
 import org.drools.degrees.factory.IDegreeFactory;
+import org.drools.degrees.operators.AbstractOperator;
 import org.drools.degrees.operators.IDiscountOperator;
 
-public class SimpleDiscountOperator implements IDiscountOperator {
+public class SimpleDiscountOperator extends AbstractOperator  implements IDiscountOperator {
 
 		
 	private SimpleDegree unk;

@@ -6,11 +6,12 @@ import org.drools.degrees.IDegree;
 import org.drools.degrees.SimpleDegree;
 import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.degrees.factory.SimpleDegreeFactory;
+import org.drools.degrees.operators.AbstractOperator;
 import org.drools.degrees.operators.IDiscountStrategy;
 import org.drools.degrees.operators.IMergeStrategy;
 import org.drools.degrees.operators.INullHandlingStrategy;
 
-public class SimpleMaxMergeStrategy implements IMergeStrategy {
+public class SimpleMaxMergeStrategy extends AbstractOperator  implements IMergeStrategy {
 
 	public IDegree eval(IDegree[] degrees, boolean[] kFlags, INullHandlingStrategy nullStrat, IDegreeFactory factory) {
 		IDegree[] args = new IDegree[degrees.length];

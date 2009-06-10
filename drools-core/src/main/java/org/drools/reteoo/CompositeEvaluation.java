@@ -90,24 +90,34 @@ public class CompositeEvaluation extends Evaluation implements Observer {
 	protected boolean combine() {
 		
 		
-		IDegree[] args = null;
+		IDegree opDeg = null;
+		if (operator.isTruthFunctional()) {
+			IDegree[] args = null;
+			
+			if (getOperands() != null) {				
+				int N = getOperands().size();
+				args = new IDegree[N];
+			
+				int j = 0;
+				for (Evaluation eval : getOperands()) {
+					args[j++] = eval == null ? this.getNullHandlingStrat().convertNull(getFactory()) : eval.getDegree();		
+				}
+			}		
+			opDeg = this.operator.eval(args,getFactory());
+		} else {
+			opDeg = this.operator.eval(this,getFactory());
+		}
 		
-		if (getOperands() != null) {				
-			int N = getOperands().size();
-			args = new IDegree[N];
-		
-			int j = 0;
-			for (Evaluation eval : getOperands()) {
-				args[j++] = eval == null ? this.getNullHandlingStrat().convertNull(getFactory()) : eval.getDegree();		
-			}
-		}		
 		
 		
-		
-		IDegree opDeg = this.operator.eval(args,getFactory());
 		updateOpRate();
 		boolean newContrib = this.addDegree(Evaluation.EVAL, opDeg, getOpRate(),true);
 						
+//		if (this instanceof EvalRecord && ! this.getOperator().isTruthFunctional() && ((EvalRecord)this).getRuleId() != null) {
+//			String ruleId = ((EvalRecord)this).getRuleId();
+//			if (ruleId.equals("Bay1"))
+//				System.out.println();
+//		}
 		return newContrib;
 		
 	}

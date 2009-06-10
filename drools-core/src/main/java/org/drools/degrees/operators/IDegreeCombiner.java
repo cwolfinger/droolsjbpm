@@ -8,6 +8,8 @@ import java.util.Collection;
 
 import org.drools.degrees.IDegree;
 import org.drools.degrees.factory.IDegreeFactory;
+import org.drools.reteoo.CompositeEvaluation;
+import org.drools.reteoo.Evaluation;
 
 
 /**
@@ -32,5 +34,9 @@ public interface IDegreeCombiner {
     public IDegree eval(Collection<? extends IDegree> args, IDegreeFactory factory );
     
     public String getName();
+    
+    public boolean isTruthFunctional();
+    
+    public IDegree eval(Evaluation eval, IDegreeFactory factory);
     
 }

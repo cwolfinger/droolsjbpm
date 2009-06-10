@@ -58,6 +58,12 @@ public class OrConstraint extends AbstractCompositeConstraint {
     	//BUILD A COMPOSITE TEMPLATE    	
     	int N = this.getAlphaConstraints().length + this.getBetaConstraints().length;
     	
+    	int Na = this.alphaConstraints.length;
+		int Nb = this.betaConstraints.length;		
+	
+		for (int j = 0; j < Na; j++)
+			alphaConstraints[j].buildEvaluationTemplate(id, dependencies, factory);
+    	
     	setOperator(factory.getOrOperator(this.getParams()));
     	CompositeEvaluationTemplate temp = new CompositeEvaluationTemplate(id,
     			this.getConstraintKey(),
@@ -68,11 +74,9 @@ public class OrConstraint extends AbstractCompositeConstraint {
     			factory.getNullHandlingStrategy(),
     			factory);
 
-    	int Na = this.alphaConstraints.length;
-		int Nb = this.betaConstraints.length;		
-	
+    	
 		for (int j = 0; j < Na; j++)
-			temp.addChild(alphaConstraints[j].buildEvaluationTemplate(id, dependencies, factory));
+			temp.addChild(alphaConstraints[j].getEvalTemplate(alphaConstraints[j].getConstraintKey()));
 		//for (int j = 0; j < Nb; j++)
 		//	temp.addChild(betaConstraints[j].build);
 

@@ -24,7 +24,8 @@ public class RandomEvaluator extends BaseImperfectEvaluator {
 
 	@Override
 	public IDegree eval(Object left, Object right, IDegreeFactory factory) {
-		return factory.buildDegree((float) Math.random());
+		//return factory.buildDegree((float) Math.random());
+		return factory.Random();
 	}
 	
 	

@@ -34,6 +34,7 @@ import org.drools.reteoo.ObjectSource;
 import org.drools.reteoo.ObjectTypeNode;
 import org.drools.reteoo.PatternNegator;
 import org.drools.reteoo.PropagationQueuingNode;
+import org.drools.reteoo.RecordHackerNode;
 import org.drools.rule.Behavior;
 import org.drools.rule.CompositeMaxDuration;
 import org.drools.rule.Declaration;
@@ -296,15 +297,41 @@ public class PatternBuilder
             }
         }
 
+        
+        
+                                       
+        
         ObjectTypeNode returnedOtn = (ObjectTypeNode) utils.attachNode( context, otn ); 
         context.setObjectSource( returnedOtn  );
         
-        //Notice that == is called on purpose
-        if (returnedOtn == otn) {
-        	if (pattern.getLabel() != null)
-        		otn.setLabel(pattern.getLabel());
+        //Notice that == is called deliberately
+        if (returnedOtn == otn) {   
+        	//this is the first time that a specific OTN is required, so it must be configured.
         	otn.setImperfectStructures(context);
         }
+        
+        if (pattern.getPrior() != null || pattern.getParams() != null) {
+        	
+        	RecordHackerNode recordHacker = new RecordHackerNode(context, pattern.getPrior(),pattern.getParams(), pattern.isCutter());
+        	
+        	context.setObjectSource( (ObjectSource) utils.attachNode( context,
+                    recordHacker) );
+        }
+//        
+//
+//        	if (pattern.getLabel() != null)
+//        		otn.setLabel(pattern.getLabel());
+//        	
+//        	if (pattern.getPrior() != null)
+//        		otn.setPrior(pattern.getPrior());
+//        	
+//        	if (pattern.getParams() != null)
+//        		otn.setParams(pattern.getParams());
+//        	        	
+//        	otn.setCutter(pattern.isCutter());
+        	
+        	
+        	
         
         
 
@@ -340,6 +367,9 @@ public class PatternBuilder
         context.setAlphaNodeMemoryAllowed( alphaMemory );
 
     }
+    
+    
+   
 
     /**
      * @param context

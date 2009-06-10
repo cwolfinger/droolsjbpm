@@ -17,7 +17,7 @@ import org.drools.runtime.rule.WorkingMemory;
 import org.drools.spi.PropagationContext;
 
 
-public class OperandSet extends Observable implements Observer {
+public class OperandSet extends Droobservable implements Observer {
 	
 	private ObservableRightTupleMemoryWrapper memory;
 	private ContextEntry context[];

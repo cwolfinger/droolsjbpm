@@ -99,7 +99,7 @@ public class ImperfectAgendaGroup implements InternalAgendaGroup {
 		
 		store.remove(activ);
 		
-		System.out.println("Afer getting next");
+		System.out.println("\nAfer getting next");
 		System.out.println(this.getStatus());
 		System.out.println();
 		return activ;

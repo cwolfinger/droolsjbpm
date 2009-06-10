@@ -312,7 +312,7 @@ System.out.println("************************************************************
 		
 		case PASS :
 			//go on
-			record.deleteObserver(this);
+			record.deleteObserver(this);					
 			//throw new RuntimeException("Awakened objeect");
 			//TODO
 			this.sink.propagateAssertObject(record.getFactHandle(),

@@ -264,7 +264,13 @@ public class AndConstraint extends AbstractCompositeConstraint {
 
 	
     public EvaluationTemplate buildEvaluationTemplate(int id, Map<ConstraintKey, Set<String>> dependencies, IDegreeFactory factory) {
-		//BUILD A COMPOSITE TEMPLATE
+    	int Na = this.alphaConstraints.length;
+		int Nb = this.betaConstraints.length;
+		
+		for (int j = 0; j < Na; j++)
+			alphaConstraints[j].buildEvaluationTemplate(id, dependencies, factory);
+    	
+    	//BUILD A COMPOSITE TEMPLATE
     	int N = this.getAlphaConstraints().length + this.getBetaConstraints().length;
     	this.setOperator(factory.getAndOperator(this.getParams()));
     	CompositeEvaluationTemplate temp = new CompositeEvaluationTemplate(
@@ -277,11 +283,10 @@ public class AndConstraint extends AbstractCompositeConstraint {
     			factory.getNullHandlingStrategy(),
     			factory);
 
-    	int Na = this.alphaConstraints.length;
-		int Nb = this.betaConstraints.length;		
+    			
 	
 		for (int j = 0; j < Na; j++)
-			temp.addChild(alphaConstraints[j].buildEvaluationTemplate(id, dependencies, factory));
+			temp.addChild(alphaConstraints[j].getEvalTemplate(alphaConstraints[j].getConstraintKey()));
 		//for (int j = 0; j < Nb; j++)
 		//	temp.addChild(betaConstraints[j].build);
 

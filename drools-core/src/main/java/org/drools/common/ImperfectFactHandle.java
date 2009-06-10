@@ -17,7 +17,12 @@ public class ImperfectFactHandle extends DefaultFactHandle {
 	}
 	
 	public void addPropertyDegree(Evaluation eval) {
-		properties.put(eval.getKey(),eval);
+		Evaluation existing = properties.get(eval.getKey());
+		if (existing == null) {
+			properties.put(eval.getKey(),eval);
+		} else {
+			existing.merge(eval);
+		}
 	}
 	
 	public void addPropertyDegrees(Collection<Evaluation> storedEvals) {

@@ -6,9 +6,10 @@ import org.drools.degrees.IDegree;
 import org.drools.degrees.SimpleDegree;
 import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.degrees.factory.SimpleDegreeFactory;
+import org.drools.degrees.operators.AbstractOperator;
 import org.drools.degrees.operators.IDegreeCombiner;
 
-public class SimpleMinAnd implements IDegreeCombiner {
+public class SimpleMinAnd extends AbstractOperator  implements IDegreeCombiner {
 
 	
 	public IDegree eval(IDegree[] args, IDegreeFactory factory) {

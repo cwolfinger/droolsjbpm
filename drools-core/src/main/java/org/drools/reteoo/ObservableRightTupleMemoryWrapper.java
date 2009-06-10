@@ -10,7 +10,7 @@ import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.spi.PropagationContext;
 import org.drools.util.Iterator;
 
-public class ObservableRightTupleMemoryWrapper extends Observable 
+public class ObservableRightTupleMemoryWrapper extends Droobservable 
 	implements RightTupleMemory {
 	
 	

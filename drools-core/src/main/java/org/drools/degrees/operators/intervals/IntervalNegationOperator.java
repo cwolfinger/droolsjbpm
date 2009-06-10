@@ -5,6 +5,7 @@ import java.util.Collection;
 import org.drools.degrees.IDegree;
 import org.drools.degrees.IntervalDegree;
 import org.drools.degrees.factory.IntervalDegreeFactory;
+import org.drools.degrees.operators.AbstractOperator;
 import org.drools.degrees.operators.IDegreeCombiner;
 import org.drools.degrees.operators.NegationOperator;
 

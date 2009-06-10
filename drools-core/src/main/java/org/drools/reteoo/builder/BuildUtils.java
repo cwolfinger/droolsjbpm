@@ -113,6 +113,8 @@ public class BuildUtils {
             Map<ObjectType, ObjectTypeNode> map = context.getRuleBase().getRete().getObjectTypeNodes( context.getCurrentEntryPoint() );
             if ( map != null ) {
                 otn = map.get( otn.getObjectType() );
+                //TODO: improve...
+                                               
                 if ( otn != null ) {
                     // adjusting expiration offset
                     otn.setExpirationOffset( Math.max( otn.getExpirationOffset(),

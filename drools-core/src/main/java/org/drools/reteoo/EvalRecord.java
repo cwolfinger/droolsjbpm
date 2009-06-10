@@ -46,6 +46,7 @@ public class EvalRecord extends CompositeEvaluation implements Observer {
 	private ImperfectRightTuple					rightTuple;
     private PropagationContext					propagationContext;
     private InternalWorkingMemory 				workingMemory;
+    private String								ruleId;
     //private IDegreeFactory						factory;
     
 	
@@ -141,6 +142,8 @@ public class EvalRecord extends CompositeEvaluation implements Observer {
 			
 		}
 		
+			
+		
 			addedEval.deleteObserver(this);
 			addedEval.addObserver(this);
 		
@@ -186,7 +189,13 @@ public class EvalRecord extends CompositeEvaluation implements Observer {
 	public EvalRecord clone() {
 		
 		EvalRecord ans = new EvalRecord(this.getNodeId(),this.getOperator(),this.getMergeStrat(),this.getNullHandlingStrat(), this.getFactory(), (ArgList) this.getArgs().clone());
+		
+
+		ans.merge(this);
+		
 		ans.addEvaluations(this);
+		
+		
 		
 		return ans;
 	}
@@ -379,6 +388,19 @@ public class EvalRecord extends CompositeEvaluation implements Observer {
 	}
 
 	
+	public void setOperator(IDegreeCombiner newOp) {
+		super.setOperator(newOp);
+		
+		((DynamicConstraintKey) this.getKey()).replaceOp(newOp.getName());
+	}
+
+	public void setRuleId(String ruleId) {
+		this.ruleId = ruleId;
+	}
+
+	public String getRuleId() {
+		return ruleId;
+	}
 	
 	
 	

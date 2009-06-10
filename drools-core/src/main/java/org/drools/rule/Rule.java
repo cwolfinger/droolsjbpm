@@ -131,9 +131,12 @@ public class Rule
     private String			  priorDescription;
     
     private String			  filterStrategy;
-    
+
+    private String 			  mpKind = null;
 
 	private Map<ConstraintKey, Set<String>> dependencies;
+
+	
 
     public void writeExternal(ObjectOutput out) throws IOException {
         out.writeObject(pkg);
@@ -764,5 +767,13 @@ public class Rule
 	 */
 	public String getFilterStrategy() {
 		return filterStrategy;
+	}
+
+	public void setModusPonensKind(String value) {
+		this.mpKind = "kind:"+value;
+	}
+	
+	public String getModusPonensKind() {
+		return this.mpKind;
 	}
 }

@@ -66,7 +66,7 @@ public class SimpleDegreeFactory implements IDegreeFactory {
 		return new SimpleDegree((float) Math.random());
 	}
 	
-	public IDegree buildDegree(float val) {
+	public IDegree buildDegree(double val) {
 		return new SimpleDegree(val);
 	}
 
@@ -184,11 +184,11 @@ public class SimpleDegreeFactory implements IDegreeFactory {
 	public IDegreeCombiner getAndOperator(String params) {
 		if (params == null)
 			return getAndOperator();
-		if (params.equals("Lukas"))
+		if (params.equals("kind:Lukas"))
 			return new SimpleLukasAnd();
-		else if (params.equals("Prod"))
+		else if (params.equals("kind:Prod"))
 			return new SimpleDotAnd();
-		else if (params.equals("Min"))
+		else if (params.equals("kind:Min"))
 			return new SimpleMinAnd();
 		else return getAndOperator();
 	}
@@ -209,11 +209,11 @@ public class SimpleDegreeFactory implements IDegreeFactory {
 		if (params == null)
 			return getOrOperator();
 		
-		if (params.equals("Lukas"))
+		if (params.equals("kind:Lukas"))
 			return new SimpleLukasOr();
-		else if (params.equals("Plus"))
+		else if (params.equals("kind:Plus"))
 			return new SimpleProbSumOr();
-		else if (params.equals("Max"))
+		else if (params.equals("kind:Max"))
 			return new SimpleMaxOr();
 		else return getOrOperator();
 	}
@@ -248,12 +248,8 @@ public class SimpleDegreeFactory implements IDegreeFactory {
 		if (params == null)
 			return getModusPonensOp();
 		
-		if (params.equals("implication")) {
-			return getModusPonensOp();
-		} else if (params.equals("equivalence")) {
-			return getDoubleMPOperator();			
-		} else
-			return getModusPonensOp();
+		return getAndOperator(params);
+		
 		
 	}
 

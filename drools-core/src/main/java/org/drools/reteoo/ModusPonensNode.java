@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Observable;
 
@@ -63,8 +64,19 @@ public class ModusPonensNode extends JoinNode {
 		} catch (Exception e) {
 			throw new RuntimeDroolsException(e);
 		}
-				
-		setMPOperator(factory.getModusPonensOperator(rule.getEntailMode()));
+		
+		String mode = rule.getEntailMode();
+		String kind = rule.getModusPonensKind();
+		IDegreeCombiner mpOperator = null;
+		if (mode == null || mode.equals("implication")) {
+			mpOperator = (kind == null) ?
+					factory.getModusPonensOp() : factory.getModusPonensOperator(kind);
+		} else if (mode.equals("equivalence")) {
+			mpOperator = (kind == null) ?
+					factory.getDoubleMPOperator() : factory.getDoubleMPOperator(kind);
+		}
+			
+		setMPOperator(mpOperator);
 		
 	}
 	
@@ -118,6 +130,11 @@ public class ModusPonensNode extends JoinNode {
     		
     		
         	EvalRecord mpRecord = new EvalRecord(this.id,getMPOperator(),factory.getMergeStrategy(),factory.getNullHandlingStrategy(),factory,new ArgList());
+        	
+        	Iterator ruleIter = this.getRules().iterator();
+        	String rule = (String) ruleIter.next();
+        	mpRecord.setRuleId(rule);
+        	
         		Evaluation core = premiseRecord.getOperands().iterator().next();
         		core.deleteObserver(premiseRecord);
         	mpRecord.addEvaluation(core);        		
@@ -259,6 +276,13 @@ public class ModusPonensNode extends JoinNode {
 	}
 	
 	
+	public String toString() {
+		Iterator ruleIter = this.getRules().iterator();
+    	String rule = (String) ruleIter.next();
+		return "MP Node for rule "+rule;
+	}
+	
+	
 	
 	
 	
@@ -328,6 +352,8 @@ public class ModusPonensNode extends JoinNode {
 			// TODO Auto-generated method stub
 			
 		}
+		
+		
 		
 	}
 	

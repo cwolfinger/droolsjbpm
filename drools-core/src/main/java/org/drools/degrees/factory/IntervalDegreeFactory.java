@@ -59,7 +59,7 @@ public class IntervalDegreeFactory implements IDegreeFactory {
 		return new IntervalDegree(low,upp);
 	}
 
-	public IDegree buildDegree(float val) {
+	public IDegree buildDegree(double val) {
 		return new IntervalDegree(val,val);
 	}
 

@@ -17,7 +17,7 @@ public interface IDegreeFactory {
 	public boolean isClosedWorldAssumption();
 	
 	
-	public IDegree buildDegree(float val);
+	public IDegree buildDegree(double val);
 	
 	
 	public IDegree True();

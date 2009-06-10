@@ -6,9 +6,10 @@ import org.drools.degrees.IDegree;
 import org.drools.degrees.IntervalDegree;
 import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.degrees.factory.IntervalDegreeFactory;
+import org.drools.degrees.operators.AbstractOperator;
 import org.drools.degrees.operators.IDegreeCombiner;
 
-public class IntervalLukasAndOperator implements IDegreeCombiner {
+public class IntervalLukasAndOperator extends AbstractOperator  implements IDegreeCombiner {
 
 	
 	

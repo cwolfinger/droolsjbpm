@@ -368,6 +368,9 @@ public abstract class AbstractCompositeConstraint extends MutableTypeConstraint 
     
 	
 	 public EvaluationTemplate getEvalTemplate(ConstraintKey key) {
+		 if (key.equals(this.getTemplate().getConstraintKey()))
+			 return this.getTemplate();
+		 else
 			return ((CompositeEvaluationTemplate) this.getTemplate()).getTemplate(key);
 	}
 	

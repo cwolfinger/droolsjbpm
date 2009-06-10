@@ -9,10 +9,11 @@ import org.drools.degrees.SimpleDegree;
 import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.degrees.factory.IntervalDegreeFactory;
 import org.drools.degrees.factory.SimpleDegreeFactory;
+import org.drools.degrees.operators.AbstractOperator;
 import org.drools.degrees.operators.IDegreeCombiner;
 import org.drools.degrees.operators.IDiscountOperator;
 
-public class IntervalDiscountOperator implements IDiscountOperator {
+public class IntervalDiscountOperator extends AbstractOperator  implements IDiscountOperator {
 
 	
 	public IDegree discount(IDegree arg, double strength) {

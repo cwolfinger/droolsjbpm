@@ -57,6 +57,8 @@ public class Pattern
     // this is the offset of the related fact inside a tuple. i.e:
     // the position of the related fact inside the tuple;
     private int               offset;
+	private String 			  params = null;
+	private String 			  prior = null;
 
     public Pattern() {
         this( 0,
@@ -407,5 +409,22 @@ public class Pattern
 	 */
 	public String getLabel() {
 		return label;
+	}
+	
+	public String getParams() {
+		return params;
+	}
+
+	public void setParams(String params) {
+		this.params = params;
+		
+	}
+
+	public String getPrior() {
+		return prior;
+	}
+	
+	public void setPrior(String prior) {
+		this.prior = prior;		
 	}
 }

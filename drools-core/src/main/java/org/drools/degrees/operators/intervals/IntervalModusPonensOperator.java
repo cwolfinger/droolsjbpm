@@ -7,9 +7,10 @@ import org.drools.degrees.IDegree;
 import org.drools.degrees.IntervalDegree;
 import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.degrees.factory.IntervalDegreeFactory;
+import org.drools.degrees.operators.AbstractOperator;
 import org.drools.degrees.operators.IDegreeCombiner;
 
-public class IntervalModusPonensOperator implements IDegreeCombiner {
+public class IntervalModusPonensOperator extends AbstractOperator  implements IDegreeCombiner {
 
 	public IDegree eval(IDegree[] args, IDegreeFactory factory) {
 		if (args == null || args.length < 2)
