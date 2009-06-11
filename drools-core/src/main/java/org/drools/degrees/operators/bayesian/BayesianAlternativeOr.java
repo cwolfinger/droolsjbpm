@@ -28,20 +28,26 @@ public class BayesianAlternativeOr extends AbstractOperator {
 	public BayesianAlternativeOr(String params) {
 		StringTokenizer tok = new StringTokenizer(params,",");
 		while (tok.hasMoreTokens()) {			
-			String param = tok.nextToken();
+			String param = tok.nextToken().trim();
 			if (param.startsWith("args:")) {
 				
 				param = param.substring(5);
-				if (param.startsWith("lambda"))
-					setLambda(true);
 				
-				if (param.startsWith("lambda") || param.startsWith("pi")) {
-					setLinkSource(revert(param));;
+				StringTokenizer subTok = new StringTokenizer(param,";");
+				while (subTok.hasMoreElements()) {
+					String subP = subTok.nextToken().trim();
+					if (subP.startsWith("lambda"))
+						setLambda(true);
+					
+					if (subP.startsWith("lambda") || subP.startsWith("pi")) {
+						setLinkSource(revert(param));
+					}
+					
+					if (subP.startsWith("index:")) {					
+						if (isLambda())
+							setSkip(Integer.parseInt(subP.substring(6).trim()));		
+					}
 				}
-				
-				int ix = param.lastIndexOf('_');
-				if (isLambda() && ix >= 0)
-					setSkip(Integer.parseInt(param.substring(ix+1).trim()));
 			}
 			
 			
@@ -53,26 +59,49 @@ public class BayesianAlternativeOr extends AbstractOperator {
 
 
 	public IDegree eval(IDegree[] args, IDegreeFactory factory) {
+		
 		if (args.length == 0)
 			return factory.Unknown();
+		if (args.length == 1) {
+			ProbabilityDistributionDegree p = (ProbabilityDistributionDegree) args[0];
+			if (p.getDistribution().getColumnDimension() == 1 && p.getDistribution().getRowDimension() == 1)
+				return p;
+		}
 		
-		int n = args.length;
-		int N = (int) Math.pow(2,args.length);
+		
+		if (getSkip() >= 0)
+			System.out.println();
+		
+		int n = getSkip() >= 0 ? args.length+1 : args.length;
+		int nargs = args.length; 
+		int N = (int) Math.pow(2,n);
 		int M = getSkip() >= 0 ? 2 : 1;
-		double[][] core = new double[N/M][M];
-	
+		double[][] core = new double[N][M];
+		
+		
 		
 		for (int j = 0; j < N; j++) {
 			double x = 1;
 			
-			for (int k = 0; k < n; k++) {
+			for (int k = 0; k < nargs; k++) {
 				int pow = (int) Math.pow(2,k);
 				int bit = (j & pow) > 0 ? 1 : 0;
 				
-				x *= ((ProbabilityDistributionDegree) args[k]).getDistribution().get(bit,0);
+				Matrix m = ((ProbabilityDistributionDegree) args[k]).getDistribution();
+				
+				if (m.getRowDimension()+m.getColumnDimension() > 2)
+					x *= ((ProbabilityDistributionDegree) args[k]).getDistribution().get(bit,0);
 			}
 			
-			core[j][0] = x;
+			if (getSkip() >= 0) {
+				int pow = (int) Math.pow(2,getSkip()-1);
+				int col = (j & pow) > 0 ? 1 : 0;
+				core[j][col] = x;
+			} else {
+				core[j][0] = x;
+			}
+			
+			
 		}
 		
 		System.out.println();

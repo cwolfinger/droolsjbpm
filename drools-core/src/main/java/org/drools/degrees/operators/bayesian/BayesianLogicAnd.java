@@ -14,7 +14,7 @@ import org.drools.util.ArrayUtils;
 
 import Jama.Matrix;
 
-public class BayesianAnd extends AbstractOperator implements IDegreeCombiner {
+public class BayesianLogicAnd extends AbstractOperator implements IDegreeCombiner {
 
 	public IDegree eval(IDegree[] args, IDegreeFactory factory) {
 		if (args.length == 0)

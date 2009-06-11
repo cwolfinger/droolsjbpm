@@ -10,8 +10,9 @@ import org.drools.degrees.operators.IDiscountOperator;
 import org.drools.degrees.operators.IDiscountStrategy;
 import org.drools.degrees.operators.IMergeStrategy;
 import org.drools.degrees.operators.INullHandlingStrategy;
+import org.drools.degrees.operators.bayesian.BayesianAlternativeAnd;
 import org.drools.degrees.operators.bayesian.BayesianAlternativeOr;
-import org.drools.degrees.operators.bayesian.BayesianAnd;
+import org.drools.degrees.operators.bayesian.BayesianLogicAnd;
 import org.drools.degrees.operators.bayesian.BayesianDiscounter;
 import org.drools.degrees.operators.bayesian.BayesianMergeStrategy;
 import org.drools.degrees.operators.bayesian.BayesianModusPonensOperator;
@@ -41,7 +42,8 @@ public class BayesianDegreeFactory implements IDegreeFactory {
 	}
 
 	public IDegree Unknown() {
-		return new ProbabilityDistributionDegree(new double[] {0.5,0.5});		
+		//return new ProbabilityDistributionDegree(new double[] {0.5,0.5});		
+		return new ProbabilityDistributionDegree(new BooleanDomain(), new Matrix(1,1,1.0));
 	}
 
 	
@@ -95,11 +97,18 @@ public class BayesianDegreeFactory implements IDegreeFactory {
 	}
 
 	public IDegreeCombiner getAndOperator() {
-		return new BayesianAnd();
+		return new BayesianLogicAnd();
 	}
 
 	public IDegreeCombiner getAndOperator(String params) {
-		return new BayesianAnd();
+		StringTokenizer tok = new StringTokenizer(params,",");
+			
+			int ix = params.indexOf("kind:et");
+			if (ix >= 0)
+				return new BayesianAlternativeAnd(params.substring(0,ix)+params.substring(ix+7));
+
+					
+		return new BayesianLogicAnd();
 	}
 
 	public IFilterStrategy getDefaultStrategy() {
@@ -190,12 +199,11 @@ public class BayesianDegreeFactory implements IDegreeFactory {
 	}
 
 	public IDegreeCombiner getModusPonensOp() {
-		// TODO Auto-generated method stub
-		return null;
+		return new BayesianModusPonensOperator();
 	}
 
 	public IDegreeCombiner getModusPonensOperator(String params) {
-		return new BayesianModusPonensOperator();
+		return new BayesianModusPonensOperator(params);
 	}
 
 	public IDegreeCombiner getNegationOperator() {

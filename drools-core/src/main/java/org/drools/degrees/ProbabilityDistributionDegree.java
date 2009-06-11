@@ -30,8 +30,8 @@ public class ProbabilityDistributionDegree implements IDegree {
 		setN(domain.getN());
 		setDistribution(new Matrix(getN(), 1, 1.0/getN()));
 		
-		if (getDistribution().getRowDimension() != N && getDistribution().getColumnDimension() != 1)
-			throw new RuntimeException("X-ED ");
+//		if (getDistribution().getRowDimension() != N && getDistribution().getColumnDimension() != 1)
+//			throw new RuntimeException("X-ED ");
 	}
 	
 	public ProbabilityDistributionDegree(IDomain domain, Matrix distribution) {
@@ -46,8 +46,8 @@ public class ProbabilityDistributionDegree implements IDegree {
 		
 		setDistribution(mat);
 		
-		if (getDistribution().getRowDimension() != N && getDistribution().getColumnDimension() != 1)
-			throw new RuntimeException("X-ED 2");
+//		if (getDistribution().getRowDimension() != N && getDistribution().getColumnDimension() != 1)
+//			throw new RuntimeException("X-ED 2");
 	}
 	
 	
@@ -167,6 +167,11 @@ public class ProbabilityDistributionDegree implements IDegree {
 		if (m1.getColumnDimension() == m2.getColumnDimension()
 			&& m2.getRowDimension() == m1.getRowDimension()) {
 			ans = m1.arrayTimes(m2);
+			
+		} else if (isUnity(m1)) {
+			ans = m2;
+		} else if (isUnity(m2)) {
+			ans = m1;
 		} else if (m2.getRowDimension() == m1.getRowDimension()
 				   && m2.getColumnDimension() != m1.getColumnDimension()) {
 				
@@ -199,6 +204,11 @@ public class ProbabilityDistributionDegree implements IDegree {
 	}
 	
 	
+	private boolean isUnity(Matrix m1) {
+		return m1.getColumnDimension() == 1 && m1.getRowDimension() == 1;
+	}
+
+
 	private void normalize(Matrix mat) {
 		double[][] data = mat.getArray();
 		int C = mat.getColumnDimension();
