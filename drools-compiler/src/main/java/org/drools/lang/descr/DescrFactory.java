@@ -536,12 +536,13 @@ public class DescrFactory {
 		String prior = atts.get(DroolsSoftKeywords.PRIOR);
 						
 		String p = params == null ? null : "args:"+params;
-		if (p == null)
+		if (p == null) {
 			if (type != null)
 				p = "kind:"+type;
-		else 
+		} else { 
 			if (type != null)
 				p+= ",kind:"+type;
+		}
 			
 		descr.setParams(p);
 			
