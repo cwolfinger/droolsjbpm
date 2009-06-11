@@ -86,7 +86,9 @@ rule "lambda:Quake->Alarm"
 	then
 		writer.write("Message : Alarm->Quake  " +drools.getConsequenceDegree()+"\n\n");
 		
-		drools.injectKey(new Quake(),"org.drools.chance.BayesianTest.Quake.flag","random",null);	
+		Quake quake = new Quake();
+			drools.injectKey(quake,"org.drools.chance.BayesianTest.Quake.flag","random",null);
+		insertLogical(quake);	
 end
 
 
@@ -122,7 +124,8 @@ rule "lambda:Alarm->John"
 		writer.write("Message : John->Alarm " + drools.getConsequenceDegree() + "\n\n");
 		Alarm alarm = new Alarm();
 			alarm.setId(0);		
-		drools.injectKey(alarm,"class","==","org.drools.chance.BayesianTest.Alarm");	
+			drools.injectKey(alarm,"class","==","org.drools.chance.BayesianTest.Alarm");
+		insertLogical(alarm);	
 end
 
 
@@ -162,7 +165,8 @@ rule "lambda:Alarm->Mary"
 		writer.write("Message : Mary->Alarm " + drools.getConsequenceDegree() + "\n\n");
 		Alarm alarm = new Alarm();
 			alarm.setId(0);		
-		drools.injectKey(alarm,"class","==","org.drools.chance.BayesianTest.Alarm");	
+			drools.injectKey(alarm,"class","==","org.drools.chance.BayesianTest.Alarm");
+		insertLogical(alarm);	
 end
 
 

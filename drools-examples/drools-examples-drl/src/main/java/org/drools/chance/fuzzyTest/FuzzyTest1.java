@@ -43,7 +43,7 @@ public class FuzzyTest1 extends AbstractChanceTest {
 		getSession().insert(r);				
 		getSession().fireAllRules();
 				
-		log("\n\n\n\nULTIMATE ANSWER : FAN speed is "+f.getSpeed()+"\n\n");
+		//log("\n\n\n\nULTIMATE ANSWER : FAN speed is "+f.getSpeed()+"\n\n");
 
 	}
 	

@@ -25,13 +25,16 @@ public class BayesianNetworkTest extends AbstractChanceTest {
 		
 		FactType quakeType = getFactType("Quake");
 		FactType burglarType = getFactType("Burglar");
+		FactType johnType = getFactType("John");
 		
 		try {
 			Object quake = quakeType.newInstance();			
 			Object burglar = burglarType.newInstance();
+			Object john = johnType.newInstance();
 			
 			getSession().insert(quake);
-			getSession().insert(burglar);			
+//			getSession().insert(burglar);			
+			getSession().insert(john);
 						
 			getSession().fireAllRules();
 			
