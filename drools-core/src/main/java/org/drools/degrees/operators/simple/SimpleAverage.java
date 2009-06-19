@@ -1,6 +1,7 @@
 package org.drools.degrees.operators.simple;
 
 import java.util.Collection;
+import java.util.Iterator;
 
 import org.drools.degrees.IDegree;
 import org.drools.degrees.SimpleDegree;
@@ -8,6 +9,8 @@ import org.drools.degrees.factory.IDegreeFactory;
 import org.drools.degrees.factory.SimpleDegreeFactory;
 import org.drools.degrees.operators.AbstractOperator;
 import org.drools.degrees.operators.IDegreeCombiner;
+import org.drools.reteoo.CompositeEvaluation;
+import org.drools.reteoo.Evaluation;
 
 public final class SimpleAverage extends AbstractOperator  implements IDegreeCombiner {
 
@@ -29,6 +32,39 @@ public final class SimpleAverage extends AbstractOperator  implements IDegreeCom
 	}
 
 	
+	
+	public IDegree eval(Evaluation evaluation, IDegreeFactory factory) {
+		double num = 0;
+		double wgt = 0;
+		if (evaluation instanceof CompositeEvaluation) {
+			CompositeEvaluation combo = (CompositeEvaluation) evaluation;
+
+			
+			if (combo.getOperands() != null && combo.getOperands().size() > 0) {				
+				
+				
+				for (Evaluation eval : combo.getOperands()) {
+					if (eval != null) {
+						num += eval.getDegree().getValue();
+						
+							Iterator<Evaluation> iter = ((CompositeEvaluation) eval).getOperands().iterator();
+							Evaluation discounter = iter.next();
+							iter = ((CompositeEvaluation) discounter).getOperands().iterator();
+								iter.next(); //discounted
+						wgt += iter.next().getDegree().getValue();	//weight
+					}
+							
+				}
+			}
+			
+			return wgt == 0 ? factory.Unknown() : factory.buildDegree(num/wgt); 
+		} else {
+			return evaluation.getDegree();
+		}
+		
+		
+	}
+
 	
 	
 	/*
@@ -58,15 +94,18 @@ public final class SimpleAverage extends AbstractOperator  implements IDegreeCom
 	}
 */
 
-	public IDegree eval(Collection<? extends IDegree> args, IDegreeFactory factory) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	
 
 	public String getName() {
 		return "avg";
 	}
 	
+	
+	
+	
+	public boolean isTruthFunctional() {
+		return false;
+	}
 	
 	
 }

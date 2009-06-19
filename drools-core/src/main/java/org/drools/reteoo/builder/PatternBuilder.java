@@ -305,12 +305,21 @@ public class PatternBuilder
         context.setObjectSource( returnedOtn  );
         
         //Notice that == is called deliberately
-        if (returnedOtn == otn) {   
+        if (returnedOtn == otn) {
+        	
+        	if (pattern.getLabel() != null)
+        		otn.setLabel(pattern.getLabel());
+        	
+        	
         	//this is the first time that a specific OTN is required, so it must be configured.
         	otn.setImperfectStructures(context);
+        	
+
         }
         
+        
         if (pattern.getPrior() != null || pattern.getParams() != null) {
+        	        	
         	
         	RecordHackerNode recordHacker = new RecordHackerNode(context, pattern.getPrior(),pattern.getParams(), pattern.isCutter());
         	
@@ -319,8 +328,7 @@ public class PatternBuilder
         }
 //        
 //
-//        	if (pattern.getLabel() != null)
-//        		otn.setLabel(pattern.getLabel());
+        	
 //        	
 //        	if (pattern.getPrior() != null)
 //        		otn.setPrior(pattern.getPrior());

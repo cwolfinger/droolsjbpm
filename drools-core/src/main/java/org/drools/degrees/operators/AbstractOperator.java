@@ -34,7 +34,7 @@ public abstract class AbstractOperator implements IDegreeCombiner {
 			
 				int j = 0;
 				for (Evaluation eval : combo.getOperands()) {
-					args[j++] = eval == null ? factory.getNullHandlingStrategy().convertNull(factory) : eval.getDegree();		
+					args[j++] = eval.getDegree() == null ? factory.getNullHandlingStrategy().convertNull(factory) : eval.getDegree();		
 				}
 			}
 			

@@ -824,7 +824,7 @@ public class ObjectTypeNode extends ObjectSource
 		System.err.println(this.getClass()+" set label "+ label);	
 	}
 
-	/**
+	/** 
 	 * @return the label
 	 */
 	public String getLabel() {

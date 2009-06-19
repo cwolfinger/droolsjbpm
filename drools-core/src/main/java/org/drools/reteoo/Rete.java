@@ -286,7 +286,7 @@ public class Rete extends ObjectSource
 		else {
 			IGammaNode prevNode = constraintIndex.get(key); 
 			if (! node.equals(prevNode))
-				System.out.println("WARNING: Found duplicate key: "+key+" this may be a know issue");
+				System.err.println("WARNING: Found duplicate key: "+key+" this may be a know issue");
 		}
 	}
 	

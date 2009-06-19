@@ -1,5 +1,6 @@
 package org.drools.reteoo;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Observable;
 import java.util.Observer;
@@ -37,7 +38,8 @@ public class Droobservable extends Observable {
 	public void notifyObservers(Object arg) {
 		if (isChanged()) {
 			this.changd = false;
-			for (Observer o : observers)
+			Vector<Observer> observerz = new Vector<Observer>(observers);
+			for (Observer o : observerz)
 				o.update(this, arg);
 				
 		}
