@@ -1271,7 +1271,9 @@ public class DescrFactory {
 		FieldConstraintDescr fieldConstraint = (FieldConstraintDescr) descr;
 		fieldBiding.setIdentifier(label.getText());
 		fieldBiding.setFieldName(fieldConstraint.getFieldName());
-		fieldBiding.setFieldConstraint(fieldConstraint);
+        if( ! fieldConstraint.getRestrictions().isEmpty() ) {
+        	fieldBiding.setFieldConstraint(fieldConstraint);
+        }
 		return fieldBiding;
 	}
 
