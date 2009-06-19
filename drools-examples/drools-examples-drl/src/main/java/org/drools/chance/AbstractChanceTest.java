@@ -45,7 +45,7 @@ public abstract class AbstractChanceTest {
 	
 	private StatefulKnowledgeSession session;
 	
-	private boolean isDumpable = true;
+	private boolean isDumpable = false;
 	
 	private RuleMLDumper dumper = new RuleMLDumper();
 	

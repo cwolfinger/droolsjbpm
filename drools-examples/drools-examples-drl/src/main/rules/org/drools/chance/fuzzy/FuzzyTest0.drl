@@ -16,7 +16,7 @@ global FileWriter writer;
 
 rule "Hot v1"
 	when 
-		$r : Room( temperature ~hot )		
+		$r : Room( t : temperature ~hot )		
 	then
 		
 		writer.write("\n\n");

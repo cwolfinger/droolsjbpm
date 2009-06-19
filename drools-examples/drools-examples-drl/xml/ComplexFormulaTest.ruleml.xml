@@ -214,14 +214,6 @@
                                     <Reify>
                                         <And>
                                             <Atom>
-                                                <!--unsupported attribute - 
-<kind>kind:Lukas</kind>
--->
-                                                <!--
-<degree>
-    <Data>0.99321</Data>
-</degree>
--->
                                                 <op>
                                                     <Rel>isA</Rel>
                                                 </op>

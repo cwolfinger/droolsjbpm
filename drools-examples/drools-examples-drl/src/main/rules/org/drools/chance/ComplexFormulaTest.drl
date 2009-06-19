@@ -30,8 +30,12 @@ rule "TestOpDegs"
 			)
 				
 				
-		Message(status ~random 5 , status ~random 6) @( kind="Lukas" prior="0.99321")
+		exists Message(s : status ~random 5 , status ~random 6) //@( kind="Lukas" prior="0.99321")
 		
+		((equiv
+			Message( s1 : status ~random 8)
+			Message( s2 : status ~random 9)
+		))
 									
 	then
 	
