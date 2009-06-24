@@ -414,9 +414,11 @@ fact_expression returns [BaseDescr descr]
 	{	$descr = factory.createOrRestrictionConnective($left.descr, $right.descr, attribs); }	
 	  
 	|	^(( DOUBLE_AMPER | SINGLE_AMPER) left=fact_expression attribs=constraint_attributes? right=fact_expression )
-	{	$descr = factory.createAndRestrictionConnective($left.descr, $right.descr, attribs); 
-		
-	} 
+	{	$descr = factory.createAndRestrictionConnective($left.descr, $right.descr, attribs); } 
+	
+	|  ^(( DOUBLE_XOR | SINGLE_XOR) left=fact_expression attribs=constraint_attributes? right=fact_expression )
+  { $descr = factory.createXorRestrictionConnective($left.descr, $right.descr, attribs); }
+			
 
 	|	^(VT_ACCESSOR_PATH (ae=accessor_element {exprList.add($ae.element);})+)
 	{	$descr = factory.createAccessorPath(exprList);	}

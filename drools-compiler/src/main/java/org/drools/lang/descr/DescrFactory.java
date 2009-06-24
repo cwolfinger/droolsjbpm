@@ -1495,6 +1495,37 @@ public class DescrFactory {
 	}
 	
 	
+	
+	public BaseDescr createXorRestrictionConnective(BaseDescr left,
+			BaseDescr right, List<AttributeDescr> attribs) {
+				
+		BaseDescr xor = createXorRestrictionConnective(left, right);
+		fillWithAttribs(xor, attribs);				
+	
+		return xor;
+	}
+	
+	public BaseDescr createXorRestrictionConnective(BaseDescr left,
+			BaseDescr right) {
+		BaseDescr xor = null;
+		if (left instanceof RestrictionDescr
+				&& !(left instanceof PredicateDescr)) {
+			RestrictionConnectiveDescr restXor = new RestrictionConnectiveDescr(
+					RestrictionConnectiveDescr.XOR);
+			restXor.addOrMerge((RestrictionDescr) left);
+			restXor.addOrMerge((RestrictionDescr) right);
+			xor = restXor;
+		} else {
+			XorDescr consXor = new XorDescr();
+			consXor.addOrMerge(left);
+			consXor.addOrMerge(right);
+			xor = consXor;
+		}
+
+		return xor;
+	}
+	
+	
 	public BaseDescr createAndRestrictionConnective(BaseDescr left,
 			BaseDescr right, List<AttributeDescr> attribs) {
 //		Map<String,String> atts = buildAttributes(attribs);

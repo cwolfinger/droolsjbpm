@@ -52,6 +52,7 @@ import org.drools.lang.descr.RestrictionDescr;
 import org.drools.lang.descr.ReturnValueRestrictionDescr;
 import org.drools.lang.descr.SlidingWindowDescr;
 import org.drools.lang.descr.VariableRestrictionDescr;
+import org.drools.lang.descr.XorDescr;
 import org.drools.rule.AbstractCompositeConstraint;
 import org.drools.rule.AbstractCompositeRestriction;
 import org.drools.rule.AndCompositeRestriction;
@@ -74,6 +75,8 @@ import org.drools.rule.SlidingLengthWindow;
 import org.drools.rule.SlidingTimeWindow;
 import org.drools.rule.VariableConstraint;
 import org.drools.rule.VariableRestriction;
+import org.drools.rule.XorCompositeRestriction;
+import org.drools.rule.XorConstraint;
 import org.drools.rule.builder.dialect.mvel.MVELDialect;
 import org.drools.spi.AcceptsReadAccessor;
 import org.drools.spi.Constraint;
@@ -289,6 +292,27 @@ public class PatternBuilder
             and.setCutter(cutter);
             and.setLabel(label);
             and.setParams(((AndDescr) constraint ).getParams());
+        } else if ( constraint instanceof XorDescr ) {
+            XorConstraint xor = new XorConstraint();
+            for ( Iterator it = ((XorDescr) constraint).getDescrs().iterator(); it.hasNext(); ) {
+                this.buildConstraint( context,
+                                      pattern,
+                                      it.next(),
+                                      xor );
+            }
+
+            if ( container == null ) {
+                pattern.addConstraint( xor );
+            } else {
+                if ( xor.getType().equals( Constraint.ConstraintType.UNKNOWN ) ) {
+                    this.setConstraintType( pattern,
+                                            (MutableTypeConstraint) xor );
+                }                
+                container.addConstraint( xor );
+            }
+            xor.setCutter(cutter);
+            xor.setLabel(label);
+            xor.setParams(((XorDescr) constraint ).getParams());
         } else if ( constraint instanceof OrDescr ) {
             OrConstraint or = new OrConstraint();
             for ( Iterator it = ((OrDescr) constraint).getDescrs().iterator(); it.hasNext(); ) {
@@ -564,6 +588,8 @@ public class PatternBuilder
                 composite = new AndCompositeRestriction( restrictions );
             } else if ( top.getConnective() == RestrictionConnectiveDescr.OR ) {
                 composite = new OrCompositeRestriction( restrictions );
+            } else if ( top.getConnective() == RestrictionConnectiveDescr.XOR ) {
+                composite = new XorCompositeRestriction( restrictions );
             } else {
                 context.getErrors().add( new DescrBuildError( context.getParentDescr(),
                                                               fieldConstraintDescr,

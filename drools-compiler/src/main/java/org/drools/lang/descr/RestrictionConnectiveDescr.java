@@ -17,6 +17,7 @@ public class RestrictionConnectiveDescr extends RestrictionDescr {
 
     public final static RestrictionConnectiveType AND              = RestrictionConnectiveType.AND;
     public final static RestrictionConnectiveType OR               = RestrictionConnectiveType.OR;
+    public final static RestrictionConnectiveType XOR              = RestrictionConnectiveType.XOR;
 
     private RestrictionConnectiveType             connective;
     private List<RestrictionDescr>                restrictions;
@@ -81,7 +82,13 @@ public class RestrictionConnectiveDescr extends RestrictionDescr {
             public String toString() {
                 return "||";
             }
+        },
+        XOR {
+            public String toString() {
+                return "^^";
+            }
         };
+        
     }
     
     public boolean isCutter() {

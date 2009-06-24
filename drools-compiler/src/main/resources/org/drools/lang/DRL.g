@@ -1270,82 +1270,41 @@ constraints
 	;
 
 constraint
-	:	or_constr
+	:	or_constr		
 	;
 
 
 
-
-//or_constr
-//  :             
-//     or_constr_config
-//          
-//        (DOUBLE_PIPE^                        
-//         and_constr
-//        )*
-//        
-//  ;
-//   
-//or_constr_config
-//  :     
-//    (and_constr SINGLE_PIPE) =>
-//      and_constr
-//         SINGLE_PIPE
-//           //square_chunk?
-//           //constr_identifier? 
-//           //cut?
-//           constr_parameters             
-//           and_constr
-//      -> ^(SINGLE_PIPE 
-//            // square_chunk? ^(VT_CONSTRID constr_identifier)? cut?
-//            constr_parameters? 
-//            and_constr and_constr)
-//    |
-//    and_constr      
-//  ;     
-
-
-//
-//and_constr
-//  :       
-//          and_constr_config          
-//          (DOUBLE_AMPER^                        
-//           unary_constr
-//          )*                        
-//  ;
-//  
-//and_constr_config
-//  :     
-//    (unary_constr SINGLE_AMPER) =>
-//      unary_constr
-//         SINGLE_AMPER
-//           //square_chunk?
-//           //constr_identifier?
-//           //cut?
-//           constr_parameters?                 
-//           unary_constr           
-//      -> ^(SINGLE_AMPER 
-//            // square_chunk? ^(VT_CONSTRID constr_identifier)? cut?
-//            constr_parameters? 
-//            unary_constr unary_constr)
-//    |
-//    unary_constr      
-//  ;      
-
-
-
-
+xor_constr
+  : 
+   and_constr
+   xor_key^
+   and_constr
+  ;
 
 or_constr
-  :              
-         and_constr          
-          
-          (DOUBLE_PIPE^
-            constr_parameters?
-            or_constr_follow
-          )?
+  :   
+      and_constr               
+      or_sequitur^?
+         
+         
         
   ;
+  
+  
+  
+or_sequitur
+  : (DOUBLE_PIPE^
+            constr_parameters?
+            or_constr_follow
+          )
+    | (DOUBLE_XOR^
+      and_constr)
+          
+  ;  
+  
+  
+  
    
 or_constr_follow
   : and_constr
@@ -3219,6 +3178,10 @@ DOT	:	'.'
 DOUBLE_AMPER
 	:	'&&'
 	;
+	
+DOUBLE_XOR
+  : '^^'
+  ;	
 	
 DOUBLE_PIPE
 	:	'||'

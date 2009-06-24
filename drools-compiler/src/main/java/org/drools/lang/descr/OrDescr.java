@@ -59,6 +59,10 @@ public class OrDescr extends BaseDescr
             }
         }
     }
+    
+
+  
+    
 
     public void insertDescr(int index,
                             final BaseDescr baseDescr) {
@@ -85,7 +89,7 @@ public class OrDescr extends BaseDescr
                 addDescr( descr );
             }
         } else {
-            this.descrs.add( baseDescr );
+        	 addDescr( baseDescr );
         }
     }
 
