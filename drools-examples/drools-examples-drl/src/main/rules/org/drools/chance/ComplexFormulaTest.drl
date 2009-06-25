@@ -18,7 +18,7 @@ rule "TestOpDegs"
 		
 		
 		(
-		Message( status == 0 && @( kind="Lukas" ) (status random 1 && @( kind="Prod" ) status random -1)) @( kind="Min" prior="0.04444")
+		Message( star : status == 0 || @( kind="Lukas" ) (status random 1 && @( kind="Min" ) status random -1)) @( kind="Min" prior="0.04444")
 		or @( kind="Lukas" )
 		Message(status not ~random 2)
 		)
@@ -36,6 +36,8 @@ rule "TestOpDegs"
 			Message( s1 : status ~random 8)
 			Message( s2 : status ~random 9)
 		))
+						
+		Message( status ~random 10 ^^ status ~random 11)				
 									
 	then
 	

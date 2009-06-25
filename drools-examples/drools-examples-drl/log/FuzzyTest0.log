@@ -8,20 +8,20 @@ Room is hot in degree 0.75
 Evaluator from temp domain, requires a method in Room
 
 
-Room is warm in degree 0.1875
+Room is warm in degree 0.75
 Room is warm in degree Eval Record info(1.0) for args L : Room 47	 
 AND{
-(47@20) : 0.1875/1.0 dotAnd(dotAnd(==(class,org.drools.chance.fuzzyTest.Room),dotAnd(seems(org.drools.chance.fuzzyTest.Room.temperature,warm),seems(org.drools.chance.fuzzyTest.Room.temperature,hot)))) [EVAL 0.1875,PRIOR o,]
+(47@20) : 0.75/1.0 dotAnd(dotAnd(==(class,org.drools.chance.fuzzyTest.Room),maxOr(seems(org.drools.chance.fuzzyTest.Room.temperature,hot),seems(org.drools.chance.fuzzyTest.Room.temperature,warm)))) [EVAL 0.75,PRIOR o,]
 (47@21) : 1.0/1.0 Hot v3 (Warm) [EVAL 0.0,PRIOR 1.0,]
 }
 
-(47@22) : 0.1875/1.0 minAnd(dotAnd(dotAnd(==(class,org.drools.chance.fuzzyTest.Room),dotAnd(seems(org.drools.chance.fuzzyTest.Room.temperature,warm),seems(org.drools.chance.fuzzyTest.Room.temperature,hot)))),Hot v3 (Warm)) [EVAL 0.1875,PRIOR o,]
-	(47@20) : 0.1875/1.0 dotAnd(dotAnd(==(class,org.drools.chance.fuzzyTest.Room),dotAnd(seems(org.drools.chance.fuzzyTest.Room.temperature,warm),seems(org.drools.chance.fuzzyTest.Room.temperature,hot)))) [EVAL 0.1875,PRIOR o,]
-		(47@1) : 0.1875/1.0 dotAnd(==(class,org.drools.chance.fuzzyTest.Room),dotAnd(seems(org.drools.chance.fuzzyTest.Room.temperature,warm),seems(org.drools.chance.fuzzyTest.Room.temperature,hot))) [EVAL 0.1875,PRIOR o,]
+(47@22) : 0.75/1.0 minAnd(dotAnd(dotAnd(==(class,org.drools.chance.fuzzyTest.Room),maxOr(seems(org.drools.chance.fuzzyTest.Room.temperature,hot),seems(org.drools.chance.fuzzyTest.Room.temperature,warm)))),Hot v3 (Warm)) [EVAL 0.75,PRIOR o,]
+	(47@20) : 0.75/1.0 dotAnd(dotAnd(==(class,org.drools.chance.fuzzyTest.Room),maxOr(seems(org.drools.chance.fuzzyTest.Room.temperature,hot),seems(org.drools.chance.fuzzyTest.Room.temperature,warm)))) [EVAL 0.75,PRIOR o,]
+		(47@1) : 0.75/1.0 dotAnd(==(class,org.drools.chance.fuzzyTest.Room),maxOr(seems(org.drools.chance.fuzzyTest.Room.temperature,hot),seems(org.drools.chance.fuzzyTest.Room.temperature,warm))) [EVAL 0.75,PRIOR o,]
 			(47@3) : 1.0/1.0 ==(class,org.drools.chance.fuzzyTest.Room) [EVAL 1.0,PRIOR o,]
-			(47@18) : 0.1875/1.0 dotAnd(seems(org.drools.chance.fuzzyTest.Room.temperature,warm),seems(org.drools.chance.fuzzyTest.Room.temperature,hot)) [EVAL 0.1875,PRIOR o,]
-				(47@18) : 0.25/1.0 seems(org.drools.chance.fuzzyTest.Room.temperature,warm) [EVAL 0.25,PRIOR o,]
+			(47@18) : 0.75/1.0 maxOr(seems(org.drools.chance.fuzzyTest.Room.temperature,hot),seems(org.drools.chance.fuzzyTest.Room.temperature,warm)) [EVAL 0.75,PRIOR o,]
 				(47@18) : 0.75/1.0 seems(org.drools.chance.fuzzyTest.Room.temperature,hot) [EVAL 0.75,PRIOR o,]
+				(47@18) : 0.25/1.0 seems(org.drools.chance.fuzzyTest.Room.temperature,warm) [EVAL 0.25,PRIOR o,]
 	(47@21) : 1.0/1.0 Hot v3 (Warm) [EVAL 0.0,PRIOR 1.0,]
 
 Evaluator from temp domain, runtime call (no method in room)
@@ -38,20 +38,20 @@ Room is hot in degree 0.0
 Evaluator from temp domain, requires a method in Room
 
 
-Room is warm in degree 0.0
+Room is warm in degree 0.12999999523162842
 Room is warm in degree Eval Record info(1.0) for args L : Room 47	 
 AND{
-(47@20) : 0.0/1.0 dotAnd(dotAnd(==(class,org.drools.chance.fuzzyTest.Room),dotAnd(seems(org.drools.chance.fuzzyTest.Room.temperature,warm),seems(org.drools.chance.fuzzyTest.Room.temperature,hot)))) [EVAL 0.0,PRIOR o,]
+(47@20) : 0.12999999523162842/1.0 dotAnd(dotAnd(==(class,org.drools.chance.fuzzyTest.Room),maxOr(seems(org.drools.chance.fuzzyTest.Room.temperature,hot),seems(org.drools.chance.fuzzyTest.Room.temperature,warm)))) [EVAL 0.12999999523162842,PRIOR o,]
 (47@21) : 1.0/1.0 Hot v3 (Warm) [EVAL 0.0,PRIOR 1.0,]
 }
 
-(47@22) : 0.0/1.0 minAnd(dotAnd(dotAnd(==(class,org.drools.chance.fuzzyTest.Room),dotAnd(seems(org.drools.chance.fuzzyTest.Room.temperature,warm),seems(org.drools.chance.fuzzyTest.Room.temperature,hot)))),Hot v3 (Warm)) [EVAL 0.0,PRIOR o,]
-	(47@20) : 0.0/1.0 dotAnd(dotAnd(==(class,org.drools.chance.fuzzyTest.Room),dotAnd(seems(org.drools.chance.fuzzyTest.Room.temperature,warm),seems(org.drools.chance.fuzzyTest.Room.temperature,hot)))) [EVAL 0.0,PRIOR o,]
-		(47@1) : 0.0/1.0 dotAnd(==(class,org.drools.chance.fuzzyTest.Room),dotAnd(seems(org.drools.chance.fuzzyTest.Room.temperature,warm),seems(org.drools.chance.fuzzyTest.Room.temperature,hot))) [EVAL 0.0,PRIOR o,]
+(47@22) : 0.12999999523162842/1.0 minAnd(dotAnd(dotAnd(==(class,org.drools.chance.fuzzyTest.Room),maxOr(seems(org.drools.chance.fuzzyTest.Room.temperature,hot),seems(org.drools.chance.fuzzyTest.Room.temperature,warm)))),Hot v3 (Warm)) [EVAL 0.12999999523162842,PRIOR o,]
+	(47@20) : 0.12999999523162842/1.0 dotAnd(dotAnd(==(class,org.drools.chance.fuzzyTest.Room),maxOr(seems(org.drools.chance.fuzzyTest.Room.temperature,hot),seems(org.drools.chance.fuzzyTest.Room.temperature,warm)))) [EVAL 0.12999999523162842,PRIOR o,]
+		(47@1) : 0.12999999523162842/1.0 dotAnd(==(class,org.drools.chance.fuzzyTest.Room),maxOr(seems(org.drools.chance.fuzzyTest.Room.temperature,hot),seems(org.drools.chance.fuzzyTest.Room.temperature,warm))) [EVAL 0.12999999523162842,PRIOR o,]
 			(47@3) : 1.0/1.0 ==(class,org.drools.chance.fuzzyTest.Room) [EVAL 1.0,PRIOR o,]
-			(47@18) : 0.0/1.0 dotAnd(seems(org.drools.chance.fuzzyTest.Room.temperature,warm),seems(org.drools.chance.fuzzyTest.Room.temperature,hot)) [EVAL 0.0,PRIOR o,]
-				(47@18) : 0.12999999523162842/1.0 seems(org.drools.chance.fuzzyTest.Room.temperature,warm) [EVAL 0.12999999523162842,PRIOR o,]
+			(47@18) : 0.12999999523162842/1.0 maxOr(seems(org.drools.chance.fuzzyTest.Room.temperature,hot),seems(org.drools.chance.fuzzyTest.Room.temperature,warm)) [EVAL 0.12999999523162842,PRIOR o,]
 				(47@18) : 0.0/1.0 seems(org.drools.chance.fuzzyTest.Room.temperature,hot) [EVAL 0.0,PRIOR o,]
+				(47@18) : 0.12999999523162842/1.0 seems(org.drools.chance.fuzzyTest.Room.temperature,warm) [EVAL 0.12999999523162842,PRIOR o,]
 	(47@21) : 1.0/1.0 Hot v3 (Warm) [EVAL 0.0,PRIOR 1.0,]
 
 Evaluator from temp domain, runtime call (no method in room)

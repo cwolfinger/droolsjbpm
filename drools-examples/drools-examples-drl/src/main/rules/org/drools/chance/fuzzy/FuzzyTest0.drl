@@ -39,7 +39,7 @@ end
 
 rule "Hot v3 (Warm)"
 	when 
-		$r : Room( $w: temperature ~seems "warm" && @(kind="Prod")  $h: temperature ~seems "hot")		
+		$r : Room( $w: temperature ~seems "warm" || @(kind="Prod")  $h: temperature ~seems "hot")		
 	then
 		
 		writer.write("\n\n");

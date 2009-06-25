@@ -146,7 +146,7 @@
                                                 </slot>
                                                 <Ind type="java.lang.Class">org.drools.chance.fuzzyTest.Room</Ind>
                                             </Atom>
-                                            <And>
+                                            <Or>
                                                 <!--unsupported attribute - 
 <kind>kind:Prod</kind>
 -->
@@ -158,7 +158,7 @@
                                                         <Ind type="java.lang.Object">temperature</Ind>
                                                         <Var/>
                                                     </slot>
-                                                    <Ind type="java.lang.String">warm</Ind>
+                                                    <Ind type="java.lang.String">hot</Ind>
                                                 </Atom>
                                                 <Atom>
                                                     <op>
@@ -168,9 +168,9 @@
                                                         <Ind type="java.lang.Object">temperature</Ind>
                                                         <Var/>
                                                     </slot>
-                                                    <Ind type="java.lang.String">hot</Ind>
+                                                    <Ind type="java.lang.String">warm</Ind>
                                                 </Atom>
-                                            </And>
+                                            </Or>
                                         </And>
                                     </Reify>
                                 </Atom>
