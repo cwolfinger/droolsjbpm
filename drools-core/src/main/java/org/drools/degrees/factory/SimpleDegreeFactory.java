@@ -219,7 +219,7 @@ public class SimpleDegreeFactory implements IDegreeFactory {
 	}
 
 	public IDegreeCombiner getXorOperator(String params) {
-		throw new UnsupportedOperationException("Not yet ready to do this :"+ params);
+		return new SimpleXor();
 	}
 
 	
