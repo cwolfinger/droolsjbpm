@@ -32,7 +32,7 @@ public class SimpleDegreeTest {
 	public void testToBoolean() {
 		assertTrue(s1.toBoolean());
 		assertFalse(s0.toBoolean());
-		assertFalse(s3.toBoolean());
+		assertTrue(s3.toBoolean());
 		assertTrue(s5.toBoolean());
 		assertTrue(s8.toBoolean());				
 	}
