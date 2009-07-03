@@ -184,7 +184,7 @@ public interface EvaluatorDefinition extends Externalizable, org.drools.runtime.
     /**
      * An enum for the target of the evaluator
      */
-    public static enum Target {
+    enum Target {
         FACT, HANDLE, BOTH;
     }
 
