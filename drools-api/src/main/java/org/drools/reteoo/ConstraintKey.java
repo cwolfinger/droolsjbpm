@@ -1,6 +1,5 @@
 package org.drools.reteoo;
 
-import com.sun.tools.xjc.model.CNonElement;
 
 
 public class ConstraintKey {
