@@ -58,7 +58,7 @@ public class ImperfectFactHandle extends DefaultFactHandle {
                              final long recency) {
         super(id,object,recency);
         properties = new HashMap<ConstraintKey, Evaluation>();
-    	System.out.println(this.getClass().getName() + ": hacked fact handle to hold object "+object);
+    	//System.out.println(this.getClass().getName() + ": hacked fact handle to hold object "+object);
 
     }
 

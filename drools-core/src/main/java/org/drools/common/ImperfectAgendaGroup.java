@@ -39,13 +39,13 @@ public class ImperfectAgendaGroup implements InternalAgendaGroup {
 		
 		int tgt = activation.hashCode();
 		Iterator iter = store.iterator();
-		System.out.print("Set is made of : ");
-		while (iter.hasNext())  {
-			ImperfectAgendaItem impAit = (ImperfectAgendaItem) iter.next();
-			int code = impAit.hashCode();
-			IDegree deg = impAit.getDegree();
-			System.out.print(code + "/"+deg+" ( " + (tgt == code) + ")\t");
-		}
+//		System.out.print("Set is made of : ");
+//		while (iter.hasNext())  {
+//			ImperfectAgendaItem impAit = (ImperfectAgendaItem) iter.next();
+//			int code = impAit.hashCode();
+//			IDegree deg = impAit.getDegree();
+//			System.out.print(code + "/"+deg+" ( " + (tgt == code) + ")\t");
+//		}
 		
 		int idx = store.indexOf(agItem);
 		if (idx != -1) {
@@ -58,20 +58,20 @@ public class ImperfectAgendaGroup implements InternalAgendaGroup {
 				org.drools.util.Iterator depIter = deps.iterator();
 				while (depIter.hasNext()) 
 					agItem.addLogicalDependency((LogicalDependency) depIter.next() );
-				System.out.println("Moved deps from old activ");
+				//System.out.println("Moved deps from old activ");
 			}
 				
 				
-			System.out.println("Replaced old activ");
+			//System.out.println("Replaced old activ");
 		}
 		
-		System.out.println("added activation " + agItem.getEvaluation().hashCode() + " with degree " + agItem.getDegree());
+		//System.out.println("added activation " + agItem.getEvaluation().hashCode() + " with degree " + agItem.getDegree());
 		store.add(agItem);
 		agItem.setActivated(true);
 		
-		System.out.println("After adding activation: ");
-		System.out.println(this.getStatus());
-		System.out.println();
+//		System.out.println("After adding activation: ");
+//		System.out.println(this.getStatus());
+//		System.out.println();
 	}
 
 	public void clear() {
@@ -81,27 +81,27 @@ public class ImperfectAgendaGroup implements InternalAgendaGroup {
 	public Activation getNext() {										
 		
 		
-		System.out.println("Before getting next :");
-		System.out.println(this.getStatus());
-		System.out.println();
+//		System.out.println("Before getting next :");
+//		System.out.println(this.getStatus());
+//		System.out.println();
 		
 		Activation activ = store.iterator().next();
 		int tgt = activ.hashCode();
-		System.out.print("\n Looking for : "+activ.hashCode());
+		//System.out.print("\n Looking for : "+activ.hashCode());
 		
-		Iterator iter = store.iterator();
-		System.out.print("Set is made of : ");
-		while (iter.hasNext())  {
-			int code = iter.next().hashCode();
-			System.out.print(code + "( " + (tgt == code) + "\t");
-		}
+//		Iterator iter = store.iterator();
+//		System.out.print("Set is made of : ");
+//		while (iter.hasNext())  {
+//			int code = iter.next().hashCode();
+//			System.out.print(code + "( " + (tgt == code) + "\t");
+//		}
 		
 		
 		store.remove(activ);
 		
-		System.out.println("\nAfer getting next");
-		System.out.println(this.getStatus());
-		System.out.println();
+//		System.out.println("\nAfer getting next");
+//		System.out.println(this.getStatus());
+//		System.out.println();
 		return activ;
 	}
 
