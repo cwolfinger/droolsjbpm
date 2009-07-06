@@ -76,7 +76,7 @@ public class SetCompositeEvaluation extends CompositeEvaluation {
 									
 		
 		
-		System.out.println("Created setCE \n "+this.toString());
+		//System.out.println("Created setCE \n "+this.toString());
 	}
 	
 	
@@ -84,7 +84,7 @@ public class SetCompositeEvaluation extends CompositeEvaluation {
 
 
 	public void update(Observable source, Object arg) {
-		System.out.println("UPDATE HAS BEEN CALLED ON SETVAL by "+ source.toString());
+		//System.out.println("UPDATE HAS BEEN CALLED ON SETVAL by "+ source.toString());
 		
 		
 		if (arg instanceof EvalRecord && source instanceof OperandSet) {
@@ -94,14 +94,14 @@ public class SetCompositeEvaluation extends CompositeEvaluation {
 			
 			if (wrapper.isAdding()) {					
 					
-					System.out.println(eval.expand());
+					//System.out.println(eval.expand());
 					
 					
 					if (! this.operands.contains(eval)) {
 						//this.operands.add(impRT.getRecord());
 							
 						setOperand(this.operands.size(), eval);
-						System.out.println(eval.expand());
+						//System.out.println(eval.expand());
 						
 						//Just to notify the new arg...
 						//setChanged();
@@ -111,10 +111,10 @@ public class SetCompositeEvaluation extends CompositeEvaluation {
 					//
 					
 					
-					System.out.println(eval.expand());
+					//System.out.println(eval.expand());
 					combine();
 					
-					System.out.println();	
+					//System.out.println();	
 //					setChanged();
 //					this.notifyObservers();
 					
