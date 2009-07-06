@@ -200,7 +200,7 @@ public class ImperfectExistsNode extends ExistsNode implements Observer {
 		
 			
 		        				
-		System.out.println("Situation at EXISTS eval"+mainRecord.expand());        		        		        		        	
+		//System.out.println("Situation at EXISTS eval"+mainRecord.expand());        		        		        		        	
     	
 		
     	switch (this.filterStrat.doTry(mainRecord)) {
@@ -211,8 +211,8 @@ public class ImperfectExistsNode extends ExistsNode implements Observer {
     			
 		
     		case HOLD : //TODO: HOLD
-    			System.out.println("HOLD RULES @EXIST NODE"+this.getId());
-    			System.out.println("Situation is "+mainRecord.expand());
+    			//System.out.println("HOLD RULES @EXIST NODE"+this.getId());
+    			//System.out.println("Situation is "+mainRecord.expand());
     			
     				mainRecord.setLeftTuple(leftTuple);    				
     				mainRecord.setFactory(factory);
@@ -223,7 +223,7 @@ public class ImperfectExistsNode extends ExistsNode implements Observer {
     			break;
 		
     		case PASS : 
-    			System.out.println("Exist PASS at assertTuple: propagate record");
+    			//System.out.println("Exist PASS at assertTuple: propagate record");
     			mainRecord.setLeftTuple(leftTuple);
     			mainRecord.setFactory(factory);
 				mainRecord.setPropagationContext(context);
@@ -258,7 +258,7 @@ public class ImperfectExistsNode extends ExistsNode implements Observer {
 
 	public void update(Observable o, Object arg) {
 		
-		System.out.println(this.getClass().toString() + " NOTIFIED OF CHANGE");
+		//System.out.println(this.getClass().toString() + " NOTIFIED OF CHANGE");
 		
 		EvalRecord mainRecord = null;
 		
@@ -269,7 +269,7 @@ public class ImperfectExistsNode extends ExistsNode implements Observer {
 			return;
 		
 		
-		System.out.println("Situation changed at EXISTS eval"+mainRecord.expand());        		        		        		        	
+		//System.out.println("Situation changed at EXISTS eval"+mainRecord.expand());        		        		        		        	
     	
 		
     	switch (this.filterStrat.doTry(mainRecord)) {
@@ -280,8 +280,8 @@ public class ImperfectExistsNode extends ExistsNode implements Observer {
     			
 //		
     		case HOLD : //TODO: HOLD
-    			System.out.println("HOLD RULES @EXIST NODE"+this.getId());
-    			System.out.println("Situation is "+mainRecord.expand());    	
+    			//System.out.println("HOLD RULES @EXIST NODE"+this.getId());
+    			//System.out.println("Situation is "+mainRecord.expand());    	
     			
     			
     			mainRecord.addObserver(this);
@@ -289,7 +289,7 @@ public class ImperfectExistsNode extends ExistsNode implements Observer {
     			break;
 		
     		case PASS : 
-    			System.out.println("Exist PASS at assertTuple: propagate record");
+    			//System.out.println("Exist PASS at assertTuple: propagate record");
     			
     			mainRecord.deleteObserver(this);
     			
