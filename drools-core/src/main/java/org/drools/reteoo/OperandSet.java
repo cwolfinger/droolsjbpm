@@ -141,7 +141,7 @@ public class OperandSet extends Droobservable implements Observer {
 				            this.sink.propagateRetractLeftTuple( tuple,
 				                                                 wrapper.getPropContext(),
 				                                                 workMem );
-				            System.out.println("Killed children");			
+				            //System.out.println("Killed children");			
 				        }
 						
 						
@@ -168,7 +168,7 @@ public class OperandSet extends Droobservable implements Observer {
 						
 						node.update(this,propRecord);
 						
-						System.out.println();																																				
+						//System.out.println();																																				
 						
 						
 						
