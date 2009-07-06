@@ -117,7 +117,7 @@ public class JoinNode extends BetaNode implements IGammaNode, Observer {
         	for (ConstraintKey key : keys)
         		context.getRuleBase().getRete().indexGammaNode(key,this);
         }
-        System.out.println(this.getClass().getName() + "(id "+id+") constructor hacked to add filter strategy");
+       // System.out.println(this.getClass().getName() + "(id "+id+") constructor hacked to add filter strategy");
         
              
         
@@ -261,7 +261,7 @@ public class JoinNode extends BetaNode implements IGammaNode, Observer {
     		ImperfectRightTuple propRightTuple = new ImperfectRightTuple(factHandle,this,record);
         	
         	
-        	System.out.println("Situation at join eval"+mainRecord.expand());        		        		        		        	
+        	//System.out.println("Situation at join eval"+mainRecord.expand());        		        		        		        	
 	        		        	        		        		        		        	
         	
         	IFilterStrategy.filterOptions verdict;
@@ -275,12 +275,12 @@ public class JoinNode extends BetaNode implements IGammaNode, Observer {
         	
         	switch (verdict) {
         		case DROP : 
-        			System.out.println("Beta FAIL at assertTuple: DROP record");
+        			//System.out.println("Beta FAIL at assertTuple: DROP record");
         			continue;
 			
         		case HOLD : //TODO: HOLD
-        			System.out.println("HOLD RULES @JOIN NODE"+this.getId());
-        			System.out.println("Situation is "+mainRecord.expand());
+        			//System.out.println("HOLD RULES @JOIN NODE"+this.getId());
+        			//System.out.println("Situation is "+mainRecord.expand());
         			
         				mainRecord.setLeftTuple(leftTuple);
         				mainRecord.setRightTuple(propRightTuple);
@@ -292,7 +292,7 @@ public class JoinNode extends BetaNode implements IGammaNode, Observer {
         			//break;
 			
         		case PASS : 
-        			System.out.println("Beta PASS at assertTuple: propagate record");
+        			//System.out.println("Beta PASS at assertTuple: propagate record");
         			this.sink.propagateAssertLeftTuple( leftTuple,
                             propRightTuple,
                             context,
@@ -475,7 +475,7 @@ public class JoinNode extends BetaNode implements IGammaNode, Observer {
     		ImperfectRightTuple propRightTuple = new ImperfectRightTuple(factHandle,this,record);
         	
         	
-        	System.out.println("Situation at join eval"+mainRecord.expand());        		        		        		        	
+         //	System.out.println("Situation at join eval"+mainRecord.expand());        		        		        		        	
         		
         	IFilterStrategy.filterOptions verdict;
         	
@@ -488,13 +488,13 @@ public class JoinNode extends BetaNode implements IGammaNode, Observer {
         	
         	switch (verdict) {
         		case DROP :
-        			System.out.println("Beta DROP at assertobject");
+        			//System.out.println("Beta DROP at assertobject");
         			return;
 			
         		case HOLD : //TODO: HOLD
-        			System.out.println("HOLD RULES @JOIN NODE"+this.getId());
-        			System.out.println("Situation is "+mainRecord.expand());
-        			
+//        			System.out.println("HOLD RULES @JOIN NODE"+this.getId());
+//        			System.out.println("Situation is "+mainRecord.expand());
+//        			
         				mainRecord.setLeftTuple(leftTuple);
         				mainRecord.setRightTuple(propRightTuple);
         				mainRecord.setFactory(factory);
@@ -505,7 +505,7 @@ public class JoinNode extends BetaNode implements IGammaNode, Observer {
         			break;
 			
         		case PASS : 
-        			System.out.println("Beta PASS at assertObjecf: propagate record");
+//        			System.out.println("Beta PASS at assertObjecf: propagate record");
         			this.sink.propagateAssertLeftTuple( leftTuple,
                             propRightTuple,
                             context,
@@ -541,7 +541,7 @@ public class JoinNode extends BetaNode implements IGammaNode, Observer {
 		if (record == null) 
 			return;
 		
-		System.out.println("**************************************************************UPDATE @JOIN NODE");
+//		System.out.println("**************************************************************UPDATE @JOIN NODE");
 		
 		IFilterStrategy.filterOptions verdict;
     	
