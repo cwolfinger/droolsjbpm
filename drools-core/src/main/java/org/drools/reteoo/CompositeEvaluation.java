@@ -129,7 +129,7 @@ public class CompositeEvaluation extends Evaluation implements Observer {
 	
 	public void setOperand(int position, Evaluation operand) {
 				
-		System.out.println(operand.expand());
+		//System.out.println(operand.expand());
 
 		
 		if (operands.size() <= position) {
@@ -138,12 +138,12 @@ public class CompositeEvaluation extends Evaluation implements Observer {
 			operands.setSize(position+1);
 			
 			operand.addObserver(this);
-			System.out.println(operand.expand());
+			//System.out.println(operand.expand());
 			//operands.set(position,operand);
 		} else {
 			if (operands.get(position) != null && operands.get(position) != operand) {
 				
-				System.out.println("SET OPERAND "+operand.getKey()+ "with " + operand.getBitS());
+				//System.out.println("SET OPERAND "+operand.getKey()+ "with " + operand.getBitS());
 				operands.get(position).deleteObserver(this);
 				
 				operand.addObserver(this);
@@ -177,13 +177,13 @@ public class CompositeEvaluation extends Evaluation implements Observer {
 		
 			Evaluation operand = operands.get(position);
 		
-			System.out.println("Removing "+operand.expand());
+			//System.out.println("Removing "+operand.expand());
 		
 			operand.deleteObserver(this);
 
-			System.out.println(operands.size());
+			//System.out.println(operands.size());
 			operands.set(position,null);
-			System.out.println(operands.size());
+			//System.out.println(operands.size());
 			
 			this.getArgs().delete(operand.getArgs());
 
@@ -195,8 +195,8 @@ public class CompositeEvaluation extends Evaluation implements Observer {
 				
 				operands.setSize(j);
 		
-			System.out.println(operands.size());
-			System.out.println();
+			//System.out.println(operands.size());
+			//System.out.println();
 
 
 		//this.setArgCode(this.getArgCode()^operand.getArgCode());
@@ -247,7 +247,7 @@ public class CompositeEvaluation extends Evaluation implements Observer {
 	
 	
 	public void update(Observable o, Object arg) {
-		System.out.println("\nUPDATE HAS BEEN CALLED ON COMBOVAL by" + o.toString()+ " " + getOpRate());
+		//System.out.println("\nUPDATE HAS BEEN CALLED ON COMBOVAL by" + o.toString()+ " " + getOpRate());
 		//incInfo("EVAL",-getOpRate());
 		
 		if (arg instanceof ArgList) {
