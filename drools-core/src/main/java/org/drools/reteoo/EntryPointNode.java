@@ -330,7 +330,7 @@ public class EntryPointNode extends ObjectSource
 			ObjectTypeNode[] cachedNodes = objectTypeConf.getObjectTypeNodes();
 		
 			for ( int i = 0, length = cachedNodes.length; i < length; i++ ) {
-				System.out.println(this.getClass() + " dispatching obj"+ (handle.getObject().getClass().getSimpleName()) + "to node "+cachedNodes[i].hashCode());
+				//System.out.println(this.getClass() + " dispatching obj"+ (handle.getObject().getClass().getSimpleName()) + "to node "+cachedNodes[i].hashCode());
 				EvalRecord record = new EvalRecord(this.getId(),factory.getAndOperator(),factory.getMergeStrategy(),factory.getNullHandlingStrategy(),factory,new ArgList());				
 				cachedNodes[i].assertObject(handle,
 		                        context,
