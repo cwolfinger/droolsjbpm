@@ -73,7 +73,7 @@ public class SingleLeftTupleSinkAdapter extends AbstractLeftTupleSinkAdapter {
             child.unlinkFromRightParent();
             child.unlinkFromLeftParent();                        
 
-            System.out.println(this.getClass() + "HACKED TO DETACH RECORD OBSERVER");
+            //System.out.println(this.getClass() + "HACKED TO DETACH RECORD OBSERVER");
             if (child instanceof ImperfectLeftTuple)
             	((ImperfectLeftTuple) child).getRecord().deleteObservers();
             
