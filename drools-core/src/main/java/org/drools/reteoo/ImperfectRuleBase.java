@@ -99,7 +99,7 @@ public class ImperfectRuleBase extends ReteooRuleBase {
         try {
 			factory = (IDegreeFactory) Class.forName(factoryName).newInstance();
 			factory.setClosedWorldAssumption(cwa);
-			System.out.println("Created instance of "+factoryName);
+			//System.out.println("Created instance of "+factoryName);
 		} catch (InstantiationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

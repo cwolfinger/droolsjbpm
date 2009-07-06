@@ -122,7 +122,7 @@ public class Evaluation extends Droobservable {
 					killerContri = false;
 				
 			if (evalDeg != null) {
-				System.out.println("Trying to merge degrees for source "+ source + "+1");
+				//System.out.println("Trying to merge degrees for source "+ source + "+1");
 				
 				/*
 				confidence.put(source, conf.get(source));
@@ -170,23 +170,23 @@ public class Evaluation extends Droobservable {
 		
 		
 			prevConf = confidence.get(source);
-			System.out.println(prevConf);
+			//System.out.println(prevConf);
 				confidence.put(source, wgt);
 			rateIncr = prevConf == null ? true : prevConf.doubleValue() < wgt;
 			
 						
 			IDegree oldVal = getDegreeBit(source);
 			if (oldVal == null) {
-				System.out.println(this.key+" Added degree for source "+ source + " with wgt "+wgt);
+				//System.out.println(this.key+" Added degree for source "+ source + " with wgt "+wgt);
 				this.degrees.put(source,evalDeg);
 				this.killer.put(source,isKiller);
 				newContrib = true;
 			} else {
 					if (oldVal.equals(evalDeg)) {
-						System.out.println(this.key+" No news for source "+ source + " with wgt "+wgt);
+						//System.out.println(this.key+" No news for source "+ source + " with wgt "+wgt);
 						newContrib = false;
 					} else {
-						System.out.println(this.key+" UPDATED degree for source "+ source + " with wgt "+wgt);
+						//System.out.println(this.key+" UPDATED degree for source "+ source + " with wgt "+wgt);
 						this.degrees.put(source,evalDeg);
 						newContrib = true;
 					}
@@ -209,7 +209,7 @@ public class Evaluation extends Droobservable {
 								
 		}
 		
-		System.out.println(this.getKey()+"\n\t\tAdd degree status immUpd = "+immediateUpdate + " , newcontr = "+newContrib+ " , rateincr ="+ rateIncr);
+		//System.out.println(this.getKey()+"\n\t\tAdd degree status immUpd = "+immediateUpdate + " , newcontr = "+newContrib+ " , rateincr ="+ rateIncr);
 		
 		
 		if (immediateUpdate && newContrib)

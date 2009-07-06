@@ -87,13 +87,13 @@ public class EvalRecord extends CompositeEvaluation implements Observer {
 		//Evaluation prevEval = evalMap.get(eval.getKey());
 		Evaluation prevEval = evalSet.get(eval);
 		if (prevEval == null) {
-			System.out.println(this.getClass()+" insert "+eval.toString());
+			// System.out.println(this.getClass()+" insert "+eval.toString());
 			//evalMap.put(eval.getKey(),eval);	
 			evalSet.put(eval,eval);
 			prevEval = eval;
 			//eval.addObserver(this);
 		} else {
-			System.out.println(this.getClass()+" merge "+eval.toString());
+			//System.out.println(this.getClass()+" merge "+eval.toString());
 			prevEval.merge(eval);
 		}
 		

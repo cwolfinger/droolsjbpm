@@ -271,7 +271,7 @@ public class TruthMaintenanceSystem {
                 this.tms.getJustifiedMap().remove( handle.getId() );
                 // this needs to be scheduled so we don't upset the current
                 // working memory operation
-				System.out.println("Retracting "+handle.toString()+"at" + Calendar.getInstance().getTimeInMillis());
+				//System.out.println("Retracting "+handle.toString()+"at" + Calendar.getInstance().getTimeInMillis());
 
                 workingMemory.retract( this.handle,
                                        false,
@@ -331,12 +331,12 @@ public class TruthMaintenanceSystem {
             this.justifiedMap.put( handle.getId(),
                                    set );
         }
-        System.out.println("Adding a dep NOde "+node.hashCode() + " set contains "+set.contains(node));
-        for (Object o : set) {
-        	LogicalDependency l = (LogicalDependency) o;
-        	System.out.println("Set contains "+l + " code : " +l.hashCode());
-        	System.out.println(l.equals(node));
-        }
+//        System.out.println("Adding a dep NOde "+node.hashCode() + " set contains "+set.contains(node));
+//        for (Object o : set) {
+//        	LogicalDependency l = (LogicalDependency) o;
+//        	System.out.println("Set contains "+l + " code : " +l.hashCode());
+//        	System.out.println(l.equals(node));
+//        }
         set.add( node );
     }
     

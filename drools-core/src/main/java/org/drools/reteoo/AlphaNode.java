@@ -203,7 +203,7 @@ public class AlphaNode extends ObjectSource
 		
 		final AlphaMemory memory = (AlphaMemory) workingMemory.getNodeMemory( this );
 		
-		System.out.println("--------------     Passing by alpha" + id);
+		//System.out.println("--------------     Passing by alpha" + id);
 
 		//Collect any provided info
 		Collection<Evaluation> storedEvals = this.gammaMemory.retrieve(new ArgList(factHandle.getObject()));
@@ -246,7 +246,7 @@ public class AlphaNode extends ObjectSource
 			}			
 		}   
 		 
-		System.out.println("Alpha evaluation trial "+record.expand());
+		//System.out.println("Alpha evaluation trial "+record.expand());
 		
 		IFilterStrategy.filterOptions verdict;
     	
@@ -260,12 +260,12 @@ public class AlphaNode extends ObjectSource
     	switch (verdict) {
 			case DROP : 
 				//time to die
-				System.out.println("Alpha FAIL : DROP record");
+				//System.out.println("Alpha FAIL : DROP record");
 				return;
 			
 			case HOLD : 
-				System.out.println("WARNING::::::::::::::::::::::::::: OBJECT HELD AT ALPHA NODE "+this.constraint.getConstraintKey());
-				System.out.println("Situation is "+record.expand());
+				//System.out.println("WARNING::::::::::::::::::::::::::: OBJECT HELD AT ALPHA NODE "+this.constraint.getConstraintKey());
+				//System.out.println("Situation is "+record.expand());
 					record.setFactHandle(factHandle);
 					record.setFactory(factory);
 					record.setPropagationContext(propagationContext);
@@ -276,7 +276,7 @@ public class AlphaNode extends ObjectSource
 			
 			case PASS :
 				//go on
-				System.out.println("Alpha PASS ");
+				//System.out.println("Alpha PASS ");
 				this.sink.propagateAssertObject(factHandle,
 		            propagationContext,
 		            workingMemory,
