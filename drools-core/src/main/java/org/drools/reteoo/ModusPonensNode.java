@@ -147,8 +147,8 @@ public class ModusPonensNode extends JoinNode {
         		case DROP : return;
 			
         		case HOLD : //TODO: HOLD
-        			System.out.println("HOLD RULES @MP NODE"+this.getId());
-        			System.out.println("Situation is "+mpRecord.expand());
+        			//System.out.println("HOLD RULES @MP NODE"+this.getId());
+        			//System.out.println("Situation is "+mpRecord.expand());
         			
         			if (mpRecord.getLeftTuple() == null || ! mpRecord.getLeftTuple().equals(leftTuple))
         				mpRecord.addObserver(this);
@@ -215,7 +215,7 @@ public class ModusPonensNode extends JoinNode {
 		if (record == null) 
 			return;
 		
-		System.out.println("**************************************************************UPDATE @MP NODE");
+		//System.out.println("**************************************************************UPDATE @MP NODE");
 		switch (this.filterStrat.doTry(record)) {
 		case DROP : 
 			//record.deleteObserver(this);
