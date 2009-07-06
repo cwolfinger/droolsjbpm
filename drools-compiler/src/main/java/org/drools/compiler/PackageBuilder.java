@@ -280,7 +280,7 @@ public class PackageBuilder {
         this.results.addAll( parser.getErrors() );
         if ( !parser.hasErrors() ) {
         	        	
-        	System.out.println(this.getClass().toString()+" HACKED TO DO LEXICAL ANALYSIS");
+        	//System.out.println(this.getClass().toString()+" HACKED TO DO LEXICAL ANALYSIS");
             pkg.setDependencies(doLexicalAnalysis(pkg));
         	
             addPackage( pkg );
@@ -299,7 +299,7 @@ public class PackageBuilder {
         this.results.addAll( parser.getErrors() );
         if ( !parser.hasErrors() ) {
         	 //TODO: Where to do it?
-            System.out.println(this.getClass().toString()+" HACKED TO DO LEXICAL ANALYSIS");
+           // System.out.println(this.getClass().toString()+" HACKED TO DO LEXICAL ANALYSIS");
             pkg.setDependencies(doLexicalAnalysis(pkg));
         	
             addPackage( pkg );            
@@ -1661,14 +1661,14 @@ public class PackageBuilder {
     	}
     	
     	
-    	for (ConstraintKey ck : ans.keySet()) {
-			Set<String> rNs = ans.get(ck);
-			System.out.print(ck+ " ");
-			for (String id : rNs) {
-				System.out.print(id+ " ");
-			}
-			System.out.println();
-		}
+//    	for (ConstraintKey ck : ans.keySet()) {
+//			Set<String> rNs = ans.get(ck);
+//			System.out.print(ck+ " ");
+//			for (String id : rNs) {
+//				System.out.print(id+ " ");
+//			}
+//			System.out.println();
+//		}
 		
 		return ans;
 	}
