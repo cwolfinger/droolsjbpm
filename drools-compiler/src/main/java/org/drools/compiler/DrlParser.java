@@ -237,22 +237,22 @@ public class DrlParser {
             }
             DroolsTree resultTree = (DroolsTree) parser.compilation_unit().getTree();
             
-            System.out.println(this.getClass().toString() + " HACKED TO GET DROOLSTREE \n" + resultTree.toStringTree());
+            //System.out.println(this.getClass().toString() + " HACKED TO GET DROOLSTREE \n" + resultTree.toStringTree());
             
 
                        
-            if (resultTree.getChildCount() > 0)
-            {
-            	
-            	DroolsTree dtree;
-            	for (int j = 0; j < resultTree.getChildCount(); j++) {
-            		dtree = (DroolsTree) resultTree.getChild(j);
-            
-            		if (dtree.getToken().getText().equals("rule"))
-            			System.out.println(dtree.toIndentedStringTree());
-            		else System.out.println(dtree.toStringTree());
-            	}
-            }
+//            if (resultTree.getChildCount() > 0)
+//            {
+//            	
+//            	DroolsTree dtree;
+//            	for (int j = 0; j < resultTree.getChildCount(); j++) {
+//            		dtree = (DroolsTree) resultTree.getChild(j);
+//            
+//            		if (dtree.getToken().getText().equals("rule"))
+//            			System.out.println(dtree.toIndentedStringTree());
+//            		else System.out.println(dtree.toStringTree());
+//            	}
+//            }
 //            
             
             
