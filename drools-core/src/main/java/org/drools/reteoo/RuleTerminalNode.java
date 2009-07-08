@@ -180,8 +180,8 @@ public final class RuleTerminalNode extends BaseNode
     	EvalRecord record = tuple.getRecord();
     	record.setNodeId(this.getId());
     	
-    	System.out.println(this.rule);
-    	System.out.println(""+this.hashCode() + record.expand());
+    	//System.out.println(this.rule);
+    	//System.out.println(""+this.hashCode() + record.expand());
     	
     	IDegree degree = record.getDegree();
     	

@@ -19,7 +19,7 @@ public class SimpleFilterStrategy extends ImperfectFilterStrategy {
 	@Override
 	public IFilterStrategy.filterOptions doTry(Evaluation eval) {
 		//return eval.getDegree().toBoolean() ? PASS : DROP;
-		System.out.println(this.getClass()+" : "+eval.getInfoRate());
+//		System.out.println(this.getClass()+" : "+eval.getInfoRate());
 		
 		//Changed since CUT can be used
 //		if (eval.getDegree().toBoolean() && eval.getInfoRate() == 1.0f) 

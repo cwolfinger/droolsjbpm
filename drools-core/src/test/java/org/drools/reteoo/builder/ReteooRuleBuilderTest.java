@@ -83,7 +83,7 @@ public class ReteooRuleBuilderTest extends TestCase {
         final Consequence consequence = new Consequence() {
             public void evaluate(KnowledgeHelper knowledgeHelper,
                                  WorkingMemory workingMemory) throws Exception {
-                System.out.println( "Consequence!" );
+                //System.out.println( "Consequence!" );
             }
 
             public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {

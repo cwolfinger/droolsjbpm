@@ -25,7 +25,7 @@ public class MvelActionTest extends TestCase {
         action.receive( mock, new BasePipelineContext( Thread.currentThread().getContextClassLoader() ) );
 
         
-        System.out.println( mock.getValues().get( 0 ));
+       // System.out.println( mock.getValues().get( 0 ));
         assertEquals( 5, mock.getValues().size());
         assertEquals( 0, mock.getValues().get( 0 ).intValue() );
         assertEquals( 4, mock.getValues().get( 4 ).intValue() );

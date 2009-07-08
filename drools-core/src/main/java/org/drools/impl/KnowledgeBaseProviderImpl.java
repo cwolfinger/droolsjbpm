@@ -38,7 +38,7 @@ public class KnowledgeBaseProviderImpl implements KnowledgeBaseProvider {
 	}	
 	
     public KnowledgeBase newKnowledgeBase(KnowledgeBaseConfiguration conf) {
-    	System.out.println("WARNING "+this.getClass().getName()+ " HACKED METHOD TO ACTIVATE IMPERFECTION");
+    	//System.out.println("WARNING "+this.getClass().getName()+ " HACKED METHOD TO ACTIVATE IMPERFECTION");
     	if (conf.isImperfect()) {
     		return new KnowledgeBaseImpl( RuleBaseFactory.newRuleBase(RuleBase.IMPERFECT_RETEOO, ( RuleBaseConfiguration ) conf ) );	
     	} else
