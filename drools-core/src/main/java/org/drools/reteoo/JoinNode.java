@@ -21,6 +21,7 @@ import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.reteoo.builder.BuildContext;
 import org.drools.rule.Behavior;
+import org.drools.rule.BehaviorManager;
 import org.drools.spi.PropagationContext;
 import org.drools.util.Iterator;
 
@@ -113,15 +114,47 @@ public class JoinNode extends BetaNode {
             final InternalFactHandle handle = rightTuple.getFactHandle();
             if ( this.constraints.isAllowedCachedLeft( memory.getContext(),
                                                        handle ) ) {
-                this.sink.propagateAssertLeftTuple( leftTuple,
-                                                    rightTuple,
-                                                    context,
-                                                    workingMemory,
-                                                    this.tupleMemoryEnabled );
+                NetworkDriver.assertLeftTuple( this.sink,
+                                               this.sinks,
+                                               leftTuple,
+                                               rightTuple,
+                                               context,
+                                               workingMemory,
+                                               this.tupleMemoryEnabled );
             }
         }
 
         this.constraints.resetTuple( memory.getContext() );
+    }
+
+    public static void assertLeftTuple(final LeftTuple leftTuple,
+                                       final JoinNode joinNode,
+                                       final PropagationContext context,
+                                       final InternalWorkingMemory workingMemory) {
+        final BetaMemory memory = (BetaMemory) workingMemory.getNodeMemory( joinNode );
+
+        if ( joinNode.tupleMemoryEnabled ) {
+            memory.getLeftTupleMemory().add( leftTuple );
+        }
+
+        joinNode.constraints.updateFromTuple( memory.getContext(),
+                                              workingMemory,
+                                              leftTuple );
+        for ( RightTuple rightTuple = memory.getRightTupleMemory().getFirst( leftTuple ); rightTuple != null; rightTuple = (RightTuple) rightTuple.getNext() ) {
+            final InternalFactHandle handle = rightTuple.getFactHandle();
+            if ( joinNode.constraints.isAllowedCachedLeft( memory.getContext(),
+                                                           handle ) ) {
+                NetworkDriver.assertLeftTuple( joinNode.sink,
+                                               joinNode.sinks,
+                                               leftTuple,
+                                               rightTuple,
+                                               context,
+                                               workingMemory,
+                                               joinNode.tupleMemoryEnabled );
+            }
+        }
+
+        joinNode.constraints.resetTuple( memory.getContext() );
     }
 
     //    public void assertLeftTuple(final LeftTuple leftTuple,
@@ -205,11 +238,13 @@ public class JoinNode extends BetaNode {
             if ( this.constraints.isAllowedCachedRight( memory.getContext(),
                                                         leftTuple ) ) {
                 // wm.marshaller.write( i, leftTuple )
-                this.sink.propagateAssertLeftTuple( leftTuple,
-                                                    rightTuple,
-                                                    context,
-                                                    workingMemory,
-                                                    this.tupleMemoryEnabled );
+                NetworkDriver.assertLeftTuple( this.sink,
+                                               this.sinks,
+                                               leftTuple,
+                                               rightTuple,
+                                               context,
+                                               workingMemory,
+                                               this.tupleMemoryEnabled );
             }
             i++;
         }
@@ -237,9 +272,31 @@ public class JoinNode extends BetaNode {
         memory.getRightTupleMemory().remove( rightTuple );
 
         if ( rightTuple.getBetaChildren() != null ) {
-            this.sink.propagateRetractRightTuple( rightTuple,
-                                                  context,
-                                                  workingMemory );
+            NetworkDriver.retractRightTuple( rightTuple,
+                                             context,
+                                             workingMemory );
+        }
+    }
+
+    public static void retractRightTuple(final RightTuple rightTuple,
+                                         final JoinNode joinNode,
+                                         final PropagationContext context,
+                                         final InternalWorkingMemory workingMemory) {
+        final BetaMemory memory = (BetaMemory) workingMemory.getNodeMemory( joinNode );
+        Behavior[] behaviours = joinNode.behavior.behaviors;
+        if ( behaviours != BehaviorManager.NO_BEHAVIORS ) {
+            for ( int i = 0, length = behaviours.length; i < length; i++ ) {
+                behaviours[i].retractRightTuple( memory.getBehaviorContext(),
+                                                 rightTuple,
+                                                 workingMemory );
+            }
+        }
+        memory.getRightTupleMemory().remove( rightTuple );
+
+        if ( rightTuple.getBetaChildren() != null ) {
+            NetworkDriver.retractRightTuple( rightTuple,
+                                             context,
+                                             workingMemory );
         }
     }
 
@@ -261,9 +318,22 @@ public class JoinNode extends BetaNode {
         final BetaMemory memory = (BetaMemory) workingMemory.getNodeMemory( this );
         memory.getLeftTupleMemory().remove( leftTuple );
         if ( leftTuple.getBetaChildren() != null ) {
-            this.sink.propagateRetractLeftTuple( leftTuple,
-                                                 context,
-                                                 workingMemory );
+            NetworkDriver.retractLeftTuple( leftTuple,
+                                            context,
+                                            workingMemory );
+        }
+    }
+
+    public static void retractLeftTuple(LeftTuple leftTuple,
+                                        JoinNode joinNode,
+                                        PropagationContext context,
+                                        InternalWorkingMemory workingMemory) {
+        final BetaMemory memory = (BetaMemory) workingMemory.getNodeMemory( joinNode );
+        memory.getLeftTupleMemory().remove( leftTuple );
+        if ( leftTuple.getBetaChildren() != null ) {
+            NetworkDriver.retractLeftTuple( leftTuple,
+                                            context,
+                                            workingMemory );
         }
     }
 
@@ -309,4 +379,5 @@ public class JoinNode extends BetaNode {
 
         return "[JoinNode(" + this.getId() + ") - " + ((ObjectTypeNode) source).getObjectType() + "]";
     }
+
 }

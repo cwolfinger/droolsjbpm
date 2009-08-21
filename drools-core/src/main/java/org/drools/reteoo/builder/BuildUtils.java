@@ -125,7 +125,7 @@ public class BuildUtils {
         } else if ( isSharingEnabledForNode( context,
                                              candidate ) ) {
             if ( (context.getTupleSource() != null) && (candidate instanceof LeftTupleSink) ) {
-                node = context.getTupleSource().getSinkPropagator().getMatchingNode( candidate );
+                node = context.getTupleSource().getMatchingNode( candidate );
             } else if ( (context.getObjectSource() != null) && (candidate instanceof ObjectSink) ) {
                 node = context.getObjectSource().getSinkPropagator().getMatchingNode( candidate );
             } else {

@@ -43,5 +43,5 @@ public interface NetworkNode
      * @return
      */
     public RuleBasePartitionId getPartitionId();
-
+   
 }

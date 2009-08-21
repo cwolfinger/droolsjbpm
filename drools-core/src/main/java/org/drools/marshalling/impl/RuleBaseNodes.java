@@ -36,7 +36,7 @@ public class RuleBaseNodes {
         // we don't need to store alpha nodes, as they have no state to serialise
         if ( sink instanceof LeftTupleSource ) {
             LeftTupleSource node = (LeftTupleSource) sink;
-            for ( LeftTupleSink leftTupleSink : node.getSinkPropagator().getSinks() ) {
+            for ( LeftTupleSink leftTupleSink : node.getSinksAsArray() ) {
                 addLeftTupleSink( ruleBase,
                                   leftTupleSink,
                                   nodes );
@@ -57,7 +57,7 @@ public class RuleBaseNodes {
         if ( sink instanceof LeftTupleSource ) {
             nodes.put( sink.getId(),
                        (LeftTupleSource) sink );            
-            for ( LeftTupleSink leftTupleSink : ((LeftTupleSource) sink).getSinkPropagator().getSinks() ) {                
+            for ( LeftTupleSink leftTupleSink : ((LeftTupleSource) sink).getSinksAsArray() ) {                
                 addLeftTupleSink( ruleBase,
                                   leftTupleSink,
                                   nodes );

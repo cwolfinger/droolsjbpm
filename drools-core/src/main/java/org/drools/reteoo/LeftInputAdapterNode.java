@@ -49,13 +49,13 @@ public class LeftInputAdapterNode extends LeftTupleSource
     /**
      *
      */
-    private static final long   serialVersionUID = 400L;
-    private ObjectSource        objectSource;
+    private static final long serialVersionUID = 400L;
+    private ObjectSource      objectSource;
 
-    private ObjectSinkNode previousRightTupleSinkNode;
-    private ObjectSinkNode nextRightTupleSinkNode;
-    
-    private boolean leftTupleMemoryEnabled;
+    private ObjectSinkNode    previousRightTupleSinkNode;
+    private ObjectSinkNode    nextRightTupleSinkNode;
+
+    private boolean           leftTupleMemoryEnabled;
 
     public LeftInputAdapterNode() {
 
@@ -139,19 +139,24 @@ public class LeftInputAdapterNode extends LeftTupleSource
                              final PropagationContext context,
                              final InternalWorkingMemory workingMemory) {
         if ( !workingMemory.isSequential() ) {
-            this.sink.createAndPropagateAssertLeftTuple( factHandle,
-                                                         context,
-                                                         workingMemory,
-                                                         this.leftTupleMemoryEnabled );
+            NetworkDriver.assertLeftTuple( this.sink,
+                                           this.sinks,
+                                           factHandle,
+                                           context,
+                                           workingMemory,
+                                           this.leftTupleMemoryEnabled );
         } else {
-            workingMemory.addLIANodePropagation( new LIANodePropagation(this, factHandle, context) );
+            workingMemory.addLIANodePropagation( new LIANodePropagation( this,
+                                                                         factHandle,
+                                                                         context ) );
         }
     }
 
     public void updateSink(final LeftTupleSink sink,
                            final PropagationContext context,
                            final InternalWorkingMemory workingMemory) {
-        final RightTupleSinkAdapter adapter = new RightTupleSinkAdapter( sink, this.leftTupleMemoryEnabled );
+        final RightTupleSinkAdapter adapter = new RightTupleSinkAdapter( sink,
+                                                                         this.leftTupleMemoryEnabled );
         this.objectSource.updateSink( adapter,
                                       context,
                                       workingMemory );
@@ -244,9 +249,10 @@ public class LeftInputAdapterNode extends LeftTupleSource
         implements
         ObjectSink {
         private LeftTupleSink sink;
-        private boolean leftTupleMemoryEnabled;
+        private boolean       leftTupleMemoryEnabled;
 
-        public RightTupleSinkAdapter(final LeftTupleSink sink, boolean leftTupleMemoryEnabled) {
+        public RightTupleSinkAdapter(final LeftTupleSink sink,
+                                     boolean leftTupleMemoryEnabled) {
             this.sink = sink;
             this.leftTupleMemoryEnabled = leftTupleMemoryEnabled;
         }
@@ -276,12 +282,13 @@ public class LeftInputAdapterNode extends LeftTupleSource
             return sink.getPartitionId();
         }
 
-        public void writeExternal( ObjectOutput out ) throws IOException {
+        public void writeExternal(ObjectOutput out) throws IOException {
             // this is a short living adapter class used only during an update operation, and
             // as so, no need for serialization code
         }
 
-        public void readExternal( ObjectInput in ) throws IOException, ClassNotFoundException {
+        public void readExternal(ObjectInput in) throws IOException,
+                                                ClassNotFoundException {
             // this is a short living adapter class used only during an update operation, and
             // as so, no need for serialization code
         }

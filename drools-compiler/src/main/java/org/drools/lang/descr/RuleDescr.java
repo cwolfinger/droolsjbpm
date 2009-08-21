@@ -22,6 +22,7 @@ import java.io.ObjectOutput;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.drools.io.Resource;
@@ -46,6 +47,8 @@ public class RuleDescr extends BaseDescr
     private int                         consequenceLine;
     private int                         consequencePattern;
     private int                         offset;
+    
+    private List<ElseDescr>             elseBlocks;
 
     private String                      className;
 
@@ -234,6 +237,14 @@ public class RuleDescr extends BaseDescr
 
     public String getParentName() {
         return parentName;
+    }
+    
+    public List<ElseDescr> getElseBlocks() {
+        if ( this.elseBlocks == null ) {
+            return Collections.emptyList();
+        } else {
+            return this.elseBlocks;
+        }
     }
 
     public String toString() {

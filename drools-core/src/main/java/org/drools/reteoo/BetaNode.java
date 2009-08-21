@@ -183,7 +183,7 @@ public abstract class BetaNode extends LeftTupleSource
     public List getRules() {
         final List list = new ArrayList();
 
-        final LeftTupleSink[] sinks = this.sink.getSinks();
+        final LeftTupleSink[] sinks = getSinksAsArray();
         for ( int i = 0, length = sinks.length; i < length; i++ ) {
             if ( sinks[i] instanceof RuleTerminalNode ) {
                 list.add( ((RuleTerminalNode) sinks[i]).getRule().getName() );
@@ -193,7 +193,7 @@ public abstract class BetaNode extends LeftTupleSource
         }
 
         return list;
-    }
+    }    
 
     public ObjectTypeNode getObjectTypeNode() {
         ObjectSource source = this.rightInput;

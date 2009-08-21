@@ -37,7 +37,7 @@ public class BehaviorManager
 
     public static final Behavior[] NO_BEHAVIORS = new Behavior[0];
 
-    private Behavior[]             behaviors;
+    public Behavior[]             behaviors;
 
     public BehaviorManager() {
         this( NO_BEHAVIORS );

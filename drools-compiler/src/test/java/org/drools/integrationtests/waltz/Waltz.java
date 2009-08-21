@@ -49,33 +49,60 @@ public abstract class Waltz extends TestCase {
 
             //load up the rulebase
             final RuleBase ruleBase = readRule();
-            for ( int i = 0; i < 1; i++ ) {
-                final StatefulSession session = ruleBase.newStatefulSession();
-    
-    //            workingMemory.setGlobal( "sysout",
-    //                                     System.out );
-    
+
+            StatefulSession session = ruleBase.newStatefulSession();
+
+            //            workingMemory.setGlobal( "sysout",
+            //                                     System.out );
+
+            //            DebugWorkingMemoryEventListener wmListener = new DebugWorkingMemoryEventListener();
+            //            DebugAgendaEventListener agendaListener = new DebugAgendaEventListener();
+            //            workingMemory.addEventListener( wmListener );
+            //            workingMemory.addEventListener( agendaListener );
+
+            //go !     
+            this.loadLines( session,
+                            "waltz50.dat" );
+
+            //final Stage stage = new Stage( Stage.START );
+            //workingMemory.assertObject( stage );
+
+            Stage stage = new Stage( Stage.DUPLICATE );
+            session.insert( stage );
+            session.fireAllRules();
+            session.dispose();
+            long end = System.currentTimeMillis();
+
+            long totalTime = 0;
+            for ( int i = 0; i < 10; i++ ) {
+                session = ruleBase.newStatefulSession();
+
+                //            workingMemory.setGlobal( "sysout",
+                //                                     System.out );
+
                 //            DebugWorkingMemoryEventListener wmListener = new DebugWorkingMemoryEventListener();
                 //            DebugAgendaEventListener agendaListener = new DebugAgendaEventListener();
                 //            workingMemory.addEventListener( wmListener );
                 //            workingMemory.addEventListener( agendaListener );
-    
+
                 //go !     
                 this.loadLines( session,
                                 "waltz50.dat" );
-    
+
                 //final Stage stage = new Stage( Stage.START );
                 //workingMemory.assertObject( stage );
-    
+
                 final long start = System.currentTimeMillis();
-    
-                final Stage stage = new Stage( Stage.DUPLICATE );
+
+                stage = new Stage( Stage.DUPLICATE );
                 session.insert( stage );
                 session.fireAllRules();
                 session.dispose();
-                final long end = System.currentTimeMillis();
+                end = System.currentTimeMillis();
+                totalTime += end - start;
                 System.out.println( end - start );
             }
+            System.out.println( "average " + totalTime / 10 );
         } catch ( final Throwable t ) {
             t.printStackTrace();
             fail( t.getMessage() );
@@ -104,7 +131,7 @@ public abstract class Waltz extends TestCase {
         final RuleBase ruleBase = getRuleBase();
         ruleBase.addPackage( pkg );
         return ruleBase;
-//        return SerializationHelper.serializeObject(ruleBase);
+        //        return SerializationHelper.serializeObject(ruleBase);
     }
 
     private void loadLines(final WorkingMemory wm,

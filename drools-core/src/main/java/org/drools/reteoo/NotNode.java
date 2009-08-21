@@ -21,6 +21,7 @@ import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.reteoo.builder.BuildContext;
 import org.drools.rule.Behavior;
+import org.drools.rule.BehaviorManager;
 import org.drools.spi.PropagationContext;
 import org.drools.util.Iterator;
 
@@ -120,10 +121,51 @@ public class NotNode extends BetaNode {
                 memory.getLeftTupleMemory().add( leftTuple );
             }
 
-            this.sink.propagateAssertLeftTuple( leftTuple,
-                                                context,
-                                                workingMemory,
-                                                this.tupleMemoryEnabled );
+            NetworkDriver.assertLeftTuple( this.sink,
+                                           this.sinks,
+                                           leftTuple,
+                                           context,
+                                           workingMemory,
+                                           this.tupleMemoryEnabled );
+        }
+    }
+
+    public static void assertLeftTuple(LeftTuple leftTuple,
+                                       NotNode notNode,
+                                       PropagationContext context,
+                                       InternalWorkingMemory workingMemory) {
+        final BetaMemory memory = (BetaMemory) workingMemory.getNodeMemory( notNode );
+
+        notNode.constraints.updateFromTuple( memory.getContext(),
+                                             workingMemory,
+                                             leftTuple );
+
+        for ( RightTuple rightTuple = memory.getRightTupleMemory().getFirst( leftTuple ); rightTuple != null; rightTuple = (RightTuple) rightTuple.getNext() ) {
+            if ( notNode.constraints.isAllowedCachedLeft( memory.getContext(),
+                                                          rightTuple.getFactHandle() ) ) {
+                leftTuple.setBlocker( rightTuple );
+
+                if ( notNode.tupleMemoryEnabled ) {
+                    rightTuple.setBlocked( leftTuple );
+                }
+
+                break;
+            }
+        }
+
+        notNode.constraints.resetTuple( memory.getContext() );
+
+        if ( leftTuple.getBlocker() == null ) {
+            // tuple is not blocked, so add to memory so other fact handles can attempt to match
+            if ( notNode.tupleMemoryEnabled ) {
+                memory.getLeftTupleMemory().add( leftTuple );
+            }
+            NetworkDriver.assertLeftTuple( notNode.sink,
+                                           notNode.sinks,
+                                           leftTuple,
+                                           context,
+                                           workingMemory,
+                                           notNode.tupleMemoryEnabled );
         }
     }
 
@@ -177,9 +219,9 @@ public class NotNode extends BetaNode {
                 // this is now blocked so remove from memory
                 memory.getLeftTupleMemory().remove( leftTuple );
 
-                this.sink.propagateRetractLeftTuple( leftTuple,
-                                                     context,
-                                                     workingMemory );
+                NetworkDriver.retractLeftTuple( leftTuple,
+                                                context,
+                                                workingMemory );
             }
 
             leftTuple = temp;
@@ -243,15 +285,80 @@ public class NotNode extends BetaNode {
                 // was previous blocked and not in memory, so add
                 memory.getLeftTupleMemory().add( leftTuple );
 
-                this.sink.propagateAssertLeftTuple( leftTuple,
-                                                    context,
-                                                    workingMemory,
-                                                    this.tupleMemoryEnabled );
+                NetworkDriver.assertLeftTuple( this.sink,
+                                               this.sinks,
+                                               leftTuple,
+                                               context,
+                                               workingMemory,
+                                               this.tupleMemoryEnabled );
             }
 
             leftTuple = temp;
         }
         this.constraints.resetTuple( memory.getContext() );
+    }
+
+    public static void retractRightTuple(RightTuple rightTuple,
+                                         NotNode notNode,
+                                         PropagationContext context,
+                                         InternalWorkingMemory workingMemory) {
+        // assign now, so we can remove from memory before doing any possible propagations
+        final RightTuple rootBlocker = (RightTuple) rightTuple.getNext();
+
+        final BetaMemory memory = (BetaMemory) workingMemory.getNodeMemory( notNode );
+        Behavior[] behaviours = notNode.behavior.behaviors;
+        if ( behaviours != BehaviorManager.NO_BEHAVIORS ) {
+            for ( int i = 0, length = behaviours.length; i < length; i++ ) {
+                behaviours[i].retractRightTuple( memory.getBehaviorContext(),
+                                                 rightTuple,
+                                                 workingMemory );
+            }
+        }
+        memory.getRightTupleMemory().remove( rightTuple );
+
+        if ( rightTuple.getBlocked() == null ) {
+            return;
+        }
+
+        BetaConstraints constraints = notNode.constraints;
+
+        for ( LeftTuple leftTuple = (LeftTuple) rightTuple.getBlocked(); leftTuple != null; ) {
+            LeftTuple temp = leftTuple.getBlockedNext();
+
+            leftTuple.setBlocker( null );
+            leftTuple.setBlockedPrevious( null );
+            leftTuple.setBlockedNext( null );
+
+            constraints.updateFromTuple( memory.getContext(),
+                                         workingMemory,
+                                         leftTuple );
+
+            // we know that older tuples have been checked so continue next
+            for ( RightTuple newBlocker = rootBlocker; newBlocker != null; newBlocker = (RightTuple) newBlocker.getNext() ) {
+                if ( constraints.isAllowedCachedLeft( memory.getContext(),
+                                                      newBlocker.getFactHandle() ) ) {
+                    leftTuple.setBlocker( newBlocker );
+                    newBlocker.setBlocked( leftTuple );
+
+                    break;
+                }
+            }
+
+            if ( leftTuple.getBlocker() == null ) {
+                // was previous blocked and not in memory, so add
+                memory.getLeftTupleMemory().add( leftTuple );
+                
+                NetworkDriver.assertLeftTuple( notNode.sink,
+                                               notNode.sinks,
+                                               leftTuple,
+                                               context,
+                                               workingMemory,
+                                               notNode.tupleMemoryEnabled );
+            }
+
+            leftTuple = temp;
+        }
+        notNode.constraints.resetTuple( memory.getContext() );
     }
 
     /**
@@ -272,10 +379,25 @@ public class NotNode extends BetaNode {
         if ( blocker == null ) {
             final BetaMemory memory = (BetaMemory) workingMemory.getNodeMemory( this );
             memory.getLeftTupleMemory().remove( leftTuple );
+            NetworkDriver.retractLeftTuple( leftTuple,
+                                            context,
+                                            workingMemory );
+        } else {
+            blocker.removeBlocked( leftTuple );
+        }
+    }
 
-            this.sink.propagateRetractLeftTuple( leftTuple,
-                                                 context,
-                                                 workingMemory );
+    public static void retractLeftTuple(LeftTuple leftTuple,
+                                        NotNode notNode,
+                                        PropagationContext context,
+                                        InternalWorkingMemory workingMemory) {
+        RightTuple blocker = leftTuple.getBlocker();
+        if ( blocker == null ) {
+            final BetaMemory memory = (BetaMemory) workingMemory.getNodeMemory( notNode );
+            memory.getLeftTupleMemory().remove( leftTuple );
+            NetworkDriver.retractLeftTuple( leftTuple,
+                                            context,
+                                            workingMemory );
         } else {
             blocker.removeBlocked( leftTuple );
         }
@@ -311,4 +433,5 @@ public class NotNode extends BetaNode {
 
         return "[NotNode - " + ((ObjectTypeNode) source).getObjectType() + "]";
     }
+
 }
