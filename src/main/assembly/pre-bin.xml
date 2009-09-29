@@ -38,6 +38,20 @@
     		<include>org.drools:drools-jpdl</include>
     		<include>org.drools:drools-osworkflow</include>
             
+            <include>org.drools:drools-assistant</include>
+            <include>org.drools:drools-doc</include>
+            <include>org.drools:drools-bpmn2</include>
+            <include>org.drools:drools-gwt-console</include>
+            <include>org.drools:drools-gwt-form</include>
+            <include>org.drools:drools-gwt-graph</include>
+            <include>org.drools:drools-gwt-server-war</include>
+            <include>org.drools:drools-gwt-war</include>
+            <include>org.drools:drools-ode</include>
+            <include>org.drools:drools-rhq-plugin</include>
+            <include>org.drools:drools-simulator</include>
+            <include>org.drools:drools-vsm</include>
+
+
     		<include>org.drools:drools-verifier</include>
      		<include>org.drools:drools-ant</include>
             <include>org.drools:drools-server</include>            

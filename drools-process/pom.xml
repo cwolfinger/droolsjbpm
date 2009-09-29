@@ -22,12 +22,16 @@
           </activation>
           <modules>
               <module>drools-bpel</module>
-              <module>drools-jpdl</module>
+              <module>drools-jpdl</module> 
           </modules>
       </profile>
   </profiles>
   
   <modules>
+              <!-- <module>drools-bpel</module> -->
+              <module>drools-jpdl</module>
+              <!-- <module>drools-ode</module> -->
+              <!-- <module>drools-osworkflow</module> -->
       <module>drools-process-task</module>
       <module>drools-workitems</module>
       <module>drools-bam</module>
