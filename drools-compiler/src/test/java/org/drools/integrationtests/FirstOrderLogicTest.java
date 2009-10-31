@@ -19,6 +19,9 @@ import junit.framework.TestCase;
 
 import org.drools.Cheese;
 import org.drools.Cheesery;
+import org.drools.FactA;
+import org.drools.FactB;
+import org.drools.FactC;
 import org.drools.FactHandle;
 import org.drools.Order;
 import org.drools.OrderItem;
@@ -391,6 +394,26 @@ public class FirstOrderLogicTest extends TestCase {
 
         assertEquals( 1,
                       list.size() );
+    }
+
+    public void testImplicitBindingsAndNesting() throws Exception {
+        final PackageBuilder builder = new PackageBuilder();
+        builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "notWithNesting.drl" ) ) );
+        final Package pkg = builder.getPackage();
+
+        RuleBase ruleBase = getRuleBase();
+        ruleBase.addPackage( pkg );
+        StatefulSession workingMemory = ruleBase.newStatefulSession();
+
+        List list = new ArrayList();
+        workingMemory.setGlobal( "list",
+                                 list );
+        
+        workingMemory.insert( new FactA("x") );
+        workingMemory.insert( new FactB("x") );
+        workingMemory.insert( new FactC("x") );
+
+        workingMemory.fireAllRules();
     }
 
     public void testExists() throws Exception {

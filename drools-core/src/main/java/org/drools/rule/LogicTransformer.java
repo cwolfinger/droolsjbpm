@@ -160,6 +160,12 @@ class LogicTransformer {
                     if ( resolved != null && resolved != decl[i] ) {
                         constraint.replaceDeclaration( decl[i],
                                                        resolved );
+                    } else if( resolved == null && decl[i].getPattern().getDeclaration() != null ) {
+                        // it might be an implicit declaration, so fix the pattern
+                        Declaration patDecl = resolver.getDeclaration( decl[i].getPattern().getDeclaration().getIdentifier() );
+                        if( patDecl != null ) {
+                            decl[i].setPattern( patDecl.getPattern() );
+                        }
                     }
                 }
             }

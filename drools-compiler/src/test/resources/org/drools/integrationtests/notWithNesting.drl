@@ -1,0 +1,16 @@
+package org.drools
+
+import org.drools.Cheese
+import org.drools.Person
+
+global java.util.List list
+
+rule "not rule test"
+    when
+        $factA : FactA( $fA : field1 )
+        $factB : FactB( $fB : f1 )
+        (not FactC( f1 == $factB.f1 ) or FactC( ) )   
+    then
+		list.add( $factB );
+end    
+
