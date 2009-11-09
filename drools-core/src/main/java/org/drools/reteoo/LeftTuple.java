@@ -46,8 +46,16 @@ public class LeftTuple
 
     private LeftTupleSink      sink;
 
+    // temporal info
+    private long               startTimestamp;
+    private long               endTimestamp;
+
     public LeftTuple() {
         // constructor needed for serialisation
+        
+        // by default start and end timestamps are -INFINITY and +INFINITY respectively
+        this.startTimestamp = Long.MIN_VALUE;
+        this.endTimestamp = Long.MAX_VALUE;
     }
 
     // ------------------------------------------------------------
@@ -57,6 +65,7 @@ public class LeftTuple
                      LeftTupleSink sink,
                      boolean leftTupleMemoryEnabled) {
         this.handle = factHandle;
+        adjustTimeRange();
 
         if ( leftTupleMemoryEnabled ) {
             LeftTuple currentFirst = handle.getLeftTuple();
@@ -76,6 +85,7 @@ public class LeftTuple
         this.index = leftTuple.index;
         this.parent = leftTuple.parent;
         this.handle = leftTuple.handle;
+        adjustTimeRange();
 
         if ( leftTupleMemoryEnabled ) {
             this.leftParent = leftTuple;
@@ -85,7 +95,7 @@ public class LeftTuple
             }
             this.leftParent.children = this;
         }
-        
+
         this.sink = sink;
     }
 
@@ -96,6 +106,7 @@ public class LeftTuple
         this.handle = rightTuple.getFactHandle();
         this.index = leftTuple.index + 1;
         this.parent = leftTuple;
+        adjustTimeRange();
 
         if ( leftTupleMemoryEnabled ) {
             this.rightParent = rightTuple;
@@ -112,8 +123,20 @@ public class LeftTuple
             }
             this.leftParent.children = this;
         }
-        
+
         this.sink = sink;
+    }
+
+    private void adjustTimeRange() {
+        if( handle.isTemporal() ) {
+            if( parent != null ) {
+                this.startTimestamp = Math.max( parent.getStartTimestamp(), handle.getStartTimestamp() );
+                this.endTimestamp = Math.min( parent.getEndTimestamp(), handle.getEndTimestamp() );
+            } else {
+                this.startTimestamp = handle.getStartTimestamp();
+                this.endTimestamp = handle.getEndTimestamp();
+            }
+        }
     }
 
     public void unlinkFromLeftParent() {
@@ -125,7 +148,7 @@ public class LeftTuple
             this.leftParentPrevious.leftParentNext = this.leftParentNext;
             this.leftParentNext.leftParentPrevious = this.leftParentPrevious;
         } else if ( next != null ) {
-            if ( this.leftParent != null ) { 
+            if ( this.leftParent != null ) {
                 //remove from first
                 this.leftParent.children = this.leftParentNext;
             } else {
@@ -137,7 +160,7 @@ public class LeftTuple
             //remove from end
             this.leftParentPrevious.leftParentNext = null;
         } else {
-            if ( this.leftParent != null ) { 
+            if ( this.leftParent != null ) {
                 this.leftParent.children = null;
             } else {
                 this.handle.setLeftTuple( null );
@@ -184,7 +207,7 @@ public class LeftTuple
         this.rightParentPrevious = null;
         this.rightParentNext = null;
     }
-    
+
     public int getIndex() {
         return this.index;
     }
@@ -306,7 +329,8 @@ public class LeftTuple
         }
         return handles;
     }
-     public InternalFactHandle[] toFactHandles() {
+
+    public InternalFactHandle[] toFactHandles() {
         InternalFactHandle[] handles = new InternalFactHandle[this.index + 1];
         LeftTuple entry = this;
 
@@ -315,7 +339,7 @@ public class LeftTuple
             entry = entry.parent;
         }
         return handles;
-    }    
+    }
 
     public void setBlocker(RightTuple blocker) {
         this.blocker = blocker;
@@ -345,9 +369,9 @@ public class LeftTuple
         this.activation = activation;
     }
 
-//    public int hashCode() {        
-//        return this.hashCode;
-//    }
+    //    public int hashCode() {        
+    //        return this.hashCode;
+    //    }
 
     public String toString() {
         final StringBuilder buffer = new StringBuilder();
@@ -355,16 +379,16 @@ public class LeftTuple
         LeftTuple entry = this;
         while ( entry != null ) {
             //buffer.append( entry.handle );
-            buffer.append(entry.handle).append("\n");
+            buffer.append( entry.handle ).append( "\n" );
             entry = entry.parent;
         }
         return buffer.toString();
     }
 
-    
     public int hashCode() {
         return this.handle.hashCode();
     }
+
     /**
      * We use this equals method to avoid the cast
      * @param tuple
@@ -384,14 +408,14 @@ public class LeftTuple
         if ( this.handle != other.handle ) {
             return false;
         }
-        
-//        if ( this.sink.getId() != other.sink.getId() ) {
-//            return false;
-//        }
-//        
-//        if ( this.index != other.index ) {
-//            return false;
-//        }
+
+        //        if ( this.sink.getId() != other.sink.getId() ) {
+        //            return false;
+        //        }
+        //        
+        //        if ( this.index != other.index ) {
+        //            return false;
+        //        }
 
         if ( this.parent == null ) {
             return (other.parent == null);
@@ -450,4 +474,17 @@ public class LeftTuple
     public LeftTuple getParent() {
         return parent;
     }
+    
+    public long getStartTimestamp() {
+        return startTimestamp;
+    }
+
+    public long getEndTimestamp() {
+        return endTimestamp;
+    }
+    
+    public boolean isTemporal() {
+        return handle.isTemporal() || (parent != null && parent.isTemporal() );
+    }
+
 }

@@ -70,5 +70,11 @@ public interface InternalFactHandle
     public InternalFactHandle clone();
     
     public String toExternalForm();
+
+    public boolean isTemporal();
+    
+    public long getStartTimestamp();
+    
+    public long getEndTimestamp();
     
 }

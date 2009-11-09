@@ -54,6 +54,8 @@ public class ClassObjectTypeConf
 
     private TypeDeclaration            typeDecl;
 
+    private TypeDeclaration.Role       role;
+
     public ClassObjectTypeConf() {
 
     }
@@ -65,7 +67,9 @@ public class ClassObjectTypeConf
         this.ruleBase = ruleBase;
         this.entryPoint = entryPoint;
         this.typeDecl = ruleBase.getTypeDeclaration( clazz );
-        final boolean isEvent = typeDecl != null && typeDecl.getRole() == TypeDeclaration.Role.EVENT;
+        this.role = ( typeDecl != null ) ? typeDecl.getRole() : TypeDeclaration.Role.FACT;
+        final boolean isEvent = role == TypeDeclaration.Role.EVENT;
+        
 
         ObjectType objectType = ((AbstractRuleBase) ruleBase).getClassFieldAccessorCache().getClassObjectType( new ClassObjectType( clazz,
                                                                                                                                     isEvent ) );
@@ -188,8 +192,12 @@ public class ClassObjectTypeConf
     public TypeDeclaration getTypeDeclaration() {
         return typeDecl;
     }
-    
+
     public boolean isDynamic() {
         return (typeDecl != null) ? typeDecl.isDynamic() : false;
+    }
+
+    public TypeDeclaration.Role getRole() {
+        return this.role;
     }
 }

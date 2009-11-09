@@ -944,7 +944,7 @@ public class PackageBuilder {
                 type.setResource( this.resource );
             }
 
-            // is it a regular fact or an event?
+            // what is this type role??
             String role = typeDescr.getMetaAttribute( TypeDeclaration.Role.ID );
             if ( role != null ) {
                 type.setRole( TypeDeclaration.Role.parseRole( role ) );
@@ -998,12 +998,12 @@ public class PackageBuilder {
 
             String timestamp = typeDescr.getMetaAttribute( TypeDeclaration.ATTR_TIMESTAMP );
             if ( timestamp != null ) {
-                type.setTimestampAttribute( timestamp );
+                type.setStartTimestampAttribute( timestamp );
                 ClassDefinition cd = type.getTypeClassDef();
                 ClassFieldAccessorStore store = pkgRegistry.getPackage().getClassFieldAccessorStore();
                 InternalReadAccessor extractor = store.getReader( type.getTypeClass().getName(),
                                                                   timestamp,
-                                                                  type.new TimestampAccessorSetter() );
+                                                                  type.new StartTimestampAccessorSetter() );
             }
             String duration = typeDescr.getMetaAttribute( TypeDeclaration.ATTR_DURATION );
             if ( duration != null ) {
@@ -1013,6 +1013,15 @@ public class PackageBuilder {
                 InternalReadAccessor extractor = store.getReader( type.getTypeClass().getName(),
                                                                   duration,
                                                                   type.new DurationAccessorSetter() );
+            }
+            String endTimestamp = typeDescr.getMetaAttribute( TypeDeclaration.ATTR_END_TIMESTAMP );
+            if ( timestamp != null ) {
+                type.setEndTimestampAttribute( endTimestamp );
+                ClassDefinition cd = type.getTypeClassDef();
+                ClassFieldAccessorStore store = pkgRegistry.getPackage().getClassFieldAccessorStore();
+                InternalReadAccessor extractor = store.getReader( type.getTypeClass().getName(),
+                                                                  endTimestamp,
+                                                                  type.new EndTimestampAccessorSetter() );
             }
             String expiration = typeDescr.getMetaAttribute( TypeDeclaration.ATTR_EXPIRE );
             if ( expiration != null ) {

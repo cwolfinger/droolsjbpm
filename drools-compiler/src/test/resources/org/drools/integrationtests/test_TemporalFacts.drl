@@ -1,0 +1,26 @@
+package org.drools
+
+import java.util.Date
+
+declare EmployeeStatus
+    @role( temporal )
+    @timestamp( startDate )
+    @endTimestamp( endDate )
+end
+
+declare Coverage
+    @role( temporal )
+    @timestamp( start )
+    @endTimestamp( end )
+end
+
+rule "Employee is full time worker"
+when
+    $e : EmployeeStatus( status == "full time" )
+    $c : Coverage( employeeId == $e.employeeId, type == "A" )
+then
+    System.out.println( $e ); 
+    System.out.println( $c );
+    System.out.println( "Start = "+new Date(drools.getActivation().getStartTimestamp()) );
+    System.out.println( "End   = "+new Date(drools.getActivation().getEndTimestamp()) );
+end

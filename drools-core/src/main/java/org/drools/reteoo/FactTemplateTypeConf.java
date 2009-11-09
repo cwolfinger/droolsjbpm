@@ -30,6 +30,7 @@ import org.drools.reteoo.builder.BuildContext;
 import org.drools.reteoo.builder.PatternBuilder;
 import org.drools.rule.EntryPoint;
 import org.drools.rule.TypeDeclaration;
+import org.drools.rule.TypeDeclaration.Role;
 import org.drools.spi.ObjectType;
 
 public class FactTemplateTypeConf
@@ -127,6 +128,10 @@ public class FactTemplateTypeConf
 
     public boolean isDynamic() {
         return false;
+    }
+
+    public Role getRole() {
+        return TypeDeclaration.Role.FACT;
     }
 
 }

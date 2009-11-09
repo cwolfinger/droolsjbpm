@@ -139,10 +139,10 @@ public class EventFactHandle extends DefaultFactHandle {
 
     public EventFactHandle clone() {
         EventFactHandle clone = new EventFactHandle( getId(),
-                                                      getObject(),
-                                                      getRecency(),
-                                                      startTimestamp,
-                                                      duration );
+                                                     getObject(),
+                                                     getRecency(),
+                                                     startTimestamp,
+                                                     duration );
         clone.activationsCount = activationsCount;
         clone.expired = expired;
         clone.setEntryPoint( getEntryPoint() );

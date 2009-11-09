@@ -113,15 +113,29 @@ public class JoinNode extends BetaNode {
             final InternalFactHandle handle = rightTuple.getFactHandle();
             if ( this.constraints.isAllowedCachedLeft( memory.getContext(),
                                                        handle ) ) {
-                this.sink.propagateAssertLeftTuple( leftTuple,
-                                                    rightTuple,
-                                                    context,
-                                                    workingMemory,
-                                                    this.tupleMemoryEnabled );
+                if ( thereIsTemporalOverlap( leftTuple,
+                                             handle ) ) {
+                    this.sink.propagateAssertLeftTuple( leftTuple,
+                                                        rightTuple,
+                                                        context,
+                                                        workingMemory,
+                                                        this.tupleMemoryEnabled );
+
+                }
             }
         }
 
         this.constraints.resetTuple( memory.getContext() );
+    }
+
+    private boolean thereIsTemporalOverlap(final LeftTuple leftTuple,
+                                           final InternalFactHandle handle) {
+        boolean result = true;
+        if ( leftTuple.isTemporal() || handle.isTemporal() ) {
+            result = (leftTuple.getStartTimestamp() >= handle.getStartTimestamp() && leftTuple.getStartTimestamp() <= handle.getEndTimestamp())
+                     || (leftTuple.getEndTimestamp() >= handle.getStartTimestamp() && leftTuple.getEndTimestamp() <= handle.getEndTimestamp());
+        }
+        return result;
     }
 
     //    public void assertLeftTuple(final LeftTuple leftTuple,
@@ -205,11 +219,14 @@ public class JoinNode extends BetaNode {
             if ( this.constraints.isAllowedCachedRight( memory.getContext(),
                                                         leftTuple ) ) {
                 // wm.marshaller.write( i, leftTuple )
-                this.sink.propagateAssertLeftTuple( leftTuple,
-                                                    rightTuple,
-                                                    context,
-                                                    workingMemory,
-                                                    this.tupleMemoryEnabled );
+                if ( thereIsTemporalOverlap( leftTuple,
+                                             rightTuple.getFactHandle() ) ) {
+                    this.sink.propagateAssertLeftTuple( leftTuple,
+                                                        rightTuple,
+                                                        context,
+                                                        workingMemory,
+                                                        this.tupleMemoryEnabled );
+                }
             }
             i++;
         }

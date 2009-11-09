@@ -37,4 +37,6 @@ public interface ObjectTypeConf {
     public boolean isDynamic();
     
     public TypeDeclaration getTypeDeclaration();    
+    
+    public TypeDeclaration.Role getRole();
 }

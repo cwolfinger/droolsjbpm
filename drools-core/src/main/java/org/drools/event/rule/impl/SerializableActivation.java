@@ -18,15 +18,21 @@ public class SerializableActivation
     private Rule                              rule;
     private Collection< ? extends FactHandle> factHandles;
     private PropagationContext                propgationContext;
+    private boolean                           temporal;
+    private long                              startTimestamp;
+    private long                              endTimestamp;
 
     public SerializableActivation() {
-        
+
     }
-    
+
     public SerializableActivation(Activation activation) {
         this.rule = activation.getRule();
         this.factHandles = activation.getFactHandles();
         this.propgationContext = activation.getPropagationContext();
+        this.temporal = activation.isTemporal();
+        this.startTimestamp = activation.getStartTimestamp();
+        this.endTimestamp = activation.getEndTimestamp();
     }
 
     public void readExternal(ObjectInput in) throws IOException,
@@ -46,5 +52,17 @@ public class SerializableActivation
 
     public PropagationContext getPropagationContext() {
         return this.propgationContext;
+    }
+
+    public long getEndTimestamp() {
+        return endTimestamp;
+    }
+
+    public long getStartTimestamp() {
+        return startTimestamp;
+    }
+
+    public boolean isTemporal() {
+        return temporal;
     }
 }

@@ -115,4 +115,16 @@ public class DisconnectedFactHandle
         return "0:" + this.id + ":" + this.identityHashCode + ":" + this.objectHashCode + ":" + this.recency;
     }
 
+    public long getEndTimestamp() {
+        throw new UnsupportedOperationException( "DisonnectedFactHandle does not support this method" );
+    }
+
+    public long getStartTimestamp() {
+        throw new UnsupportedOperationException( "DisonnectedFactHandle does not support this method" );
+    }
+
+    public boolean isTemporal() {
+        throw new UnsupportedOperationException( "DisonnectedFactHandle does not support this method" );
+    }
+
 }

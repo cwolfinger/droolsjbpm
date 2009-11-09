@@ -23,7 +23,9 @@ import org.drools.common.DefaultFactHandle;
 import org.drools.common.EventFactHandle;
 import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
+import org.drools.common.TemporalFactHandle;
 import org.drools.rule.TypeDeclaration;
+import org.drools.rule.TypeDeclaration.Role;
 import org.drools.spi.FactHandleFactory;
 
 public class ReteooFactHandleFactory extends AbstractFactHandleFactory {
@@ -51,12 +53,12 @@ public class ReteooFactHandleFactory extends AbstractFactHandleFactory {
         if ( conf != null && conf.isEvent() ) {
             TypeDeclaration type = conf.getTypeDeclaration();
             long timestamp;
-            if ( type.getTimestampExtractor() != null ) {
-                if ( Date.class.isAssignableFrom( type.getTimestampExtractor().getExtractToClass() ) ) {
-                    timestamp = ((Date) type.getTimestampExtractor().getValue( workingMemory,
+            if ( type.getStartTimestampExtractor() != null ) {
+                if ( Date.class.isAssignableFrom( type.getStartTimestampExtractor().getExtractToClass() ) ) {
+                    timestamp = ((Date) type.getStartTimestampExtractor().getValue( workingMemory,
                                                                                object )).getTime();
                 } else {
-                    timestamp = type.getTimestampExtractor().getLongValue( workingMemory,
+                    timestamp = type.getStartTimestampExtractor().getLongValue( workingMemory,
                                                                            object );
                 }
             } else {
@@ -72,6 +74,14 @@ public class ReteooFactHandleFactory extends AbstractFactHandleFactory {
                                         recency,
                                         timestamp,
                                         duration );
+        } else if( conf != null && conf.getRole().equals( Role.TEMPORAL ) ) {
+            TypeDeclaration type = conf.getTypeDeclaration();
+            return new TemporalFactHandle( id,
+                                        object,
+                                        recency,
+                                        type.getStartTimestampExtractor(),
+                                        type.getEndTimestampExtractor(),
+                                        type.getDurationExtractor() );
         } else {
             return new DefaultFactHandle( id,
                                           object,

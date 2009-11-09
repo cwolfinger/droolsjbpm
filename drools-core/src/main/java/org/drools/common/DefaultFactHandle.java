@@ -226,4 +226,16 @@ public class DefaultFactHandle
         clone.objectHashCode = this.objectHashCode;
         return clone;
     }
+
+    public long getEndTimestamp() {
+        return Long.MAX_VALUE;
+    }
+
+    public long getStartTimestamp() {
+        return Long.MIN_VALUE;
+    }
+
+    public boolean isTemporal() {
+        return false;
+    }
 }

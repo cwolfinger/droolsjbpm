@@ -51,9 +51,10 @@ public class TypeDeclaration
     public static final String ATTR_TIMESTAMP           = "timestamp";
     public static final String ATTR_EXPIRE              = "expires";
     public static final String ATTR_PROP_CHANGE_SUPPORT = "propertyChangeSupport";
+    public static final String ATTR_END_TIMESTAMP       = "endTimestamp";
 
     public static enum Role {
-        FACT, EVENT;
+        FACT, EVENT, TEMPORAL;
 
         public static final String ID = "role";
 
@@ -62,6 +63,8 @@ public class TypeDeclaration
                 return EVENT;
             } else if ( "fact".equalsIgnoreCase( role ) ) {
                 return FACT;
+            } else if ( "temporal".equalsIgnoreCase( role ) ) {
+                return TEMPORAL;
             }
             return null;
         }
@@ -85,10 +88,12 @@ public class TypeDeclaration
     private String               typeName;
     private Role                 role;
     private Format               format;
-    private String               timestampAttribute;
+    private String               startTimestampAttribute;
+    private String               endTimestampAttribute;
     private String               durationAttribute;
     private InternalReadAccessor durationExtractor;
-    private InternalReadAccessor timestampExtractor;
+    private InternalReadAccessor startTimestampExtractor;
+    private InternalReadAccessor endTimestampExtractor;
     private transient Class< ? > typeClass;
     private String               typeClassName;
     private FactTemplate         typeTemplate;
@@ -107,7 +112,7 @@ public class TypeDeclaration
         this.role = Role.FACT;
         this.format = Format.POJO;
         this.durationAttribute = null;
-        this.timestampAttribute = null;
+        this.startTimestampAttribute = null;
         this.typeTemplate = null;
     }
 
@@ -117,12 +122,13 @@ public class TypeDeclaration
         this.role = (Role) in.readObject();
         this.format = (Format) in.readObject();
         this.durationAttribute = (String) in.readObject();
-        this.timestampAttribute = (String) in.readObject();
+        this.startTimestampAttribute = (String) in.readObject();
         this.typeClassName = (String) in.readObject();
         this.typeTemplate = (FactTemplate) in.readObject();
         this.typeClassDef = (ClassDefinition) in.readObject();
         this.durationExtractor = (InternalReadAccessor) in.readObject();
-        this.timestampExtractor = (InternalReadAccessor) in.readObject();
+        this.startTimestampExtractor = (InternalReadAccessor) in.readObject();
+        this.endTimestampExtractor = (InternalReadAccessor) in.readObject();
         this.resource = (Resource) in.readObject();
         this.expirationOffset = in.readLong();
         this.dynamic = in.readBoolean();
@@ -133,12 +139,13 @@ public class TypeDeclaration
         out.writeObject( role );
         out.writeObject( format );
         out.writeObject( durationAttribute );
-        out.writeObject( timestampAttribute );
+        out.writeObject( startTimestampAttribute );
         out.writeObject( typeClassName );
         out.writeObject( typeTemplate );
         out.writeObject( typeClassDef );
         out.writeObject( durationExtractor );
-        out.writeObject( timestampExtractor );
+        out.writeObject( startTimestampExtractor );
+        out.writeObject( endTimestampExtractor );
         out.writeObject( this.resource );
         out.writeLong( expirationOffset );
         out.writeBoolean( dynamic );
@@ -182,15 +189,29 @@ public class TypeDeclaration
     /**
      * @return the timestampAttribute
      */
-    public String getTimestampAttribute() {
-        return timestampAttribute;
+    public String getStartTimestampAttribute() {
+        return startTimestampAttribute;
     }
 
     /**
      * @param timestampAttribute the timestampAttribute to set
      */
-    public void setTimestampAttribute(String timestampAttribute) {
-        this.timestampAttribute = timestampAttribute;
+    public void setStartTimestampAttribute(String timestampAttribute) {
+        this.startTimestampAttribute = timestampAttribute;
+    }
+
+    /**
+     * @return the timestampAttribute
+     */
+    public String getEndTimestampAttribute() {
+        return endTimestampAttribute;
+    }
+
+    /**
+     * @param timestampAttribute the timestampAttribute to set
+     */
+    public void setEndTimestampAttribute(String timestampAttribute) {
+        this.endTimestampAttribute = timestampAttribute;
     }
 
     /**
@@ -263,11 +284,12 @@ public class TypeDeclaration
         } else if ( obj instanceof TypeDeclaration ) {
             TypeDeclaration that = (TypeDeclaration) obj;
             return isObjectEqual( typeName,
-                                  that.typeName ) && role == that.role && format == that.format && isObjectEqual( timestampAttribute,
-                                                                                                                  that.timestampAttribute ) && isObjectEqual( durationAttribute,
-                                                                                                                                                              that.durationAttribute ) && typeClass == that.typeClass
-                   && isObjectEqual( typeTemplate,
-                                     that.typeTemplate );
+                                  that.typeName ) && role == that.role && format == that.format && isObjectEqual( startTimestampAttribute,
+                                                                                                                  that.startTimestampAttribute ) && isObjectEqual( endTimestampAttribute,
+                                                                                                                                                                   that.endTimestampAttribute ) && isObjectEqual( durationAttribute,
+                                                                                                                                                                                                                  that.durationAttribute )
+                   && typeClass == that.typeClass && isObjectEqual( typeTemplate,
+                                                                    that.typeTemplate );
         }
         return false;
     }
@@ -299,12 +321,12 @@ public class TypeDeclaration
         this.typeClassDef = typeClassDef;
     }
 
-    public InternalReadAccessor getTimestampExtractor() {
-        return timestampExtractor;
+    public InternalReadAccessor getStartTimestampExtractor() {
+        return startTimestampExtractor;
     }
 
-    public void setTimestampExtractor(InternalReadAccessor timestampExtractor) {
-        this.timestampExtractor = timestampExtractor;
+    public void setStartTimestampExtractor(InternalReadAccessor timestampExtractor) {
+        this.startTimestampExtractor = timestampExtractor;
     }
 
     public class DurationAccessorSetter
@@ -318,14 +340,25 @@ public class TypeDeclaration
         }
     }
 
-    public class TimestampAccessorSetter
+    public class StartTimestampAccessorSetter
         implements
         AcceptsReadAccessor,
         Serializable {
         private static final long serialVersionUID = 8656678871125722903L;
 
         public void setReadAccessor(InternalReadAccessor readAccessor) {
-            setTimestampExtractor( readAccessor );
+            setStartTimestampExtractor( readAccessor );
+        }
+    }
+
+    public class EndTimestampAccessorSetter
+        implements
+        AcceptsReadAccessor,
+        Serializable {
+        private static final long serialVersionUID = 8656678871125722903L;
+
+        public void setReadAccessor(InternalReadAccessor readAccessor) {
+            setEndTimestampExtractor( readAccessor );
         }
     }
 
@@ -370,6 +403,14 @@ public class TypeDeclaration
 
     public void setDynamic(boolean dynamic) {
         this.dynamic = dynamic;
+    }
+
+    public InternalReadAccessor getEndTimestampExtractor() {
+        return this.endTimestampExtractor;
+    }
+
+    public void setEndTimestampExtractor(InternalReadAccessor endTimestampExtractor) {
+        this.endTimestampExtractor = endTimestampExtractor;
     }
 
 }

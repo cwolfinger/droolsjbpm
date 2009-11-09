@@ -313,4 +313,16 @@ public class AgendaItem
         }
         return Collections.unmodifiableCollection( list );
     }
+
+    public long getEndTimestamp() {
+        return tuple.getEndTimestamp();
+    }
+
+    public long getStartTimestamp() {
+        return tuple.getStartTimestamp();
+    }
+
+    public boolean isTemporal() {
+        return tuple.isTemporal();
+    }
 }

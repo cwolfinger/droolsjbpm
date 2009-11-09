@@ -135,4 +135,19 @@ public class BaseQueueable
         // TODO Auto-generated method stub
         return null;
     }
+
+    public long getEndTimestamp() {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    public long getStartTimestamp() {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    public boolean isTemporal() {
+        // TODO Auto-generated method stub
+        return false;
+    }
 }

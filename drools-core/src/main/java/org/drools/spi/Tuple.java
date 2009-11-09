@@ -65,4 +65,9 @@ public interface Tuple
      */
     int size();
 
+    public long getStartTimestamp();
+
+    public long getEndTimestamp();
+    
+    public boolean isTemporal();
 }
