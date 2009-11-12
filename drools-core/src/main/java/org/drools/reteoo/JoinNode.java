@@ -113,63 +113,16 @@ public class JoinNode extends BetaNode {
             final InternalFactHandle handle = rightTuple.getFactHandle();
             if ( this.constraints.isAllowedCachedLeft( memory.getContext(),
                                                        handle ) ) {
-                if ( thereIsTemporalOverlap( leftTuple,
-                                             handle ) ) {
-                    this.sink.propagateAssertLeftTuple( leftTuple,
-                                                        rightTuple,
-                                                        context,
-                                                        workingMemory,
-                                                        this.tupleMemoryEnabled );
-
-                }
+                this.sink.propagateAssertLeftTuple( leftTuple,
+                                                    rightTuple,
+                                                    context,
+                                                    workingMemory,
+                                                    this.tupleMemoryEnabled );
             }
         }
 
         this.constraints.resetTuple( memory.getContext() );
     }
-
-    private boolean thereIsTemporalOverlap(final LeftTuple leftTuple,
-                                           final InternalFactHandle handle) {
-        boolean result = true;
-        if ( leftTuple.isTemporal() || handle.isTemporal() ) {
-            result = (leftTuple.getStartTimestamp() >= handle.getStartTimestamp() && leftTuple.getStartTimestamp() <= handle.getEndTimestamp())
-                     || (leftTuple.getEndTimestamp() >= handle.getStartTimestamp() && leftTuple.getEndTimestamp() <= handle.getEndTimestamp());
-        }
-        return result;
-    }
-
-    //    public void assertLeftTuple(final LeftTuple leftTuple,
-    //                                RightTuple rightTuple,
-    //                                final PropagationContext context,
-    //                                final InternalWorkingMemory workingMemory) {
-    //        final BetaMemory memory = (BetaMemory) workingMemory.getNodeMemory( this );
-    //
-    //        if ( this.tupleMemoryEnabled ) {
-    //            memory.getLeftTupleMemory().add( leftTuple );
-    //        }
-    //
-    //        this.constraints.updateFromTuple( memory.getContext(),
-    //                                          workingMemory,
-    //                                          leftTuple );
-    //        if ( rightTuple == null ) {
-    //            rightTuple = memory.getRightTupleMemory().getFirst( leftTuple );
-    //        }
-    //        
-    //        boolean suspend = false;
-    //        for ( ;rightTuple != null && !suspend; rightTuple = (RightTuple) rightTuple.getNext() ) {
-    //            final InternalFactHandle handle = rightTuple.getFactHandle();
-    //            if ( this.constraints.isAllowedCachedLeft( memory.getContext(),
-    //                                                       handle ) ) {
-    //                this.sink.propagateAssertLeftTuple( leftTuple,
-    //                                                    rightTuple,
-    //                                                    context,
-    //                                                    workingMemory,
-    //                                                    this.tupleMemoryEnabled );
-    //            }
-    //        }
-    //
-    //        this.constraints.resetTuple( memory.getContext() );
-    //    }    
 
     /**
      * Assert a new <code>FactHandleImpl</code>. The left input of
@@ -218,15 +171,11 @@ public class JoinNode extends BetaNode {
         for ( LeftTuple leftTuple = memory.getLeftTupleMemory().getFirst( rightTuple ); leftTuple != null; leftTuple = (LeftTuple) leftTuple.getNext() ) {
             if ( this.constraints.isAllowedCachedRight( memory.getContext(),
                                                         leftTuple ) ) {
-                // wm.marshaller.write( i, leftTuple )
-                if ( thereIsTemporalOverlap( leftTuple,
-                                             rightTuple.getFactHandle() ) ) {
-                    this.sink.propagateAssertLeftTuple( leftTuple,
-                                                        rightTuple,
-                                                        context,
-                                                        workingMemory,
-                                                        this.tupleMemoryEnabled );
-                }
+                this.sink.propagateAssertLeftTuple( leftTuple,
+                                                    rightTuple,
+                                                    context,
+                                                    workingMemory,
+                                                    this.tupleMemoryEnabled );
             }
             i++;
         }

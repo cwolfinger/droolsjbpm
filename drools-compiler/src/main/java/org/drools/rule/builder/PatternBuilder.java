@@ -71,6 +71,7 @@ import org.drools.rule.ReturnValueRestriction;
 import org.drools.rule.RuleConditionElement;
 import org.drools.rule.SlidingLengthWindow;
 import org.drools.rule.SlidingTimeWindow;
+import org.drools.rule.TypeDeclaration;
 import org.drools.rule.VariableConstraint;
 import org.drools.rule.VariableRestriction;
 import org.drools.rule.builder.dialect.mvel.MVELDialect;
@@ -138,9 +139,9 @@ public class PatternBuilder
         } else {
             try {
                 final Class userProvidedClass = context.getDialect().getTypeResolver().resolveType( patternDescr.getObjectType() );
-                final boolean isEvent = context.getPkg().isEvent( userProvidedClass );
+                final TypeDeclaration.Role role = context.getPkg().getRole( userProvidedClass );
                 objectType = new ClassObjectType( userProvidedClass,
-                                                  isEvent );
+                                                  role );
             } catch ( final ClassNotFoundException e ) {
                 context.getErrors().add( new DescrBuildError( context.getParentDescr(),
                                                               patternDescr,

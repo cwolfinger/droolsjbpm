@@ -221,6 +221,7 @@ public class GroupElementBuilder
             // NOT must save some context info to restore it later
             final int currentPatternIndex = context.getCurrentPatternOffset();
             final LeftTupleSource tupleSource = context.getTupleSource();
+            final boolean isEffectiveDated = context.isEffectiveDated();
 
             // get child
             final RuleConditionElement child = (RuleConditionElement) not.getChildren().get( 0 );
@@ -250,7 +251,7 @@ public class GroupElementBuilder
                 final List<TupleStartEqualsConstraint> predicates = new ArrayList<TupleStartEqualsConstraint>();
                 predicates.add( constraint );
                 context.setBetaconstraints( predicates );
-
+                context.setEffectiveDated( isEffectiveDated );
             }
 
             final BetaConstraints betaConstraints = utils.createBetaNodeConstraint( context,
@@ -313,6 +314,7 @@ public class GroupElementBuilder
             // EXISTS must save some context info to restore it later
             final int currentPatternIndex = context.getCurrentPatternOffset();
             final LeftTupleSource tupleSource = context.getTupleSource();
+            final boolean isEffectiveDated = context.isEffectiveDated();
 
             // get child
             final RuleConditionElement child = (RuleConditionElement) exists.getChildren().get( 0 );
@@ -342,7 +344,7 @@ public class GroupElementBuilder
                 final List<TupleStartEqualsConstraint> predicates = new ArrayList<TupleStartEqualsConstraint>();
                 predicates.add( constraint );
                 context.setBetaconstraints( predicates );
-
+                context.setEffectiveDated( isEffectiveDated );
             }
 
             final BetaConstraints betaConstraints = utils.createBetaNodeConstraint( context,

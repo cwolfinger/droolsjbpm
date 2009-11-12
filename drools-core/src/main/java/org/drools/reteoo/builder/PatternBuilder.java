@@ -24,6 +24,7 @@ import java.util.ListIterator;
 import org.drools.RuntimeDroolsException;
 import org.drools.base.ClassObjectType;
 import org.drools.base.DroolsQuery;
+import org.drools.common.EffectiveDateOverlapsConstraint;
 import org.drools.common.InstanceNotEqualsConstraint;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.conf.EventProcessingOption;
@@ -149,6 +150,11 @@ public class PatternBuilder
 
         // checks if this pattern is nested inside a NOT CE
         final boolean isNegative = isNegative( context );
+        
+        if( context.isEffectiveDated() || pattern.getObjectType().isEffectiveDated() ) {
+            betaConstraints.add( EffectiveDateOverlapsConstraint.POSITIVE_INSTANCE );
+            context.setEffectiveDated( true );
+        }
         
         for ( final Iterator<?> it = constraints.iterator(); it.hasNext(); ) {
             final Object object = it.next();

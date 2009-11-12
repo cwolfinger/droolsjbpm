@@ -22,13 +22,16 @@ import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.drools.RuntimeDroolsException;
 import org.drools.base.ClassFieldAccessorCache;
 import org.drools.base.ClassFieldAccessorStore;
 import org.drools.common.DroolsObjectInputStream;
@@ -36,6 +39,7 @@ import org.drools.common.DroolsObjectOutputStream;
 import org.drools.definition.process.Process;
 import org.drools.definition.type.FactType;
 import org.drools.facttemplates.FactTemplate;
+import org.drools.rule.TypeDeclaration.Role;
 
 /**
  * Collection of related <code>Rule</code>s.
@@ -503,27 +507,6 @@ public class Package
         return this.name.hashCode();
     }
 
-    /**
-     * Returns true if clazz is imported as an Event class in this package
-     * 
-     * @param clazz
-     * @return true if clazz is imported as an Event class in this package
-     */
-    public boolean isEvent(Class clazz) {
-        if ( clazz == null ) {
-            return false;
-        }
-
-        // check if clazz is resolved by any of the type declarations
-        for ( TypeDeclaration type : this.typeDeclarations.values() ) {
-            if ( type.matches( clazz ) && type.getRole() == TypeDeclaration.Role.EVENT ) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     public void clear() {
         this.rules.clear();
         this.dialectRuntimeRegistry.clear();
@@ -553,6 +536,24 @@ public class Package
 
     public void setClassFieldAccessorCache(ClassFieldAccessorCache classFieldAccessorCache) {
         this.classFieldAccessorStore.setClassFieldAccessorCache( classFieldAccessorCache );
+    }
+
+    public Role getRole(Class<?> clazz) {
+        TypeDeclaration.Role role = TypeDeclaration.Role.FACT;
+        List<TypeDeclaration> definedRoles = new ArrayList<TypeDeclaration>(); 
+        // check if clazz is resolved by any of the type declarations
+        for ( TypeDeclaration type : this.typeDeclarations.values() ) {
+            if ( type.matches( clazz ) && type.getRole() != TypeDeclaration.Role.FACT ) {
+                definedRoles.add( type );
+            }
+        }
+
+        if( definedRoles.size() > 1 ) {
+            throw new RuntimeDroolsException("Unable to determine role for "+clazz+" due to multiple conflicting type declarations: "+definedRoles );
+        } else if( definedRoles.size() == 1 ) {
+            return definedRoles.get( 0 ).getRole();
+        }
+        return TypeDeclaration.Role.FACT;
     }
 
 }

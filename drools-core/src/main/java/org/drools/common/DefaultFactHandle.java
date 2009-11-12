@@ -227,15 +227,15 @@ public class DefaultFactHandle
         return clone;
     }
 
-    public long getEndTimestamp() {
+    public long getExpirationTimestamp() {
         return Long.MAX_VALUE;
     }
 
-    public long getStartTimestamp() {
+    public long getEffectiveTimestamp() {
         return Long.MIN_VALUE;
     }
 
-    public boolean isTemporal() {
+    public boolean isEffectiveDated() {
         return false;
     }
 }

@@ -71,10 +71,10 @@ public interface InternalFactHandle
     
     public String toExternalForm();
 
-    public boolean isTemporal();
+    public boolean isEffectiveDated();
     
-    public long getStartTimestamp();
+    public long getEffectiveTimestamp();
     
-    public long getEndTimestamp();
+    public long getExpirationTimestamp();
     
 }

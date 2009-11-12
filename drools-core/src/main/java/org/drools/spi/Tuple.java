@@ -65,9 +65,9 @@ public interface Tuple
      */
     int size();
 
-    public long getStartTimestamp();
+    public long getEffectiveTimestamp();
 
-    public long getEndTimestamp();
+    public long getExpirationTimestamp();
     
-    public boolean isTemporal();
+    public boolean isEffectiveDated();
 }

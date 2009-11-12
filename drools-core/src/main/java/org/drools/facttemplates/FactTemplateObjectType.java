@@ -40,6 +40,8 @@ public class FactTemplateObjectType
 
     private boolean           isEvent;
 
+    private boolean           isEffDated;
+
     // ------------------------------------------------------------
     // Constructors
     // ------------------------------------------------------------
@@ -126,7 +128,15 @@ public class FactTemplateObjectType
         this.isEvent = isEvent;
     }
 
-   public String toString() {
+    public void setEffectiveDated(boolean isEffDated) {
+        this.isEffDated = isEffDated;
+    }
+
+    public boolean isEffectiveDated() {
+        return isEffDated;
+    }
+
+    public String toString() {
         return "[FactTemplateObjectType "+( this.isEvent ? "event=" : "template=") + this.factTemplate.getName() + "]";
     }
 
@@ -156,4 +166,5 @@ public class FactTemplateObjectType
     public int hashCode() {
         return this.factTemplate.hashCode();
     }
+
 }

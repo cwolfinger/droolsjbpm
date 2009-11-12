@@ -51,7 +51,6 @@ import org.drools.base.ClassObjectType;
 import org.drools.reteoo.EntryPointNode;
 import org.drools.reteoo.ObjectTypeNode;
 import org.drools.reteoo.ReteooRuleBase;
-import org.drools.rule.Package;
 
 /**
  * An implementation for the KnowledgeBaseMBean

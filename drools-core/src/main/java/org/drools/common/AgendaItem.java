@@ -315,14 +315,14 @@ public class AgendaItem
     }
 
     public long getEndTimestamp() {
-        return tuple.getEndTimestamp();
+        return tuple.getExpirationTimestamp();
     }
 
     public long getStartTimestamp() {
-        return tuple.getStartTimestamp();
+        return tuple.getEffectiveTimestamp();
     }
 
     public boolean isTemporal() {
-        return tuple.isTemporal();
+        return tuple.isEffectiveDated();
     }
 }

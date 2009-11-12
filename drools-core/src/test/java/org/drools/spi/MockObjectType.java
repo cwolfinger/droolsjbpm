@@ -112,5 +112,8 @@ public class MockObjectType
     public void setEvent(boolean isEvent) {
         this.isEvent = isEvent;
     }
+    public boolean isEffectiveDated() {
+        return false;
+    }
 
 }

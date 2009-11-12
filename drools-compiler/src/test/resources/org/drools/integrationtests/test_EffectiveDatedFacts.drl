@@ -3,15 +3,15 @@ package org.drools
 import java.util.Date
 
 declare EmployeeStatus
-    @role( temporal )
-    @timestamp( startDate )
-    @endTimestamp( endDate )
+    @role( effective-dated )
+    @effDate( effDate )
+    @expDate( expDate )
 end
 
 declare Coverage
-    @role( temporal )
-    @timestamp( start )
-    @endTimestamp( end )
+    @role( effective-dated )
+    @effDate( effDate )
+    @expDate( expDate )
 end
 
 rule "Employee is full time worker"

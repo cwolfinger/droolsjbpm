@@ -47,6 +47,8 @@ public class AccumulateBuilder
                       final RuleConditionElement rce) {
         final Accumulate accumulate = (Accumulate) rce;
         boolean existSubNetwort = false;
+        
+        final boolean isEffectiveDated = context.isEffectiveDated();
 
         final List resultBetaConstraints = context.getBetaconstraints();
         final List resultAlphaConstraints = context.getAlphaConstraints();
@@ -113,6 +115,7 @@ public class AccumulateBuilder
         context.setObjectSource( null );
         context.setCurrentPatternOffset( currentPatternIndex );
         context.setBehaviors( Collections.EMPTY_LIST );
+        context.setEffectiveDated( isEffectiveDated );
     }
 
     /**

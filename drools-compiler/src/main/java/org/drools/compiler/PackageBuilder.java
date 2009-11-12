@@ -996,45 +996,82 @@ public class PackageBuilder {
                 }
             }
 
-            String timestamp = typeDescr.getMetaAttribute( TypeDeclaration.ATTR_TIMESTAMP );
-            if ( timestamp != null ) {
-                type.setStartTimestampAttribute( timestamp );
-                ClassDefinition cd = type.getTypeClassDef();
-                ClassFieldAccessorStore store = pkgRegistry.getPackage().getClassFieldAccessorStore();
-                InternalReadAccessor extractor = store.getReader( type.getTypeClass().getName(),
-                                                                  timestamp,
-                                                                  type.new StartTimestampAccessorSetter() );
-            }
-            String duration = typeDescr.getMetaAttribute( TypeDeclaration.ATTR_DURATION );
-            if ( duration != null ) {
-                type.setDurationAttribute( duration );
-                ClassDefinition cd = type.getTypeClassDef();
-                ClassFieldAccessorStore store = pkgRegistry.getPackage().getClassFieldAccessorStore();
-                InternalReadAccessor extractor = store.getReader( type.getTypeClass().getName(),
-                                                                  duration,
-                                                                  type.new DurationAccessorSetter() );
-            }
-            String endTimestamp = typeDescr.getMetaAttribute( TypeDeclaration.ATTR_END_TIMESTAMP );
-            if ( timestamp != null ) {
-                type.setEndTimestampAttribute( endTimestamp );
-                ClassDefinition cd = type.getTypeClassDef();
-                ClassFieldAccessorStore store = pkgRegistry.getPackage().getClassFieldAccessorStore();
-                InternalReadAccessor extractor = store.getReader( type.getTypeClass().getName(),
-                                                                  endTimestamp,
-                                                                  type.new EndTimestampAccessorSetter() );
-            }
-            String expiration = typeDescr.getMetaAttribute( TypeDeclaration.ATTR_EXPIRE );
-            if ( expiration != null ) {
-                if ( timeParser == null ) {
-                    timeParser = new TimeIntervalParser();
-                }
-                type.setExpirationOffset( timeParser.parse( expiration )[0].longValue() );
+            if( type.getRole().equals( TypeDeclaration.Role.EVENT ) ) {
+                parseEventMetadata( pkgRegistry,
+                                    typeDescr,
+                                    type );
+            } else if( type.getRole().equals( TypeDeclaration.Role.EFFDATED ) ) {
+                parseEffectiveDatedMetadata( pkgRegistry,
+                                             typeDescr,
+                                             type );
             }
 
             boolean dynamic = typeDescr.getMetaAttributes().containsKey( TypeDeclaration.ATTR_PROP_CHANGE_SUPPORT );
             type.setDynamic( dynamic );
 
             pkgRegistry.getPackage().addTypeDeclaration( type );
+        }
+    }
+
+    private void parseEventMetadata(PackageRegistry pkgRegistry,
+                                    TypeDeclarationDescr typeDescr,
+                                    TypeDeclaration type) {
+        String timestamp = typeDescr.getMetaAttribute( TypeDeclaration.ATTR_TIMESTAMP );
+        if ( timestamp != null ) {
+            type.setStartTimestampAttribute( timestamp );
+            ClassDefinition cd = type.getTypeClassDef();
+            ClassFieldAccessorStore store = pkgRegistry.getPackage().getClassFieldAccessorStore();
+            InternalReadAccessor extractor = store.getReader( type.getTypeClass().getName(),
+                                                              timestamp,
+                                                              type.new StartTimestampAccessorSetter() );
+        }
+        String duration = typeDescr.getMetaAttribute( TypeDeclaration.ATTR_DURATION );
+        if ( duration != null ) {
+            type.setDurationAttribute( duration );
+            ClassDefinition cd = type.getTypeClassDef();
+            ClassFieldAccessorStore store = pkgRegistry.getPackage().getClassFieldAccessorStore();
+            InternalReadAccessor extractor = store.getReader( type.getTypeClass().getName(),
+                                                              duration,
+                                                              type.new DurationAccessorSetter() );
+        }
+        String endTimestamp = typeDescr.getMetaAttribute( TypeDeclaration.ATTR_END_TIMESTAMP );
+        if ( timestamp != null ) {
+            type.setEndTimestampAttribute( endTimestamp );
+            ClassDefinition cd = type.getTypeClassDef();
+            ClassFieldAccessorStore store = pkgRegistry.getPackage().getClassFieldAccessorStore();
+            InternalReadAccessor extractor = store.getReader( type.getTypeClass().getName(),
+                                                              endTimestamp,
+                                                              type.new EndTimestampAccessorSetter() );
+        }
+        String expiration = typeDescr.getMetaAttribute( TypeDeclaration.ATTR_EXPIRE );
+        if ( expiration != null ) {
+            if ( timeParser == null ) {
+                timeParser = new TimeIntervalParser();
+            }
+            type.setExpirationOffset( timeParser.parse( expiration )[0].longValue() );
+        }
+    }
+
+    private void parseEffectiveDatedMetadata(PackageRegistry pkgRegistry,
+                                             TypeDeclarationDescr typeDescr,
+                                             TypeDeclaration type) {
+        String effts = typeDescr.getMetaAttribute( TypeDeclaration.ATTR_EFF_DATE );
+        if ( effts != null ) {
+            type.setStartTimestampAttribute( effts );
+            ClassDefinition cd = type.getTypeClassDef();
+            ClassFieldAccessorStore store = pkgRegistry.getPackage().getClassFieldAccessorStore();
+            InternalReadAccessor extractor = store.getReader( type.getTypeClass().getName(),
+                                                              effts,
+                                                              type.new StartTimestampAccessorSetter() );
+        }
+        String expts = typeDescr.getMetaAttribute( TypeDeclaration.ATTR_EXP_DATE );
+        if ( expts != null ) {
+            type.setEndTimestampAttribute( expts );
+            ClassDefinition cd = type.getTypeClassDef();
+            ClassFieldAccessorStore store = pkgRegistry.getPackage().getClassFieldAccessorStore();
+            InternalReadAccessor extractor = store.getReader( type.getTypeClass().getName(),
+                                                              expts,
+                                                              type.new EndTimestampAccessorSetter() );
         }
     }
 

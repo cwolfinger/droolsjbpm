@@ -23,6 +23,7 @@ import org.drools.base.evaluators.AfterEvaluatorDefinition;
 import org.drools.base.extractors.SelfReferenceClassFieldReader;
 import org.drools.rule.GroupElement;
 import org.drools.rule.Pattern;
+import org.drools.rule.TypeDeclaration;
 import org.drools.rule.VariableConstraint;
 import org.drools.rule.VariableRestriction;
 import org.drools.rule.GroupElement.Type;
@@ -67,7 +68,7 @@ public class BuildUtilsTest extends TestCase {
                                         };
 
         AfterEvaluatorDefinition evals = new AfterEvaluatorDefinition();
-        ClassObjectType ot = new ClassObjectType(StockTick.class, true);
+        ClassObjectType ot = new ClassObjectType(StockTick.class, TypeDeclaration.Role.EVENT);
         
         Pattern a = new Pattern( 0, ot, "$a" );
         Pattern b = new Pattern( 1, ot, "$b" );

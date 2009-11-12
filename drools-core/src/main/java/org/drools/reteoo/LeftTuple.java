@@ -47,15 +47,15 @@ public class LeftTuple
     private LeftTupleSink      sink;
 
     // temporal info
-    private long               startTimestamp;
-    private long               endTimestamp;
+    private long               effectiveTimestamp;
+    private long               expirationTimestamp;
 
     public LeftTuple() {
         // constructor needed for serialisation
         
         // by default start and end timestamps are -INFINITY and +INFINITY respectively
-        this.startTimestamp = Long.MIN_VALUE;
-        this.endTimestamp = Long.MAX_VALUE;
+        this.effectiveTimestamp = Long.MIN_VALUE;
+        this.expirationTimestamp = Long.MAX_VALUE;
     }
 
     // ------------------------------------------------------------
@@ -128,13 +128,13 @@ public class LeftTuple
     }
 
     private void adjustTimeRange() {
-        if( handle.isTemporal() ) {
+        if( handle.isEffectiveDated() ) {
             if( parent != null ) {
-                this.startTimestamp = Math.max( parent.getStartTimestamp(), handle.getStartTimestamp() );
-                this.endTimestamp = Math.min( parent.getEndTimestamp(), handle.getEndTimestamp() );
+                this.effectiveTimestamp = Math.max( parent.getEffectiveTimestamp(), handle.getEffectiveTimestamp() );
+                this.expirationTimestamp = Math.min( parent.getExpirationTimestamp(), handle.getExpirationTimestamp() );
             } else {
-                this.startTimestamp = handle.getStartTimestamp();
-                this.endTimestamp = handle.getEndTimestamp();
+                this.effectiveTimestamp = handle.getEffectiveTimestamp();
+                this.expirationTimestamp = handle.getExpirationTimestamp();
             }
         }
     }
@@ -475,16 +475,16 @@ public class LeftTuple
         return parent;
     }
     
-    public long getStartTimestamp() {
-        return startTimestamp;
+    public long getEffectiveTimestamp() {
+        return effectiveTimestamp;
     }
 
-    public long getEndTimestamp() {
-        return endTimestamp;
+    public long getExpirationTimestamp() {
+        return expirationTimestamp;
     }
     
-    public boolean isTemporal() {
-        return handle.isTemporal() || (parent != null && parent.isTemporal() );
+    public boolean isEffectiveDated() {
+        return handle.isEffectiveDated() || (parent != null && parent.isEffectiveDated() );
     }
 
 }

@@ -110,18 +110,14 @@ public interface InternalRuleBase
     
     public Process[] getProcesses();
     
-    /**
-     * Returns true if clazz represents an Event class. False otherwise.
-     *  
-     * @param clazz
-     * @return
-     */
-    public boolean isEvent( Class<?> clazz );
-	
 	public int getNodeCount();
 
 	/**
-	 * Returns the type declaration associated to the given class
+	 * Returns the most specific type declaration associated to the given class,
+	 * i.e., starting from the concrete class, looks for a type declaration for it
+	 * or for its parents in sequence. If not found for any of the parents, looks
+	 * for type declarations for its interfaces. Returns the first (i.e. most specific)
+	 * type declaration.
 	 * 
 	 * @param clazz
 	 * @return

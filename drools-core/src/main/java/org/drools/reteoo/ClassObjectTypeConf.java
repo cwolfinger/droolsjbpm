@@ -68,11 +68,9 @@ public class ClassObjectTypeConf
         this.entryPoint = entryPoint;
         this.typeDecl = ruleBase.getTypeDeclaration( clazz );
         this.role = ( typeDecl != null ) ? typeDecl.getRole() : TypeDeclaration.Role.FACT;
-        final boolean isEvent = role == TypeDeclaration.Role.EVENT;
-        
 
         ObjectType objectType = ((AbstractRuleBase) ruleBase).getClassFieldAccessorCache().getClassObjectType( new ClassObjectType( clazz,
-                                                                                                                                    isEvent ) );
+                                                                                                                                    role ) );
 
         this.concreteObjectTypeNode = (ObjectTypeNode) ruleBase.getRete().getObjectTypeNodes( entryPoint ).get( objectType );
         if ( this.concreteObjectTypeNode == null ) {

@@ -100,6 +100,8 @@ public class BuildContext {
     /** the calculate temporal distance matrix */
     private TemporalDependencyMatrix         temporal;
 
+    private boolean isEffectiveDated;
+
     public BuildContext(final InternalRuleBase rulebase,
                         final ReteooBuilder.IdGenerator idGenerator) {
         this.rulebase = rulebase;
@@ -444,5 +446,14 @@ public class BuildContext {
         	this.query = true;
         }
     }
+
+    public boolean isEffectiveDated() {
+        return isEffectiveDated;
+    }
+    
+    public void setEffectiveDated( boolean effDated ) {
+        this.isEffectiveDated = effDated;
+    }
+    
 
 }

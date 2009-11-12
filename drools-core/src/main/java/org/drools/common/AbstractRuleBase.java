@@ -609,17 +609,24 @@ abstract public class AbstractRuleBase
                 pkg.addProcess( flow );
             }
         }
-
-        //        // this handles re-wiring any dirty Packages, it's done lazily to allow incremental 
-        //        // additions without incurring the repeated cost.
-        //        if ( this.reloadPackageCompilationData == null ) {
-        //            this.reloadPackageCompilationData = new ReloadPackageCompilationData();
-        //        }
-        //        this.reloadPackageCompilationData.addDialectDatas( pkg.getDialectRuntimeRegistry() );
     }
 
-    public TypeDeclaration getTypeDeclaration(Class< ? > clazz) {
-        return this.classTypeDeclaration.get( clazz );
+    public TypeDeclaration getTypeDeclaration(final Class< ? > clazz) {
+        TypeDeclaration type = null;
+        Class<?> aux = clazz;
+        while( type == null && aux != null ) {
+            type = this.classTypeDeclaration.get( aux );
+            aux = aux.getSuperclass();  
+        }
+        if( type == null ) {
+            for( Class<?> intfc : clazz.getInterfaces() ) {
+                type = getTypeDeclaration( intfc );
+                if( type != null ) {
+                    break;
+                }
+            }
+        }
+        return type;
     }
 
     public Collection<TypeDeclaration> getTypeDeclarations() {
@@ -873,15 +880,6 @@ abstract public class AbstractRuleBase
     public List<RuleBaseEventListener> getRuleBaseEventListeners() {
         // no need for synchonization or locking because eventSupport is thread-safe
         return this.eventSupport.getEventListeners();
-    }
-
-    public boolean isEvent(Class clazz) {
-        for ( Package pkg : this.pkgs.values() ) {
-            if ( pkg.isEvent( clazz ) ) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public FactType getFactType(final String name) {

@@ -22,6 +22,7 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
 import org.drools.RuntimeDroolsException;
+import org.drools.rule.TypeDeclaration;
 import org.drools.spi.ObjectType;
 
 /**
@@ -36,19 +37,15 @@ public class ClassObjectType
     ObjectType,
     Externalizable {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 400L;
+    private static final long    serialVersionUID = 400L;
 
-    /** Java object class. */
-    protected Class<?>        cls;
+    protected Class< ? >         cls;
 
-    protected String          clsName;
+    protected String             clsName;
 
-    protected ValueType       valueType;
+    protected ValueType          valueType;
 
-    private boolean           isEvent;
+    private TypeDeclaration.Role role;
 
     // ------------------------------------------------------------
     // Constructors
@@ -63,9 +60,9 @@ public class ClassObjectType
      * @param objectTypeClass
      *            Java object class.
      */
-    public ClassObjectType(final Class<?> objectTypeClass) {
+    public ClassObjectType(final Class< ? > objectTypeClass) {
         this( objectTypeClass,
-              false );
+              TypeDeclaration.Role.FACT );
     }
 
     /**
@@ -74,22 +71,12 @@ public class ClassObjectType
      * @param objectTypeClass the class represented by this class object type
      * @param isEvent true if it is an event class, false otherwise
      */
-    public ClassObjectType(final Class<?> objectTypeClass,
-                           final boolean isEvent) {
+    public ClassObjectType(final Class< ? > objectTypeClass,
+                           final TypeDeclaration.Role role) {
         this.cls = objectTypeClass;
-        this.isEvent = isEvent;
-        //if (objectTypeClass != null)
+        this.role = role;
         this.clsName = this.cls.getName();
         this.valueType = ValueType.determineValueType( objectTypeClass );
-    }
-
-    public ClassObjectType(final String className,
-                           final boolean isEvent) {
-        this.isEvent = isEvent;
-        this.clsName = this.cls.getName();
-        //        if (objectTypeClass != null)
-        //
-        //            this.valueType = ValueType.determineValueType( objectTypeClass );        
     }
 
     public void readExternal(ObjectInput in) throws IOException,
@@ -102,15 +89,13 @@ public class ClassObjectType
             } catch ( ClassNotFoundException e ) {
                 throw new RuntimeDroolsException( "Unable to resolve class '" + clsName + "'" );
             }
-        }        
-//        this.valueType = (ValueType) in.readObject();
-        this.isEvent = in.readBoolean();
+        }
+        this.role = (TypeDeclaration.Role) in.readObject();
     }
 
     public void writeExternal(ObjectOutput out) throws IOException {
         out.writeUTF( clsName );
-//        out.writeObject( valueType );
-        out.writeBoolean( isEvent );
+        out.writeObject( role );
     }
 
     /**
@@ -118,7 +103,7 @@ public class ClassObjectType
      *
      * @return The Java object class.
      */
-    public Class<?> getClassType() {
+    public Class< ? > getClassType() {
         return this.cls;
     }
 
@@ -126,46 +111,10 @@ public class ClassObjectType
         return this.clsName;
     }
 
-    public void setClassType(Class<?> cls) {
+    public void setClassType(Class< ? > cls) {
         this.cls = cls;
         this.valueType = ValueType.determineValueType( cls );
     }
-
-    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    // org.drools.spi.ObjectType
-    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-    //    /**
-    //     * Determine if the passed <code>Class</code> matches to the object type
-    //     * defined by this <code>objectType</code> instance.
-    //     *
-    //     * @param clazz
-    //     *            The <code>Class</code> to test.
-    //     *
-    //     * @return <code>true</code> if the <code>Class</code> matches this
-    //     *         object type, else <code>false</code>.
-    //     */
-    //    public boolean matchesClass(final Class clazz) {
-    //        return getClassType().isAssignableFrom( clazz );
-    //    }
-    //
-    //    /**
-    //     * Determine if the passed <code>Object</code> belongs to the object type
-    //     * defined by this <code>objectType</code> instance.
-    //     *
-    //     * @param object
-    //     *            The <code>Object</code> to test.
-    //     *
-    //     * @return <code>true</code> if the <code>Object</code> matches this
-    //     *         object type, else <code>false</code>.
-    //     */
-    //    public boolean matches(final Object object) {
-    //        return getClassType().isInstance( object );
-    //    }
-    //
-    //    public boolean isAssignableFrom(Object object) {
-    //        return this.objectTypeClass.isAssignableFrom( (Class) object );
-    //    }
 
     public boolean isAssignableFrom(ObjectType objectType) {
         if ( !(objectType instanceof ClassObjectType) ) {
@@ -180,15 +129,15 @@ public class ClassObjectType
     }
 
     public boolean isEvent() {
-        return isEvent;
+        return role.equals( TypeDeclaration.Role.EVENT );
     }
 
-    public void setEvent(boolean isEvent) {
-        this.isEvent = isEvent;
+    public boolean isEffectiveDated() {
+        return role.equals( TypeDeclaration.Role.EFFDATED );
     }
 
     public String toString() {
-        return "[ClassObjectType " + (this.isEvent ? "event=" : "class=") + getClassType().getName() + "]";
+        return "[ClassObjectType class=" + getClassType().getName() + " role="+ role +"]";
     }
 
     /**
@@ -209,11 +158,11 @@ public class ClassObjectType
             return false;
         }
 
-        return this.clsName.equals( ((ClassObjectType) object).clsName );
+        return this.role.equals( ((ClassObjectType)object).role ) && this.clsName.equals( ((ClassObjectType) object).clsName );
     }
 
     public int hashCode() {
-        return this.clsName.hashCode();
+        return this.clsName.hashCode() | (this.role.hashCode() * 31);
     }
 
 }

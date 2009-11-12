@@ -115,15 +115,15 @@ public class DisconnectedFactHandle
         return "0:" + this.id + ":" + this.identityHashCode + ":" + this.objectHashCode + ":" + this.recency;
     }
 
-    public long getEndTimestamp() {
+    public long getExpirationTimestamp() {
         throw new UnsupportedOperationException( "DisonnectedFactHandle does not support this method" );
     }
 
-    public long getStartTimestamp() {
+    public long getEffectiveTimestamp() {
         throw new UnsupportedOperationException( "DisonnectedFactHandle does not support this method" );
     }
 
-    public boolean isTemporal() {
+    public boolean isEffectiveDated() {
         throw new UnsupportedOperationException( "DisonnectedFactHandle does not support this method" );
     }
 

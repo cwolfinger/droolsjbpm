@@ -52,9 +52,11 @@ public class TypeDeclaration
     public static final String ATTR_EXPIRE              = "expires";
     public static final String ATTR_PROP_CHANGE_SUPPORT = "propertyChangeSupport";
     public static final String ATTR_END_TIMESTAMP       = "endTimestamp";
+    public static final String ATTR_EFF_DATE            = "effDate";
+    public static final String ATTR_EXP_DATE            = "expDate";
 
     public static enum Role {
-        FACT, EVENT, TEMPORAL;
+        FACT, EVENT, EFFDATED;
 
         public static final String ID = "role";
 
@@ -63,8 +65,8 @@ public class TypeDeclaration
                 return EVENT;
             } else if ( "fact".equalsIgnoreCase( role ) ) {
                 return FACT;
-            } else if ( "temporal".equalsIgnoreCase( role ) ) {
-                return TEMPORAL;
+            } else if ( "effective-dated".equalsIgnoreCase( role ) ) {
+                return EFFDATED;
             }
             return null;
         }

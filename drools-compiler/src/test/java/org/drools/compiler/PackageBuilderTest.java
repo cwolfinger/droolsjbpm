@@ -1687,17 +1687,17 @@ public class PackageBuilderTest extends DroolsTestCase {
             return 0;
         }
 
-        public long getEndTimestamp() {
+        public long getEffectiveTimestamp() {
             // TODO Auto-generated method stub
             return 0;
         }
 
-        public long getStartTimestamp() {
+        public long getExpirationTimestamp() {
             // TODO Auto-generated method stub
             return 0;
         }
 
-        public boolean isTemporal() {
+        public boolean isEffectiveDated() {
             // TODO Auto-generated method stub
             return false;
         }
