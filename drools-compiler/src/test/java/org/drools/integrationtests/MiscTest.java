@@ -6642,6 +6642,44 @@ public class MiscTest extends TestCase {
 
     }
 
+    public void testJBRules2369() {
+        KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
+        kbuilder.add( ResourceFactory.newClassPathResource( "test_JBRules2369.drl",
+                                                            getClass() ),
+                      ResourceType.DRL );
+        KnowledgeBuilderErrors errors = kbuilder.getErrors();
+        if ( errors.size() > 0 ) {
+            for ( KnowledgeBuilderError error : errors ) {
+                System.err.println( error );
+            }
+            fail( "Error loading test_JBRules2369" );
+        }
+        KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
+        kbase.addKnowledgePackages( kbuilder.getKnowledgePackages() );
+        StatefulKnowledgeSession ksession = kbase.newStatefulKnowledgeSession();
+        List<String> results = new ArrayList<String>();
+        ksession.setGlobal( "results",
+                            results );
+
+        FactA a = new FactA();
+        FactB b = new FactB( Integer.valueOf( 0 ) );
+
+        org.drools.runtime.rule.FactHandle aHandle = ksession.insert( a );
+        org.drools.runtime.rule.FactHandle bHandle = ksession.insert( b );
+
+        ksession.fireAllRules();
+
+        assertEquals( 1,
+                      results.size() );
+
+        ksession.update( aHandle,
+                         a );
+
+        ksession.fireAllRules();
+        assertEquals( 2,
+                      results.size() );
+    }
+
     public void testInsertionOrder() {
         KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
         kbuilder.add( ResourceFactory.newClassPathResource( "test_InsertionOrder.drl",
@@ -6695,7 +6733,7 @@ public class MiscTest extends TestCase {
     public void testFireAllWhenFiringUntilHalt() {
         KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
         final StatefulKnowledgeSession ksession = kbase.newStatefulKnowledgeSession();
-        
+
         Runnable fireUntilHalt = new Runnable() {
             public void run() {
                 ksession.fireUntilHalt();
@@ -6726,16 +6764,18 @@ public class MiscTest extends TestCase {
         } catch ( InterruptedException e ) {
         }
         boolean aliveT1 = t1.isAlive();
-        if( t2.isAlive() ){
+        if ( t2.isAlive() ) {
             t2.interrupt();
         }
-        if( t1.isAlive() ) {
+        if ( t1.isAlive() ) {
             t1.interrupt();
         }
-        assertFalse( "T2 should have finished", aliveT2 );
-        assertFalse( "T1 should have finished", aliveT1 );
+        assertFalse( "T2 should have finished",
+                     aliveT2 );
+        assertFalse( "T1 should have finished",
+                     aliveT1 );
     }
-    
+
     public void testDroolsQueryCleanup() {
         KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
         kbuilder.add( ResourceFactory.newClassPathResource( "test_QueryMemoryLeak.drl",
