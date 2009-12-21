@@ -251,6 +251,7 @@ public class NotNode extends BetaNode {
 
             leftTuple = temp;
         }
+        rightTuple.setBlocked( null );
         this.constraints.resetTuple( memory.getContext() );
     }
 
@@ -305,10 +306,10 @@ public class NotNode extends BetaNode {
 
     public String toString() {
         ObjectSource source = this.rightInput;
-        while ( !(source instanceof ObjectTypeNode) ) {
+        while ( source != null && !(source instanceof ObjectTypeNode) ) {
             source = source.source;
         }
 
-        return "[NotNode - " + ((ObjectTypeNode) source).getObjectType() + "]";
+        return "[NotNode("+this.getId()+") - " + ((source != null) ? ((ObjectTypeNode) source).getObjectType() : "<source from a subnetwork>" )  + "]";
     }
 }
