@@ -99,7 +99,8 @@ public class SessionInspectorTest extends TestCase {
         
         String report = SessionReporter.generateReport( "simple", info, null );
         
-        System.out.println(report);
+        assertNotNull( report );
+        //System.out.println(report);
         
     }
 
