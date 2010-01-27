@@ -1406,6 +1406,8 @@ public interface Constants extends ConstantsWithLookup {
     String ChooseOtherConditionType();
 
     String FreeFormDrl();
+    
+    String ExpressionEditor();
 
     String ConditionTypeButton();
 
@@ -1429,6 +1431,8 @@ public interface Constants extends ConstantsWithLookup {
     String DSLSentence();
 
     String AdvancedOptionsColon();
+
+    String AddFromConditionColon();
 
     String AddAnItemToACollection();
 
@@ -1845,6 +1849,8 @@ public interface Constants extends ConstantsWithLookup {
 
     String clickToAddPatterns();
 
+    String clickToAddPattern();
+
     String ChangeFieldValuesOf0();
 
     String Retract0();
@@ -1870,6 +1876,8 @@ public interface Constants extends ConstantsWithLookup {
     String ThereIsAAn0With();
 
     String ThereIsAAn0();
+
+    String All0with();
 
     String AddFirstNewField();
 
@@ -1932,6 +1940,10 @@ public interface Constants extends ConstantsWithLookup {
     String IncomingChanges();
 
     String From();
+
+    String FromAccumulate();
+
+    String FromCollect();
     
     String URLDocumentionDescription();
 

@@ -115,15 +115,11 @@ public class RuleModeller extends DirtyableComposite {
         layout.getColumnFormatter().setWidth(1, "87%");
         layout.getColumnFormatter().setWidth(2, "5%");
 
-
-
         layout.setWidget( 0, 0, new SmallLabel(constants.WHEN()) );
 
         if (!lockLHS()) {
             layout.setWidget( 0, 2, addPattern );
         }
-
-
 
         layout.setWidget( 1, 1, renderLhs(this.model) );
         layout.getFlexCellFormatter().setHorizontalAlignment(1, 1, HasHorizontalAlignment.ALIGN_LEFT);
@@ -352,7 +348,7 @@ public class RuleModeller extends DirtyableComposite {
      * Pops up the fact selector.
      */
     protected void showConditionSelector(final Widget w) {
-
+    	//XXX {bauna} add actions for LHS
         final FormStylePopup popup = new FormStylePopup();
         popup.setWidth(-1);
         popup.setTitle(constants.AddAConditionToTheRule());
@@ -361,15 +357,10 @@ public class RuleModeller extends DirtyableComposite {
 
         final ListBox choices = new ListBox(true);
 
-        
-
         //
         // The list of DSL sentences
         //
         if (completions.getDSLConditions().length > 0) {
-
-
-
             for(int i = 0; i < completions.getDSLConditions().length; i++ ) {
                 final DSLSentence sen = completions.getDSLConditions()[i];
                 String key = "DSL" + i;
@@ -381,7 +372,6 @@ public class RuleModeller extends DirtyableComposite {
                     }
                 });
             }
-
         }
 
         //
@@ -405,7 +395,6 @@ public class RuleModeller extends DirtyableComposite {
             }
         }
 
-
         //
         // The list of top level CEs
         //
@@ -422,14 +411,22 @@ public class RuleModeller extends DirtyableComposite {
                     popup.hide();
                 }
             });
-
-
         }
 
+        String fces[]  = HumanReadable.FROM_CONDITIONAL_ELEMENTS;
 
-
-
-
+        choices.addItem("..................");
+        for ( int i = 0; i < fces.length; i++ ) {
+            final String ce = fces[i];
+            String key = "FCE" + ce;
+            choices.addItem( HumanReadable.getCEDisplayName( ce ) + " ...", key );
+            cmds.put(key, new Command() {
+                public void execute() {
+                    addNewFCE(ce);
+                    popup.hide();
+                }
+            });
+        }
 
         if (ExplorerLayoutManager.shouldShow(Capabilities.SHOW_PACKAGE_VIEW)) {
             choices.addItem("..................");
@@ -441,9 +438,18 @@ public class RuleModeller extends DirtyableComposite {
                     popup.hide();
                 }
             });
+            
+            choices.addItem("..................");
+            choices.addItem(constants.ExpressionEditor(), "EE");
+            cmds.put("EE", new Command() {
+                public void execute() {
+                    model.addLhsItem(new ExpressionFormLine());
+                    refreshWidget();
+                    popup.hide();
+                }
+            });
         }
-
-
+        
         if (completions.getDSLConditions().length == 0 && facts.length == 0) {
         	popup.addRow(new HTML("<div class='highlight'>" + constants.NoModelTip() + "</div>")); //NON-NLS
         }
@@ -468,7 +474,6 @@ public class RuleModeller extends DirtyableComposite {
             }
         });
 
-
         HorizontalPanel hp = new HorizontalPanel();
         hp.add(choices);
         Button b = new Button(constants.OK());
@@ -488,18 +493,15 @@ public class RuleModeller extends DirtyableComposite {
                 choices.setFocus(true);
             }
         });
-
     }
-
 
     protected void addNewDSLLhs(DSLSentence sentence) {
         model.addLhsItem( sentence.copy() );
         refreshWidget();
-
     }
 
-
     protected void showActionSelector(Widget w) {
+    	//XXX {Bauna} add RHS Actions
         final FormStylePopup popup = new FormStylePopup();
         popup.setWidth(-1);
         popup.setTitle(constants.AddANewAction());
@@ -540,8 +542,8 @@ public class RuleModeller extends DirtyableComposite {
 
 
         //Do Set field (NOT modify)
-        for ( Iterator iter = vars.iterator(); iter.hasNext(); ) {
-            final String v = (String) iter.next();
+        for ( Iterator<String> iter = vars.iterator(); iter.hasNext(); ) {
+            final String v = iter.next();
 
             //varBox.addItem( v );
             choices.addItem(Format.format(constants.ChangeFieldValuesOf0(), v), "VAR" + v); //NON-NLS
@@ -568,8 +570,8 @@ public class RuleModeller extends DirtyableComposite {
 
 
         //RETRACT
-        for ( Iterator iter = vars.iterator(); iter.hasNext(); ) {
-            final String v = (String) iter.next();
+        for ( Iterator<String> iter = vars.iterator(); iter.hasNext(); ) {
+            final String v = iter.next();
             //retractBox.addItem( v );
             choices.addItem(Format.format(constants.Retract0(), v), "RET" + v); //NON-NLS
             cmds.put("RET" + v, new Command() {                                          //NON-NLS
@@ -581,8 +583,8 @@ public class RuleModeller extends DirtyableComposite {
         }
 
         //MODIFY
-        for ( Iterator iter = vars.iterator(); iter.hasNext(); ) {
-            final String v = (String) iter.next();
+        for ( Iterator<String> iter = vars.iterator(); iter.hasNext(); ) {
+            final String v = iter.next();
             // modifyBox.addItem( v );
 
             choices.addItem(Format.format(constants.Modify0(), v), "MOD" + v);    //NON-NLS
@@ -622,17 +624,12 @@ public class RuleModeller extends DirtyableComposite {
             });
         }
 
-
-
-
         choices.addItem("................");
-
-
         //now global collections
-        if (completions.globalCollections.length > 0 && vars.size() > 0) {
+        if (completions.getGlobalCollections().length > 0 && vars.size() > 0) {
             for (String bf : vars) {
-                for(int i = 0; i < completions.globalCollections.length; i++) {
-                    final String glob = completions.globalCollections[i];
+                for(int i = 0; i < completions.getGlobalCollections().length; i++) {
+                    final String glob = completions.getGlobalCollections()[i];
                     final String var = bf;
                     choices.addItem(Format.format(constants.Append0ToList1(), var, glob), "GLOBCOL" + glob + var); //NON-NLS
                     cmds.put("GLOBCOL" + glob + var, new Command() {                                                        //NON-NLS
@@ -648,7 +645,6 @@ public class RuleModeller extends DirtyableComposite {
                 }
             }
         }
-
 
         if (ExplorerLayoutManager.shouldShow(Capabilities.SHOW_PACKAGE_VIEW)) {
             choices.addItem(constants.AddFreeFormDrl(), "FF");  //NON-NLS
@@ -671,9 +667,9 @@ public class RuleModeller extends DirtyableComposite {
 
             }
 
-                    //CALL methods
-            for ( Iterator iter = vars.iterator(); iter.hasNext(); ) {
-                final String v = (String) iter.next();
+            //CALL methods
+            for ( Iterator<String> iter = vars.iterator(); iter.hasNext(); ) {
+                final String v = iter.next();
 
                 choices.addItem(Format.format(constants.CallMethodOn0(), v ), "CALL" + v); //NON-NLS
                 cmds.put("CALL" + v, new Command() { //NON-NLS
@@ -684,8 +680,8 @@ public class RuleModeller extends DirtyableComposite {
                 });
             }
             //Do Set field (NOT modify)
-            for ( Iterator iter = vars2.iterator(); iter.hasNext(); ) {
-                final String v = (String) iter.next();
+            for ( Iterator<String> iter = vars2.iterator(); iter.hasNext(); ) {
+                final String v = iter.next();
 
                 choices.addItem(Format.format(constants.CallMethodOn0(), v), "CALL" + v); //NON-NLS
                 cmds.put("CALL" + v, new Command() {        //NON-NLS
@@ -694,10 +690,7 @@ public class RuleModeller extends DirtyableComposite {
                         popup.hide();
                     }
                 });
-
-
             }
-
         }
 
         HorizontalPanel hp = new HorizontalPanel();
@@ -729,13 +722,9 @@ public class RuleModeller extends DirtyableComposite {
         choices.setFocus(true);
     }
 
-
-
-
     protected void addModify(String itemText) {
         this.model.addRhsItem(new ActionUpdateField(itemText));
         refreshWidget();
-
     }
 
     protected void addNewDSLRhs(DSLSentence sentence) {
@@ -761,7 +750,20 @@ public class RuleModeller extends DirtyableComposite {
     protected void addNewCE(String s) {
         this.model.addLhsItem( new CompositeFactPattern(s) );
         refreshWidget();
-        
+    }
+
+    protected void addNewFCE(String type) {
+        FromCompositeFactPattern p = null;
+        if (type.equals("from")){
+            p = new FromCompositeFactPattern();
+        }else if (type.equals("from accumulate")){
+            p = new FromAccumulateCompositeFactPattern();
+        }else if (type.equals("from collect")){
+            p = new FromCollectCompositeFactPattern();
+        }
+
+        this.model.addLhsItem(p);
+        refreshWidget();
     }
 
     /**
@@ -782,16 +784,28 @@ public class RuleModeller extends DirtyableComposite {
             IPattern pattern = model.lhs[i];
             Widget w = null;
             if (pattern instanceof FactPattern) {
-                w = new FactPatternWidget(this, pattern, completions, true) ;
+                w = new FactPatternWidget(this, pattern, true) ;
                 vert.add( wrapLHSWidget( model,
                               i,
                               w ) );
                 vert.add( spacerWidget() );
             } else if (pattern instanceof CompositeFactPattern) {
-                w = new CompositeFactPatternWidget(this, (CompositeFactPattern) pattern, completions) ;
+                w = new CompositeFactPatternWidget(this, (CompositeFactPattern) pattern) ;
                 vert.add( wrapLHSWidget( model, i, w ));
                 vert.add( spacerWidget() );
-            } else if (pattern instanceof DSLSentence) {
+            }else if(pattern instanceof FromAccumulateCompositeFactPattern){
+                w = new FromAccumulateCompositeFactPatternWidget(this, (FromAccumulateCompositeFactPattern) pattern) ;
+                vert.add( wrapLHSWidget( model, i, w ));
+                vert.add( spacerWidget() );
+            }else if(pattern instanceof FromCollectCompositeFactPattern){
+                w = new FromCollectCompositeFactPatternWidget(this, (FromCollectCompositeFactPattern) pattern) ;
+                vert.add( wrapLHSWidget( model, i, w ));
+                vert.add( spacerWidget() );
+            }else if(pattern instanceof FromCompositeFactPattern){
+                w = new FromCompositeFactPatternWidget(this, (FromCompositeFactPattern) pattern) ;
+                vert.add( wrapLHSWidget( model, i, w ));
+                vert.add( spacerWidget() );
+            }else if (pattern instanceof DSLSentence) {
                 //ignore this time
             } else if (pattern instanceof FreeFormLine){
             	final FreeFormLine ffl = (FreeFormLine) pattern;
@@ -805,12 +819,16 @@ public class RuleModeller extends DirtyableComposite {
             	});
             	vert.add(wrapLHSWidget(model, i, tb));
             	vert.add( spacerWidget() );
+            } else if (pattern instanceof ExpressionFormLine) {
+            	ExpressionFormLine efl = (ExpressionFormLine) pattern;
+            	ExpressionBuilder eb = new ExpressionBuilder(this, efl);
+            	vert.add(wrapLHSWidget(model, i, eb));
+            	vert.add( spacerWidget() );
             } else {
                 throw new RuntimeException("I don't know what type of pattern that is.");
             }
 
         }
-
 
         DirtyableVerticalPane dsls = new DirtyableVerticalPane();
         for ( int i = 0; i < model.lhs.length; i++ ) {
