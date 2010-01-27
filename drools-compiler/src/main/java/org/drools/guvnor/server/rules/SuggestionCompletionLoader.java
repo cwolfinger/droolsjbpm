@@ -57,7 +57,7 @@ import org.drools.util.asm.ClassFieldInspector;
  *
  * @author Michael Neale
  */
-public class SuggestionCompletionLoader {
+public class SuggestionCompletionLoader implements ClassToGenericClassConverter {
 
     private final SuggestionCompletionEngineBuilder builder = new SuggestionCompletionEngineBuilder();
 
@@ -328,7 +328,7 @@ public class SuggestionCompletionLoader {
                     } else {
                         try {
                             Class clz = resolver.resolveType(fieldClass);
-                            this.builder.addFieldType(declaredType + "." + fieldName, getFieldType(clz),clz);
+                            this.builder.addFieldType(declaredType + "." + fieldName, translateClassToGenericType(clz),clz);
                         } catch (ClassNotFoundException e) {
                             this.errors.add("Class of field not found: " + fieldClass);
                         }
@@ -373,7 +373,7 @@ public class SuggestionCompletionLoader {
                     this.errors.add("Fact template field type not found: " + fieldType);
                 }
                 this.builder.addFieldType(factType + "." + fieldDescr.getName(),
-                        getFieldType(fieldTypeClass),fieldTypeClass);
+                        translateClassToGenericType(fieldTypeClass),fieldTypeClass);
             }
 
             Arrays.sort(fields);
@@ -442,13 +442,13 @@ public class SuggestionCompletionLoader {
 
         for (String field : fieldSet) {
             final Class<?> type = inspector.getFieldTypes().get(field);
-            final String fieldType = getFieldType(type);
+            final String fieldType = translateClassToGenericType(type);
             this.builder.addFieldType(shortTypeName + "." + field, fieldType,type);
             Field f = inspector.getFieldTypesField().get(field);
             this.builder.addFieldTypeField(shortTypeName + "." + field,f);
         }
         
-        ClassMethodInspector methodInspector = new ClassMethodInspector(clazz);
+        ClassMethodInspector methodInspector = new ClassMethodInspector(clazz, this);
         
         List<MethodInfo> methodInfos = methodInspector.getMethodInfos();
         for (MethodInfo mi : methodInfos) {
@@ -504,13 +504,11 @@ public class SuggestionCompletionLoader {
         }
     }
 
-    /**
-     * @param inspector
-     * @param fields
-     * @param i
-     * @return
-     */
-    private String getFieldType(final Class type) {
+    /* (non-Javadoc)
+	 * @see org.drools.guvnor.server.rules.ClassToGenericClassConverter#translateClassToGenericType(java.lang.Class)
+	 */
+    //XXX {bauna} field type
+    public String translateClassToGenericType(final Class<?>type) {
         String fieldType = null; // if null, will use standard operators
         if (type != null) {
             if (type.isPrimitive() && (type != boolean.class)) {

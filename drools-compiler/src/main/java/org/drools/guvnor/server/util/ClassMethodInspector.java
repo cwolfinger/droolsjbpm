@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.drools.guvnor.client.modeldriven.MethodInfo;
+import org.drools.guvnor.server.rules.ClassToGenericClassConverter;
 
 /**
  * 
@@ -24,7 +25,7 @@ public class ClassMethodInspector {
 
     private final Set<MethodInfo> methods = new HashSet<MethodInfo>();
 
-    public ClassMethodInspector(final Class< ? > clazz) throws IOException {
+    public ClassMethodInspector(final Class< ? > clazz, ClassToGenericClassConverter converter) throws IOException {
         Method[] methods = clazz.getDeclaredMethods();
 
         for ( int i = 0; i < methods.length; i++ ) {
@@ -37,11 +38,11 @@ public class ClassMethodInspector {
 
                 Class<?>[] listParam = aMethod.getParameterTypes();
                 
-                
 				MethodInfo info = new MethodInfo(methodName,
 						solveParams(listParam), aMethod.getReturnType(),
 						SuggestionCompletionEngineBuilder
-								.obtainGenericType(aMethod.getGenericReturnType()));
+								.obtainGenericType(aMethod.getGenericReturnType()),
+						converter.translateClassToGenericType(clazz));
 				this.methods.add(info);
             }
         }
