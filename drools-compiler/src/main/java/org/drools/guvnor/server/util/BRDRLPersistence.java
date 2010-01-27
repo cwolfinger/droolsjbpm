@@ -379,7 +379,7 @@ public class BRDRLPersistence implements BRLPersistence {
                     buf.append(" : ");
                 }
                 if ((constr.operator != null && constr.value != null)
-                        || constr.fieldBinding != null) {
+                        || constr.fieldBinding != null || constr.constraintValueType == ISingleFieldConstraint.TYPE_EXPR_BUILDER) {
                     SingleFieldConstraint parent = (SingleFieldConstraint) constr.parent;
                     StringBuilder parentBuf = new StringBuilder();
                     while (parent != null) {
@@ -391,21 +391,22 @@ public class BRDRLPersistence implements BRLPersistence {
                 }
 
                 addFieldRestriction(buf, constr.constraintValueType,
-                        constr.operator, constr.value);
+                        constr.operator, constr.value,constr.getExpression());
 
                 // and now do the connectives.
                 if (constr.connectives != null) {
                     for (int j = 0; j < constr.connectives.length; j++) {
                         final ConnectiveConstraint conn = constr.connectives[j];
                         addFieldRestriction(buf, conn.constraintValueType,
-                                conn.operator, conn.value);
+                                conn.operator, conn.value,null);
                     }
                 }
             }
         }
 
         private void addFieldRestriction(final StringBuilder buf,
-                final int type, final String operator, final String value) {
+                final int type, final String operator, final String value,
+                final ExpressionFormLine expression) {
             if (operator == null) {
                 return;
             }
@@ -426,6 +427,11 @@ public class BRDRLPersistence implements BRLPersistence {
                         buf.append('"');
                         buf.append(value);
                         buf.append('"');
+                    }
+                    break;
+                case ISingleFieldConstraint.TYPE_EXPR_BUILDER:
+                    if (expression!=null){
+                        buf.append(expression.getText());
                     }
                     break;
                 default:
