@@ -38,6 +38,12 @@ public class BRXMLPersistence
                        DSLSentence.class );
         this.xt.alias( "compositePattern",
                        CompositeFactPattern.class );
+        this.xt.alias( "fromCompositePattern",
+                       FromCompositeFactPattern.class );
+        this.xt.alias( "fromCollectCompositePattern",
+                       FromCollectCompositeFactPattern.class );
+        this.xt.alias( "fromAccumulateCompositePattern",
+                       FromAccumulateCompositeFactPattern.class );
         this.xt.alias( "metadata",
                        RuleMetadata.class );
         this.xt.alias( "attribute",

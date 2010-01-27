@@ -109,8 +109,8 @@ public class ClassTypeResolver
     /* (non-Javadoc)
      * @see org.drools.semantics.java.TypeResolver#resolveType(java.lang.String)
      */
-    public Class resolveType(String className) throws ClassNotFoundException {
-        Class clazz = null;
+    public Class<?> resolveType(String className) throws ClassNotFoundException {
+        Class<?> clazz = null;
         boolean isArray = false;
         final StringBuilder arrayClassName = new StringBuilder();
 

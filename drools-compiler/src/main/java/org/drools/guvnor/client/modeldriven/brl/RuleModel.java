@@ -1,6 +1,7 @@
 package org.drools.guvnor.client.modeldriven.brl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class RuleModel
@@ -102,21 +103,18 @@ public class RuleModel
     /**
      * @return A list of bound facts (String). Or empty list if none are found.
      */
-    public List getBoundFacts() {
+    public List<String> getBoundFacts() {
         if ( this.lhs == null ) {
-            return null;
+            return Collections.emptyList();
         }
-        final List list = new ArrayList();
+        final List<String> list = new ArrayList<String>();
         for ( int i = 0; i < this.lhs.length; i++ ) {
             if ( this.lhs[i] instanceof FactPattern ) {
                 final FactPattern p = (FactPattern) this.lhs[i];
                 if ( p.boundName != null ) {
                     list.add( p.boundName );
                 }
-                List<String> fieldBindings = getListFieldBinding( p );
-                if ( fieldBindings != null ) {
-                    list.addAll( fieldBindings );
-                }
+                list.addAll( getListFieldBinding( p ) );
             }
         }
         return list;
@@ -156,11 +154,11 @@ public class RuleModel
      * @return A list of bound facts of the rhs(String). Or empty list if none are found.
      *         Fix nheron
      */
-    public List getRhsBoundFacts() {
+    public List<String> getRhsBoundFacts() {
         if ( this.rhs == null ) {
             return null;
         }
-        final List list = new ArrayList();
+        final List<String> list = new ArrayList<String>();
         for ( int i = 0; i < this.rhs.length; i++ ) {
             if ( this.rhs[i] instanceof ActionInsertFact ) {
                 final ActionInsertFact p = (ActionInsertFact) this.rhs[i];
@@ -373,8 +371,8 @@ public class RuleModel
      * what bound variables are in scope for a given constraint (including connectives).
      * Does not take into account globals.
      */
-    public List getBoundVariablesInScope(final ISingleFieldConstraint con) {
-        final List result = new ArrayList();
+    public List<String> getBoundVariablesInScope(final ISingleFieldConstraint con) {
+        final List<String> result = new ArrayList<String>();
         for ( int i = 0; i < this.lhs.length; i++ ) {
             final IPattern pat = this.lhs[i];
             if ( pat instanceof FactPattern ) {
@@ -420,8 +418,8 @@ public class RuleModel
     /**
      * This will get a list of all bound variables, including bound fields.
      */
-    public List getAllVariables() {
-        List result = new ArrayList();
+    public List<String> getAllVariables() {
+        List<String> result = new ArrayList<String>();
         for ( int i = 0; i < this.lhs.length; i++ ) {
             IPattern pat = this.lhs[i];
             if ( pat instanceof FactPattern ) {
