@@ -18,7 +18,9 @@ public abstract class ExpressionPart implements IPattern, IAction {
 
 	public void setPrevious(ExpressionPart prev) {
 		this.prev = prev;
-		prev.next = this;
+		if (prev != null) {
+			prev.next = this;
+		}
 	}
 
 	public ExpressionPart getNext() {
@@ -27,7 +29,9 @@ public abstract class ExpressionPart implements IPattern, IAction {
 
 	public void setNext(ExpressionPart next) {
 		this.next = next;
-		next.prev = this;
+		if (next != null) {
+			next.prev = this;
+		}
 	}
 
 	@Override

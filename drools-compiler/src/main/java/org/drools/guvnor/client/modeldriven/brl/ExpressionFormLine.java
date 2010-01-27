@@ -21,7 +21,11 @@ public class ExpressionFormLine implements IAction, IPattern {
 	
 	public void removeLast() {
 		if (!parts.isEmpty()) {
-			parts.removeLast();
+			ExpressionPart last = parts.removeLast();
+			if (last.getPrevious() != null) {
+				last.getPrevious().setNext(null);
+				last.setPrevious(null);
+			}
 		}
 	}
 	
@@ -32,5 +36,9 @@ public class ExpressionFormLine implements IAction, IPattern {
 	
 	public String getType() {
 		return parts.getLast().getType();
+	}
+
+	public boolean isEmpty() {
+		return parts.isEmpty();
 	}
 }
