@@ -225,6 +225,14 @@ public class RuleModel
     }
 
     public void addLhsItem(final IPattern pat) {
+        this.addLhsItem(pat, true);
+    }
+
+    public void addLhsItem(final IPattern pat,boolean append) {
+        this.addLhsItem(pat, append?this.lhs.length:0);
+    }
+
+    public void addLhsItem(final IPattern pat,int position) {
         if ( this.lhs == null ) {
             this.lhs = new IPattern[0];
         }
@@ -232,15 +240,30 @@ public class RuleModel
         final IPattern[] list = this.lhs;
         final IPattern[] newList = new IPattern[list.length + 1];
 
-        for ( int i = 0; i < list.length; i++ ) {
-            newList[i] = list[i];
+        for (int i = 0; i < newList.length; i++) {
+            if (i<position){
+                newList[i] = list[i];
+            }else if (i>position){
+                newList[i] = list[i-1];
+            }else{
+                newList[i]=pat;
+            }
+
         }
-        newList[list.length] = pat;
 
         this.lhs = newList;
     }
 
+
     public void addRhsItem(final IAction action) {
+        this.addRhsItem(action, true);
+    }
+
+    public void addRhsItem(final IAction action,boolean append) {
+        this.addRhsItem(action, append?this.rhs.length:0);
+    }
+
+    public void addRhsItem(final IAction action,int position) {
         if ( this.rhs == null ) {
             this.rhs = new IAction[0];
         }
@@ -248,10 +271,15 @@ public class RuleModel
         final IAction[] list = this.rhs;
         final IAction[] newList = new IAction[list.length + 1];
 
-        for ( int i = 0; i < list.length; i++ ) {
-            newList[i] = list[i];
+        for (int i = 0; i < newList.length; i++) {
+            if (i<position){
+                newList[i] = list[i];
+            }else if (i>position){
+                newList[i] = list[i-1];
+            }else{
+                newList[i]=action;
+            }
         }
-        newList[list.length] = action;
 
         this.rhs = newList;
     }

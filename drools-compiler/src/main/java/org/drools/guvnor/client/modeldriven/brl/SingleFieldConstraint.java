@@ -16,7 +16,8 @@ public class SingleFieldConstraint extends ISingleFieldConstraint implements Fie
     public FieldConstraint  parent;
 
     /**
-     * Used instead of "value" when constraintValueType = TYPE_EXPR_BUILDER
+     * Used instead of "value" when constraintValueType = TYPE_EXPR_BUILDER.
+     * Eteban Aliverti
      */
     private ExpressionFormLine expression = new ExpressionFormLine();
 
