@@ -355,6 +355,14 @@ public class RuleModeller extends DirtyableComposite {
 
         final Map<String, Command> cmds = new HashMap<String, Command>();
 
+        final ListBox positionCbo = new ListBox();
+        positionCbo.addItem(constants.Bottom(),String.valueOf(this.model.lhs.length));
+        positionCbo.addItem(constants.Top(),"0");
+        for (int i = 1; i < model.lhs.length; i++) {
+            positionCbo.addItem(Format.format(constants.Line0(), i),String.valueOf(i));
+        }
+
+
         final ListBox choices = new ListBox(true);
 
         //
@@ -367,7 +375,7 @@ public class RuleModeller extends DirtyableComposite {
                 choices.addItem(sen.toString(), key);
                 cmds.put(key, new Command() {
                     public void execute() {
-                       addNewDSLLhs(sen);
+                       addNewDSLLhs(sen,Integer.parseInt(positionCbo.getValue(positionCbo.getSelectedIndex())));
                        popup.hide();
                     }
                 });
@@ -388,7 +396,7 @@ public class RuleModeller extends DirtyableComposite {
                 choices.addItem(f + " ...",  key);
                 cmds.put(key, new Command() {
                     public void execute() {
-                        addNewFact(f);
+                        addNewFact(f,Integer.parseInt(positionCbo.getValue(positionCbo.getSelectedIndex())));
                         popup.hide();
                     }
                 });
@@ -407,7 +415,7 @@ public class RuleModeller extends DirtyableComposite {
             choices.addItem( HumanReadable.getCEDisplayName( ce ) + " ...", key );
             cmds.put(key, new Command() {
                 public void execute() {
-                    addNewCE(ce);
+                    addNewCE(ce,Integer.parseInt(positionCbo.getValue(positionCbo.getSelectedIndex())));
                     popup.hide();
                 }
             });
@@ -422,7 +430,7 @@ public class RuleModeller extends DirtyableComposite {
             choices.addItem( HumanReadable.getCEDisplayName( ce ) + " ...", key );
             cmds.put(key, new Command() {
                 public void execute() {
-                    addNewFCE(ce);
+                    addNewFCE(ce,Integer.parseInt(positionCbo.getValue(positionCbo.getSelectedIndex())));
                     popup.hide();
                 }
             });
@@ -433,7 +441,7 @@ public class RuleModeller extends DirtyableComposite {
             choices.addItem(constants.FreeFormDrl(), "FF");
             cmds.put("FF", new Command() {
                 public void execute() {
-                    model.addLhsItem(new FreeFormLine());
+                    model.addLhsItem(new FreeFormLine(),Integer.parseInt(positionCbo.getValue(positionCbo.getSelectedIndex())));
                     refreshWidget();
                     popup.hide();
                 }
@@ -443,7 +451,7 @@ public class RuleModeller extends DirtyableComposite {
             choices.addItem(constants.ExpressionEditor(), "EE");
             cmds.put("EE", new Command() {
                 public void execute() {
-                    model.addLhsItem(new ExpressionFormLine());
+                    model.addLhsItem(new ExpressionFormLine(),Integer.parseInt(positionCbo.getValue(positionCbo.getSelectedIndex())));
                     refreshWidget();
                     popup.hide();
                 }
@@ -474,6 +482,12 @@ public class RuleModeller extends DirtyableComposite {
             }
         });
 
+        HorizontalPanel hp0 = new HorizontalPanel();
+        hp0.add(new HTML(constants.PositionColon()));
+        hp0.add(positionCbo);
+        hp0.add(new InfoPopup(constants.PositionColon(), constants.ConditionPositionExplanation()));
+        popup.addRow(hp0);
+
         HorizontalPanel hp = new HorizontalPanel();
         hp.add(choices);
         Button b = new Button(constants.OK());
@@ -495,8 +509,8 @@ public class RuleModeller extends DirtyableComposite {
         });
     }
 
-    protected void addNewDSLLhs(DSLSentence sentence) {
-        model.addLhsItem( sentence.copy() );
+    protected void addNewDSLLhs(DSLSentence sentence,int position) {
+        model.addLhsItem( sentence.copy(),position );
         refreshWidget();
     }
 
@@ -505,6 +519,14 @@ public class RuleModeller extends DirtyableComposite {
         final FormStylePopup popup = new FormStylePopup();
         popup.setWidth(-1);
         popup.setTitle(constants.AddANewAction());
+
+        final ListBox positionCbo = new ListBox();
+        positionCbo.addItem(constants.Bottom(),String.valueOf(this.model.rhs.length));
+        positionCbo.addItem(constants.Top(),"0");
+        for (int i = 1; i < model.rhs.length; i++) {
+            positionCbo.addItem(Format.format(constants.Line0(), i),String.valueOf(i));
+        }
+
 
         final ListBox choices = new ListBox(true);
         final Map<String, Command> cmds = new HashMap<String, Command>();
@@ -529,7 +551,7 @@ public class RuleModeller extends DirtyableComposite {
                     choices.addItem(sentence, "DSL" + sentence);  //NON-NLS
                     cmds.put("DSL" + sentence, new Command() {    //NON-NLS
                         public void execute() {
-                          addNewDSLRhs(sen);
+                          addNewDSLRhs(sen,Integer.parseInt(positionCbo.getValue(positionCbo.getSelectedIndex())));
                           popup.hide();
                         }
                     });
@@ -549,7 +571,7 @@ public class RuleModeller extends DirtyableComposite {
             choices.addItem(Format.format(constants.ChangeFieldValuesOf0(), v), "VAR" + v); //NON-NLS
             cmds.put("VAR" + v, new Command() {        //NON-NLS
                 public void execute() {
-                    addActionSetField(v);
+                    addActionSetField(v,Integer.parseInt(positionCbo.getValue(positionCbo.getSelectedIndex())));
                     popup.hide();
                 }
             });
@@ -562,7 +584,7 @@ public class RuleModeller extends DirtyableComposite {
             choices.addItem(Format.format(constants.ChangeFieldValuesOf0(), v), "GLOBVAR" + v);   //NON-NLS
             cmds.put("GLOBVAR" + v, new Command() {        //NON-NLS
                 public void execute() {
-                    addActionSetField(v);
+                    addActionSetField(v,Integer.parseInt(positionCbo.getValue(positionCbo.getSelectedIndex())));
                     popup.hide();
                 }
             });
@@ -576,7 +598,7 @@ public class RuleModeller extends DirtyableComposite {
             choices.addItem(Format.format(constants.Retract0(), v), "RET" + v); //NON-NLS
             cmds.put("RET" + v, new Command() {                                          //NON-NLS
                 public void execute() {
-                     addRetract(v);
+                     addRetract(v,Integer.parseInt(positionCbo.getValue(positionCbo.getSelectedIndex())));
                      popup.hide();
                 }
             });
@@ -590,7 +612,7 @@ public class RuleModeller extends DirtyableComposite {
             choices.addItem(Format.format(constants.Modify0(), v), "MOD" + v);    //NON-NLS
             cmds.put("MOD" + v, new Command() {                                            //NON-NLS
                 public void execute() {
-                    addModify(v);
+                    addModify(v,Integer.parseInt(positionCbo.getValue(positionCbo.getSelectedIndex())));
                     popup.hide();
                 }
             });
@@ -605,7 +627,7 @@ public class RuleModeller extends DirtyableComposite {
             choices.addItem(Format.format(constants.InsertFact0(), item), "INS" + item); //NON-NLS
             cmds.put("INS" + item, new Command() {                                                //NON-NLS
                 public void execute() {
-                    model.addRhsItem( new ActionInsertFact(item) );
+                    model.addRhsItem( new ActionInsertFact(item),Integer.parseInt(positionCbo.getValue(positionCbo.getSelectedIndex())) );
                     refreshWidget();
                     popup.hide();
                 }
@@ -617,7 +639,7 @@ public class RuleModeller extends DirtyableComposite {
             choices.addItem(Format.format(constants.LogicallyInsertFact0(), item), "LINS" + item); //NON-NLS
             cmds.put("LINS" + item, new Command() {                                                         //NON-NLS
                 public void execute() {
-                       model.addRhsItem( new ActionInsertLogicalFact(item) );
+                       model.addRhsItem( new ActionInsertLogicalFact(item),Integer.parseInt(positionCbo.getValue(positionCbo.getSelectedIndex())) );
                        refreshWidget();
                        popup.hide();
                 }
@@ -637,7 +659,7 @@ public class RuleModeller extends DirtyableComposite {
                             ActionGlobalCollectionAdd gca = new ActionGlobalCollectionAdd();
                             gca.globalName = glob;
                             gca.factName = var;
-                            model.addRhsItem(gca);
+                            model.addRhsItem(gca,Integer.parseInt(positionCbo.getValue(positionCbo.getSelectedIndex())));
                             refreshWidget();
                             popup.hide();
                         }
@@ -650,7 +672,7 @@ public class RuleModeller extends DirtyableComposite {
             choices.addItem(constants.AddFreeFormDrl(), "FF");  //NON-NLS
             cmds.put("FF", new Command() {                     //NON-NLS
                 public void execute() {
-                    model.addRhsItem(new FreeFormLine());
+                    model.addRhsItem(new FreeFormLine(),Integer.parseInt(positionCbo.getValue(positionCbo.getSelectedIndex())));
                     refreshWidget();
                     popup.hide();
                 }
@@ -660,7 +682,7 @@ public class RuleModeller extends DirtyableComposite {
                 choices.addItem(Format.format(constants.CallMethodOn0(), v ), "GLOBCALL" + v); //NON-NLS
                 cmds.put("GLOBCALL" + v, new Command() {      //NON-NLS
                     public void execute() {
-                        addCallMethod(v);
+                        addCallMethod(v,Integer.parseInt(positionCbo.getValue(positionCbo.getSelectedIndex())));
                         popup.hide();
                     }
                 });
@@ -674,7 +696,7 @@ public class RuleModeller extends DirtyableComposite {
                 choices.addItem(Format.format(constants.CallMethodOn0(), v ), "CALL" + v); //NON-NLS
                 cmds.put("CALL" + v, new Command() { //NON-NLS
                     public void execute() {
-                        addCallMethod(v);
+                        addCallMethod(v,Integer.parseInt(positionCbo.getValue(positionCbo.getSelectedIndex())));
                         popup.hide();
                     }
                 });
@@ -686,12 +708,19 @@ public class RuleModeller extends DirtyableComposite {
                 choices.addItem(Format.format(constants.CallMethodOn0(), v), "CALL" + v); //NON-NLS
                 cmds.put("CALL" + v, new Command() {        //NON-NLS
                     public void execute() {
-                        addCallMethod(v);
+                        addCallMethod(v,Integer.parseInt(positionCbo.getValue(positionCbo.getSelectedIndex())));
                         popup.hide();
                     }
                 });
             }
         }
+
+
+        HorizontalPanel hp0 = new HorizontalPanel();
+        hp0.add(new HTML(constants.PositionColon()));
+        hp0.add(positionCbo);
+        hp0.add(new InfoPopup(constants.PositionColon(), constants.ActionPositionExplanation()));
+        popup.addRow(hp0);
 
         HorizontalPanel hp = new HorizontalPanel();
         final ClickListener cl = new ClickListener() {
@@ -722,37 +751,37 @@ public class RuleModeller extends DirtyableComposite {
         choices.setFocus(true);
     }
 
-    protected void addModify(String itemText) {
-        this.model.addRhsItem(new ActionUpdateField(itemText));
+    protected void addModify(String itemText,int position) {
+        this.model.addRhsItem(new ActionUpdateField(itemText),position);
         refreshWidget();
     }
 
-    protected void addNewDSLRhs(DSLSentence sentence) {
-        this.model.addRhsItem( sentence.copy() );
+    protected void addNewDSLRhs(DSLSentence sentence,int position) {
+        this.model.addRhsItem( sentence.copy(),position );
         refreshWidget();
     }
 
-    protected void addRetract(String var) {
-        this.model.addRhsItem( new ActionRetractFact(var) );
+    protected void addRetract(String var,int position) {
+        this.model.addRhsItem( new ActionRetractFact(var),position );
         refreshWidget();
     }
 
-    protected void addActionSetField(String itemText) {
-        this.model.addRhsItem(new ActionSetField(itemText));
+    protected void addActionSetField(String itemText,int position) {
+        this.model.addRhsItem(new ActionSetField(itemText),position);
         refreshWidget();
     }
 
-    protected void addCallMethod(String itemText) {
-        this.model.addRhsItem(new ActionCallMethod(itemText));
+    protected void addCallMethod(String itemText,int position) {
+        this.model.addRhsItem(new ActionCallMethod(itemText),position);
         refreshWidget();
     }
 
-    protected void addNewCE(String s) {
-        this.model.addLhsItem( new CompositeFactPattern(s) );
+    protected void addNewCE(String s,int position) {
+        this.model.addLhsItem( new CompositeFactPattern(s),position );
         refreshWidget();
     }
 
-    protected void addNewFCE(String type) {
+    protected void addNewFCE(String type,int position) {
         FromCompositeFactPattern p = null;
         if (type.equals("from")){
             p = new FromCompositeFactPattern();
@@ -762,15 +791,15 @@ public class RuleModeller extends DirtyableComposite {
             p = new FromCollectCompositeFactPattern();
         }
 
-        this.model.addLhsItem(p);
+        this.model.addLhsItem(p,position);
         refreshWidget();
     }
 
     /**
      * Adds a fact to the model, and then refreshes the display.
      */
-    protected void addNewFact(String itemText) {
-        this.model.addLhsItem( new FactPattern(itemText) );
+    protected void addNewFact(String itemText,int position) {
+        this.model.addLhsItem( new FactPattern(itemText),position );
         refreshWidget();
     }
 

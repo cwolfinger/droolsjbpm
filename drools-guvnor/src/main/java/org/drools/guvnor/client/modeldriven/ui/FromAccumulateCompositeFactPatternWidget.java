@@ -3,12 +3,12 @@ package org.drools.guvnor.client.modeldriven.ui;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
+import com.gwtext.client.widgets.Panel;
+import com.gwtext.client.widgets.TabPanel;
 import org.drools.guvnor.client.common.ClickableLabel;
 import org.drools.guvnor.client.common.DirtyableFlexTable;
 import org.drools.guvnor.client.common.DirtyableVerticalPane;
@@ -120,8 +120,13 @@ public class FromAccumulateCompositeFactPatternWidget extends FromCompositeFactP
 
 
         //panel.setWidget(r++, 0, codeTable);
-
-        tPanel.add(codeTable, "Custom Code");
+        Panel codePanel = new Panel();
+        codePanel.setAutoWidth(true);
+        codePanel.setClosable(false);
+        codePanel.setTitle("Custom Code");
+        codePanel.setAutoHeight(true);
+        codePanel.add(codeTable);
+        tPanel.add(codePanel);
 
         DirtyableFlexTable functionTable = new DirtyableFlexTable();
 
@@ -133,7 +138,13 @@ public class FromAccumulateCompositeFactPatternWidget extends FromCompositeFactP
 
 //        panel.setWidget(r++, 0, functionTable);
 
-        tPanel.add(functionTable, "Function");
+        Panel functionPanel = new Panel();
+        functionPanel.setAutoWidth(true);
+        functionPanel.setClosable(false);
+        functionPanel.setTitle("Function");
+        functionPanel.setAutoHeight(true);
+        functionPanel.add(functionTable);
+        tPanel.add(functionPanel);
 
         ChangeListener changeListener = new ChangeListener() {
 
@@ -178,7 +189,12 @@ public class FromAccumulateCompositeFactPatternWidget extends FromCompositeFactP
 
         boolean useFunction = getFromAccumulatePattern().useFunctionOrCode().equals(FromAccumulateCompositeFactPattern.USE_FUNCTION);
         
-        tPanel.selectTab(useFunction?1:0);
+        tPanel.setActiveTab(useFunction?1:0);
+
+        tPanel.setBorder(false);
+        tPanel.setBodyBorder(false);
+        tPanel.setWidth(200);
+
 
 //        functionTable.setVisible(useFunction);
 //        codeTable.setVisible(!useFunction);

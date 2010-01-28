@@ -2018,4 +2018,16 @@ public interface Constants extends ConstantsWithLookup {
     String MoveDown();
     
     String Clean();
+
+    String Top();
+
+    String Bottom();
+    
+    String Line0();
+
+    String PositionColon();
+
+    String ConditionPositionExplanation();
+
+    String ActionPositionExplanation();
 }

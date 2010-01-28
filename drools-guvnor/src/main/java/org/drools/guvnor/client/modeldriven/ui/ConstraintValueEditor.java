@@ -221,7 +221,7 @@ public class ConstraintValueEditor extends DirtyableComposite {
         }
         ExpressionBuilder builder = new ExpressionBuilder(this.modeller, ((SingleFieldConstraint)this.constraint).getExpression());
         String msg = constants.ExpressionEditor();
-        Widget ed = widgets( new HTML("="),
+        Widget ed = widgets( new HTML("&nbsp;"),
                              builder );
         return ed;
     }
