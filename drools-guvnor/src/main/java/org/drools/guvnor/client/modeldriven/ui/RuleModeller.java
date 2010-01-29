@@ -173,8 +173,8 @@ public class RuleModeller extends DirtyableComposite {
         }
 
         currentLayoutRow++;
-        layout.setWidget(currentLayoutRow, 1, spacerWidget());
-        layout.getCellFormatter().setHeight(currentLayoutRow, 1, "100%");
+        layout.setWidget(currentLayoutRow+1, 1, spacerWidget());
+        layout.getCellFormatter().setHeight(currentLayoutRow+1, 1, "100%");
 
 
     }
