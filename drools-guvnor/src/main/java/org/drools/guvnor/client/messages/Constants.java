@@ -2030,4 +2030,9 @@ public interface Constants extends ConstantsWithLookup {
     String ConditionPositionExplanation();
 
     String ActionPositionExplanation();
+
+    String AddAConditionBelow();
+
+    String AddAnActionBelow();
+
 }

@@ -1,16 +1,19 @@
 package org.drools.guvnor.client.modeldriven.ui;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Widget;
 import org.drools.guvnor.client.common.ClickableLabel;
 import org.drools.guvnor.client.common.DirtyableComposite;
 import org.drools.guvnor.client.common.DirtyableFlexTable;
-import org.drools.guvnor.client.common.DirtyableVerticalPane;
+import org.drools.guvnor.client.common.DirtyableHorizontalPane;
 import org.drools.guvnor.client.common.FormStylePopup;
+import org.drools.guvnor.client.common.ImageButton;
 import org.drools.guvnor.client.modeldriven.HumanReadable;
 import org.drools.guvnor.client.modeldriven.SuggestionCompletionEngine;
 import org.drools.guvnor.client.modeldriven.brl.FactPattern;
@@ -47,15 +50,21 @@ public class FromCompositeFactPatternWidget extends DirtyableComposite {
         int r = 0;
 
         if (pattern.getFactPattern() != null) {
-            DirtyableVerticalPane vert = new DirtyableVerticalPane();
             FactPattern fact = pattern.getFactPattern();
             if (fact != null) {
-                vert.add(new FactPatternWidget(modeller,
-                        fact,
-                        true));
                 this.layout.setWidget(r,
                         0,
-                        vert);
+                        addRemoveButton(new FactPatternWidget(modeller,
+                        fact,
+                        true), new ClickListener() {
+
+                    public void onClick(Widget w) {
+                        if (Window.confirm(constants.RemoveThisEntireConditionQ())) {
+                            pattern.setFactPattern(null);
+                            modeller.refreshWidget();
+                        }
+                    }
+                }));
                 r++;
             }
         }
@@ -102,25 +111,45 @@ public class FromCompositeFactPatternWidget extends DirtyableComposite {
 
         box.addItem(constants.Choose());
 
-        for ( int i = 0; i < facts.length; i++ ) {
-            box.addItem( facts[i] );
+        for (int i = 0; i < facts.length; i++) {
+            box.addItem(facts[i]);
         }
-        box.setSelectedIndex( 0 );
+        box.setSelectedIndex(0);
 
         final FormStylePopup popup = new FormStylePopup();
         popup.setTitle(constants.NewFactPattern());
         popup.addAttribute(constants.chooseFactType(),
-                            box );
+                box);
 
-        box.addChangeListener( new ChangeListener() {
+        box.addChangeListener(new ChangeListener() {
+
             public void onChange(Widget w) {
-                pattern.setFactPattern( new FactPattern( box.getItemText( box.getSelectedIndex() ) ) );
+                pattern.setFactPattern(new FactPattern(box.getItemText(box.getSelectedIndex())));
                 modeller.refreshWidget();
                 popup.hide();
             }
-        } );
+        });
 
         popup.show();
+    }
+
+    protected Widget addRemoveButton(Widget w, ClickListener listener) {
+        DirtyableHorizontalPane horiz = new DirtyableHorizontalPane();
+
+        final Image remove = new ImageButton("images/delete_faded.gif"); //NON-NLS
+        remove.setTitle(constants.RemoveThisBlockOfData());
+        remove.addClickListener(listener);
+
+
+        horiz.setWidth("100%");
+        w.setWidth("100%");
+
+        horiz.add(w);
+        if (!modeller.lockLHS()) {
+            horiz.add(remove);
+        }
+
+        return horiz;
     }
 
     public boolean isDirty() {
