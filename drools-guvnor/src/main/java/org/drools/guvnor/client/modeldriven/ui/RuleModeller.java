@@ -1052,18 +1052,18 @@ public class RuleModeller extends DirtyableComposite {
         hp.add(moveUp);
 
         final ExtElement e = new ExtElement(hp.getElement());
-        e.setOpacity(0, false);
+        e.setOpacity(0.1f, false);
 
         MouseListenerAdapter mouseListenerAdapter = new MouseListenerAdapter() {
 
             @Override
             public void onMouseEnter(Widget sender) {
-                e.setOpacity(100, false);
+                e.setOpacity(1, false);
             }
 
             @Override
             public void onMouseLeave(Widget sender) {
-                e.setOpacity(0, false);
+                e.setOpacity(0.1f, false);
             }
         };
 
