@@ -32,6 +32,9 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.*;
 import com.google.gwt.core.client.GWT;
+import com.gwtext.client.animation.Easing;
+import com.gwtext.client.core.AnimationConfig;
+import com.gwtext.client.core.ExtElement;
 import com.gwtext.client.util.Format;
 
 /**
@@ -118,7 +121,7 @@ public class RuleModeller extends DirtyableComposite {
 
         //layout.setBorderWidth(2);
 
-        layout.setWidget(currentLayoutRow, 0, new SmallLabel("<b>"+constants.WHEN()+"</b>"));
+        layout.setWidget(currentLayoutRow, 0, new SmallLabel("<b>" + constants.WHEN() + "</b>"));
 
         if (!lockLHS()) {
             layout.setWidget(currentLayoutRow, 2, addPattern);
@@ -128,7 +131,7 @@ public class RuleModeller extends DirtyableComposite {
         renderLhs(this.model);
 
 
-        layout.setWidget(currentLayoutRow, 0, new SmallLabel("<b>"+constants.THEN()+"</b>"));
+        layout.setWidget(currentLayoutRow, 0, new SmallLabel("<b>" + constants.THEN() + "</b>"));
 
         Image addAction = new ImageButton("images/new_item.gif"); //NON-NLS
         addAction.setTitle(constants.AddAnActionToThisRule());
@@ -173,8 +176,8 @@ public class RuleModeller extends DirtyableComposite {
         }
 
         currentLayoutRow++;
-        layout.setWidget(currentLayoutRow+1, 1, spacerWidget());
-        layout.getCellFormatter().setHeight(currentLayoutRow+1, 1, "100%");
+        layout.setWidget(currentLayoutRow + 1, 1, spacerWidget());
+        layout.getCellFormatter().setHeight(currentLayoutRow + 1, 1, "100%");
 
 
     }
@@ -358,25 +361,31 @@ public class RuleModeller extends DirtyableComposite {
             widget.add(horiz);
 
 
-            layout.setHTML(currentLayoutRow, 0,"<div class='x-form-field'>"+(i+1)+".</div>");
+            layout.setHTML(currentLayoutRow, 0, "<div class='x-form-field'>" + (i + 1) + ".</div>");
             layout.getFlexCellFormatter().setHorizontalAlignment(currentLayoutRow, 0, HasHorizontalAlignment.ALIGN_CENTER);
             layout.getFlexCellFormatter().setVerticalAlignment(currentLayoutRow, 0, HasVerticalAlignment.ALIGN_MIDDLE);
 
 
             final int index = i;
-            if (!lockLHS()) {
-                Image addPattern = new ImageButton("images/new_item_below.png");
-                addPattern.setTitle(constants.AddAnActionBelow());
-                addPattern.addClickListener(new ClickListener() {
+            if (!lockRHS()) {
+                this.addInsertBelowButtonToLayout(constants.AddAnActionBelow(), new ClickListener() {
 
                     public void onClick(Widget w) {
                         showActionSelector(w, index + 1);
                     }
-                });
+                },new ClickListener() {
 
-                layout.setWidget(currentLayoutRow, 2, addPattern);
-                layout.getFlexCellFormatter().setHorizontalAlignment(currentLayoutRow, 2, HasHorizontalAlignment.ALIGN_CENTER);
-                layout.getFlexCellFormatter().setVerticalAlignment(currentLayoutRow, 2, HasVerticalAlignment.ALIGN_MIDDLE);
+                    public void onClick(Widget sender) {
+                        model.moveRhsItemDown(index);
+                        refreshWidget();
+                    }
+                },new ClickListener() {
+
+                    public void onClick(Widget sender) {
+                        model.moveRhsItemUp(index);
+                        refreshWidget();
+                    }
+                });
             }
 
             layout.setWidget(currentLayoutRow, 1, widget);
@@ -945,24 +954,30 @@ public class RuleModeller extends DirtyableComposite {
             //vert.setBorderWidth(1);
 
 
-            layout.setHTML(currentLayoutRow, 0,"<div class='x-form-field'>"+(i+1)+".</div>");
+            layout.setHTML(currentLayoutRow, 0, "<div class='x-form-field'>" + (i + 1) + ".</div>");
             layout.getFlexCellFormatter().setHorizontalAlignment(currentLayoutRow, 0, HasHorizontalAlignment.ALIGN_CENTER);
             layout.getFlexCellFormatter().setVerticalAlignment(currentLayoutRow, 0, HasVerticalAlignment.ALIGN_MIDDLE);
 
             final int index = i;
             if (!lockLHS()) {
-                Image addPattern = new ImageButton("images/new_item_below.png");
-                addPattern.setTitle(constants.AddAConditionBelow());
-                addPattern.addClickListener(new ClickListener() {
+                this.addInsertBelowButtonToLayout(constants.AddAConditionBelow(), new ClickListener() {
 
                     public void onClick(Widget w) {
                         showConditionSelector(w, index + 1);
                     }
-                });
+                },new ClickListener() {
 
-                layout.setWidget(currentLayoutRow, 2, addPattern);
-                layout.getFlexCellFormatter().setHorizontalAlignment(currentLayoutRow, 2, HasHorizontalAlignment.ALIGN_CENTER);
-                layout.getFlexCellFormatter().setVerticalAlignment(currentLayoutRow, 2, HasVerticalAlignment.ALIGN_MIDDLE);
+                    public void onClick(Widget sender) {
+                        model.moveLhsItemDown(index);
+                        refreshWidget();
+                    }
+                },new ClickListener() {
+
+                    public void onClick(Widget sender) {
+                        model.moveLhsItemUp(index);
+                        refreshWidget();
+                    }
+                });
             }
 
             layout.setWidget(currentLayoutRow, 1, vert);
@@ -1015,6 +1030,58 @@ public class RuleModeller extends DirtyableComposite {
 
         return horiz;
     }
+
+    private void addInsertBelowButtonToLayout(String title, ClickListener addBelowListener, ClickListener moveDownListener, ClickListener moveUpListener) {
+
+        DirtyableHorizontalPane hp = new DirtyableHorizontalPane();
+
+        Image addPattern = new ImageButton("images/new_item_below.png");
+        addPattern.setTitle(title);
+        addPattern.addClickListener(addBelowListener);
+
+        Image moveDown = new ImageButton("images/shuffle_down.gif");
+        moveDown.setTitle("Move Down");
+        moveDown.addClickListener(moveDownListener);
+
+        Image moveUp = new ImageButton("images/shuffle_up.gif");
+        moveUp.setTitle("Move Up");
+        moveUp.addClickListener(moveUpListener);
+        
+        hp.add(addPattern);
+        hp.add(moveDown);
+        hp.add(moveUp);
+
+        final ExtElement e = new ExtElement(hp.getElement());
+        e.setOpacity(0, false);
+
+        MouseListenerAdapter mouseListenerAdapter = new MouseListenerAdapter() {
+
+            @Override
+            public void onMouseEnter(Widget sender) {
+                e.setOpacity(100, false);
+            }
+
+            @Override
+            public void onMouseLeave(Widget sender) {
+                e.setOpacity(0, false);
+            }
+        };
+
+        addPattern.addMouseListener(mouseListenerAdapter);
+        moveDown.addMouseListener(mouseListenerAdapter);
+        moveUp.addMouseListener(mouseListenerAdapter);
+
+
+        
+
+        layout.setWidget(currentLayoutRow, 2, hp);
+        layout.getFlexCellFormatter().setHorizontalAlignment(currentLayoutRow, 2, HasHorizontalAlignment.ALIGN_CENTER);
+        layout.getFlexCellFormatter().setVerticalAlignment(currentLayoutRow, 2, HasVerticalAlignment.ALIGN_MIDDLE);
+        
+
+
+    }
+
 
     public RuleModel getModel() {
         return model;
