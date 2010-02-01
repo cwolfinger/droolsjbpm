@@ -32,8 +32,6 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.*;
 import com.google.gwt.core.client.GWT;
-import com.gwtext.client.animation.Easing;
-import com.gwtext.client.core.AnimationConfig;
 import com.gwtext.client.core.ExtElement;
 import com.gwtext.client.util.Format;
 
@@ -361,14 +359,21 @@ public class RuleModeller extends DirtyableComposite {
             widget.add(horiz);
 
 
+
             layout.setHTML(currentLayoutRow, 0, "<div class='x-form-field'>" + (i + 1) + ".</div>");
             layout.getFlexCellFormatter().setHorizontalAlignment(currentLayoutRow, 0, HasHorizontalAlignment.ALIGN_CENTER);
             layout.getFlexCellFormatter().setVerticalAlignment(currentLayoutRow, 0, HasVerticalAlignment.ALIGN_MIDDLE);
 
+            //we need a FocusPanel in order to be able to capture mouse events.
+            FocusPanel parent = new FocusPanel(widget);
+
+            layout.setWidget(currentLayoutRow, 1, parent);
+            layout.getFlexCellFormatter().setHorizontalAlignment(currentLayoutRow, 1, HasHorizontalAlignment.ALIGN_LEFT);
+            layout.getFlexCellFormatter().setVerticalAlignment(currentLayoutRow, 1, HasVerticalAlignment.ALIGN_TOP);
 
             final int index = i;
             if (!lockRHS()) {
-                this.addInsertBelowButtonToLayout(constants.AddAnActionBelow(), new ClickListener() {
+                this.addActionsButtonsToLayout(constants.AddAnActionBelow(), new ClickListener() {
 
                     public void onClick(Widget w) {
                         showActionSelector(w, index + 1);
@@ -388,9 +393,7 @@ public class RuleModeller extends DirtyableComposite {
                 });
             }
 
-            layout.setWidget(currentLayoutRow, 1, widget);
-            layout.getFlexCellFormatter().setHorizontalAlignment(currentLayoutRow, 1, HasHorizontalAlignment.ALIGN_LEFT);
-            layout.getFlexCellFormatter().setVerticalAlignment(currentLayoutRow, 1, HasVerticalAlignment.ALIGN_TOP);
+            
 
             currentLayoutRow++;
 
@@ -951,16 +954,21 @@ public class RuleModeller extends DirtyableComposite {
 
             vert.add(wrapLHSWidget(model, i, w));
             vert.add(spacerWidget());
-            //vert.setBorderWidth(1);
 
+            //we need a FocusPanel in order to be able to capture mouse events.
+            FocusPanel parent = new FocusPanel(vert);
 
             layout.setHTML(currentLayoutRow, 0, "<div class='x-form-field'>" + (i + 1) + ".</div>");
             layout.getFlexCellFormatter().setHorizontalAlignment(currentLayoutRow, 0, HasHorizontalAlignment.ALIGN_CENTER);
             layout.getFlexCellFormatter().setVerticalAlignment(currentLayoutRow, 0, HasVerticalAlignment.ALIGN_MIDDLE);
 
+            layout.setWidget(currentLayoutRow, 1, parent);
+            layout.getFlexCellFormatter().setHorizontalAlignment(currentLayoutRow, 1, HasHorizontalAlignment.ALIGN_LEFT);
+            layout.getFlexCellFormatter().setVerticalAlignment(currentLayoutRow, 1, HasVerticalAlignment.ALIGN_TOP);
+
             final int index = i;
             if (!lockLHS()) {
-                this.addInsertBelowButtonToLayout(constants.AddAConditionBelow(), new ClickListener() {
+                this.addActionsButtonsToLayout(constants.AddAConditionBelow(), new ClickListener() {
 
                     public void onClick(Widget w) {
                         showConditionSelector(w, index + 1);
@@ -980,9 +988,7 @@ public class RuleModeller extends DirtyableComposite {
                 });
             }
 
-            layout.setWidget(currentLayoutRow, 1, vert);
-            layout.getFlexCellFormatter().setHorizontalAlignment(currentLayoutRow, 1, HasHorizontalAlignment.ALIGN_LEFT);
-            layout.getFlexCellFormatter().setVerticalAlignment(currentLayoutRow, 1, HasVerticalAlignment.ALIGN_TOP);
+            
 
             currentLayoutRow++;
         }
@@ -1031,7 +1037,7 @@ public class RuleModeller extends DirtyableComposite {
         return horiz;
     }
 
-    private void addInsertBelowButtonToLayout(String title, ClickListener addBelowListener, ClickListener moveDownListener, ClickListener moveUpListener) {
+    private void addActionsButtonsToLayout(String title, ClickListener addBelowListener, ClickListener moveDownListener, ClickListener moveUpListener) {
 
         DirtyableHorizontalPane hp = new DirtyableHorizontalPane();
 
@@ -1051,8 +1057,12 @@ public class RuleModeller extends DirtyableComposite {
         hp.add(moveDown);
         hp.add(moveUp);
 
+
+
         final ExtElement e = new ExtElement(hp.getElement());
         e.setOpacity(0.1f, false);
+
+        FocusPanel actionPanel = new FocusPanel(hp);
 
         MouseListenerAdapter mouseListenerAdapter = new MouseListenerAdapter() {
 
@@ -1067,14 +1077,15 @@ public class RuleModeller extends DirtyableComposite {
             }
         };
 
-        addPattern.addMouseListener(mouseListenerAdapter);
-        moveDown.addMouseListener(mouseListenerAdapter);
-        moveUp.addMouseListener(mouseListenerAdapter);
 
-
+        actionPanel.addMouseListener(mouseListenerAdapter);
         
+        Widget widget = layout.getWidget(currentLayoutRow, 1);
+        if (widget instanceof FocusPanel){
+            ((FocusPanel)widget).addMouseListener(mouseListenerAdapter);
+        }
 
-        layout.setWidget(currentLayoutRow, 2, hp);
+        layout.setWidget(currentLayoutRow, 2, actionPanel);
         layout.getFlexCellFormatter().setHorizontalAlignment(currentLayoutRow, 2, HasHorizontalAlignment.ALIGN_CENTER);
         layout.getFlexCellFormatter().setVerticalAlignment(currentLayoutRow, 2, HasVerticalAlignment.ALIGN_MIDDLE);
         
