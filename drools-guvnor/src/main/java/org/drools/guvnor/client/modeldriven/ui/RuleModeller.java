@@ -1046,11 +1046,11 @@ public class RuleModeller extends DirtyableComposite {
         addPattern.addClickListener(addBelowListener);
 
         Image moveDown = new ImageButton("images/shuffle_down.gif");
-        moveDown.setTitle("Move Down");
+        moveDown.setTitle(constants.MoveDown());
         moveDown.addClickListener(moveDownListener);
 
         Image moveUp = new ImageButton("images/shuffle_up.gif");
-        moveUp.setTitle("Move Up");
+        moveUp.setTitle(constants.MoveUp());
         moveUp.addClickListener(moveUpListener);
         
         hp.add(addPattern);
