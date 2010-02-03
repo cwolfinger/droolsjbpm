@@ -216,7 +216,7 @@ public class ValueType
             return ValueType.BIG_INTEGER_TYPE;
         } else if ( clazz == String.class ) {
             return ValueType.STRING_TYPE;
-        } else if ( clazz instanceof Object ) {
+        } else if ( Object.class.isAssignableFrom( clazz ) ) {
             return ValueType.OBJECT_TYPE;
         }
         throw new RuntimeDroolsException( "unable to determine ValueType for Class [" + clazz + "]" );
