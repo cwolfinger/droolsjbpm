@@ -1,0 +1,194 @@
+
+
+
+
+rule "inner terms"
+when
+  Person( name== "mark", age == 34, address{ city == "london", country ==  "uk"} ) 
+then end
+
+rule "positional"
+when
+  Person( "mark", 34 )
+  Person( "mark", 34, address{"london", "uk"} )
+then end
+
+
+rule "mixed positional"
+when
+  Person( "mark", age == 34, address{"london", country == "uk"} ) 
+then end
+
+rule "full positional with inner"
+when
+  Person( "mark", 34, addres{ "london", "uk" } )
+then end
+
+
+rule "match list"
+when
+  Person( list in {"zis", "iz", "lizt"} )
+then end
+
+
+rule "nested dot-acc"
+when
+  Person( name== "mark", age == 34, address.country == "uk" ) // nested  address object
+then end
+
+rule "equivalent forms"
+when
+  Person( name== "mark", age == 34, address.country == "uk" ) // nested  address object
+  Person( name== "mark", age == 34, address{country == "uk"} ) // nested  address object
+then end
+
+
+
+
+rule "methods"
+when
+ Person( someMethod(1,2) == $x, address.someMethod(3,4) == $y, $z :  someOtherMethod(5,6) )
+then end
+
+rule "nested pattern"
+when
+  $p : Person( name == "mark", age == 34, address == /Address( owner ==  "p, .......) )
+then end
+
+
+
+rule "innerquery"
+when
+  Person( name == "mark", age == 34, address == ?query(.....) )
+then end
+
+rule "querywithterms"
+when
+  ?queryName("a", "b", c{"d", "e", "f"}, "g", h)
+then end
+
+
+
+rule "collection"
+when
+Person( pets[0].age == 15 )
+Person( pets["rover"].age == 15 )
+then end
+
+
+
+
+// not possible, also unclear that iterates for each pet
+// MUST be bound (also resembles JAVA foreach
+/*
+rule "one of many"
+when
+  Person( pets[ {age == 15 } ] )
+then end
+*/
+
+rule "with bindings"
+when
+	$per : Person( $pet : pets[ {age == 15} ] )
+then end
+
+
+rule "method collection"
+when
+$p : Person( $a : someMethodCallToGetAddresses(...)[ {location ==  "london"} ] )
+then end
+
+
+
+rule "full iteration"
+when 
+$per : Person( $pet : pets[] )
+then end
+
+
+
+rule "slight difference :)"
+when
+Person( $p : pets[{15}] ) // would return all pets with an age of 15
+Person( $p : pets[15] ) // would return pet at element 15.
+then end
+
+rule "positional select"
+when
+Person( $p : pets[{"rover"}] ) // a list of pets, get all pets called  rover.
+then end
+
+
+
+rule "map access"
+when
+Person( $p : pets["rover"] ) // a map, return the pet called rover.
+then end
+
+
+rule "list accessors"
+when
+Person( pets[last()] )
+then end
+
+
+
+
+
+
+
+rule "bool method"
+when
+Person( someMethodReturnsBoolean(14,"xx")  == true )
+then end
+
+
+
+//Person( pets["rover"].age == $otherAge.someMethod( $x ) + 3 ) // notice  no (...) delimeter like on return-value
+//Person( pets["rover"].age == ($otherAge.someMethod( $x ) + 3 ) / 2 )  //  this has the (...) but it's to indicate ordering in the expr evaluation only
+                                                                                                             // so the / 2 is last
+
+//Person( pets["rover"].age * $v1 == $v2 - 3 ) // expr can be on both sides
+
+
+
+//If we have collection filters, $p will exist for each resulting  red pet  with appropriate age
+//Person( $p : pets[ { color == "red" ].age * $v1 == $v2 - 3 )
+
+//Although that can be re-wrriten, as mentioned previously
+//Person( $p : pets[ { color == "red", age * $v1 == $v2 - 3 ] )
+
+
+rule "federated"
+when
+?TableName( fieldName == "x", fieldName2 == $y, $v : fieldName3 )
+then end
+
+
+rule "federated_posit"
+when
+?TableName( "x", $y, $v )
+then end
+
+
+
+rule "federated_more"
+when
+	?Table1( fieldName1 == "x", $v1 : fieldName2 )
+	?Table2( fieldName2 == $v1, $v2 : fieldNam2 )
+then end
+
+
+rule "quantif query"
+when
+	?Table1( $v1 :fieldName1 )
+	exists( ?Table2( fieldNAme1 == $v ) )
+then end
+
+
+
+rule "Test"
+when
+    ? Person( $var, 18, $a : age > 18 , ? Address(number == $a) )
+then
+end

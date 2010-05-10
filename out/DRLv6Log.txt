@@ -1,0 +1,1504 @@
+**************************************
+compilation_unit
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 8
+>> SOURCE : 
+package org.pack.subpack;
+import org.klass;
+
+declare Klass
+end
+
+rule "ruel"
+when
+then
+end
+
+>> OUTPUT : 
+
+	(VT_COMPILATION_UNIT 
+		(package 
+			(VT_PACKAGE_ID org pack subpack
+			)
+		) 
+		(import 
+			(VT_IMPORT_ID org klass
+			)
+		) 
+		(declare Klass
+		) 
+		(rule "ruel" 
+			(when VT_AND_IMPLICIT
+			) 
+		)
+	)
+**************************************
+package_statement
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 0
+>> SOURCE : 
+package this.isa.pack ;
+>> OUTPUT : 
+
+	(package 
+		(VT_PACKAGE_ID this isa pack
+		)
+	)
+**************************************
+package_statement
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 0
+>> SOURCE : 
+package semi.colon.is.optional 
+>> OUTPUT : 
+
+	(package 
+		(VT_PACKAGE_ID semi colon is optional
+		)
+	)
+**************************************
+package_statement
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 0
+>> SOURCE : 
+package simplePack
+>> OUTPUT : 
+
+	(package 
+		(VT_PACKAGE_ID simplePack
+		)
+	)
+**************************************
+global
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 0
+>> SOURCE : 
+global int N 
+>> OUTPUT : 
+
+	(global 
+		(VT_DATA_TYPE 0 int
+		) N
+	)
+**************************************
+global
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 0
+>> SOURCE : 
+global org.it.pack.String strix ;
+>> OUTPUT : 
+
+	(global 
+		(VT_DATA_TYPE 0 org it pack String
+		) strix
+	)
+**************************************
+data_type
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 0
+>> SOURCE : 
+String
+>> OUTPUT : 
+
+	(VT_DATA_TYPE 0 String
+	)
+**************************************
+data_type
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 0
+>> SOURCE : 
+int
+>> OUTPUT : 
+
+	(VT_DATA_TYPE 0 int
+	)
+**************************************
+data_type
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 0
+>> SOURCE : 
+float[]
+>> OUTPUT : 
+
+	(VT_DATA_TYPE 1 float
+	)
+**************************************
+data_type
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 0
+>> SOURCE : 
+org.pack.data.Claxx[]
+>> OUTPUT : 
+
+	(VT_DATA_TYPE 1 org pack data Claxx
+	)
+**************************************
+data_type
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 0
+>> SOURCE : 
+int[][][]
+>> OUTPUT : 
+
+	(VT_DATA_TYPE 3 int
+	)
+**************************************
+import_statement
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 0
+>> SOURCE : 
+import jav.lang.String
+>> OUTPUT : 
+
+	(import 
+		(VT_IMPORT_ID jav lang String
+		)
+	)
+**************************************
+import_statement
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 1
+>> SOURCE : 
+import Test ; 
+>> OUTPUT : 
+
+	(import 
+		(VT_IMPORT_ID Test
+		)
+	)
+**************************************
+import_statement
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 0
+>> SOURCE : 
+import jav.pack.*
+>> OUTPUT : 
+
+	(import 
+		(VT_IMPORT_ID jav pack .*
+		)
+	)
+**************************************
+function_import_statement
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 1
+>> SOURCE : 
+import function org.pack.square
+>> OUTPUT : 
+
+	(import function 
+		(VT_IMPORT_ID org pack square
+		)
+	)
+**************************************
+function
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 2
+>> SOURCE : 
+function float square( float x ) { ... x*x ... }
+>> OUTPUT : 
+
+	(function 
+		(VT_DATA_TYPE 0 float
+		) square 
+		(VT_PARAM_LIST 
+			(VT_PARAM 
+				(VT_DATA_TYPE 0 float
+				) x
+			)
+		) { ... x*x ... }
+	)
+**************************************
+function
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 1
+>> SOURCE : 
+function process( int x, org.String zz ) { ... ... }
+>> OUTPUT : 
+
+	(function process 
+		(VT_PARAM_LIST 
+			(VT_PARAM 
+				(VT_DATA_TYPE 0 int
+				) x
+			) 
+			(VT_PARAM 
+				(VT_DATA_TYPE 0 org String
+				) zz
+			)
+		) { ... ... }
+	)
+**************************************
+parameters
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 1
+>> SOURCE : 
+( int a, org.klass.AnType obj, String[][] argz )
+>> OUTPUT : 
+
+	(VT_PARAM_LIST 
+		(VT_PARAM 
+			(VT_DATA_TYPE 0 int
+			) a
+		) 
+		(VT_PARAM 
+			(VT_DATA_TYPE 0 org klass AnType
+			) obj
+		) 
+		(VT_PARAM 
+			(VT_DATA_TYPE 2 String
+			) argz
+		)
+	)
+**************************************
+type_declaration
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 2
+>> SOURCE : 
+declare Student
+ @role(entity) 
+ @namespace(myNS="http:\\www.stix.com\domain\subd#") 
+ @subclass(Person)
+ age  : int 
+ name : String 
+ end 
+
+>> OUTPUT : 
+
+	(declare Student 
+		(VT_ATTRIBUTES 
+			(role entity
+			) 
+			(namespace myNS "http:\\www.stix.com\domain\subd#"
+			) 
+			(subclass Person
+			)
+		) 
+		(VT_FIELD age 
+			(VT_DATA_TYPE 0 int
+			)
+		) 
+		(VT_FIELD name 
+			(VT_DATA_TYPE 0 String
+			)
+		)
+	)
+**************************************
+type_declaration
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 1
+>> SOURCE : 
+declare HasFriend 
+@role(property) 
+@namespace(myNS="http:\\www.somens.com\arg\test#") 
+@subproperty(Knows) 
+@disjoint(HasEnemy) 
+@symmetric 
+subject	: Person 
+object  : Person 
+end 
+
+>> OUTPUT : 
+
+	(declare HasFriend 
+		(VT_ATTRIBUTES 
+			(role property
+			) 
+			(namespace myNS "http:\\www.somens.com\arg\test#"
+			) 
+			(subproperty Knows
+			) 
+			(disjoint HasEnemy
+			) symmetric
+		) 
+		(VT_FIELD subject 
+			(VT_DATA_TYPE 0 Person
+			)
+		) 
+		(VT_FIELD object 
+			(VT_DATA_TYPE 0 Person
+			)
+		)
+	)
+**************************************
+type_declaration
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 1
+>> SOURCE : 
+declare HasSpouse 
+@role(property) 
+@namespace(myNS="http:\\www.somens.com\arg\test#") 
+@symmetric 
+@transitive 
+@inverse(HasSpouse) 
+subject	= ("john") : Person 	@[key] 
+object  : Person	@[key] 
+end 
+
+>> OUTPUT : 
+
+	(declare HasSpouse 
+		(VT_ATTRIBUTES 
+			(role property
+			) 
+			(namespace myNS "http:\\www.somens.com\arg\test#"
+			) symmetric transitive 
+			(inverse HasSpouse
+			)
+		) 
+		(VT_FIELD 
+			(VT_ATTRIBUTES key
+			) subject 
+			(VT_DATA_TYPE 0 Person
+			) 
+			(= 
+				("john"
+				)
+			)
+		) 
+		(VT_FIELD 
+			(VT_ATTRIBUTES key
+			) object 
+			(VT_DATA_TYPE 0 Person
+			)
+		)
+	)
+**************************************
+type_declare_attribute
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 0
+>> SOURCE : 
+@role(event)
+>> OUTPUT : 
+
+	(role event
+	)
+**************************************
+type_declare_attribute
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 0
+>> SOURCE : 
+@role(type)
+>> OUTPUT : 
+
+	(role type
+	)
+**************************************
+type_declare_attribute
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 1
+>> SOURCE : 
+@role(entity)
+>> OUTPUT : 
+
+	(role entity
+	)
+**************************************
+type_declare_attribute
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 0
+>> SOURCE : 
+@role(property)
+>> OUTPUT : 
+
+	(role property
+	)
+**************************************
+type_declare_attribute
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 0
+>> SOURCE : 
+@namespace( alias = "http:\\www.org.dom\arg# ")
+>> OUTPUT : 
+
+	(namespace alias "http:\\www.org.dom\arg# "
+	)
+**************************************
+type_declare_attribute
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 0
+>> SOURCE : 
+@subclass(Type)
+>> OUTPUT : 
+
+	(subclass Type
+	)
+**************************************
+type_declare_attribute
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 0
+>> SOURCE : 
+@subproperty(SomeProperty)
+>> OUTPUT : 
+
+	(subproperty SomeProperty
+	)
+**************************************
+type_declare_attribute
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 0
+>> SOURCE : 
+@disjoint(AnotherType)
+>> OUTPUT : 
+
+	(disjoint AnotherType
+	)
+**************************************
+type_declare_attribute
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 0
+>> SOURCE : 
+@symmetric
+>> OUTPUT : 
+symmetric
+**************************************
+type_declare_attribute
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 1
+>> SOURCE : 
+@transitive
+>> OUTPUT : 
+transitive
+**************************************
+type_declare_attribute
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 0
+>> SOURCE : 
+@inverse(ReverseProperty)
+>> OUTPUT : 
+
+	(inverse ReverseProperty
+	)
+**************************************
+decl_field
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 1
+>> SOURCE : 
+field = (...) : datatype[][] @[key]
+>> OUTPUT : 
+
+	(VT_FIELD 
+		(VT_ATTRIBUTES key
+		) field 
+		(VT_DATA_TYPE 2 datatype
+		) 
+		(= 
+			(...
+			)
+		)
+	)
+**************************************
+rule
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 1
+>> SOURCE : 
+rule "ruleName" extends "anotherRule" 
+ salience 100 
+ no-loop 
+ calendar "s1" , "s2" 
+when
+then
+end
+
+>> OUTPUT : 
+
+	(rule "ruleName" 
+		(extends "anotherRule"
+		) 
+		(VT_ATTRIBUTES 
+			(salience 100
+			) no-loop 
+			(calendar [ "s1", "s2" ]
+			)
+		) 
+		(when VT_AND_IMPLICIT
+		) 
+	)
+**************************************
+rule_attribute
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 0
+>> SOURCE : 
+salience 100
+>> OUTPUT : 
+
+	(salience 100
+	)
+**************************************
+rule_attribute
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 0
+>> SOURCE : 
+no-loop true
+>> OUTPUT : 
+
+	(no-loop true
+	)
+**************************************
+rule_attribute
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 0
+>> SOURCE : 
+agenda-group "test-group"
+>> OUTPUT : 
+
+	(agenda-group "test-group"
+	)
+**************************************
+rule_attribute
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 0
+>> SOURCE : 
+activation-group "act-group"
+>> OUTPUT : 
+
+	(activation-group "act-group"
+	)
+**************************************
+rule_attribute
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 0
+>> SOURCE : 
+auto-focus false
+>> OUTPUT : 
+
+	(auto-focus false
+	)
+**************************************
+rule_attribute
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 0
+>> SOURCE : 
+effective "2010-04-12"
+>> OUTPUT : 
+
+	(effective "2010-04-12"
+	)
+**************************************
+rule_attribute
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 0
+>> SOURCE : 
+expires "2010-04-12"
+>> OUTPUT : 
+
+	(expires "2010-04-12"
+	)
+**************************************
+rule_attribute
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 0
+>> SOURCE : 
+enabled true
+>> OUTPUT : 
+
+	(enabled true
+	)
+**************************************
+rule_attribute
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 0
+>> SOURCE : 
+ruleflow-group "act-group"
+>> OUTPUT : 
+
+	(ruleflow-group "act-group"
+	)
+**************************************
+rule_attribute
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 1
+>> SOURCE : 
+agenda-group "act-group"
+>> OUTPUT : 
+
+	(agenda-group "act-group"
+	)
+**************************************
+rule_attribute
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 0
+>> SOURCE : 
+duration 100
+>> OUTPUT : 
+
+	(duration 100
+	)
+**************************************
+rule_attribute
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 0
+>> SOURCE : 
+timer 100
+>> OUTPUT : 
+
+	(timer 100
+	)
+**************************************
+rule_attribute
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 0
+>> SOURCE : 
+dialect "java" 
+>> OUTPUT : 
+
+	(dialect "java"
+	)
+**************************************
+rule_attribute
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 0
+>> SOURCE : 
+lock-on-active true
+>> OUTPUT : 
+
+	(lock-on-active true
+	)
+**************************************
+rule_attribute
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 0
+>> SOURCE : 
+defeats "anotherRule" 
+>> OUTPUT : 
+
+	(defeats "anotherRule"
+	)
+**************************************
+rule_attribute
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 1
+>> SOURCE : 
+deductive
+>> OUTPUT : 
+deductive
+**************************************
+rule_attribute
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 0
+>> SOURCE : 
+abductive
+>> OUTPUT : 
+abductive
+**************************************
+rule_attribute
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 0
+>> SOURCE : 
+equivalence
+>> OUTPUT : 
+equivalence
+**************************************
+rule_attribute
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 1
+>> SOURCE : 
+deduction @[crisp]
+>> OUTPUT : 
+
+	(deduction 
+		(VT_ATTRIBUTES crisp
+		)
+	)
+**************************************
+rule_attribute
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 0
+>> SOURCE : 
+implication @[crisp]
+>> OUTPUT : 
+
+	(implication 
+		(VT_ATTRIBUTES crisp
+		)
+	)
+**************************************
+operator_attributes
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 3
+>> SOURCE : 
+@[
+kind="lukasiewicz", 
+id="myID", 
+params="addit,args,2,more", 
+degree="[0.3,0.2]", 
+crisp,
+default,
+defeat,
+merge="mStrat", 
+filter="fStrat", 
+missing="sStrat" 
+]
+>> OUTPUT : 
+
+	(VT_ATTRIBUTES 
+		(kind = "lukasiewicz"
+		) 
+		(id = "myID"
+		) 
+		(params = "addit,args,2,more"
+		) 
+		(degree = "[0.3,0.2]"
+		) crisp default defeat 
+		(merge = "mStrat"
+		) 
+		(filter = "fStrat"
+		) 
+		(missing = "sStrat"
+		)
+	)
+**************************************
+rule
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 2
+>> SOURCE : 
+rule test when Bus() Car() Taxi()then end
+>> OUTPUT : 
+
+	(rule test 
+		(when 
+			(VT_AND_IMPLICIT 
+				(VT_AND VT_ENABLED 
+					(VT_PATTERN Bus
+					)
+				) 
+				(VT_AND VT_ENABLED 
+					(VT_PATTERN Car
+					)
+				) 
+				(VT_AND VT_ENABLED 
+					(VT_PATTERN Taxi
+					)
+				)
+			)
+		) 
+	)
+**************************************
+rule
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 0
+>> SOURCE : 
+rule test when $p : Person() implies @[kind="anImpl"] Dog()then end
+>> OUTPUT : 
+
+	(rule test 
+		(when 
+			(VT_AND_IMPLICIT 
+				(VT_IMPLIES 
+					(VT_ATTRIBUTES 
+						(kind = "anImpl"
+						)
+					) 
+					(VT_BINDING $p : 
+						(VT_AND VT_ENABLED 
+							(VT_PATTERN Person
+							)
+						)
+					) 
+					(VT_AND VT_ENABLED 
+						(VT_PATTERN Dog
+						)
+					)
+				)
+			)
+		) 
+	)
+**************************************
+rule
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 1
+>> SOURCE : 
+rule test when Car() or @[kind="anOr"] Taxi() or @[kind="anotherOr"] Bus()then end
+>> OUTPUT : 
+
+	(rule test 
+		(when 
+			(VT_AND_IMPLICIT 
+				(VT_OR 
+					(VT_ATTRIBUTES 
+						(kind = "anotherOr"
+						)
+					) 
+					(VT_OR 
+						(VT_ATTRIBUTES 
+							(kind = "anOr"
+							)
+						) 
+						(VT_AND VT_ENABLED 
+							(VT_PATTERN Car
+							)
+						) 
+						(VT_AND VT_ENABLED 
+							(VT_PATTERN Taxi
+							)
+						)
+					) 
+					(VT_AND VT_ENABLED 
+						(VT_PATTERN Bus
+						)
+					)
+				)
+			)
+		) 
+	)
+**************************************
+rule
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 0
+>> SOURCE : 
+rule test when $p : Person() xor Dog()then end
+>> OUTPUT : 
+
+	(rule test 
+		(when 
+			(VT_AND_IMPLICIT 
+				(VT_XOR 
+					(VT_BINDING $p : 
+						(VT_AND VT_ENABLED 
+							(VT_PATTERN Person
+							)
+						)
+					) 
+					(VT_AND VT_ENABLED 
+						(VT_PATTERN Dog
+						)
+					)
+				)
+			)
+		) 
+	)
+**************************************
+rule
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 1
+>> SOURCE : 
+rule test when (Person() xor Dog()) equiv Cat()then end
+>> OUTPUT : 
+
+	(rule test 
+		(when 
+			(VT_AND_IMPLICIT 
+				(VT_EQUIV 
+					(VT_AND_IMPLICIT 
+						(VT_XOR 
+							(VT_AND VT_ENABLED 
+								(VT_PATTERN Person
+								)
+							) 
+							(VT_AND VT_ENABLED 
+								(VT_PATTERN Dog
+								)
+							)
+						)
+					) 
+					(VT_AND VT_ENABLED 
+						(VT_PATTERN Cat
+						)
+					)
+				)
+			)
+		) 
+	)
+**************************************
+rule
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 0
+>> SOURCE : 
+rule test when Car() and Taxi() and Bus()then end
+>> OUTPUT : 
+
+	(rule test 
+		(when 
+			(VT_AND_IMPLICIT 
+				(VT_AND 
+					(VT_AND 
+						(VT_AND VT_ENABLED 
+							(VT_PATTERN Car
+							)
+						) 
+						(VT_AND VT_ENABLED 
+							(VT_PATTERN Taxi
+							)
+						)
+					) 
+					(VT_AND VT_ENABLED 
+						(VT_PATTERN Bus
+						)
+					)
+				)
+			)
+		) 
+	)
+**************************************
+rule
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 1
+>> SOURCE : 
+rule test when (P() implies Q()) implies ( (K() equiv K()) or Z() and X() )then end
+>> OUTPUT : 
+
+	(rule test 
+		(when 
+			(VT_AND_IMPLICIT 
+				(VT_IMPLIES 
+					(VT_AND_IMPLICIT 
+						(VT_IMPLIES 
+							(VT_AND VT_ENABLED 
+								(VT_PATTERN P
+								)
+							) 
+							(VT_AND VT_ENABLED 
+								(VT_PATTERN Q
+								)
+							)
+						)
+					) 
+					(VT_AND_IMPLICIT 
+						(VT_OR 
+							(VT_AND_IMPLICIT 
+								(VT_EQUIV 
+									(VT_AND VT_ENABLED 
+										(VT_PATTERN K
+										)
+									) 
+									(VT_AND VT_ENABLED 
+										(VT_PATTERN K
+										)
+									)
+								)
+							) 
+							(VT_AND 
+								(VT_AND VT_ENABLED 
+									(VT_PATTERN Z
+									)
+								) 
+								(VT_AND VT_ENABLED 
+									(VT_PATTERN X
+									)
+								)
+							)
+						)
+					)
+				)
+			)
+		) 
+	)
+**************************************
+rule
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 0
+>> SOURCE : 
+rule "r" when neg @[crisp] very @[crisp] Person() then end
+>> OUTPUT : 
+
+	(rule "r" 
+		(when 
+			(VT_AND_IMPLICIT 
+				(VT_NEG 
+					(VT_ATTRIBUTES crisp
+					) 
+					(VT_HEDGE_VERY 
+						(VT_ATTRIBUTES crisp
+						) 
+						(VT_AND VT_ENABLED 
+							(VT_PATTERN Person
+							)
+						)
+					)
+				)
+			)
+		) 
+	)
+**************************************
+rule
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 1
+>> SOURCE : 
+rule "r" when $lab : Person()then end
+>> OUTPUT : 
+
+	(rule "r" 
+		(when 
+			(VT_AND_IMPLICIT 
+				(VT_BINDING $lab : 
+					(VT_AND VT_ENABLED 
+						(VT_PATTERN Person
+						)
+					)
+				)
+			)
+		) 
+	)
+**************************************
+rule
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 0
+>> SOURCE : 
+rule "r" when (Person() implies Dog())then end
+>> OUTPUT : 
+
+	(rule "r" 
+		(when 
+			(VT_AND_IMPLICIT 
+				(VT_AND_IMPLICIT 
+					(VT_IMPLIES 
+						(VT_AND VT_ENABLED 
+							(VT_PATTERN Person
+							)
+						) 
+						(VT_AND VT_ENABLED 
+							(VT_PATTERN Dog
+							)
+						)
+					)
+				)
+			)
+		) 
+	)
+**************************************
+rule
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 1
+>> SOURCE : 
+rule "r" when exists @[crisp] ( $p : Person() and $d : Dog() ) then end
+>> OUTPUT : 
+
+	(rule "r" 
+		(when 
+			(VT_AND_IMPLICIT 
+				(VT_EXISTS 
+					(VT_ATTRIBUTES crisp
+					) 
+					(VT_AND_IMPLICIT 
+						(VT_AND 
+							(VT_BINDING $p : 
+								(VT_AND VT_ENABLED 
+									(VT_PATTERN Person
+									)
+								)
+							) 
+							(VT_BINDING $d : 
+								(VT_AND VT_ENABLED 
+									(VT_PATTERN Dog
+									)
+								)
+							)
+						)
+					)
+				)
+			)
+		) 
+	)
+**************************************
+rule
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 0
+>> SOURCE : 
+rule "r" when  $p : exists Person() then end
+>> OUTPUT : 
+
+	(rule "r" 
+		(when 
+			(VT_AND_IMPLICIT 
+				(VT_BINDING $p : 
+					(VT_EXISTS 
+						(VT_AND VT_ENABLED 
+							(VT_PATTERN Person
+							)
+						)
+					)
+				)
+			)
+		) 
+	)
+**************************************
+rule
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 1
+>> SOURCE : 
+rule "r" when not @[crisp] ( $p : Person() and $d : Dog() ) then end
+>> OUTPUT : 
+
+	(rule "r" 
+		(when 
+			(VT_AND_IMPLICIT 
+				(VT_NEXISTS 
+					(VT_ATTRIBUTES crisp
+					) 
+					(VT_AND_IMPLICIT 
+						(VT_AND 
+							(VT_BINDING $p : 
+								(VT_AND VT_ENABLED 
+									(VT_PATTERN Person
+									)
+								)
+							) 
+							(VT_BINDING $d : 
+								(VT_AND VT_ENABLED 
+									(VT_PATTERN Dog
+									)
+								)
+							)
+						)
+					)
+				)
+			)
+		) 
+	)
+**************************************
+rule
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 0
+>> SOURCE : 
+rule "r" when  not Person() then end
+>> OUTPUT : 
+
+	(rule "r" 
+		(when 
+			(VT_AND_IMPLICIT 
+				(VT_NEXISTS 
+					(VT_AND VT_ENABLED 
+						(VT_PATTERN Person
+						)
+					)
+				)
+			)
+		) 
+	)
+**************************************
+rule
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 1
+>> SOURCE : 
+rule "r" when forall @[crisp] Person() then end
+>> OUTPUT : 
+
+	(rule "r" 
+		(when 
+			(VT_AND_IMPLICIT 
+				(VT_FORALL 
+					(VT_ATTRIBUTES crisp
+					) 
+					(VT_AND VT_ENABLED 
+						(VT_PATTERN Person
+						)
+					)
+				)
+			)
+		) 
+	)
+**************************************
+rule
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 0
+>> SOURCE : 
+rule "r" when forall  ( $p : Person()                Person() ) then end
+>> OUTPUT : 
+
+	(rule "r" 
+		(when 
+			(VT_AND_IMPLICIT 
+				(VT_FORALL 
+					(VT_BINDING $p : 
+						(VT_AND VT_ENABLED 
+							(VT_PATTERN Person
+							)
+						)
+					) 
+					(VT_AND VT_ENABLED 
+						(VT_PATTERN Person
+						)
+					)
+				)
+			)
+		) 
+	)
+**************************************
+rule
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 1
+>> SOURCE : 
+rule "r" when forall  ( $p : Person()                (Person() Dog()) ) then end
+>> OUTPUT : 
+
+	(rule "r" 
+		(when 
+			(VT_AND_IMPLICIT 
+				(VT_FORALL 
+					(VT_BINDING $p : 
+						(VT_AND VT_ENABLED 
+							(VT_PATTERN Person
+							)
+						)
+					) 
+					(VT_AND_IMPLICIT 
+						(VT_AND VT_ENABLED 
+							(VT_PATTERN Person
+							)
+						) 
+						(VT_AND VT_ENABLED 
+							(VT_PATTERN Dog
+							)
+						)
+					)
+				)
+			)
+		) 
+	)
+**************************************
+rule
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 1
+>> SOURCE : 
+rule "r" when forall  ( ($p : Person() $d : Dog() )          (     Person()      Dog() )         ) then end
+>> OUTPUT : 
+
+	(rule "r" 
+		(when 
+			(VT_AND_IMPLICIT 
+				(VT_FORALL 
+					(VT_AND_IMPLICIT 
+						(VT_BINDING $p : 
+							(VT_AND VT_ENABLED 
+								(VT_PATTERN Person
+								)
+							)
+						) 
+						(VT_BINDING $d : 
+							(VT_AND VT_ENABLED 
+								(VT_PATTERN Dog
+								)
+							)
+						)
+					) 
+					(VT_AND_IMPLICIT 
+						(VT_AND VT_ENABLED 
+							(VT_PATTERN Person
+							)
+						) 
+						(VT_AND VT_ENABLED 
+							(VT_PATTERN Dog
+							)
+						)
+					)
+				)
+			)
+		) 
+	)
+**************************************
+rule
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 0
+>> SOURCE : 
+rule "r" when $p : Person() then end
+>> OUTPUT : 
+
+	(rule "r" 
+		(when 
+			(VT_AND_IMPLICIT 
+				(VT_BINDING $p : 
+					(VT_AND VT_ENABLED 
+						(VT_PATTERN Person
+						)
+					)
+				)
+			)
+		) 
+	)
+**************************************
+rule
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 0
+>> SOURCE : 
+rule "r" when Person() @[crisp]then end
+>> OUTPUT : 
+
+	(rule "r" 
+		(when 
+			(VT_AND_IMPLICIT 
+				(VT_AND 
+					(VT_ATTRIBUTES crisp
+					) VT_ENABLED 
+					(VT_PATTERN Person
+					)
+				)
+			)
+		) 
+	)
+**************************************
+rule
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 3
+>> SOURCE : 
+rule "r" when Person( "john" , 18, height > 150) then end
+>> OUTPUT : 
+
+	(rule "r" 
+		(when 
+			(VT_AND_IMPLICIT 
+				(VT_AND VT_ENABLED 
+					(VT_PATTERN Person
+					) 
+					(VT_AND 
+						(VT_POSITIONAL_CONST 0 "john"
+						) 
+						(VT_POSITIONAL_CONST 1 18
+						) 
+						(> 150 
+							(VT_EXPR height
+							)
+						)
+					)
+				)
+			)
+		) 
+	)
+**************************************
+rule
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 1
+>> SOURCE : 
+rule "r" when Person( "john" , 18, 2.0, true, null, new Dog(), {12, $x, "test" }, $var) then end
+>> OUTPUT : 
+
+	(rule "r" 
+		(when 
+			(VT_AND_IMPLICIT 
+				(VT_AND VT_ENABLED 
+					(VT_PATTERN Person
+					) 
+					(VT_AND 
+						(VT_POSITIONAL_CONST 0 "john"
+						) 
+						(VT_POSITIONAL_CONST 1 18
+						) 
+						(VT_POSITIONAL_CONST 2 2.0
+						) 
+						(VT_POSITIONAL_CONST 3 true
+						) 
+						(VT_POSITIONAL_CONST 4 null
+						) 
+						(VT_POSITIONAL_CONST 5 
+							(VT_NEW_OBJ 
+								(VT_TYPE Dog
+								)
+							)
+						) 
+						(VT_POSITIONAL_CONST 6 
+							(VT_LIST 12 $x "test"
+							)
+						) 
+						(VT_POSITIONAL_VAR 7 $var
+						)
+					)
+				)
+			)
+		) 
+	)
+**************************************
+literal_object
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 1
+>> SOURCE : 
+new Thing(13, $var, true)
+>> OUTPUT : 
+
+	(VT_NEW_OBJ 
+		(VT_TYPE Thing
+		) 
+		(VT_ARGS 13 $var true
+		)
+	)
+**************************************
+literal_object
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 1
+>> SOURCE : 
+new Obj(12 - 13*($var*2 + sqrt(4)))
+>> OUTPUT : 
+
+	(VT_NEW_OBJ 
+		(VT_TYPE Obj
+		) 
+		(VT_ARGS 12 - 13 * $var * 2 + sqrt 4
+		)
+	)

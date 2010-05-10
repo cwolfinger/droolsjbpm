@@ -1,0 +1,44 @@
+package qualchek;
+
+import org.drools.lang.stix;
+
+
+declare Student
+	@role(entity)	
+	@namespace(myNS="http:\\www.somens.com\arg\test#")
+	@subclass(Person)
+	age  : int	
+	name : String
+end
+
+declare HasFriend
+	@role(property)
+	@namespace(myNS="http:\\www.somens.com\arg\test#")	
+	@subproperty(Knows)
+	@disjoint(HasEnemy)
+	@symmetric
+	subject	: Person
+	object  : Person
+end
+
+declare HasSpouse
+	@role(property)
+	@namespace(myNS="http:\\www.somens.com\arg\test#")		
+	@symmetric
+	@transitive
+	@inverse(HasSpouse)
+	subject	= ("john") : Person 	@[key]
+	object  : Person	@[key]
+end
+
+
+
+
+rule "test"
+calendar "s2", "s3"
+when
+ $b : Bus()
+ and
+ $c : Car()
+then
+end
