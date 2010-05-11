@@ -779,12 +779,10 @@ var_literal
     ;    
     
 msr_unit
-    :   GATE ID conversion*
+    :   GATE ID msr_unit?
     ;
    
-conversion
-    :   COLON ID
-    ;    
+  
         
     
 list
