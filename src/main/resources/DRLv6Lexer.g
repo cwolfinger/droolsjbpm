@@ -165,10 +165,12 @@ OA_CRISP
 OA_MERGE
   : 'merge'
   ;   
-    
+
+/*    
 OA_FILTER
   : 'filter'
   ;
+*/
 
 OA_MISSING
   : 'missing'
@@ -273,6 +275,10 @@ EXISTS
 EXTEND  
   : 'extends'
   ;
+  
+FILTER
+  : 'filter'
+  ;  
  
 FORALL
   : 'forall'
@@ -566,6 +572,10 @@ NOT_EQUAL
   : '!='
   ;
 
+PIPE
+  : '|'
+  ;
+
 PLUS
   : '+'
   ;
@@ -647,7 +657,7 @@ ID
   
 MISC  :
     //'!' | '%' | '^' | '*' | '-' | '+'  | '?' | '/' | '\'' | '\\' | '|' | '&' 
-    '!' | '%' | '^' | '\'' | '\\' | '|' | '&' 
+    '!' | '%' | '^' | '\'' | '\\' | '&' 
   ;
  
 

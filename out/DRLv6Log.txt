@@ -2,7 +2,7 @@
 compilation_unit
 **************************************
 >>>> RESULT :  SUCCESS 
->> TIME to parse 8
+>> TIME to parse 7
 >> SOURCE : 
 package org.pack.subpack;
 import org.klass;
@@ -63,7 +63,7 @@ package semi.colon.is.optional
 package_statement
 **************************************
 >>>> RESULT :  SUCCESS 
->> TIME to parse 0
+>> TIME to parse 1
 >> SOURCE : 
 package simplePack
 >> OUTPUT : 
@@ -76,7 +76,7 @@ package simplePack
 global
 **************************************
 >>>> RESULT :  SUCCESS 
->> TIME to parse 0
+>> TIME to parse 1
 >> SOURCE : 
 global int N 
 >> OUTPUT : 
@@ -146,7 +146,7 @@ org.pack.data.Claxx[]
 data_type
 **************************************
 >>>> RESULT :  SUCCESS 
->> TIME to parse 0
+>> TIME to parse 1
 >> SOURCE : 
 int[][][]
 >> OUTPUT : 
@@ -157,7 +157,7 @@ int[][][]
 import_statement
 **************************************
 >>>> RESULT :  SUCCESS 
->> TIME to parse 0
+>> TIME to parse 1
 >> SOURCE : 
 import jav.lang.String
 >> OUTPUT : 
@@ -170,7 +170,7 @@ import jav.lang.String
 import_statement
 **************************************
 >>>> RESULT :  SUCCESS 
->> TIME to parse 1
+>> TIME to parse 0
 >> SOURCE : 
 import Test ; 
 >> OUTPUT : 
@@ -196,7 +196,7 @@ import jav.pack.*
 function_import_statement
 **************************************
 >>>> RESULT :  SUCCESS 
->> TIME to parse 1
+>> TIME to parse 0
 >> SOURCE : 
 import function org.pack.square
 >> OUTPUT : 
@@ -209,7 +209,7 @@ import function org.pack.square
 function
 **************************************
 >>>> RESULT :  SUCCESS 
->> TIME to parse 2
+>> TIME to parse 1
 >> SOURCE : 
 function float square( float x ) { ... x*x ... }
 >> OUTPUT : 
@@ -249,7 +249,7 @@ function process( int x, org.String zz ) { ... ... }
 parameters
 **************************************
 >>>> RESULT :  SUCCESS 
->> TIME to parse 1
+>> TIME to parse 0
 >> SOURCE : 
 ( int a, org.klass.AnType obj, String[][] argz )
 >> OUTPUT : 
@@ -272,7 +272,7 @@ parameters
 type_declaration
 **************************************
 >>>> RESULT :  SUCCESS 
->> TIME to parse 2
+>> TIME to parse 1
 >> SOURCE : 
 declare Student
  @role(entity) 
@@ -344,7 +344,7 @@ end
 type_declaration
 **************************************
 >>>> RESULT :  SUCCESS 
->> TIME to parse 1
+>> TIME to parse 2
 >> SOURCE : 
 declare HasSpouse 
 @role(property) 
@@ -410,7 +410,7 @@ type_declare_attribute
 type_declare_attribute
 **************************************
 >>>> RESULT :  SUCCESS 
->> TIME to parse 1
+>> TIME to parse 0
 >> SOURCE : 
 @role(entity)
 >> OUTPUT : 
@@ -443,7 +443,7 @@ type_declare_attribute
 type_declare_attribute
 **************************************
 >>>> RESULT :  SUCCESS 
->> TIME to parse 0
+>> TIME to parse 1
 >> SOURCE : 
 @subclass(Type)
 >> OUTPUT : 
@@ -485,7 +485,7 @@ symmetric
 type_declare_attribute
 **************************************
 >>>> RESULT :  SUCCESS 
->> TIME to parse 1
+>> TIME to parse 0
 >> SOURCE : 
 @transitive
 >> OUTPUT : 
@@ -505,7 +505,7 @@ type_declare_attribute
 decl_field
 **************************************
 >>>> RESULT :  SUCCESS 
->> TIME to parse 1
+>> TIME to parse 0
 >> SOURCE : 
 field = (...) : datatype[][] @[key]
 >> OUTPUT : 
@@ -524,7 +524,7 @@ field = (...) : datatype[][] @[key]
 rule
 **************************************
 >>>> RESULT :  SUCCESS 
->> TIME to parse 1
+>> TIME to parse 0
 >> SOURCE : 
 rule "ruleName" extends "anotherRule" 
  salience 100 
@@ -651,7 +651,7 @@ ruleflow-group "act-group"
 rule_attribute
 **************************************
 >>>> RESULT :  SUCCESS 
->> TIME to parse 1
+>> TIME to parse 0
 >> SOURCE : 
 agenda-group "act-group"
 >> OUTPUT : 
@@ -717,7 +717,7 @@ defeats "anotherRule"
 rule_attribute
 **************************************
 >>>> RESULT :  SUCCESS 
->> TIME to parse 1
+>> TIME to parse 0
 >> SOURCE : 
 deductive
 >> OUTPUT : 
@@ -744,7 +744,7 @@ equivalence
 rule_attribute
 **************************************
 >>>> RESULT :  SUCCESS 
->> TIME to parse 1
+>> TIME to parse 0
 >> SOURCE : 
 deduction @[crisp]
 >> OUTPUT : 
@@ -781,7 +781,6 @@ crisp,
 default,
 defeat,
 merge="mStrat", 
-filter="fStrat", 
 missing="sStrat" 
 ]
 >> OUTPUT : 
@@ -797,8 +796,6 @@ missing="sStrat"
 		) crisp default defeat 
 		(merge = "mStrat"
 		) 
-		(filter = "fStrat"
-		) 
 		(missing = "sStrat"
 		)
 	)
@@ -806,7 +803,7 @@ missing="sStrat"
 rule
 **************************************
 >>>> RESULT :  SUCCESS 
->> TIME to parse 2
+>> TIME to parse 3
 >> SOURCE : 
 rule test when Bus() Car() Taxi()then end
 >> OUTPUT : 
@@ -833,7 +830,7 @@ rule test when Bus() Car() Taxi()then end
 rule
 **************************************
 >>>> RESULT :  SUCCESS 
->> TIME to parse 0
+>> TIME to parse 1
 >> SOURCE : 
 rule test when $p : Person() implies @[kind="anImpl"] Dog()then end
 >> OUTPUT : 
@@ -903,7 +900,7 @@ rule test when Car() or @[kind="anOr"] Taxi() or @[kind="anotherOr"] Bus()then e
 rule
 **************************************
 >>>> RESULT :  SUCCESS 
->> TIME to parse 0
+>> TIME to parse 1
 >> SOURCE : 
 rule test when $p : Person() xor Dog()then end
 >> OUTPUT : 
@@ -930,7 +927,7 @@ rule test when $p : Person() xor Dog()then end
 rule
 **************************************
 >>>> RESULT :  SUCCESS 
->> TIME to parse 1
+>> TIME to parse 0
 >> SOURCE : 
 rule test when (Person() xor Dog()) equiv Cat()then end
 >> OUTPUT : 
@@ -963,7 +960,7 @@ rule test when (Person() xor Dog()) equiv Cat()then end
 rule
 **************************************
 >>>> RESULT :  SUCCESS 
->> TIME to parse 0
+>> TIME to parse 1
 >> SOURCE : 
 rule test when Car() and Taxi() and Bus()then end
 >> OUTPUT : 
@@ -1288,7 +1285,7 @@ rule "r" when forall  ( $p : Person()                Person() ) then end
 rule
 **************************************
 >>>> RESULT :  SUCCESS 
->> TIME to parse 1
+>> TIME to parse 0
 >> SOURCE : 
 rule "r" when forall  ( $p : Person()                (Person() Dog()) ) then end
 >> OUTPUT : 
@@ -1404,7 +1401,7 @@ rule "r" when Person() @[crisp]then end
 rule
 **************************************
 >>>> RESULT :  SUCCESS 
->> TIME to parse 3
+>> TIME to parse 2
 >> SOURCE : 
 rule "r" when Person( "john" , 18, height > 150) then end
 >> OUTPUT : 
@@ -1499,6 +1496,18 @@ new Obj(12 - 13*($var*2 + sqrt(4)))
 	(VT_NEW_OBJ 
 		(VT_TYPE Obj
 		) 
-		(VT_ARGS 12 - 13 * $var * 2 + sqrt 4
+		(VT_ARGS 
+			(- 12 
+				(* 13 
+					(+ 
+						(* $var 2
+						) 
+						(sqrt 
+							(VT_ARGS 4
+							)
+						)
+					)
+				)
+			)
 		)
 	)

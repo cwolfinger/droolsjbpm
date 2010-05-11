@@ -227,7 +227,7 @@ public class Rule_Test {
 	}
 	
 	
-	@Test	
+	@Test		
 	public void test_rule() {
 		String rule = "rule";
 		String[] testDRL = {
@@ -239,6 +239,9 @@ public class Rule_Test {
 				"then" + "\n" +
 				"end" + "\n" 	
 		};
+		
+		
+		String test2;
 				
 		check(rule,testDRL);										
 	}
@@ -289,7 +292,7 @@ public class Rule_Test {
 				"default," + "\n" +
 				"defeat," + "\n" +
 				"merge=\"mStrat\", " + "\n" +
-				"filter=\"fStrat\", " + "\n" +
+				//"filter=\"fStrat\", " + "\n" +		//TODO: removed "filter" from here
 				"missing=\"sStrat\" " + "\n" +
 				"]",				
 		};
@@ -533,34 +536,17 @@ public class Rule_Test {
 		check(rule,testDRL);										
 	}
 	
-	/*
-	method_expr_root
-	  : method_expr_atom  ( (PLUS | MINUS) method_factor )*
-	  ;
-	   
-	method_factor
-	  : method_term ( (TIMES | SLASH) method_term )*  
-	  ; 
-	      
-	method_term
-	  : MINUS? method_expr_unary  
-	  ; 
-	  
-	method_expr_unary
-	  : method_expr_atom  
-	  | LEFT_PAREN! method_expr_root RIGHT_PAREN!
-	  ; 
-	  
-	method_expr_atom
-	  : VAR
-	  | literal   
-	  | method
-	  ; 
-	  
-	method
-	  : ID LEFT_PAREN! method_args? RIGHT_PAREN!
-	  ;
-	*/
+	
+	public void test_meta_annotation() {
+		String rule = "rule";
+		String[] testDRL = {
+				"xx"	
+		};
+				
+		check(rule,testDRL);										
+	}
+	
+	//TODO : test filter & tree struct
 	
 	/*
 	@Test	
@@ -1290,6 +1276,7 @@ public class Rule_Test {
 		}
 		
 	}
+	
 	
 	
 	

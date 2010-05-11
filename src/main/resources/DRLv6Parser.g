@@ -69,6 +69,8 @@ tokens {
   VT_FIELD;
   VT_EXPR;
   
+  VT_FILTER;
+  
   VT_LIST;
   
   VT_BEHAVIOR;
@@ -633,7 +635,7 @@ lhs_and_sequitur[Object leftChild]
   ;
   
 lhs_unary
-  : lhs_modified_unary  
+  : lhs_modified_unary filter_chain?
   |   lhs_query
   ;
 
@@ -697,11 +699,22 @@ lhs_label_atom_pattern
   ;  
 
 lhs_atom_pattern
-  : ID LEFT_PAREN constraints? RIGHT_PAREN operator_attributes? over_clause? from?
-  -> ^(VT_AND operator_attributes? VT_ENABLED ^(VT_PATTERN ID) constraints? over_clause? from?)
+  : ID LEFT_PAREN constraints? RIGHT_PAREN operator_attributes? /*over_clause?*/ from?
+  -> ^(VT_AND operator_attributes? VT_ENABLED ^(VT_PATTERN ID) constraints? /*over_clause?*/ from?)
   ;
 
 
+
+
+filter_chain
+  :   PIPE filter filter_chain?
+  -> ^(VT_FILTER ID filter_chain?)
+  ;
+  
+filter
+  :   over_clause
+  |   FILTER ID  
+  ;
 /*********************************************** INSIDE PATTERN *****************************************/
 
 
@@ -732,8 +745,8 @@ positional_constraint[int j]
 }
   : literal  
     -> ^(VT_POSITIONAL_CONST VT_POSITIONAL_INDEX[$start,idx] literal)   
-  | VAR 
-    -> ^(VT_POSITIONAL_VAR VT_POSITIONAL_INDEX[$start,idx] VAR) 
+  | var_literal 
+    -> ^(VT_POSITIONAL_VAR VT_POSITIONAL_INDEX[$start,idx] var_literal) 
   ;
                 
 slotted_constraint
@@ -747,13 +760,32 @@ options{
 k=6;
 }
     :   STRING 
-    |   INT  
-    |   FLOAT 
+    |   INT msr_unit? 
+    |   FLOAT msr_unit?
     |   BOOL 
     |   NULL 
     | literal_object
     | list 
     ;
+    
+    
+var
+    :   VAR
+    ;    
+    
+    
+var_literal
+    :   VAR msr_unit?
+    ;    
+    
+msr_unit
+    :   GATE ID conversion*
+    ;
+   
+conversion
+    :   COLON ID
+    ;    
+        
     
 list
   : LEFT_CURLY list_members? RIGHT_CURLY  
@@ -761,7 +793,7 @@ list
   ; 
 
 list_members
-  : (literal|VAR) (COMMA! (literal|VAR))*
+  : (literal|var_literal) (COMMA! (literal|var_literal))*
   ;
     
   
@@ -787,19 +819,19 @@ method_arg
 
 // method expr roots can't start with () and have a slightly simpler structure than outer expressions
 method_expr_root
-  : method_expr_atom  ( (PLUS | MINUS) method_factor )*
+  : method_expr_atom  ( (PLUS | MINUS)^ method_factor )*
   ;
 
 method_expr_recur
-  : method_factor  ( (PLUS | MINUS) method_factor )*
+  : method_factor  ( (PLUS | MINUS)^ method_factor )*
   ;
    
 method_factor
-  : method_term ( (TIMES | SLASH) method_term )*  
+  : method_term ( (TIMES | SLASH)^ method_term )*  
   ; 
       
 method_term
-  : MINUS? method_expr_unary  
+  : MINUS^? method_expr_unary  
   ; 
   
 method_expr_unary
@@ -808,13 +840,15 @@ method_expr_unary
   ; 
   
 method_expr_atom
-  : VAR
+  : var_literal
   | literal   
-  | method
+  | method 
   ; 
   
 method
-  : ID LEFT_PAREN! method_args? RIGHT_PAREN!
+  : ID LEFT_PAREN args=method_args? RIGHT_PAREN msr_unit?
+  -> {args==null}? ^(ID msr_unit? )
+  -> ^(ID msr_unit? ^(VT_ARGS method_args?))
   ;
 
 
@@ -1001,9 +1035,9 @@ left_expression
   : label
     ( 
       left_expr_atom 
-      -> ^(VT_BINDING VAR ^(VT_FIELD left_expr_atom))
+      -> ^(VT_BINDING label ^(VT_FIELD left_expr_atom))
       | LEFT_PAREN left_expr_root RIGHT_PAREN 
-      -> ^(VT_BINDING VAR ^(VT_EXPR left_expr_root))
+      -> ^(VT_BINDING label ^(VT_EXPR left_expr_root))
     )
   | left_expr_root
     -> ^(VT_EXPR left_expr_root)
@@ -1016,7 +1050,7 @@ left_expr_atom
 
 expr_atom
   : accessor_path 
-  |   VAR
+  |   var_literal
   | literal
   ; 
    
@@ -1047,7 +1081,7 @@ expr_root
 
 accessor_path
   :   accessor (DOT! accessor)*
-  | VAR (DOT! accessor)+
+  | var (DOT! accessor)+
   ;
 
 /* 
@@ -1222,7 +1256,7 @@ lhs_query
 
 
 label
-  : VAR COLON
+  : var COLON
   ;
 
 
@@ -1381,7 +1415,7 @@ rhs_insert_logical
 rhs_retract
   : RETRACT^ 
     ( literal_object
-    | VAR
+    | var
     )
     SEMICOLON!
   ;
@@ -1389,19 +1423,19 @@ rhs_retract
 rhs_retract_logical
   : RETRACT_LOG^
     ( literal_object
-    | VAR
+    | var
     )
     SEMICOLON!
   ;
 
 rhs_update
   : UPDATE^
-      VAR
+      var
     SEMICOLON!  
   ;
 
 rhs_modify
-  : MODIFY^ LEFT_PAREN! VAR RIGHT_PAREN! 
+  : MODIFY^ LEFT_PAREN! var RIGHT_PAREN! 
     LEFT_CURLY!
       accessor_path
       (COMMA! accessor_path)*
