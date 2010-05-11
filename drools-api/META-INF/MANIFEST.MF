@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-Activator: org.drools.osgi.api.Activator
-Created-By: 1.5.0_21 (Sun Microsystems Inc.)
+Created-By: 1.5.0_15 (Sun Microsystems Inc.)
 Bundle-License: http://www.apache.org/licenses/LICENSE-2.0.txt
 Import-Package: com.sun.tools.xjc;resolution:=optional,com.thoughtwork
  s.xstream;resolution:=optional,javax.management;resolution:=optional,
@@ -8,7 +8,7 @@ Import-Package: com.sun.tools.xjc;resolution:=optional,com.thoughtwork
  tional,org.milyn;resolution:=optional,org.osgi.framework;resolution:=
  optional;version="1.5",org.osgi.util.tracker;resolution:=optional;ver
  sion="1.4",org.quartz;resolution:=optional
-Bnd-LastModified: 1267407372231
+Bnd-LastModified: 1273519179120
 Export-Package: org.drools.logger;uses:="org.drools.event";version="5.
  1.0.SNAPSHOT",org.drools.runtime;uses:="org.drools.command,org.drools
  .time,org.drools.event,org.drools,org.drools.runtime.process,org.droo
@@ -26,7 +26,7 @@ Export-Package: org.drools.logger;uses:="org.drools.event";version="5.
  ls.osgi.api;uses:="org.osgi.framework,org.drools,org.drools.util,org.
  osgi.util.tracker";version="5.1.0.SNAPSHOT",org.drools;uses:="org.dro
  ols.io,org.drools.event.knowledgebase,org.drools.runtime,org.drools.d
- efinition,org.drools.definition.type,org.drools.definition.rule,org.d
+ efinition,org.drools.definition.rule,org.drools.definition.type,org.d
  rools.definition.process,org.drools.conf,org.drools.util";version="5.
  1.0.SNAPSHOT",org.drools.runtime.conf;uses:="org.drools.conf";version
  ="5.1.0.SNAPSHOT",org.drools.runtime.process;uses:="org.drools.runtim
@@ -44,20 +44,22 @@ Export-Package: org.drools.logger;uses:="org.drools.event";version="5.
  ime,javax.xml.bind,net.sf.jxls.reader,org.milyn,com.thoughtworks.xstr
  eam";version="5.1.0.SNAPSHOT",org.drools.runtime.help;uses:="com.thou
  ghtworks.xstream,org.drools.time,org.quartz";version="5.1.0.SNAPSHOT"
- ,org.drools.event.knowledgebase;uses:="org.drools.definition.rule,org
- .drools.definition,org.drools";version="5.1.0.SNAPSHOT",org.drools.ev
- ent;uses:="org.drools.runtime,org.drools.event.rule,org.drools.event.
- process";version="5.1.0.SNAPSHOT",org.drools.persistence.jpa;uses:="o
- rg.drools.runtime,org.drools";version="5.1.0.SNAPSHOT",org.drools.bui
- lder;uses:="org.drools.io,org.drools,org.drools.definition,org.drools
- .builder.conf,org.drools.util";version="5.1.0.SNAPSHOT",org.drools.io
- ;uses:="org.drools,org.drools.event.io,org.drools.util";version="5.1.
- 0.SNAPSHOT",org.drools.util;uses:="org.drools,org.drools.builder,org.
- drools.io";version="5.1.0.SNAPSHOT",org.drools.command.impl;uses:="or
- g.drools.command";version="5.1.0.SNAPSHOT",org.drools.definition.type
- ;version="5.1.0.SNAPSHOT",org.drools.definition.process;uses:="org.dr
- ools.definition";version="5.1.0.SNAPSHOT",org.drools.agent;uses:="org
- .drools.runtime,org.drools,org.drools.io";version="5.1.0.SNAPSHOT"
+ ,org.drools.grid;uses:="org.drools.command";version="5.1.0.SNAPSHOT",
+ org.drools.event.knowledgebase;uses:="org.drools.definition.rule,org.
+ drools.definition,org.drools";version="5.1.0.SNAPSHOT",org.drools.eve
+ nt;uses:="org.drools.runtime,org.drools.event.rule,org.drools.event.p
+ rocess";version="5.1.0.SNAPSHOT",org.drools.persistence.jpa;uses:="or
+ g.drools.runtime,org.drools";version="5.1.0.SNAPSHOT",org.drools.buil
+ der;uses:="org.drools.runtime,org.drools,org.drools.io,org.drools.def
+ inition,org.drools.builder.conf,org.drools.util";version="5.1.0.SNAPS
+ HOT",org.drools.io;uses:="org.drools,org.drools.event.io,org.drools.u
+ til";version="5.1.0.SNAPSHOT",org.drools.util;uses:="org.drools,org.d
+ rools.builder,org.drools.io";version="5.1.0.SNAPSHOT",org.drools.comm
+ and.impl;uses:="org.drools.command";version="5.1.0.SNAPSHOT",org.droo
+ ls.definition.type;version="5.1.0.SNAPSHOT",org.drools.definition.pro
+ cess;uses:="org.drools.definition";version="5.1.0.SNAPSHOT",org.drool
+ s.agent;uses:="org.drools.runtime,org.drools,org.drools.io";version="
+ 5.1.0.SNAPSHOT"
 Bundle-Version: 5.1.0.SNAPSHOT
 Bundle-Name: Drools :: API
 Bundle-Description: A rule production system

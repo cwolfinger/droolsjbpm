@@ -1,10 +1,10 @@
 Manifest-Version: 1.0
-Created-By: 1.5.0_21 (Sun Microsystems Inc.)
+Created-By: 1.5.0_15 (Sun Microsystems Inc.)
 Bundle-License: http://www.apache.org/licenses/LICENSE-2.0.txt
 Import-Package: javax.naming,javax.persistence,javax.transaction,org.h
  ibernate.annotations,org.hibernate.ejb,org.osgi.framework;version="1.
  5"
-Bnd-LastModified: 1266547279496
+Bnd-LastModified: 1273519677470
 Export-Package: org.drools.persistence.processinstance.persisters;uses
  :="org.drools.persistence.processinstance.variabletypes,javax.persist
  ence";version="5.1.0.SNAPSHOT",org.drools.persistence.session;uses:="
@@ -16,8 +16,10 @@ Export-Package: org.drools.persistence.processinstance.persisters;uses
  ersistence.jpa.impl;uses:="org.drools.persistence.session,org.drools.
  persistence.processinstance";version="5.1.0.SNAPSHOT",org.drools.pers
  istence.processinstance.variabletypes;uses:="javax.persistence";versi
- on="5.1.0.SNAPSHOT",org.drools.persistence.osgi;uses:="org.hibernate.
- ejb,org.osgi.framework";version="5.1.0.SNAPSHOT"
+ on="5.1.0.SNAPSHOT",org.drools.persistence.jpa.grid;uses:="org.drools
+ .persistence.session,org.drools.persistence.processinstance";version=
+ "5.1.0.SNAPSHOT",org.drools.persistence.osgi;uses:="org.osgi.framewor
+ k,org.hibernate.ejb";version="5.1.0.SNAPSHOT"
 Bundle-Version: 5.1.0.SNAPSHOT
 Bundle-Name: Drools :: Persistence :: JPA
 Bundle-Description: A rule production system

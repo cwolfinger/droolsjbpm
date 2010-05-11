@@ -1,8 +1,8 @@
 Manifest-Version: 1.0
-Created-By: 1.5.0_21 (Sun Microsystems Inc.)
+Created-By: 1.5.0_15 (Sun Microsystems Inc.)
 Bundle-License: http://www.apache.org/licenses/LICENSE-2.0.txt
 Import-Package: org.mvel2.templates;version="2.0"
-Bnd-LastModified: 1266547494316
+Bnd-LastModified: 1273520128604
 Export-Package: org.drools.template.jdbc;uses:="org.drools.template.pa
  rser";version="5.1.0.SNAPSHOT",org.drools.template;uses:="org.drools.
  template.parser,org.drools.template.objects";version="5.1.0.SNAPSHOT"
@@ -13,9 +13,7 @@ Export-Package: org.drools.template.jdbc;uses:="org.drools.template.pa
 Bundle-Version: 5.1.0.SNAPSHOT
 Bundle-Name: Drools :: Templates
 Bundle-Description: A rule production system
-Private-Package: .;version="5.1.0.SNAPSHOT"
 Bundle-DocURL: http://www.jboss.org/
-Originally-Created-By: 1.6.0_18 (Sun Microsystems Inc.)
 Bundle-Vendor: JBoss Inc.
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.drools.templates;singleton:=true

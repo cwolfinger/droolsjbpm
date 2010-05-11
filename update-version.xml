@@ -19,7 +19,13 @@
 				   drools-docs/docbook-*/pom.xml,
 				   drools-dataloaders/**/pom.xml,
 				   drools-container/**/pom.xml,
-                                   drools-planner/**/pom.xml, drools-process/**/pom.xml"/>
+				   drools-grid/**/pom.xml,
+				   drools-server/**/pom.xml,
+				   osgi-bundles/**/**/pom.xml,
+				   osgi-bundles/**/pom.xml,
+				   osgi-bundles/pom.xml,
+                                   drools-planner/**/pom.xml, 
+				   drools-process/**/pom.xml"/>
       </replaceregexp>             
 
       <replaceregexp match="&lt;releaseinfo&gt;${current}&lt;/releaseinfo&gt;"
@@ -27,6 +33,20 @@
                      byline="true">
         <fileset dir="." includes="drools-docs/drools-*/src/main/docbook/**/master.xml"/>
       </replaceregexp> 
+
+      <replaceregexp match="${current}"
+                     replace="${new}" 
+                     byline="true">
+        <fileset dir="." includes="drools-grid/drools-grid-rio/src/main/resources/org/drools/executionNodeService.groovy,
+				   drools-grid/drools-grid-rio/src/test/resources/org/drools/executionNodeService.bak.groovy,nstall/build.xml,
+				   install/build.xml"/>
+      </replaceregexp>     
+
+      <replaceregexp match="ignore.drools.version=${current}"
+                     replace="ignore.drools.version=${new}" 
+                     byline="true">
+        <fileset dir="." includes="osgi-bundles/org.drools.osgi.test/src/test/resources/boot-bundles.properties"/>
+      </replaceregexp>     
 
       <replaceregexp match="droolsVersion=${current}"
                      replace="droolsVersion=${new}" 

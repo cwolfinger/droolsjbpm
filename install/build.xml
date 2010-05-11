@@ -2,7 +2,7 @@
 
 <project name="drools.install">
 
-  <property name="drools.version" value="5.1.0.SNAPSHOT" />
+  <property name="drools.version" value="5.1.0.M2" />
   <property name="drools.home" value="../" />
 
   <property name="jboss.home" value="/NotBackedUp/jboss-4.2.3.GA" />

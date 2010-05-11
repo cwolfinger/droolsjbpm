@@ -1,9 +1,9 @@
 Manifest-Version: 1.0
 Bundle-Activator: org.drools.osgi.decisiontables.Activator
-Created-By: 1.5.0_21 (Sun Microsystems Inc.)
+Created-By: 1.5.0_15 (Sun Microsystems Inc.)
 Bundle-License: http://www.apache.org/licenses/LICENSE-2.0.txt
 Import-Package: jxl,jxl.read.biff,org.osgi.framework;version="1.5"
-Bnd-LastModified: 1266547499075
+Bnd-LastModified: 1273520138598
 Export-Package: org.drools.decisiontable;uses:="org.drools.decisiontab
  le.parser.csv,org.drools.decisiontable.parser,org.drools.decisiontabl
  e.parser.xls";version="5.1.0.SNAPSHOT",org.drools.decisiontable.parse
@@ -16,10 +16,8 @@ Export-Package: org.drools.decisiontable;uses:="org.drools.decisiontab
 Bundle-Version: 5.1.0.SNAPSHOT
 Bundle-Name: Drools :: Decision Tables
 Bundle-Description: A rule production system
-Private-Package: .;version="5.1.0.SNAPSHOT",python-dt;version="5.1.0.S
- NAPSHOT"
+Private-Package: python-dt;version="5.1.0.SNAPSHOT"
 Bundle-DocURL: http://www.jboss.org/
-Originally-Created-By: 1.6.0_18 (Sun Microsystems Inc.)
 Bundle-Vendor: JBoss Inc.
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.drools.decisiontables;singleton:=true
