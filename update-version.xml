@@ -14,12 +14,17 @@
 				   drools-eclipse/**/pom.xml,
 				   drools-examples/**/pom.xml,  
 				   drools-pipeline/**/pom.xml,  
-                                   drools-docs/pom.xml, 
+                   drools-docs/pom.xml, 
+				   drools-grid/drools-*/pom.xml,
+				   drools-server/drools-*/pom.xml,
 				   drools-docs/drools-*/pom.xml,
 				   drools-docs/docbook-*/pom.xml,
 				   drools-dataloaders/**/pom.xml,
 				   drools-container/**/pom.xml,
-                                   drools-planner/**/pom.xml, drools-process/**/pom.xml"/>
+                   drools-planner/**/pom.xml, 
+                   osgi-bundles/**/**/pom.xml,
+                   osgi-bundles/pom.xml,
+                   drools-process/**/pom.xml"/>
       </replaceregexp>             
 
       <replaceregexp match="&lt;releaseinfo&gt;${current}&lt;/releaseinfo&gt;"

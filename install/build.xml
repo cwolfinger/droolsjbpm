@@ -4,7 +4,7 @@
 
   <property file="build.properties" />
 
-  <property name="drools.version" value="5.1.0.SNAPSHOT" />
+  <property name="drools.version" value="5.1.0.M2" />
   <property name="drools.home" value="../" />
   <property name="jboss.server.conf.dir" value="${jboss.home}/server/${jboss.server.configuration}/conf" />
   <property name="jboss.server.data.dir" value="${jboss.home}/server/${jboss.server.configuration}/data" />
