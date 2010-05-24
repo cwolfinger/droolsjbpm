@@ -1,49 +1,6 @@
 Manifest-Version: 1.0
-Export-Package: org.drools.builder.impl;uses:="org.drools.compiler";ve
- rsion="5.1.0.M2",org.drools.osgi.compiler;uses:="org.osgi.util.tracke
- r,org.osgi.framework,org.drools.builder.impl,org.drools.compiler";ver
- sion="5.1.0.M2",org.drools.compiler.xml.rules;uses:="org.w3c.dom,org.
- xml.sax,org.antlr.runtime.tree,org.antlr.runtime";version="5.1.0.M2",
- org.drools.compiler.xml.processes;uses:="org.drools.compiler.xml,org.
- w3c.dom,org.xml.sax,javax.xml.transform,javax.xml.transform.stream";v
- ersion="5.1.0.M2",org.drools.compiler.xml;uses:="org.drools.compiler.
- xml.processes,org.drools.compiler.xml.rules,javax.xml.parsers,org.xml
- .sax";version="5.1.0.M2",org.drools.testframework;version="5.1.0.M2",
- org.drools.compiler;uses:="org.drools.rule.builder,org.antlr.runtime.
- tree,org.antlr.runtime,org.xml.sax,org.drools.compiler.xml,org.drools
- .process.builder,org.mvel2,org.drools.compiler.xml.processes,javax.xm
- l.parsers";version="5.1.0.M2",org.drools.process.builder;uses:="org.d
- rools.rule.builder,org.drools.compiler";version="5.1.0.M2",org.drools
- .reteoo.compiled;uses:="org.drools.rule.builder.dialect.java,org.droo
- ls.compiler";version="5.1.0.M2",org.drools.semantics.java.parser;vers
- ion="5.1.0.M2",org.drools.rule.builder.dialect.java;uses:="org.mvel2.
- templates,org.mvel2.integration,org.mvel2.integration.impl,org.drools
- .rule.builder,org.drools.compiler,org.drools.rule.builder.dialect.mve
- l,org.mvel2.optimizers,org.mvel2.compiler,org.drools.rule.builder.dia
- lect.java.parser,org.antlr.runtime,org.mvel2";version="5.1.0.M2",org.
- drools.rule.builder.dialect.mvel;uses:="org.drools.rule.builder,org.d
- rools.compiler,org.mvel2,org.mvel2.util,org.drools.rule.builder.diale
- ct.java,org.mvel2.ast,org.mvel2.compiler";version="5.1.0.M2",org.droo
- ls.rule.builder.dialect.java.parser;uses:="org.antlr.runtime";version
- ="5.1.0.M2",org.drools.rule.builder;uses:="org.drools.compiler,org.dr
- ools.rule.builder.dialect.mvel,org.mvel2,org.mvel2.compiler";version=
- "5.1.0.M2"
-Private-Package: org.drools.commons.jci.problems;version="5.1.0.M2",or
- g.drools.lang.descr;version="5.1.0.M2",org.drools.commons.jci.compile
- rs;version="5.1.0.M2",org.drools.commons.jci.readers;version="5.1.0.M
- 2",org.drools.commons.jci.stores;version="5.1.0.M2",org.drools.lang;v
- ersion="5.1.0.M2",org.drools.lang.dsl;version="5.1.0.M2"
-Tool: Bnd-0.0.357
-Bundle-Name: Drools :: Compiler
-Created-By: 1.6.0_17 (Apple Inc.)
-Require-Bundle: org.drools.core;bundle-version="5.1.0.M2"
-Bundle-Vendor: JBoss Inc.
-DynamicImport-Package: *
-Bundle-Version: 5.1.0.M2
-Bnd-LastModified: 1274528415298
 Bundle-Activator: org.drools.osgi.compiler.Activator
-Bundle-ManifestVersion: 2
-Bundle-Description: A rule production system
+Created-By: 1.5.0_15 (Sun Microsystems Inc.)
 Bundle-License: http://www.apache.org/licenses/LICENSE-2.0.txt
 Import-Package: javax.xml.parsers,javax.xml.transform,javax.xml.transf
  orm.stream,org.antlr.runtime,org.antlr.runtime.tree,org.codehaus.jani
@@ -59,6 +16,49 @@ Import-Package: javax.xml.parsers,javax.xml.transform,javax.xml.transf
  sion="2.0",org.mvel2.templates;version="2.0",org.mvel2.util;version="
  2.0",org.osgi.framework;version="1.5",org.osgi.util.tracker;version="
  1.4",org.w3c.dom,org.xml.sax
-Bundle-SymbolicName: org.drools.compiler;singleton:=true
+Bnd-LastModified: 1274735827715
+Export-Package: org.drools.builder.impl;uses:="org.drools.compiler";ve
+ rsion="5.1.0.M2",org.drools.rule.builder;uses:="org.drools.compiler,o
+ rg.mvel2.compiler,org.mvel2,org.drools.rule.builder.dialect.mvel";ver
+ sion="5.1.0.M2",org.drools.rule.builder.dialect.java.parser;uses:="or
+ g.antlr.runtime";version="5.1.0.M2",org.drools.semantics.java.parser;
+ version="5.1.0.M2",org.drools.compiler.xml;uses:="org.drools.compiler
+ .xml.processes,org.drools.compiler.xml.rules,org.xml.sax,javax.xml.pa
+ rsers";version="5.1.0.M2",org.drools.compiler.xml.processes;uses:="or
+ g.xml.sax,org.w3c.dom,org.drools.compiler.xml,javax.xml.transform.str
+ eam,javax.xml.transform";version="5.1.0.M2",org.drools.rule.builder.d
+ ialect.java;uses:="org.drools.rule.builder,org.mvel2.integration,org.
+ mvel2.integration.impl,org.mvel2.templates,org.mvel2.compiler,org.mve
+ l2.optimizers,org.drools.compiler,org.drools.rule.builder.dialect.mve
+ l,org.drools.rule.builder.dialect.java.parser,org.antlr.runtime,org.m
+ vel2";version="5.1.0.M2",org.drools.osgi.compiler;uses:="org.osgi.fra
+ mework,org.osgi.util.tracker,org.drools.compiler,org.drools.builder.i
+ mpl";version="5.1.0.M2",org.drools.compiler;uses:="org.drools.rule.bu
+ ilder,org.antlr.runtime.tree,org.antlr.runtime,org.drools.compiler.xm
+ l,org.xml.sax,org.mvel2,org.drools.process.builder,org.drools.compile
+ r.xml.processes,javax.xml.parsers";version="5.1.0.M2",org.drools.comp
+ iler.xml.rules;uses:="org.xml.sax,org.w3c.dom,org.antlr.runtime.tree,
+ org.antlr.runtime";version="5.1.0.M2",org.drools.process.builder;uses
+ :="org.drools.rule.builder,org.drools.compiler";version="5.1.0.M2",or
+ g.drools.rule.builder.dialect.mvel;uses:="org.drools.compiler,org.dro
+ ols.rule.builder,org.mvel2,org.mvel2.compiler,org.mvel2.util,org.droo
+ ls.rule.builder.dialect.java,org.mvel2.ast";version="5.1.0.M2",org.dr
+ ools.testframework;version="5.1.0.M2",org.drools.reteoo.compiled;uses
+ :="org.drools.compiler,org.drools.rule.builder.dialect.java";version=
+ "5.1.0.M2"
+Bundle-Version: 5.1.0.M2
+Bundle-Name: Drools :: Compiler
+Bundle-Description: A rule production system
+Private-Package: org.drools.commons.jci.readers;version="5.1.0.M2",org
+ .drools.lang.descr;version="5.1.0.M2",org.drools.lang.dsl;version="5.
+ 1.0.M2",org.drools.commons.jci.compilers;version="5.1.0.M2",org.drool
+ s.commons.jci.stores;version="5.1.0.M2",org.drools.lang;version="5.1.
+ 0.M2",org.drools.commons.jci.problems;version="5.1.0.M2"
 Bundle-DocURL: http://www.jboss.org/
+Bundle-Vendor: JBoss Inc.
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.drools.compiler;singleton:=true
+Tool: Bnd-0.0.357
+Require-Bundle: org.drools.core;bundle-version="5.1.0.M2"
+DynamicImport-Package: *
 

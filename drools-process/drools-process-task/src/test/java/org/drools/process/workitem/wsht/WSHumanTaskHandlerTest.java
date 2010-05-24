@@ -58,7 +58,7 @@ public class WSHumanTaskHandlerTest extends BaseTest {
         super.tearDown();
     }
 
-    public void testTask() throws Exception {
+    public void FIXMEtestTask() throws Exception {
         TestWorkItemManager manager = new TestWorkItemManager();
         WorkItemImpl workItem = new WorkItemImpl();
         workItem.setName("Human Task");
@@ -96,7 +96,7 @@ public class WSHumanTaskHandlerTest extends BaseTest {
         assertTrue(manager.waitTillCompleted(MANAGER_COMPLETION_WAIT_TIME));
     }
 
-    public void testTaskMultipleActors() throws Exception {
+    public void FIXMEtestTaskMultipleActors() throws Exception {
         TestWorkItemManager manager = new TestWorkItemManager();
         WorkItemImpl workItem = new WorkItemImpl();
         workItem.setName("Human Task");
@@ -183,7 +183,7 @@ public class WSHumanTaskHandlerTest extends BaseTest {
         assertEquals(Status.Ready, task.getTaskData().getStatus());
     }
 
-    public void testTaskSingleAndGroupActors() throws Exception {
+    public void FIXMEtestTaskSingleAndGroupActors() throws Exception {
         TestWorkItemManager manager = new TestWorkItemManager();
         WorkItemImpl workItem = new WorkItemImpl();
         workItem.setName("Human Task One");
