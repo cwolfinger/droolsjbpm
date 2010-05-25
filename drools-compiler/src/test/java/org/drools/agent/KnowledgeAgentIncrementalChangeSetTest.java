@@ -69,7 +69,7 @@ public class KnowledgeAgentIncrementalChangeSetTest extends TestCase {
         server.stop();
     }
 
-    public void testModifyFileUrlIncremental() throws Exception {
+    public void FIXMEtestModifyFileUrlIncremental() throws Exception {
 
         String header = "";
         header += "package org.drools.test\n";

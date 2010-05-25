@@ -4,7 +4,7 @@ Created-By: 1.5.0_15 (Sun Microsystems Inc.)
 Bundle-License: http://www.apache.org/licenses/LICENSE-2.0.txt
 Import-Package: org.osgi.framework;version="1.5",org.w3c.dom,org.xml.s
  ax
-Bnd-LastModified: 1274784472471
+Bnd-LastModified: 1274819120897
 Export-Package: org.drools.bpmn2;uses:="org.drools.bpmn2.xml";version=
  "5.1.0.M2",org.drools.bpmn2.core;version="5.1.0.M2",org.drools.bpmn2.
  xpath;version="5.1.0.M2",org.drools.bpmn2.handler;version="5.1.0.M2",

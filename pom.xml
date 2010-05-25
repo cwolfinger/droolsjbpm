@@ -417,9 +417,11 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
          </activation>
          <modules>
             <module>drools-docs</module>
-            <!--module>drools-assistant</module-->
+            <module>drools-assistant</module>
             <module>drools-eclipse</module>
             <module>drools-examples</module>
+            <!--module>drools-atom</module-->
+            <module>drools-server</module>
          </modules>
       </profile>
       <profile>
@@ -906,6 +908,11 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
          </dependency>
          <dependency>
             <groupId>org.drools</groupId>
+            <artifactId>drools-grid-rio</artifactId>
+            <version>${project.version}</version>
+         </dependency>
+         <dependency>
+            <groupId>org.drools</groupId>
             <artifactId>drools-bpmn2</artifactId>
             <version>${project.version}</version>
          </dependency>
@@ -1054,6 +1061,21 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
          <dependency>
             <groupId>org.drools</groupId>
             <artifactId>drools-gwt-graph</artifactId>
+            <version>${project.version}</version>
+         </dependency>
+         <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-jpdl</artifactId>
+            <version>${project.version}</version>
+         </dependency>
+         <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-ode</artifactId>
+            <version>${project.version}</version>
+         </dependency>
+         <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-gwt-server-war</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>

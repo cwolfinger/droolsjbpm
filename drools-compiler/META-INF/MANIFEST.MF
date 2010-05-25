@@ -16,7 +16,7 @@ Import-Package: javax.xml.parsers,javax.xml.transform,javax.xml.transf
  sion="2.0",org.mvel2.templates;version="2.0",org.mvel2.util;version="
  2.0",org.osgi.framework;version="1.5",org.osgi.util.tracker;version="
  1.4",org.w3c.dom,org.xml.sax
-Bnd-LastModified: 1274783871580
+Bnd-LastModified: 1274819102654
 Export-Package: org.drools.builder.impl;uses:="org.drools.compiler";ve
  rsion="5.1.0.M2",org.drools.rule.builder;uses:="org.drools.compiler,o
  rg.mvel2.compiler,org.mvel2,org.drools.rule.builder.dialect.mvel";ver

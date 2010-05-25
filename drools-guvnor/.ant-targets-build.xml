@@ -1,4 +1,6 @@
+download-jboss-as
 guvnor-standalone
 gwt-compile
 gwt-shell
 plug-editors
+remove-jboss-as
