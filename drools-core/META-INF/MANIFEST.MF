@@ -15,7 +15,7 @@ Import-Package: com.thoughtworks.xstream,com.thoughtworks.xstream.conv
  ,org.mvel2.templates;version="2.0",org.mvel2.util;version="2.0",org.o
  sgi.framework;version="1.5",org.w3c.dom,org.xml.sax,org.xml.sax.helpe
  rs
-Bnd-LastModified: 1274735734551
+Bnd-LastModified: 1274783817291
 Export-Package: org.drools.ruleflow.instance;uses:="org.drools.workflo
  w.instance.impl,org.drools.workflow.instance,org.drools.ruleflow.core
  ,org.drools.workflow.core.node,org.drools.process.instance";version="
