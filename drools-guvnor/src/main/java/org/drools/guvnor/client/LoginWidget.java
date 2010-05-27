@@ -87,6 +87,7 @@ public class LoginWidget {
 
     private void doLogin(final TextField userName, TextField password, final FormStylePopup pop) {
         LoadingPopup.showMessage(messages.Authenticating());
+        
         RepositoryServiceFactory.login( userName.getText(), password.getText(), new GenericCallback() {
             public void onSuccess(Object o) {
                 userNameLoggedIn = userName.getText();

@@ -50,6 +50,11 @@ public class SecurityServiceImpl
 
     public boolean login(String userName,
                          String password) {
+
+        if ( userName == null || userName.trim().equals( "" ) ) {
+            userName = "admin";
+        }
+
         log.info( "Logging in user [" + userName + "]" );
         if ( Contexts.isApplicationContextActive() ) {
 
