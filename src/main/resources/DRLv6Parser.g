@@ -1,5 +1,5 @@
 parser grammar DRLv6Parser;
-
+ 
 options {
   language = Java;
   output = AST;
@@ -11,6 +11,7 @@ options {
 tokens {
   VT_COMPILATION_UNIT;
   VT_PACKAGE_ID;
+  VT_PACKAGE;
   
   VT_GLOBAL_ID;
   VT_DATA_TYPE;
@@ -27,7 +28,10 @@ tokens {
   VT_SLOT;
   VT_SLOT_ID;
   
+  VT_TYPE_DECLARE;
   VT_TYPE_DECLARE_ID;
+  VT_DL_DEFINITION;
+  VT_DL_TYPE;
   
   VT_RULE_ID; 
   VT_ATTRIBUTES;
@@ -108,7 +112,7 @@ compilation_unit
 package_statement
   : PACKAGE
     package_id SEMICOLON?
-    -> ^(PACKAGE package_id)
+    -> ^(VT_PACKAGE package_id)
   ;
   
 package_id
@@ -237,13 +241,14 @@ slot_id
 
 
 type_declaration
-  : DECLARE  type_declare_id
-    type_declare_attributes?
+  : DECLARE  type_declare_id extend?
+    type_declare_attributes?  
+    dl_class_descr?
     decl_field*
     END SEMICOLON?
-    -> ^(DECLARE type_declare_id type_declare_attributes? decl_field*)
+    -> ^(VT_TYPE_DECLARE type_declare_id extend? type_declare_attributes? dl_class_descr? decl_field*)
   ;
-
+ 
 type_declare_id
   :   id=ID
      -> VT_TYPE_DECLARE_ID[$id]
@@ -263,8 +268,6 @@ type_declare_attribute
   
 type_declare_att_semantic
   :         tda_namespace
-        |   tda_subclass
-        |   tda_subproperty
         |   tda_disjoint
         |   tda_symmetric
         |   tda_transitive
@@ -278,14 +281,6 @@ tda_role
 tda_namespace
   :     AT! NAMESPACE^ LEFT_PAREN! ID EQUALS! STRING RIGHT_PAREN! 
   ;  
-
-tda_subclass
-  :    AT! SUBCLASS^ LEFT_PAREN! ID RIGHT_PAREN!
-  ;
-
-tda_subproperty
-  :    AT! SUBPROPERTY^ LEFT_PAREN! ID RIGHT_PAREN!
-  ;
   
 tda_disjoint
   :    AT! DISJOINT^ LEFT_PAREN! ID RIGHT_PAREN!
@@ -304,13 +299,9 @@ tda_symmetric
   ;  
   
   
-  
-
-/*
-decl_metadata
-  :   AT^ ID paren_chunk?
+extend
+  :   EXTEND ID
   ;
-*/
 
 decl_field
   : ID  
@@ -340,6 +331,52 @@ decl_field_attribute
     KEY 
   ;
 
+
+
+dl_class_descr 
+  :   AS dl_implies
+      -> ^(VT_DL_DEFINITION dl_implies) 
+  ;
+  
+dl_implies
+  :   dl_or (impl=IMPLIES dl_or)?
+  -> {impl==null}? dl_or
+  -> ^(VT_IMPLIES dl_or dl_or)
+  ;  
+  
+dl_or
+  :   dl_and (or=OR dl_and)*
+  -> {or==null}? dl_and
+  ->  ^(VT_OR dl_and+)
+  ;  
+ 
+dl_and
+  :   dl_atom (and=AND dl_atom)*
+  -> {and==null}? dl_atom
+  ->  ^(VT_AND dl_atom+)
+  ;  
+
+dl_atom
+  :   NEG dl_atom
+      -> ^(VT_NEG dl_atom)
+  |   dl_type
+  |   dl_prop
+  ;
+  
+  
+dl_type
+  :   LEFT_PAREN! dl_implies RIGHT_PAREN!
+  |   dl_class
+  ;
+    
+dl_class
+  :   ID LEFT_PAREN RIGHT_PAREN 
+      -> ^(VT_DL_TYPE ID)
+  ;  
+  
+dl_prop
+  :   ID (ALL | SOME)^ dl_type      
+  ;  
 
 /**************************** RULES *******************************************/
 

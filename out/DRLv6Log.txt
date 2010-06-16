@@ -26,7 +26,7 @@ end
 			(VT_IMPORT_ID org klass
 			)
 		) 
-		(declare Klass
+		(VT_TYPE_DECLARE Klass
 		) 
 		(rule "ruel" 
 			(when VT_AND_IMPLICIT
@@ -63,7 +63,7 @@ package semi.colon.is.optional
 package_statement
 **************************************
 >>>> RESULT :  SUCCESS 
->> TIME to parse 1
+>> TIME to parse 0
 >> SOURCE : 
 package simplePack
 >> OUTPUT : 
@@ -76,7 +76,7 @@ package simplePack
 global
 **************************************
 >>>> RESULT :  SUCCESS 
->> TIME to parse 1
+>> TIME to parse 0
 >> SOURCE : 
 global int N 
 >> OUTPUT : 
@@ -146,7 +146,7 @@ org.pack.data.Claxx[]
 data_type
 **************************************
 >>>> RESULT :  SUCCESS 
->> TIME to parse 1
+>> TIME to parse 0
 >> SOURCE : 
 int[][][]
 >> OUTPUT : 
@@ -157,7 +157,7 @@ int[][][]
 import_statement
 **************************************
 >>>> RESULT :  SUCCESS 
->> TIME to parse 1
+>> TIME to parse 0
 >> SOURCE : 
 import jav.lang.String
 >> OUTPUT : 
@@ -183,7 +183,7 @@ import Test ;
 import_statement
 **************************************
 >>>> RESULT :  SUCCESS 
->> TIME to parse 0
+>> TIME to parse 1
 >> SOURCE : 
 import jav.pack.*
 >> OUTPUT : 
@@ -228,7 +228,7 @@ function float square( float x ) { ... x*x ... }
 function
 **************************************
 >>>> RESULT :  SUCCESS 
->> TIME to parse 1
+>> TIME to parse 0
 >> SOURCE : 
 function process( int x, org.String zz ) { ... ... }
 >> OUTPUT : 
@@ -274,23 +274,20 @@ type_declaration
 >>>> RESULT :  SUCCESS 
 >> TIME to parse 1
 >> SOURCE : 
-declare Student
+declare Student extends Person
  @role(entity) 
  @namespace(myNS="http:\\www.stix.com\domain\subd#") 
- @subclass(Person)
  age  : int 
  name : String 
  end 
 
 >> OUTPUT : 
 
-	(declare Student 
+	(VT_TYPE_DECLARE Student extends Person 
 		(VT_ATTRIBUTES 
 			(role entity
 			) 
 			(namespace myNS "http:\\www.stix.com\domain\subd#"
-			) 
-			(subclass Person
 			)
 		) 
 		(VT_FIELD age 
@@ -308,10 +305,9 @@ type_declaration
 >>>> RESULT :  SUCCESS 
 >> TIME to parse 1
 >> SOURCE : 
-declare HasFriend 
+declare HasFriend extends Knows
 @role(property) 
 @namespace(myNS="http:\\www.somens.com\arg\test#") 
-@subproperty(Knows) 
 @disjoint(HasEnemy) 
 @symmetric 
 subject	: Person 
@@ -320,13 +316,11 @@ end
 
 >> OUTPUT : 
 
-	(declare HasFriend 
+	(VT_TYPE_DECLARE HasFriend extends Knows 
 		(VT_ATTRIBUTES 
 			(role property
 			) 
 			(namespace myNS "http:\\www.somens.com\arg\test#"
-			) 
-			(subproperty Knows
 			) 
 			(disjoint HasEnemy
 			) symmetric
@@ -344,7 +338,7 @@ end
 type_declaration
 **************************************
 >>>> RESULT :  SUCCESS 
->> TIME to parse 2
+>> TIME to parse 1
 >> SOURCE : 
 declare HasSpouse 
 @role(property) 
@@ -358,7 +352,7 @@ end
 
 >> OUTPUT : 
 
-	(declare HasSpouse 
+	(VT_TYPE_DECLARE HasSpouse 
 		(VT_ATTRIBUTES 
 			(role property
 			) 
@@ -443,28 +437,6 @@ type_declare_attribute
 type_declare_attribute
 **************************************
 >>>> RESULT :  SUCCESS 
->> TIME to parse 1
->> SOURCE : 
-@subclass(Type)
->> OUTPUT : 
-
-	(subclass Type
-	)
-**************************************
-type_declare_attribute
-**************************************
->>>> RESULT :  SUCCESS 
->> TIME to parse 0
->> SOURCE : 
-@subproperty(SomeProperty)
->> OUTPUT : 
-
-	(subproperty SomeProperty
-	)
-**************************************
-type_declare_attribute
-**************************************
->>>> RESULT :  SUCCESS 
 >> TIME to parse 0
 >> SOURCE : 
 @disjoint(AnotherType)
@@ -524,7 +496,7 @@ field = (...) : datatype[][] @[key]
 rule
 **************************************
 >>>> RESULT :  SUCCESS 
->> TIME to parse 0
+>> TIME to parse 1
 >> SOURCE : 
 rule "ruleName" extends "anotherRule" 
  salience 100 
@@ -684,7 +656,7 @@ timer 100
 rule_attribute
 **************************************
 >>>> RESULT :  SUCCESS 
->> TIME to parse 0
+>> TIME to parse 1
 >> SOURCE : 
 dialect "java" 
 >> OUTPUT : 
@@ -717,7 +689,7 @@ defeats "anotherRule"
 rule_attribute
 **************************************
 >>>> RESULT :  SUCCESS 
->> TIME to parse 0
+>> TIME to parse 1
 >> SOURCE : 
 deductive
 >> OUTPUT : 
@@ -770,7 +742,7 @@ implication @[crisp]
 operator_attributes
 **************************************
 >>>> RESULT :  SUCCESS 
->> TIME to parse 3
+>> TIME to parse 1
 >> SOURCE : 
 @[
 kind="lukasiewicz", 
@@ -803,7 +775,7 @@ missing="sStrat"
 rule
 **************************************
 >>>> RESULT :  SUCCESS 
->> TIME to parse 3
+>> TIME to parse 1
 >> SOURCE : 
 rule test when Bus() Car() Taxi()then end
 >> OUTPUT : 
@@ -900,7 +872,7 @@ rule test when Car() or @[kind="anOr"] Taxi() or @[kind="anotherOr"] Bus()then e
 rule
 **************************************
 >>>> RESULT :  SUCCESS 
->> TIME to parse 1
+>> TIME to parse 0
 >> SOURCE : 
 rule test when $p : Person() xor Dog()then end
 >> OUTPUT : 
@@ -927,7 +899,7 @@ rule test when $p : Person() xor Dog()then end
 rule
 **************************************
 >>>> RESULT :  SUCCESS 
->> TIME to parse 0
+>> TIME to parse 1
 >> SOURCE : 
 rule test when (Person() xor Dog()) equiv Cat()then end
 >> OUTPUT : 
@@ -1073,7 +1045,7 @@ rule "r" when neg @[crisp] very @[crisp] Person() then end
 rule
 **************************************
 >>>> RESULT :  SUCCESS 
->> TIME to parse 1
+>> TIME to parse 0
 >> SOURCE : 
 rule "r" when $lab : Person()then end
 >> OUTPUT : 
@@ -1121,7 +1093,7 @@ rule "r" when (Person() implies Dog())then end
 rule
 **************************************
 >>>> RESULT :  SUCCESS 
->> TIME to parse 1
+>> TIME to parse 0
 >> SOURCE : 
 rule "r" when exists @[crisp] ( $p : Person() and $d : Dog() ) then end
 >> OUTPUT : 
@@ -1156,7 +1128,7 @@ rule "r" when exists @[crisp] ( $p : Person() and $d : Dog() ) then end
 rule
 **************************************
 >>>> RESULT :  SUCCESS 
->> TIME to parse 0
+>> TIME to parse 1
 >> SOURCE : 
 rule "r" when  $p : exists Person() then end
 >> OUTPUT : 
@@ -1285,7 +1257,7 @@ rule "r" when forall  ( $p : Person()                Person() ) then end
 rule
 **************************************
 >>>> RESULT :  SUCCESS 
->> TIME to parse 0
+>> TIME to parse 1
 >> SOURCE : 
 rule "r" when forall  ( $p : Person()                (Person() Dog()) ) then end
 >> OUTPUT : 
@@ -1380,7 +1352,7 @@ rule "r" when $p : Person() then end
 rule
 **************************************
 >>>> RESULT :  SUCCESS 
->> TIME to parse 0
+>> TIME to parse 1
 >> SOURCE : 
 rule "r" when Person() @[crisp]then end
 >> OUTPUT : 
@@ -1401,7 +1373,7 @@ rule "r" when Person() @[crisp]then end
 rule
 **************************************
 >>>> RESULT :  SUCCESS 
->> TIME to parse 2
+>> TIME to parse 3
 >> SOURCE : 
 rule "r" when Person( "john" , 18, height > 150) then end
 >> OUTPUT : 
@@ -1473,7 +1445,7 @@ rule "r" when Person( "john" , 18, 2.0, true, null, new Dog(), {12, $x, "test" }
 literal_object
 **************************************
 >>>> RESULT :  SUCCESS 
->> TIME to parse 1
+>> TIME to parse 0
 >> SOURCE : 
 new Thing(13, $var, true)
 >> OUTPUT : 
@@ -1488,7 +1460,7 @@ new Thing(13, $var, true)
 literal_object
 **************************************
 >>>> RESULT :  SUCCESS 
->> TIME to parse 1
+>> TIME to parse 0
 >> SOURCE : 
 new Obj(12 - 13*($var*2 + sqrt(4)))
 >> OUTPUT : 
@@ -1508,6 +1480,50 @@ new Obj(12 - 13*($var*2 + sqrt(4)))
 						)
 					)
 				)
+			)
+		)
+	)
+**************************************
+type_declaration
+**************************************
+>>>> RESULT :  SUCCESS 
+>> TIME to parse 1
+>> SOURCE : 
+declare Student 
+ defined Male() and Human() and (Slave() or worksAt some (School() or Prison()))
+ age  : int 
+ name : String 
+ end 
+
+>> OUTPUT : 
+
+	(VT_TYPE_DECLARE Student 
+		(VT_DL_DEFINITION 
+			(VT_AND 
+				(VT_DL_TYPE Male
+				) 
+				(VT_DL_TYPE Human
+				) 
+				(VT_OR 
+					(VT_DL_TYPE Slave
+					) 
+					(some worksAt 
+						(VT_OR 
+							(VT_DL_TYPE School
+							) 
+							(VT_DL_TYPE Prison
+							)
+						)
+					)
+				)
+			)
+		) 
+		(VT_FIELD age 
+			(VT_DATA_TYPE 0 int
+			)
+		) 
+		(VT_FIELD name 
+			(VT_DATA_TYPE 0 String
 			)
 		)
 	)

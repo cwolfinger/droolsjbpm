@@ -161,18 +161,16 @@ public class Rule_Test {
 	public void test_type_declaration() {
 		String rule = "type_declaration";
 		String[] testDRL = {
-				"declare Student" + "\n" +
+				"declare Student extends Person" + "\n" +
 				" @role(entity) " + "\n" +
-				" @namespace(myNS=\"http:\\\\www.stix.com\\domain\\subd#\") " + "\n" +
-				" @subclass(Person)" + "\n" +
+				" @namespace(myNS=\"http:\\\\www.stix.com\\domain\\subd#\") " + "\n" +				
 				" age  : int " + "\n" +
 				" name : String " + "\n" +
 				" end \n",
 				
-				"declare HasFriend " + "\n" +
+				"declare HasFriend extends Knows" + "\n" +
 				"@role(property) " + "\n" +
-				"@namespace(myNS=\"http:\\\\www.somens.com\\arg\\test#\") " + "\n" +	
-				"@subproperty(Knows) " + "\n" +
+				"@namespace(myNS=\"http:\\\\www.somens.com\\arg\\test#\") " + "\n" +					
 				"@disjoint(HasEnemy) " + "\n" +
 				"@symmetric " + "\n" +
 				"subject	: Person " + "\n" +
@@ -202,9 +200,7 @@ public class Rule_Test {
 				"@role(type)",
 				"@role(entity)",
 				"@role(property)",
-				"@namespace( alias = \"http:\\\\www.org.dom\\arg# \")",
-				"@subclass(Type)",
-				"@subproperty(SomeProperty)",
+				"@namespace( alias = \"http:\\\\www.org.dom\\arg# \")",				
 				"@disjoint(AnotherType)",
 				"@symmetric",
 				"@transitive",
@@ -545,6 +541,26 @@ public class Rule_Test {
 				
 		check(rule,testDRL);										
 	}
+	
+	
+	
+	
+	
+	@Test	
+	public void test_decl_dl() {
+		String rule = "type_declaration";
+		String[] testDRL = {
+				"declare Student " + "\n" +
+				" defined Male() and Human() and (Slave() or worksAt some (School() or Prison()))" + "\n" +				
+				" age  : int " + "\n" +
+				" name : String " + "\n" +
+				" end \n"
+		};
+				
+		check(rule,testDRL);										
+	}
+	
+	
 	
 	//TODO : test filter & tree struct
 	

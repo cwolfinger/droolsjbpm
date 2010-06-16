@@ -211,6 +211,10 @@ AND
   : 'and'
   ;
 
+AS
+  : 'as'
+  ;
+
 ATTRIBUTES
   : 'attributes'
   ;
@@ -238,6 +242,7 @@ DECLARE
 DEFEATS
   : 'defeats'
   ;
+
 
 DISJOINT
   :  'disjoint'
@@ -425,13 +430,7 @@ SOME
   : 'some'
   ; 
   
-SUBCLASS
-  : 'subclass'
-  ;  
-  
-SUBPROPERTY
-  : 'subproperty'
-  ;
+
   
 SYMMETRIC
   : 'symmetric'
