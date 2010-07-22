@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<process xmlns="http://drools.org/drools-5.0/process"
+         xmlns:xs="http://www.w3.org/2001/XMLSchema-instance"
+         xs:schemaLocation="http://drools.org/drools-5.0/process drools-processes-5.0.xsd"
+         type="RuleFlow" name="flow" id="com.plugtree.timer" package-name="com.plugtree" version="1">
+  <header>
+    <imports>
+      <import name="org.drools.persistence.processinstance.timer.Message" />
+    </imports>
+    <globals>
+      <global identifier="myList" type="java.util.List" />
+    </globals>
+  </header>
+
+  <nodes>
+    <start id="1" name="Start" x="96" y="96" width="48" height="48" />
+    <timerNode id="2" name="Timer" x="228" y="96" width="48" height="48" delay="800ms" period="200ms" />
+    <actionNode id="3" name="Action" x="348" y="96" width="80" height="48" >
+      <action type="expression" dialect="java" >
+        System.out.println("Triggered");
+        myList.add( new Message() );
+        insert( new Message() );
+      </action>
+    </actionNode>
+    <milestone id="4" name="Wait" x="504" y="96" width="80" height="48" >
+      <constraint type="rule" dialect="mvel" >
+        Number( intValue &gt;= 5 ) from accumulate ( m: Message( ), count( m ) )
+      </constraint>
+    </milestone>
+    <end id="5" name="End" x="648" y="96" width="48" height="48" />
+  </nodes>
+
+  <connections>
+    <connection from="1" to="2" />
+    <connection from="2" to="3" />
+    <connection from="3" to="4" />
+    <connection from="4" to="5" />
+  </connections>
+
+</process>

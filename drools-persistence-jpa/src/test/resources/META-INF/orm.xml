@@ -13,4 +13,12 @@ where
     :type in elements(processInstanceInfo.eventTypes)
           </query>
       </named-query>
+
+  <entity class="org.drools.process.instance.timer.TimerInstance">
+  	<attributes>
+  	  <id name="id"/>
+  	  <transient name="jobHandle"/>
+  	</attributes>
+  </entity>
+
 </entity-mappings>

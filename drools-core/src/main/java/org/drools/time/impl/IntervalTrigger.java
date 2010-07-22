@@ -21,6 +21,7 @@ public class IntervalTrigger
     private int       repeatCount;
     private Date      nextFireTime;
     private long      period;
+    private long      delay;
     private String[]  calendarNames;
     private Calendars calendars;
 
@@ -37,6 +38,7 @@ public class IntervalTrigger
                            String[] calendarNames,
                            Calendars calendars) {
         this.period = period;
+        this.delay = delay;
 
         if ( startTime == null ) {
             startTime = new Date( timestamp );
@@ -191,4 +193,12 @@ public class IntervalTrigger
             }
         }
     }
+
+	public long getPeriod() {
+		return period;
+	}
+
+	public long getDelay() {
+		return delay;
+	}
 }

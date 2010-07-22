@@ -22,9 +22,11 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import org.drools.process.instance.timer.TimerManager.ProcessJobContext;
 import org.drools.time.Job;
 import org.drools.time.JobContext;
 import org.drools.time.JobHandle;
+import org.drools.time.ProcessTimerPersistenceStrategy;
 import org.drools.time.SessionClock;
 import org.drools.time.TimerService;
 import org.drools.time.Trigger;
@@ -41,13 +43,19 @@ public class JDKTimerService
     SessionClock {
     
     private ScheduledThreadPoolExecutor scheduler;
+    private ProcessTimerPersistenceStrategy processTimerPersistenceStrategy;
 
     public JDKTimerService() {
-        this( 1 );
+        this( null );
+    }
+    
+    public JDKTimerService(ProcessTimerPersistenceStrategy processTimerPersistenceStrategy){
+    	this(1, processTimerPersistenceStrategy);
     }
 
-    public JDKTimerService(int size) {
+    public JDKTimerService(int size, ProcessTimerPersistenceStrategy processTimerPersistenceStrategy) {
         this.scheduler = new ScheduledThreadPoolExecutor( size );
+        this.processTimerPersistenceStrategy = processTimerPersistenceStrategy;
     }
 
     /**
@@ -67,28 +75,41 @@ public class JDKTimerService
     public JobHandle scheduleJob(Job job,
                                  JobContext ctx,
                                  Trigger trigger) {
-        JDKJobHandle jobHandle = new JDKJobHandle();
 
         Date date = trigger.nextFireTime();
 
         if ( date != null ) {
-            JDKCallableJob callableJob = new JDKCallableJob( job,
-                                                             ctx,
-                                                             trigger,
-                                                             jobHandle,
-                                                             this.scheduler );
-            ScheduledFuture future = schedule( date,
-                                               callableJob,
-                                               this.scheduler );
-            jobHandle.setFuture( future );
-
-            return jobHandle;
+        	if( null != getProcessTimerPersistenceStrategy() 
+        			&& ctx instanceof ProcessJobContext
+        			&& trigger instanceof IntervalTrigger){
+        		ProcessJobContext processContext = (ProcessJobContext) ctx;
+        		IntervalTrigger intervalTrigger = (IntervalTrigger) trigger;
+        		ProcessJobHandle jobHandle = new ProcessJobHandle();
+        		jobHandle.setProcessId(processContext.getProcessInstanceId());
+        		getProcessTimerPersistenceStrategy().save(processContext, intervalTrigger);
+        		return jobHandle;
+        	}else {
+                JDKJobHandle jobHandle = new JDKJobHandle();
+	            JDKCallableJob callableJob = new JDKCallableJob( job,
+                        ctx,
+                        trigger,
+                        jobHandle,
+                        this.scheduler );
+				ScheduledFuture future = schedule( date,
+				          callableJob,
+				          this.scheduler );
+				jobHandle.setFuture( future );
+				
+				return jobHandle;
+        	}
         } else {
             return null;
         }
     }
 
     public boolean removeJob(JobHandle jobHandle) {
+    	if(null != getProcessTimerPersistenceStrategy() && jobHandle instanceof ProcessJobHandle)
+    		return getProcessTimerPersistenceStrategy().remove((ProcessJobHandle)jobHandle);
         return this.scheduler.remove( (Runnable) ((JDKJobHandle) jobHandle).getFuture() );
     }
 
@@ -171,5 +192,14 @@ public class JDKTimerService
     public long getTimeToNextJob() {
         return 0;
     }
+
+	public ProcessTimerPersistenceStrategy getProcessTimerPersistenceStrategy() {
+		return processTimerPersistenceStrategy;
+	}
+
+	public void setProcessTimerPersistenceStrategy(
+			ProcessTimerPersistenceStrategy processTimerPersistenceStrategy) {
+		this.processTimerPersistenceStrategy = processTimerPersistenceStrategy;
+	}
 
 }

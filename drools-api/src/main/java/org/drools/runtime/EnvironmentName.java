@@ -13,4 +13,5 @@ public class EnvironmentName {
     public static final String GLOBALS                              = "drools.Globals";
     public static final String CALENDARS                            = "org.drools.time.Calendars";
     public static final String DATE_FORMATS                         = "org.drools.build.DateFormats";
+	public static final String PROCESS_TIMER_STRATEGY = "org.drools.time.Process";
 }
