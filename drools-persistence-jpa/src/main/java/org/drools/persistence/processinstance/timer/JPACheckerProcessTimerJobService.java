@@ -85,6 +85,7 @@ public class JPACheckerProcessTimerJobService implements
         SignalManager signalManager = sessionImpl.getInternalWorkingMemory().getSignalManager();
 		TimerInstance timerInstance = processJob.getTimerInstance();
 		signalManager.signalEvent( processJob.getProcessId(), "timerTriggered",  timerInstance );
+		ksession.dispose();
 	}
 
 	private boolean shouldExecuteJob(ProcessTimerJob processJob) {

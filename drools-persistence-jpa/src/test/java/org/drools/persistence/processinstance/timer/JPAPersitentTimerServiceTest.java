@@ -15,13 +15,16 @@ import junit.framework.TestCase;
 import org.drools.KnowledgeBase;
 import org.drools.KnowledgeBaseFactory;
 import org.drools.Message;
+import org.drools.base.MapGlobalResolver;
 import org.drools.builder.KnowledgeBuilder;
 import org.drools.builder.KnowledgeBuilderError;
 import org.drools.builder.KnowledgeBuilderFactory;
 import org.drools.builder.ResourceType;
 import org.drools.impl.EnvironmentFactory;
 import org.drools.io.ResourceFactory;
+import org.drools.io.impl.ClassPathResource;
 import org.drools.persistence.jpa.JPAKnowledgeService;
+import org.drools.persistence.session.TestWorkItemHandler;
 import org.drools.runtime.Environment;
 import org.drools.runtime.EnvironmentName;
 import org.drools.runtime.StatefulKnowledgeSession;
@@ -109,6 +112,8 @@ public class JPAPersitentTimerServiceTest extends TestCase{
         ksession.dispose();
         jpaTimerChecker.stop();
 	}
+	
+	
 
 	private StatefulKnowledgeSession createKnowledgeSession(KnowledgeBase kbase) {
 		Environment environment = EnvironmentFactory.newEnvironment();
@@ -137,4 +142,39 @@ public class JPAPersitentTimerServiceTest extends TestCase{
         kbase.addKnowledgePackages(kbuilder.getKnowledgePackages());
 		return kbase;
 	}
+	
+    public void testPersistenceTimer() throws Exception {
+        KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
+        kbuilder.add( new ClassPathResource( "TimerProcess.rf" ),
+                      ResourceType.DRF );
+        KnowledgeBase kbase = kbuilder.newKnowledgeBase();
+
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory( "org.drools.persistence.jpa" );
+        
+        Environment env = KnowledgeBaseFactory.newEnvironment();
+        env.set( EnvironmentName.ENTITY_MANAGER_FACTORY, emf );
+        env.set( EnvironmentName.GLOBALS, new MapGlobalResolver() );
+        env.set(EnvironmentName.PROCESS_TIMER_STRATEGY, new JPAProcessTimerPersistenceStrategy(emf));
+
+        StatefulKnowledgeSession ksession = JPAKnowledgeService.newStatefulKnowledgeSession( kbase, null, env );
+        int id = ksession.getId();
+        ksession.dispose();
+        
+		JPACheckerProcessTimerJobService jpaTimerChecker = new JPACheckerProcessTimerJobService(id, kbase);
+        jpaTimerChecker.start();
+        
+        ksession = JPAKnowledgeService.loadStatefulKnowledgeSession( id, kbase, null, env );
+        ProcessInstance processInstance = ksession.startProcess( "org.drools.test.TestProcess" );
+        ksession.dispose();
+
+        assertNotNull(TestWorkItemHandler.getInstance().getWorkItem());
+        
+        Thread.sleep(5000);
+        
+        ksession = JPAKnowledgeService.loadStatefulKnowledgeSession( id, kbase, null, env );
+        processInstance = ksession.getProcessInstance( processInstance.getId() );
+        assertNull( processInstance );
+        jpaTimerChecker.stop();
+    }
+
 }
