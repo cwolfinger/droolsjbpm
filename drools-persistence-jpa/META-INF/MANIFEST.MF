@@ -1,26 +1,26 @@
 Manifest-Version: 1.0
-Created-By: 1.5.0_21 (Sun Microsystems Inc.)
+Created-By: 1.5.0_15 (Sun Microsystems Inc.)
 Bundle-License: http://www.apache.org/licenses/LICENSE-2.0.txt
 Import-Package: javax.naming,javax.persistence,javax.transaction,org.h
  ibernate.annotations,org.hibernate.ejb,org.osgi.framework;version="1.
  5",org.slf4j;version="1.6"
-Bnd-LastModified: 1279516304126
+Bnd-LastModified: 1279872919059
 Export-Package: org.drools.persistence.processinstance.persisters;uses
  :="org.drools.persistence.processinstance.variabletypes,javax.persist
- ence";version="5.1.0.SNAPSHOT",org.drools.persistence.session;uses:="
- javax.persistence,javax.naming,org.slf4j,javax.transaction,org.drools
- .persistence.processinstance";version="5.1.0.SNAPSHOT",org.drools.per
- sistence.processinstance;uses:="javax.persistence,org.hibernate.annot
- ations,org.drools.persistence.processinstance.variabletypes,org.drool
- s.persistence.processinstance.persisters";version="5.1.0.SNAPSHOT",or
- g.drools.persistence.jpa.impl;uses:="org.drools.persistence.session,o
- rg.drools.persistence.processinstance";version="5.1.0.SNAPSHOT",org.d
- rools.persistence.processinstance.variabletypes;uses:="javax.persiste
- nce";version="5.1.0.SNAPSHOT",org.drools.persistence.jpa.grid;uses:="
- org.drools.persistence.session,org.drools.persistence.processinstance
- ";version="5.1.0.SNAPSHOT",org.drools.persistence.osgi;uses:="org.hib
- ernate.ejb,org.osgi.framework";version="5.1.0.SNAPSHOT"
-Bundle-Version: 5.1.0.SNAPSHOT
+ ence";version="5.1.0.CR1",org.drools.persistence.session;uses:="javax
+ .persistence,javax.naming,org.slf4j,javax.transaction,org.drools.pers
+ istence.processinstance";version="5.1.0.CR1",org.drools.persistence.p
+ rocessinstance;uses:="javax.persistence,org.hibernate.annotations,org
+ .drools.persistence.processinstance.variabletypes,org.drools.persiste
+ nce.processinstance.persisters";version="5.1.0.CR1",org.drools.persis
+ tence.jpa.impl;uses:="org.drools.persistence.session,org.drools.persi
+ stence.processinstance";version="5.1.0.CR1",org.drools.persistence.pr
+ ocessinstance.variabletypes;uses:="javax.persistence";version="5.1.0.
+ CR1",org.drools.persistence.jpa.grid;uses:="org.drools.persistence.se
+ ssion,org.drools.persistence.processinstance";version="5.1.0.CR1",org
+ .drools.persistence.osgi;uses:="org.osgi.framework,org.hibernate.ejb"
+ ;version="5.1.0.CR1"
+Bundle-Version: 5.1.0.CR1
 Bundle-Name: Drools :: Persistence :: JPA
 Bundle-Description: A rule production system
 Bundle-DocURL: http://www.jboss.org/
@@ -28,7 +28,7 @@ Bundle-Vendor: JBoss Inc.
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.drools.persistence-jpa
 Tool: Bnd-0.0.357
-Require-Bundle: org.drools.core;bundle-version="5.1.0.SNAPSHOT", org.d
- rools.compiler;bundle-version="5.1.0.SNAPSHOT"
+Require-Bundle: org.drools.core;bundle-version="5.1.0.CR1", org.drools
+ .compiler;bundle-version="5.1.0.CR1"
 DynamicImport-Package: *
 

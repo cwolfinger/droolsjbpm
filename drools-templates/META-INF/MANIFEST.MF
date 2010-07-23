@@ -1,16 +1,16 @@
 Manifest-Version: 1.0
-Created-By: 1.5.0_21 (Sun Microsystems Inc.)
+Created-By: 1.5.0_15 (Sun Microsystems Inc.)
 Bundle-License: http://www.apache.org/licenses/LICENSE-2.0.txt
 Import-Package: org.mvel2.templates;version="2.0"
-Bnd-LastModified: 1279516298478
+Bnd-LastModified: 1279872800583
 Export-Package: org.drools.template.jdbc;uses:="org.drools.template.pa
- rser";version="5.1.0.SNAPSHOT",org.drools.template;uses:="org.drools.
- template.parser,org.drools.template.objects";version="5.1.0.SNAPSHOT"
- ,org.drools.template.parser;uses:="org.mvel2.templates,org.drools.tem
- plate.model";version="5.1.0.SNAPSHOT",org.drools.template.objects;use
- s:="org.drools.template,org.drools.template.parser";version="5.1.0.SN
- APSHOT",org.drools.template.model;version="5.1.0.SNAPSHOT"
-Bundle-Version: 5.1.0.SNAPSHOT
+ rser";version="5.1.0.CR1",org.drools.template;uses:="org.drools.templ
+ ate.parser,org.drools.template.objects";version="5.1.0.CR1",org.drool
+ s.template.parser;uses:="org.mvel2.templates,org.drools.template.mode
+ l";version="5.1.0.CR1",org.drools.template.objects;uses:="org.drools.
+ template,org.drools.template.parser";version="5.1.0.CR1",org.drools.t
+ emplate.model;version="5.1.0.CR1"
+Bundle-Version: 5.1.0.CR1
 Bundle-Name: Drools :: Templates
 Bundle-Description: A rule production system
 Bundle-DocURL: http://www.jboss.org/
@@ -18,6 +18,6 @@ Bundle-Vendor: JBoss Inc.
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.drools.templates;singleton:=true
 Tool: Bnd-0.0.357
-Require-Bundle: org.drools.core;bundle-version="5.1.0.SNAPSHOT"
+Require-Bundle: org.drools.core;bundle-version="5.1.0.CR1"
 DynamicImport-Package: org.drools.*
 
