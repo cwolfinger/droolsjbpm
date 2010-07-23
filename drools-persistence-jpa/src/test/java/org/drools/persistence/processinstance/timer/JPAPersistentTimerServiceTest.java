@@ -155,6 +155,8 @@ public class JPAPersistentTimerServiceTest extends TestCase{
         env.set( EnvironmentName.ENTITY_MANAGER_FACTORY, emf );
         env.set( EnvironmentName.GLOBALS, new MapGlobalResolver() );
         env.set(EnvironmentName.PROCESS_TIMER_STRATEGY, new JPAProcessTimerPersistenceStrategy(emf));
+        env.set(EnvironmentName.TRANSACTION_MANAGER, TransactionManagerServices.getTransactionManager());
+
 
         StatefulKnowledgeSession ksession = JPAKnowledgeService.newStatefulKnowledgeSession( kbase, null, env );
         int id = ksession.getId();

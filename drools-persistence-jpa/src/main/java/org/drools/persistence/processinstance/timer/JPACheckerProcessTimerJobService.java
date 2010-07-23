@@ -1,6 +1,7 @@
 package org.drools.persistence.processinstance.timer;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -52,7 +53,7 @@ public class JPACheckerProcessTimerJobService implements
 	private EntityManagerFactory entityManagerFactory;
 	private KnowledgeBase kbase;
 	private int sessionId;
-	private boolean running = false;
+	private AtomicBoolean running = new AtomicBoolean(false);
 	private long poolingTime = DEFAULT_POOLING_TIME;
 	
 	public JPACheckerProcessTimerJobService(int sessionId, KnowledgeBase kbase) {
@@ -110,11 +111,11 @@ public class JPACheckerProcessTimerJobService implements
 	}
 
 	private boolean isRunning() {
-		return running;
+		return running.get();
 	}
 
 	private void setRunning(boolean running) {
-		this.running = running;
+		this.running.set(running);
 	}
 	
 	@SuppressWarnings("unchecked")
