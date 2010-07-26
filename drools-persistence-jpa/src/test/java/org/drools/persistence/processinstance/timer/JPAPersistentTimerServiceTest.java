@@ -3,18 +3,15 @@ package org.drools.persistence.processinstance.timer;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.naming.InitialContext;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
-import javax.transaction.UserTransaction;
 
 import junit.framework.TestCase;
 
 import org.drools.KnowledgeBase;
 import org.drools.KnowledgeBaseFactory;
-import org.drools.Message;
 import org.drools.base.MapGlobalResolver;
 import org.drools.builder.KnowledgeBuilder;
 import org.drools.builder.KnowledgeBuilderError;
