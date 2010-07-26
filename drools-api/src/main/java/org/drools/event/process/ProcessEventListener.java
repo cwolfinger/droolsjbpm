@@ -38,4 +38,6 @@ public interface ProcessEventListener
 
     void afterNodeLeft(ProcessNodeLeftEvent event);
 
+    void onNodeException(ProcessNodeExceptionOccurredEvent event);
+
 }

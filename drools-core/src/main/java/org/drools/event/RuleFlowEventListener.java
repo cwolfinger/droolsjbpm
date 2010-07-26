@@ -63,4 +63,7 @@ public interface RuleFlowEventListener
     void afterRuleFlowNodeLeft(RuleFlowNodeTriggeredEvent event,
     						   WorkingMemory workingMemory);
 
+    void ruleFlowNodeExceptionOccurred(RuleFlowNodeExceptionOccurredEvent event,
+                                WorkingMemory workingMemory);
+
 }

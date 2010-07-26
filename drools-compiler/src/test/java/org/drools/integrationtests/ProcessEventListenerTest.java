@@ -29,6 +29,7 @@ import org.drools.compiler.PackageBuilder;
 import org.drools.event.ProcessEvent;
 import org.drools.event.RuleFlowCompletedEvent;
 import org.drools.event.RuleFlowEventListenerExtension;
+import org.drools.event.RuleFlowNodeExceptionOccurredEvent;
 import org.drools.event.RuleFlowGroupActivatedEvent;
 import org.drools.event.RuleFlowGroupDeactivatedEvent;
 import org.drools.event.RuleFlowNodeTriggeredEvent;
@@ -161,6 +162,11 @@ public class ProcessEventListenerTest extends TestCase{
             	System.out.println("afterRuleFlowNodeLeft " + event);
                 processEventList.add(event);
             }     
+
+            public void ruleFlowNodeExceptionOccurred(RuleFlowNodeExceptionOccurredEvent event, WorkingMemory workingMemory) {
+                System.out.println("ruleFlowExceptionOccurred " + event);
+                processEventList.add(event);
+            }
         };
 
 

@@ -18,7 +18,6 @@
 package org.drools.event;
 
 import org.drools.WorkingMemory;
-import org.drools.event.process.ProcessEventListener;
 
 /**
  *

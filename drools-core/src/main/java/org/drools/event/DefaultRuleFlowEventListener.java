@@ -66,4 +66,11 @@ public class DefaultRuleFlowEventListener
         // intentionally left blank
 	}
 
+    public void ruleFlowNodeExceptionOccurred(RuleFlowNodeExceptionOccurredEvent event,
+            WorkingMemory workingMemory) {
+        // intentionally left blank
+    }
+
+
+
 }

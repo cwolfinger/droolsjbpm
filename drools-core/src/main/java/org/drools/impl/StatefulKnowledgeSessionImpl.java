@@ -36,10 +36,13 @@ import org.drools.event.ObjectUpdatedEvent;
 import org.drools.event.RuleFlowCompletedEvent;
 import org.drools.event.RuleFlowGroupActivatedEvent;
 import org.drools.event.RuleFlowGroupDeactivatedEvent;
+import org.drools.event.RuleFlowNodeExceptionOccurredEvent;
 import org.drools.event.RuleFlowNodeTriggeredEvent;
 import org.drools.event.RuleFlowStartedEvent;
+import org.drools.event.RuleFlowVariableChangeEvent;
 import org.drools.event.process.ProcessEventListener;
 import org.drools.event.process.impl.ProcessCompletedEventImpl;
+import org.drools.event.process.impl.ProcessNodeExceptionOccurredEventImpl;
 import org.drools.event.process.impl.ProcessNodeLeftEventImpl;
 import org.drools.event.process.impl.ProcessNodeTriggeredEventImpl;
 import org.drools.event.process.impl.ProcessStartedEventImpl;
@@ -729,6 +732,11 @@ public class StatefulKnowledgeSessionImpl
                                          WorkingMemory workingMemory) {
             listener.afterProcessStarted( new ProcessStartedEventImpl( event,
                                                                        workingMemory ) );
+        }
+
+        public void ruleFlowNodeExceptionOccurred(RuleFlowNodeExceptionOccurredEvent event,
+                WorkingMemory workingMemory) {
+            listener.onNodeException(new ProcessNodeExceptionOccurredEventImpl(event, workingMemory));
         }
 
         public ProcessEventListener unWrap() {

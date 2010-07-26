@@ -22,6 +22,7 @@ import org.drools.builder.ResourceType;
 import org.drools.event.process.ProcessCompletedEvent;
 import org.drools.event.process.ProcessEvent;
 import org.drools.event.process.ProcessEventListener;
+import org.drools.event.process.ProcessNodeExceptionOccurredEvent;
 import org.drools.event.process.ProcessNodeLeftEvent;
 import org.drools.event.process.ProcessNodeTriggeredEvent;
 import org.drools.event.process.ProcessStartedEvent;
@@ -535,6 +536,12 @@ public class PersistentStatefulSessionTest extends TestCase {
 				System.out.println("Before process started");
 				events.add(event);				
 			}
+
+                        public void onNodeException(ProcessNodeExceptionOccurredEvent event) {
+                            System.out.println("On node exception");
+                                            events.add(event);
+                        }
+
         };
         ksession.addEventListener(listener);
         

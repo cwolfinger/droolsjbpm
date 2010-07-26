@@ -228,6 +228,22 @@ public class RuleFlowEventSupport extends AbstractEventSupport<RuleFlowEventList
         }
     }
 
+    public void fireRuleFlowNodeExceptionOccurred(final ProcessInstance processInstance, final NodeInstance nodeInstance,
+                                        Throwable error,
+                                        WorkingMemory workingMemory) {
+        final Iterator<RuleFlowEventListener> iter = getEventListenersIterator();
+
+        if (iter.hasNext()) {
+            final RuleFlowNodeExceptionOccurredEvent event = new RuleFlowNodeExceptionOccurredEvent(
+        		nodeInstance, error);
+
+            do{
+                RuleFlowEventListener listener = iter.next();
+                listener.ruleFlowNodeExceptionOccurred(event, workingMemory);
+            } while (iter.hasNext());
+        }
+    }
+
     public void reset() {
         this.clear();
     }

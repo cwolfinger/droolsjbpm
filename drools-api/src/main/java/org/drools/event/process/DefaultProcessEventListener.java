@@ -36,4 +36,9 @@ public class DefaultProcessEventListener
         // intentionally left blank
     }
 
+    public void onNodeException(ProcessNodeExceptionOccurredEvent event) {
+        // intentionally left blank
+    }
+
+
 }

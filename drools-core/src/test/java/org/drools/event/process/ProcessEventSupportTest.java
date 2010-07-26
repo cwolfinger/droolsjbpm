@@ -123,6 +123,10 @@ public class ProcessEventSupportTest extends TestCase {
 				processEventList.add(event);
 			}
 
+                        public void onNodeException(ProcessNodeExceptionOccurredEvent event) {
+                            processEventList.add(event);
+                        }
+
         };
         session.addEventListener( processEventListener );
 

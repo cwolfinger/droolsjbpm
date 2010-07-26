@@ -39,6 +39,7 @@ import org.drools.event.RuleFlowCompletedEvent;
 import org.drools.event.RuleFlowEventListener;
 import org.drools.event.RuleFlowGroupActivatedEvent;
 import org.drools.event.RuleFlowGroupDeactivatedEvent;
+import org.drools.event.RuleFlowNodeExceptionOccurredEvent;
 import org.drools.event.RuleFlowNodeTriggeredEvent;
 import org.drools.event.RuleFlowStartedEvent;
 import org.drools.management.KnowledgeSessionMonitoring.AgendaStats.AgendaStatsData;
@@ -439,7 +440,12 @@ public class KnowledgeSessionMonitoring implements KnowledgeSessionMonitoringMBe
 
 		public void beforeRuleFlowStarted(RuleFlowStartedEvent event, WorkingMemory workingMemory) {
 			// Do nothing
-		}    
+		}
+
+                public void ruleFlowNodeExceptionOccurred(RuleFlowNodeExceptionOccurredEvent event, WorkingMemory workingMemory) {
+                    // Do nothing
+                }
+
 
         public static class GlobalProcessStatsData {
         	

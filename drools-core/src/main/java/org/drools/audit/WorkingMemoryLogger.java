@@ -71,6 +71,7 @@ import org.drools.event.RuleBaseEventListener;
 import org.drools.event.RuleFlowCompletedEvent;
 import org.drools.event.RuleFlowEventListener;
 import org.drools.event.RuleFlowEventListenerExtension;
+import org.drools.event.RuleFlowNodeExceptionOccurredEvent;
 import org.drools.event.RuleFlowGroupActivatedEvent;
 import org.drools.event.RuleFlowGroupDeactivatedEvent;
 import org.drools.event.RuleFlowNodeTriggeredEvent;
@@ -481,6 +482,17 @@ public abstract class WorkingMemoryLogger
 			event.getProcessInstance().getProcessName(),
 			event.getProcessInstance().getId(),
 			event.getValue() == null ? "null" : event.getValue().toString() ));
+    }
+
+    public void ruleFlowNodeExceptionOccurred(RuleFlowNodeExceptionOccurredEvent event,
+                                WorkingMemory workingMemory) {
+//		filterLogEvent(new RuleFlowVariableLogEvent(LogEvent.AFTER_VARIABLE_INSTANCE_CHANGED,
+//			event.getVariableId(),
+//			event.getVariableInstanceId(),
+//			event.getProcessInstance().getProcessId(),
+//			event.getProcessInstance().getProcessName(),
+//			event.getProcessInstance().getId(),
+//			event.getValue() == null ? "null" : event.getValue().toString() ));
     }
 
     private String createNodeId(NodeInstance nodeInstance) {

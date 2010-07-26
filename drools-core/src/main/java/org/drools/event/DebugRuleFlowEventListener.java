@@ -70,4 +70,11 @@ public class DebugRuleFlowEventListener
         System.err.println(event);
 	}
 
+    public void ruleFlowNodeExceptionOccurred(RuleFlowNodeExceptionOccurredEvent event,
+            WorkingMemory workingMemory) {
+        System.err.println(event);
+    }
+
+
+
 }
