@@ -150,8 +150,8 @@
     	<dependency>
 		    <groupId>org.codehaus.btm</groupId>
 		    <artifactId>btm</artifactId>
-		    <scope>test</scope>
-    	</dependency>    	
+		    <!--scope>test</scope-->
+    	</dependency>
     	
         <!--dependency>  
            <groupId>org.objectweb.jotm</groupId>  
