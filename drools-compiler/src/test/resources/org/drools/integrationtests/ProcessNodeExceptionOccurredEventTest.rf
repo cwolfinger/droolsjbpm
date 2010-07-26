@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<process xmlns="http://drools.org/drools-5.0/process"
+         xmlns:xs="http://www.w3.org/2001/XMLSchema-instance"
+         xs:schemaLocation="http://drools.org/drools-5.0/process drools-processes-5.0.xsd"
+         type="RuleFlow" name="flow" package-name="org.drools.test.process1" id="org.drools.test.process1">
+
+  <header>
+  
+  	<imports>
+      <import name="org.drools.Person" />
+    </imports>
+    <globals>
+      <global identifier="person" type="org.drools.Person" />
+      <global identifier="list" type="java.util.List" />
+    </globals>
+  
+  </header>
+
+  <nodes>
+    <start id="1" name="Start" x="100" y="100" width="48" height="48" />
+     <actionNode id="2" name="Some Script" x="186" y="97" width="80" height="48" >
+      <action type="expression" dialect="java" >
+        System.out.println("Hello "+person.getName());        
+      </action>
+    </actionNode>
+
+
+
+     <workItem id="3" name="HumanTask" >
+      <work name="Human Task" >
+        <parameter name="ActorId" >
+          <type name="org.drools.process.core.datatype.impl.type.StringDataType" />
+          <value>John Doe</value>
+        </parameter>
+        <parameter name="TaskName" >
+          <type name="org.drools.process.core.datatype.impl.type.StringDataType" />
+          <value>Do something</value>
+        </parameter>
+        <parameter name="Priority" >
+          <type name="org.drools.process.core.datatype.impl.type.StringDataType" />
+        </parameter>
+        <parameter name="Comment" >
+          <type name="org.drools.process.core.datatype.impl.type.StringDataType" />
+        </parameter>
+      </work>
+      <onEntry>
+        <action type="expression" name="Print" dialect="mvel" >list.add("Executing on entry action");</action>
+      </onEntry>
+      <onExit>
+        <action type="expression" name="Print" dialect="java" >list.add("Executing on exit action1");</action>
+        <action type="expression" name="Print" dialect="java" >list.add("Executing on exit action2");</action>
+      </onExit>
+    </workItem>
+
+    <end id="4" name="End" x="357" y="92" width="48" height="48" />
+  </nodes>
+
+  <connections>
+    <connection from="1" to="2" />
+    <connection from="2" to="3" />
+    <connection from="3" to="4" />
+  </connections>
+
+</process>
