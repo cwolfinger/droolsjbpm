@@ -16,7 +16,7 @@ WS      :       ( ' '
                 )+
                 { $channel=HIDDEN; }
         ;
-
+  
 fragment
 EOL   :      
       (       ( '\r\n' )=> '\r\n'  // Evil DOS
