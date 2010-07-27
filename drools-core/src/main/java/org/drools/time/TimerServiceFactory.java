@@ -11,7 +11,9 @@ public class TimerServiceFactory {
 	public static TimerService getTimerService(ClockType type, Environment environment){
         switch( type ) {
         case REALTIME_CLOCK:
-            ProcessTimerPersistenceStrategy processTimerPersistenceStrategy = (ProcessTimerPersistenceStrategy) environment.get(EnvironmentName.PROCESS_TIMER_STRATEGY);
+        	ProcessTimerPersistenceStrategy processTimerPersistenceStrategy = null;
+        	if(environment != null)
+        		processTimerPersistenceStrategy = (ProcessTimerPersistenceStrategy) environment.get(EnvironmentName.PROCESS_TIMER_STRATEGY);
 			return new JDKTimerService(processTimerPersistenceStrategy);
         case PSEUDO_CLOCK:
             return new PseudoClockScheduler();
