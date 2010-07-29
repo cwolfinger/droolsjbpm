@@ -84,8 +84,7 @@ public class JDKTimerService
         			&& trigger instanceof IntervalTrigger){
         		ProcessJobContext processContext = (ProcessJobContext) ctx;
         		IntervalTrigger intervalTrigger = (IntervalTrigger) trigger;
-        		ProcessJobHandle jobHandle = new ProcessJobHandle();
-        		jobHandle.setProcessId(processContext.getProcessInstanceId());
+        		ProcessJobHandle jobHandle = new ProcessJobHandle(true, processContext.getProcessInstanceId());
         		getProcessTimerPersistenceStrategy().save(processContext, intervalTrigger);
         		return jobHandle;
         	}else {
@@ -108,9 +107,19 @@ public class JDKTimerService
     }
 
     public boolean removeJob(JobHandle jobHandle) {
-    	if(null != getProcessTimerPersistenceStrategy() && jobHandle instanceof ProcessJobHandle)
-    		return getProcessTimerPersistenceStrategy().remove((ProcessJobHandle)jobHandle);
+    	if(getProcessTimerPersistenceStrategy() != null && jobHandle.isLongTermJob())
+    		return true;
         return this.scheduler.remove( (Runnable) ((JDKJobHandle) jobHandle).getFuture() );
+    }
+    
+    public boolean cancelJob(JobHandle jobHandle) {
+    	if(getProcessTimerPersistenceStrategy() != null && jobHandle.isLongTermJob()) {
+    		if(!(jobHandle instanceof ProcessJobHandle))
+    			throw new IllegalArgumentException("Not yet implemented for handles of type " + jobHandle.getClass().getSimpleName());
+			ProcessJobHandle processHandle = (ProcessJobHandle)jobHandle;
+			return getProcessTimerPersistenceStrategy().remove(processHandle);
+		}
+    	return removeJob(jobHandle);
     }
 
     private static ScheduledFuture schedule(Date date,
@@ -186,6 +195,10 @@ public class JDKTimerService
         public void setFuture(ScheduledFuture<Void> future) {
             this.future = future;
         }
+
+		public boolean isLongTermJob() {
+			return false;
+		}
 
     }
 

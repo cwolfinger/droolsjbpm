@@ -256,4 +256,8 @@ public class PseudoClockScheduler
 
     }
 
+	public boolean cancelJob(JobHandle jobHandle) {
+		return removeJob(jobHandle);
+	}
+
 }

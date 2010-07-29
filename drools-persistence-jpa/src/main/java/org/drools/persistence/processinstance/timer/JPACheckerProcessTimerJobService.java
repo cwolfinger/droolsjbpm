@@ -52,13 +52,11 @@ public class JPACheckerProcessTimerJobService implements
 	
 	private EntityManagerFactory entityManagerFactory;
 	private KnowledgeBase kbase;
-	private int sessionId;
 	private AtomicBoolean running = new AtomicBoolean(false);
 	private long poolingTime = DEFAULT_POOLING_TIME;
 	
-	public JPACheckerProcessTimerJobService(int sessionId, KnowledgeBase kbase) {
+	public JPACheckerProcessTimerJobService(KnowledgeBase kbase) {
 		this.entityManagerFactory = Persistence.createEntityManagerFactory("org.drools.persistence.jpa");
-		this.sessionId = sessionId;
 		this.kbase = kbase;
 	}
 
@@ -81,7 +79,7 @@ public class JPACheckerProcessTimerJobService implements
 		environment.set(EnvironmentName.ENTITY_MANAGER_FACTORY, Persistence.createEntityManagerFactory("org.drools.persistence.jpa"));
 		environment.set(EnvironmentName.TRANSACTION_MANAGER, TransactionManagerServices.getTransactionManager());
 
-		StatefulKnowledgeSession ksession = JPAKnowledgeService.loadStatefulKnowledgeSession(sessionId, kbase, null, environment);
+		StatefulKnowledgeSession ksession = JPAKnowledgeService.loadStatefulKnowledgeSession(processJob.getSessionId(), kbase, null, environment);
 		StatefulKnowledgeSessionImpl sessionImpl = (StatefulKnowledgeSessionImpl) ((KnowledgeCommandContext) ((CommandBasedStatefulKnowledgeSession)ksession).getCommandService().getContext()).getStatefulKnowledgesession();
         SignalManager signalManager = sessionImpl.getInternalWorkingMemory().getSignalManager();
 		TimerInstance timerInstance = processJob.getTimerInstance();

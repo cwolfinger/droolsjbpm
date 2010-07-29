@@ -23,4 +23,5 @@ package org.drools.time;
  */
 public interface JobHandle {
 
+	public boolean isLongTermJob();
 }

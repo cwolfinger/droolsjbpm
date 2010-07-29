@@ -97,7 +97,7 @@ public class TimerManager {
     public void cancelTimer(long timerId) {
         TimerInstance timer = timers.remove( timerId );
         if ( timer != null ) {
-            timerService.removeJob( timer.getJobHandle() );
+            timerService.cancelJob( timer.getJobHandle() );
         }
     }
 

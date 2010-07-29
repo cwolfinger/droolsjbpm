@@ -65,4 +65,9 @@ public class DefaultJobHandle
         } else if ( !getJob().equals( other.getJob() ) ) return false;
         return true;
     }
+
+	public boolean isLongTermJob() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

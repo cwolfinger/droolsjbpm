@@ -4,6 +4,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.NoResultException;
 
+import org.drools.common.AbstractWorkingMemory;
 import org.drools.process.instance.timer.TimerInstance;
 import org.drools.process.instance.timer.TimerManager.ProcessJobContext;
 import org.drools.time.ProcessTimerPersistenceStrategy;
@@ -32,6 +33,8 @@ public class JPAProcessTimerPersistenceStrategy implements
 			.getSingleResult();
 		}catch(NoResultException nre){
 			ProcessTimerJob timerJob = new ProcessTimerJob();
+			int sessionId = ((AbstractWorkingMemory)processContext.getWorkingMemory()).getId();
+			timerJob.setSessionId(sessionId);
 			timerJob.setProcessId(processInstanceId);
 			timerJob.setInitialTime(intervalTrigger.getStartTime().getTime());
 			timerJob.setPeriod(intervalTrigger.getPeriod());
@@ -43,10 +46,9 @@ public class JPAProcessTimerPersistenceStrategy implements
 	}
 
 	public boolean remove(ProcessJobHandle jobHandle) {
-		return true;
-//		return getEntityManager().createQuery("delete ProcessTimerJob where processId=:processId")
-//		.setParameter("processId", jobHandle.getProcessId())
-//		.executeUpdate() == 1;
+		return getEntityManager().createQuery("delete ProcessTimerJob where processId=:processId")
+					.setParameter("processId", jobHandle.getProcessId())
+				.executeUpdate() == 1;
 	}
 
 	public EntityManager getEntityManager() {

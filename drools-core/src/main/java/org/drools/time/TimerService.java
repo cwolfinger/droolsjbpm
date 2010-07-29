@@ -16,6 +16,8 @@
  */
 package org.drools.time;
 
+import javax.swing.plaf.SliderUI;
+
 /**
  * An interface for all timer service implementations used in a drools session.
  * 
@@ -43,13 +45,24 @@ public interface TimerService {
 	
 	/**
 	 * Remove the job identified by the given job handle from the 
-	 * scheduled queue
+	 * scheduled queue.
+	 * This apply to non long term jobs. To remove a long term job
+	 * you should see {@link TimerService#cancelJob(JobHandle)}
 	 * 
 	 * @param jobHandle the job identity handle
 	 * 
 	 * @return
 	 */
 	public boolean removeJob(JobHandle jobHandle);
+	
+	/**
+	 * Cancel the job identified by the given job handle.
+	 * 
+	 * 
+	 * @param jobHandle the job identity handle
+	 * @return
+	 */
+	public boolean cancelJob(JobHandle jobHandle);
 	
 	/**
 	 * Shuts the service down

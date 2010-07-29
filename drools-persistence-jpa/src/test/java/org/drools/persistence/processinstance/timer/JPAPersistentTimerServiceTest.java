@@ -88,7 +88,7 @@ public class JPAPersistentTimerServiceTest extends TestCase{
         KnowledgeBase kbase = getKnowledgeBase();
 		StatefulKnowledgeSession ksession = createKnowledgeSession(kbase);
 
-		JPACheckerProcessTimerJobService jpaTimerChecker = new JPACheckerProcessTimerJobService(ksession.getId(), kbase);
+		JPACheckerProcessTimerJobService jpaTimerChecker = new JPACheckerProcessTimerJobService(kbase);
         jpaTimerChecker.start();
 
         List<Message> myList = new ArrayList<Message>();
@@ -159,7 +159,7 @@ public class JPAPersistentTimerServiceTest extends TestCase{
         int id = ksession.getId();
         ksession.dispose();
         
-		JPACheckerProcessTimerJobService jpaTimerChecker = new JPACheckerProcessTimerJobService(id, kbase);
+		JPACheckerProcessTimerJobService jpaTimerChecker = new JPACheckerProcessTimerJobService(kbase);
         jpaTimerChecker.start();
         
         ksession = JPAKnowledgeService.loadStatefulKnowledgeSession( id, kbase, null, env );

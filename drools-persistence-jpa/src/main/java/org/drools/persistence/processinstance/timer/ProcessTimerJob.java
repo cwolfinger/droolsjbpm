@@ -14,6 +14,7 @@ import org.drools.process.instance.timer.TimerInstance;
 public class ProcessTimerJob {
 
 	private long id;
+	private int sessionId;
 	private long processId;
 	private long initialTime;
 	private long period;
@@ -28,6 +29,14 @@ public class ProcessTimerJob {
 
 	public void setId(long id) {
 		this.id = id;
+	}
+
+	public void setSessionId(int sessionId) {
+		this.sessionId = sessionId;
+	}
+
+	public int getSessionId() {
+		return sessionId;
 	}
 
 	public long getProcessId() {
