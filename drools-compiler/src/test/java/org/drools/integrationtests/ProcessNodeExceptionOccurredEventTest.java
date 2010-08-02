@@ -1,5 +1,6 @@
 package org.drools.integrationtests;
 
+import org.drools.runtime.process.ProcessInstance;
 import org.drools.impl.StatefulKnowledgeSessionImpl.ProcessEventListenerWrapper;
 import org.drools.Person;
 import java.util.List;
@@ -37,6 +38,7 @@ import org.drools.workflow.core.node.ActionNode;
 import org.drools.workflow.core.node.EndNode;
 import org.drools.workflow.core.node.StartNode;
 import org.drools.workflow.core.node.SubProcessNode;
+import org.drools.workflow.instance.impl.ProcessNodeExecutionException;
 
 
 import static org.junit.Assert.*;
@@ -155,6 +157,32 @@ public class ProcessNodeExceptionOccurredEventTest {
         }
     }
 
+    private class MyBusinessException extends RuntimeException{
+        private ProcessNodeExceptionOccurredEvent source;
+
+        public MyBusinessException(ProcessNodeExceptionOccurredEvent source){
+            this.source = source;
+        }
+
+        public String getProcessName(){
+            return this.source.getProcessInstance().getProcessName();
+        }
+
+        public String getNodeName(){
+            return this.source.getNodeInstance().getNodeName();
+        }
+
+        public Throwable getOriginalException(){
+            return this.source.getError();
+        }
+
+        @Override
+        public String toString() {
+            return "MyBusinessException{" + "Original Exception= '" + this.getOriginalException().toString() + "', Process= '"+this.getProcessName()+"', Process= '"+this.getProcessName()+"}";
+        }
+
+    }
+
     /**
      * Test of ProcessNodeExceptionOccurredEvent inside an action node and inside
      * a WorkItemHandler too.
@@ -206,7 +234,62 @@ public class ProcessNodeExceptionOccurredEventTest {
             ksession.startProcess("org.drools.test.process1");
             fail("An exception should occurr!");
         } catch (RuntimeException ex) {
-            //ok
+        }
+        assertEquals(1, this.exceptionCount);
+        this.exceptionCount = 0;
+
+        ksession.dispose();
+    }
+
+    @Test
+    public void testListenerException(){
+        //Create a new kbase with the given flow.
+        KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
+        kbuilder.add(ResourceFactory.newClassPathResource("org/drools/integrationtests/ProcessNodeExceptionOccurredEventTest.rf"), ResourceType.DRF);
+        if (kbuilder.hasErrors()) {
+            Assert.fail(kbuilder.getErrors().toString());
+        }
+        KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
+        kbase.addKnowledgePackages(kbuilder.getKnowledgePackages());
+
+        //Create a ksession and add a custom ProcessEventListener
+        final StatefulKnowledgeSession ksession = kbase.newStatefulKnowledgeSession();
+        ksession.addEventListener(new DefaultProcessEventListener(){
+
+            @Override
+            public void onNodeException(ProcessNodeExceptionOccurredEvent event) {
+                if (event.getError() instanceof MyBusinessException){
+                    return;
+                }
+                System.out.println("\t"+event.getNodeInstance().getNodeName());
+                exceptionCount++;
+                throw new MyBusinessException(event);
+            }
+
+        });
+
+        //Insert all the needed globals. Inserting a person will make that the
+        //Action node works fine.
+        List<String> list = new ArrayList<String>();
+        Person person = new Person();
+        person.setName("John");
+        ksession.setGlobal("person", person);
+        ksession.setGlobal("list", list);
+
+        //Register a WorkItemHandler. This handler will throw an exception when
+        //invoked.
+        ksession.getWorkItemManager().registerWorkItemHandler("Human Task", new FailWorkItemHandler());
+
+        
+        this.expectedResult = new ExpectedResult("flow","HumanTask", "MyBusinessException");
+        try {
+            ksession.startProcess("org.drools.test.process1");
+            fail("An exception should occurr!");
+        } catch (ProcessNodeExecutionException ex) {
+            System.out.println("\tProcessNodeExecutionException: "+ex.getCause());
+            assertTrue(ex.getCause() instanceof MyBusinessException);
+            assertEquals("flow", ((MyBusinessException)ex.getCause()).getProcessName());
+            assertEquals("HumanTask", ((MyBusinessException)ex.getCause()).getNodeName());
         }
         assertEquals(1, this.exceptionCount);
         this.exceptionCount = 0;

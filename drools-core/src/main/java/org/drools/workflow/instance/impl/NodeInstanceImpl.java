@@ -113,13 +113,15 @@ public abstract class NodeInstanceImpl implements org.drools.workflow.instance.N
         }
         try {
             internalTrigger(from, type);
-        } catch (ManagedRuntimeException ex) {
+        } catch (ProcessNodeExecutionException ex) {
+            //We don't wont to wrap a ProcessNodeExecutionException again.
             throw ex;
         } catch (RuntimeException ex) {
             if (!hidden) {
                 ((EventSupport) workingMemory).getRuleFlowEventSupport().fireRuleFlowNodeExceptionOccurred(processInstance, this, ex, workingMemory);
             }
-            throw new ManagedRuntimeException(ex);
+            //The exception is wrapped in a ProcessNodeExecutionException
+            throw new ProcessNodeExecutionException(ex);
         }
         if (!hidden) {
             ((EventSupport) workingMemory).getRuleFlowEventSupport().fireAfterRuleFlowNodeTriggered(this, (InternalWorkingMemory) workingMemory);
