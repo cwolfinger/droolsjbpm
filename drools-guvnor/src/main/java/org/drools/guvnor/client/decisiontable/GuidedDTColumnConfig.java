@@ -222,8 +222,8 @@ public class GuidedDTColumnConfig extends FormStylePopup {
                         return;
                     }
                     if ( null == editingCol.operator || "".equals( editingCol.operator ) ) {
-                        Window.alert( constants.PleaseSelectAnOperator() );
-                        return;
+                    	// Operator field optional
+                        Window.alert( constants.NotifyNoSelectedOperator() );
                     }
 
                 }
