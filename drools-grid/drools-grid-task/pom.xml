@@ -70,6 +70,13 @@
             <version>3.2.1</version>
             <scope>test</scope>
         </dependency>
+       
+        <dependency>
+            <groupId>org.mvel</groupId>
+            <artifactId>mvel2</artifactId>
+            <version>2.0.16</version>
+            <scope>test</scope>
+        </dependency>
 
         <dependency>
          <groupId>org.subethamail</groupId>
@@ -83,6 +90,26 @@
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <version>1.2.128</version>
+        </dependency>
+         <!-- Hibernate -->
+        <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-entitymanager</artifactId>
+        </dependency>
+
+        <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-annotations</artifactId>
+        </dependency>
+
+        <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-commons-annotations</artifactId>
+        </dependency>
+
+        <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-core</artifactId>
         </dependency>
     </dependencies>
     

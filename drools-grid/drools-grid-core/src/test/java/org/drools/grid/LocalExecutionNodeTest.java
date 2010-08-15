@@ -32,7 +32,8 @@ import org.drools.builder.KnowledgeBuilderFactoryService;
 import org.drools.builder.ResourceType;
 import org.drools.grid.local.LocalConnection;
 import org.drools.io.ResourceFactory;
-import org.drools.persistence.jpa.grid.JPAKnowledgeProviderLocalClient;
+import org.drools.persistence.jpa.KnowledgeStoreService;
+import org.drools.persistence.jpa.impl.KnowledgeStoreServiceImpl;
 import org.drools.runtime.Environment;
 import org.drools.runtime.EnvironmentName;
 import org.drools.runtime.StatefulKnowledgeSession;
@@ -79,7 +80,7 @@ public class LocalExecutionNodeTest extends ExecutionNodeBaseTest{
         connection = new LocalConnection();
 
         node = connection.getExecutionNode(null);
-        node.set(JPAKnowledgeFactoryService.class, new JPAKnowledgeProviderLocalClient());
+        node.set(KnowledgeStoreService.class, new KnowledgeStoreServiceImpl());
     }
     
     private Environment newEnvironment() {
@@ -128,7 +129,7 @@ public class LocalExecutionNodeTest extends ExecutionNodeBaseTest{
 
 
         StatefulKnowledgeSession ksession = node
-                                                .get(JPAKnowledgeFactoryService.class)
+                                                .get(KnowledgeStoreService.class)
                                                 .newStatefulKnowledgeSession(kbase, null, env);
 
         Assert.assertNotNull(ksession);

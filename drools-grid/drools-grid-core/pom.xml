@@ -10,7 +10,7 @@
     <artifactId>drools-grid-core</artifactId>
     <version>5.1.0</version>
     <name>Drools :: Grid :: Core</name>
-    
+
     <dependencies>
     
 	    <dependency>
