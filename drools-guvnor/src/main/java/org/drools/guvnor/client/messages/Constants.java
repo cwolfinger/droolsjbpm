@@ -614,6 +614,10 @@ public interface Constants
 
     String AddMetadataToTheRule();
 
+    String UseRowNumber();
+    
+    String ReverseOrder();
+
     String Metadata1();
 
     String Attribute();

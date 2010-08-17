@@ -36,4 +36,13 @@ public class DTColumnConfig implements PortableObject {
      */
     public boolean hideColumn = false;
 
+    /**
+     * to use the row number as number for the salience attribute.
+     */
+    public boolean useRowNumber = false;
+    
+    /**
+     * to use the reverse order of the row number as the salience attribute.
+     */
+    public boolean reverseOrder = false;
 }
