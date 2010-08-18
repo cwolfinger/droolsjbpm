@@ -7,12 +7,21 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.swing.JFrame;
 
 import org.antlr.runtime.ANTLRInputStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.ParserRuleReturnScope;
 import org.antlr.runtime.tree.CommonTree;
+import org.drools.util.DRLTreeFormatter;
+import org.drools.util.DRLTreeMLFormatter;
 import org.drools.util.ParsingResult;
+import org.drools.util.ProTreeView;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -22,35 +31,34 @@ import org.junit.Test;
 
 public class Rule_Test {
 
-	
+	private static Logger log;
 	private static FileWriter writer;
+	
+	private static Map<String,String> rules;
+	private static Map<String,String[]> data;
 		
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
+		log = Logger.getAnonymousLogger();
+		log.setLevel(Level.INFO);
 		writer = new FileWriter("out/DRLv6Log.txt"); 
-	}
-
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
-		writer.flush();
-		writer.close();
-	}
-
-	@Before
-	public void setUp() throws Exception {
 		
-	}
-
-	@After
-	public void tearDown() throws Exception {
+		rules = new HashMap<String, String>();
+		data = new HashMap<String, String[]>();
 		
+		loadCaseData();
 	}
 	
 	
-	@Test	
-	public void test_compilation_unit() {
-		String rule = "compilation_unit";
-		String testDRL = "" +
+	
+	private static void loadCaseData() {
+		String rule;
+		String[] testDRL;
+		String key;
+				
+		key =  "test_compilation_unit";
+		rule = "compilation_unit";
+		testDRL = new String[] {
 				"package org.pack.subpack;\n" +
 				"import org.klass;\n" +
 				"\n" +
@@ -60,107 +68,92 @@ public class Rule_Test {
 				"rule \"ruel\"\n" +
 				"when\n" +
 				"then\n" +
-				"end\n";				
-		;
+				"end\n"
+				};	
+		rules.put(key,rule);
+		data.put(key,testDRL);
 		
-		check(rule,testDRL);										
-	}
-	
-	
-
-	@Test	
-	public void test_package_statement() {
-		String rule = "package_statement";
-		String testDRL[] = {
+		
+		
+		
+		
+		key = "test_package_statement";
+		rule = "package_statement";
+		testDRL = new String[] {
 				"package this.isa.pack ;",
 				"package semi.colon.is.optional ",
 				"package simplePack",
 		};
-					
-		check(rule,testDRL);										
-	}
-	
-	@Test	
-	public void test_global() {
-		String rule = "global";
-		String testDRL[] = {
+		rules.put(key,rule);
+		data.put(key,testDRL);
+		
+		
+		
+		
+		
+		key = "test_global";
+		rule = "global";
+		testDRL = new String[]  {
 				"global int N ",
 				"global org.it.pack.String strix ;"
 		};
-				
-		check(rule,testDRL);										
-	}
-	
-	
-	
-	@Test	
-	public void test_data_type() {
-		String rule = "data_type"; 
-		String[] testDRL = new String[] {
+		rules.put(key,rule);
+		data.put(key,testDRL);
+		
+		
+		key = "test_data_type";
+		rule = "data_type"; 
+		testDRL = new String[] {
 				"String",
 				"int",
 				"float[]",
 				"org.pack.data.Claxx[]",
 				"int[][][]"
 			};
-				
-		check(rule,testDRL);										
-	}
+		rules.put(key,rule);
+		data.put(key,testDRL);
 	
-	
-	
-	
-	
-	@Test	
-	public void test_import_statement() {
-		String rule = "import_statement";
-		String testDRL[] = {
+		key =  "test_import_statement";
+		rule = "import_statement";
+		testDRL = new String[] {
 				"import jav.lang.String",
 				"import Test ; ",
 				"import jav.pack.*"
 		};
-				
-		check(rule,testDRL);										
-	}
-	
-	
-	
-	@Test	
-	public void test_function_import_statement() {
-		String rule = "function_import_statement";
-		String testDRL = "import function org.pack.square";
-				
-		check(rule,testDRL);										
-	}
-	
-	
-	@Test	
-	public void test_function() {
-		String rule = "function";
-		String[] testDRL = {
+		rules.put(key,rule);
+		data.put(key,testDRL);
+		
+		
+		key = "test_function_import_statement";
+		rule = "function_import_statement";
+		testDRL = new String[] {
+				"import function org.pack.square"
+		};
+		rules.put(key,rule);
+		data.put(key,testDRL);
+		
+		
+		key = "test_function";
+		rule = "function";
+		testDRL = new String[] {
 				"function float square( float x ) { ... x*x ... }",
 				"function process( int x, org.String zz ) { ... ... }"
 		};
-				
-		check(rule,testDRL);										
-	}
-	
-	
-	@Test	
-	public void test_parameters() {
-		String rule = "parameters";
-		String[] testDRL = {
+		rules.put(key,rule);
+		data.put(key,testDRL);
+		
+		key = "test_parameters";
+		rule = "parameters";
+		testDRL = new String[] {
 				"( int a, org.klass.AnType obj, String[][] argz )"
 		};
+		rules.put(key,rule);
+		data.put(key,testDRL);
 				
-		check(rule,testDRL);										
-	}
-	
-	
-	@Test	
-	public void test_type_declaration() {
-		String rule = "type_declaration";
-		String[] testDRL = {
+		
+		key = "test_type_declaration";
+		rule = "type_declaration";
+		testDRL = new String[] {
 				"declare Student extends Person" + "\n" +
 				" @role(entity) " + "\n" +
 				" @namespace(myNS=\"http:\\\\www.stix.com\\domain\\subd#\") " + "\n" +				
@@ -185,17 +178,20 @@ public class Rule_Test {
 				"@inverse(HasSpouse) " + "\n" +
 				"subject	= (\"john\") : Person 	@[key] " + "\n" +
 				"object  : Person	@[key] " + "\n" +
-				"end \n"
-		};
+				"end \n",
 				
-		check(rule,testDRL);										
-	}
-	
-	
-	@Test	
-	public void test_type_declare_attribute() {
-		String rule = "type_declare_attribute";
-		String[] testDRL = {
+				"declare AnotherWayForAttributes" + "\n" +
+				" @[ symmetric, inverse(SomeOther), transitive ] " + "\n" +
+				" name : String " + "\n" +
+				" end \n",
+		};
+		rules.put(key,rule);
+		data.put(key,testDRL);
+				
+		
+		key = "test_type_declare_attribute"; 
+		rule = "type_declare_attributes";
+		testDRL = new String[] {
 				"@role(event)",
 				"@role(type)",
 				"@role(entity)",
@@ -206,140 +202,119 @@ public class Rule_Test {
 				"@transitive",
 				"@inverse(ReverseProperty)"
 				
-		};		
-			
-		check(rule,testDRL);										
-	}
-	
-	
-	@Test	
-	public void test_decl_field() {
-		String rule = "decl_field";
-		String[] testDRL = {
+		};	
+		rules.put(key,rule);
+		data.put(key,testDRL);
+		
+		
+		key = "test_decl_field";
+		rule = "decl_field";
+		testDRL = new String[] {
 				"field = (...) : datatype[][] @[key]"
 		};
-				
-		check(rule,testDRL);										
-	}
-	
-	
-	@Test		
-	public void test_rule() {
-		String rule = "rule";
-		String[] testDRL = {
+		rules.put(key,rule);
+		data.put(key,testDRL);
+		
+		
+		key = "test_rule";
+		rule = "rule";
+		testDRL = new String[] {
 				"rule \"ruleName\" extends \"anotherRule\" " + "\n" +
-				" salience 100 " + "\n" +
-				" no-loop " + "\n" +
-				" calendar \"s1\" , \"s2\" " + "\n" +
+				" @salience(100) " + "\n" +
+				" @no-loop " + "\n" +
+				" @calendar( \"s1\" , \"s2\" )" + "\n" +
+				"deduction @crisp" + "\n" +
+				"implication @[crisp]" + "\n" +
 				"when" + "\n" +
 				"then" + "\n" +
 				"end" + "\n" 	
 		};
+		rules.put(key,rule);
+		data.put(key,testDRL);
 		
-		
-		String test2;
-				
-		check(rule,testDRL);										
-	}
-	
-	
-	
-	@Test	
-	public void test_rule_attributes() {
-		String rule = "rule_attribute";
-		String[] testDRL = {
-				"salience 100",
-				"no-loop true",
-				"agenda-group \"test-group\"",
-				"activation-group \"act-group\"",
-				"auto-focus false",
-				"effective \"2010-04-12\"",
-				"expires \"2010-04-12\"",
-				"enabled true",
-				"ruleflow-group \"act-group\"",
-				"agenda-group \"act-group\"",
-				"duration 100",
-				"timer 100",
+		key = "test_rule_attributes";
+		rule = "rule_attributes";
+		testDRL = new String[] {
+				"@salience(100)",
+				"@no-loop(true)",
+				"@agenda-group(\"test-group\")",
+				"@activation-group(\"act-group\")",
+				"@auto-focus(false)",
+				"@effective(\"2010-04-12\")",
+				"@expires(\"2010-04-12\")",
+				"@enabled(true)",
+				"@ruleflow-group(\"act-group\")",
+				"@agenda-group(\"act-group\")",
+				"@duration(100)",
+				"@timer(100)",
 //TODO: fails as stand-alone, but works in context..				
 //				"calendar \"s1\" , \"s2\" ",
-				"dialect \"java\" ",
-				"lock-on-active true",
-				"defeats \"anotherRule\" ",
-				"deductive",
-				"abductive",
-				"equivalence",
-				"deduction @[crisp]",
-				"implication @[crisp]"
+				"@dialect( \"java\" )",
+				"@lock-on-active(true)",
+				"@defeats(\"anotherRule\")",
+				"@deductive",
+				"@abductive",
+				"@equivalence",				
 		};
-				
-		check(rule,testDRL);										
-	}
-	  
-	@Test	
-	public void test_operator_attributes() {
-		String rule = "operator_attributes";
-		String[] testDRL = {				
+		rules.put(key,rule);
+		data.put(key,testDRL);
+		
+		
+		key = "test_operator_attributes";
+		rule = "operator_attributes";
+		testDRL = new String[] {				
 				"@[" + "\n" +
-				"kind=\"lukasiewicz\", " + "\n" +
-				"id=\"myID\", " + "\n" +
-				"params=\"addit,args,2,more\", " + "\n" +
-				"degree=\"[0.3,0.2]\", " + "\n" +
+				"kind(\"lukasiewicz\"), " + "\n" +
+				"id(\"myID\"), " + "\n" +
+				"params(\"addit,args,2,more\"), " + "\n" +
+				"degree(\"[0.3,0.2]\"), " + "\n" +
 				"crisp," + "\n" +
 				"default," + "\n" +
 				"defeat," + "\n" +
-				"merge=\"mStrat\", " + "\n" +
+				"merge(\"mStrat\"), " + "\n" +
 				//"filter=\"fStrat\", " + "\n" +		//TODO: removed "filter" from here
-				"missing=\"sStrat\" " + "\n" +
-				"]",				
+				"missing(\"sStrat\") " + "\n" +
+				"]",									
 		};
-				
-		check(rule,testDRL);
-				
-	}
-
-	
-	@Test
-	public void test_lhs_root() {
-		String rule = "rule";
-		String[] testDRL = {
+		rules.put(key,rule);
+		data.put(key,testDRL);
+		
+		key = "test_lhs_root";
+		rule = "rule";
+		testDRL = new String[] {
 				"rule test when " +
 				"Bus() Car() Taxi()" +
 				"then end"
 		};
-				
-		check(rule,testDRL);										
-	}
-	
-	@Test
-	public void test_lhs_implies() {
-		String rule = "rule";
-		String[] testDRL = {
+		rules.put(key,rule);
+		data.put(key,testDRL);
+		
+		key = "test_lhs_implies";
+		rule = "rule";
+		testDRL = new String[] {
 				"rule test when " +
-				"$p : Person() implies @[kind=\"anImpl\"] Dog()" +
+				"$p : Person() implies @kind(\"anImpl\") @crisp Dog()" +
 				"then end"
 		};
-				
-		check(rule,testDRL);										
-	}	
-	
-	
-	@Test
-	public void test_lhs_or() {
-		String rule = "rule";
-		String[] testDRL = {
+		rules.put(key,rule);
+		data.put(key,testDRL);
+		
+			
+		key = "test_lhs_or";
+		rule = "rule";
+		testDRL = new String[] {
 				"rule test when " +
-				"Car() or @[kind=\"anOr\"] Taxi() or @[kind=\"anotherOr\"] Bus()" +
+				"Car() or @kind(\"anOr\") Taxi() or @[kind(\"anotherOr\")] Bus()" +
 				"then end"
 		};
+		rules.put(key,rule);
+		data.put(key,testDRL);
+		
 				
-		check(rule,testDRL);										
-	}	
-	
-	
-	@Test
-	public void test_lhs_diff() {
-		String rule = "rule";
-		String[] testDRL = {
+		
+		key = "test_lhs_diff";
+		rule = "rule";
+		testDRL = new String[] {
 				"rule test when " +
 				"$p : Person() xor Dog()" +
 				"then end",
@@ -348,42 +323,36 @@ public class Rule_Test {
 				"(Person() xor Dog()) equiv Cat()" +
 				"then end"
 		};
-				
-		check(rule,testDRL);										
-	}	
-	
+		rules.put(key,rule);
+		data.put(key,testDRL);
 		
-	
-	
-	@Test
-	public void test_lhs_and() {
-		String rule = "rule";
-		String[] testDRL = {
+		key = "test_lhs_and";
+		rule = "rule";
+		testDRL = new String[] {
 				"rule test when " +
 				"Car() and Taxi() and Bus()" +
 				"then end"
 		};
-				
-		check(rule,testDRL);										
-	}	
-	
-	@Test
-	public void test_lhs_root_complex() {
-		String rule = "rule";
-		String[] testDRL = {
+		rules.put(key,rule);
+		data.put(key,testDRL);
+		
+		
+		
+		key = "test_lhs_root_complex";
+		rule = "rule";
+		testDRL = new String[] {
 				"rule test when " +
 				"(P() implies Q()) implies ( (K() equiv K()) or Z() and X() )" +
 				"then end"
 		};
-				
-		check(rule,testDRL);										
-	}	
-	
-	
-	@Test	
-	public void test_lhs_modified_unary() {
-		String rule = "rule";
-		String[] testDRL = {
+		rules.put(key,rule);
+		data.put(key,testDRL);
+		
+		
+		
+		key = "test_lhs_modified_unary";
+		rule = "rule";
+		testDRL = new String[] {
 				"rule \"r\" when " +
 				"neg @[crisp] very @[crisp] Person() " +
 				"then end",
@@ -394,52 +363,50 @@ public class Rule_Test {
 				
 				"rule \"r\" when " +
 				"(Person() implies Dog())" +
-				"then end"
-				
+				"then end"			
 		};
-				
-		check(rule,testDRL);										
-	}
-	
-	
-	@Test	
-	public void test_lhs_exists() {
-		String rule = "rule";
-		String[] testDRL = {
+		rules.put(key,rule);
+		data.put(key,testDRL);
+		
+		
+		
+		key = "test_lhs_exists";
+		rule = "rule";
+		testDRL = new String[] {
 				"rule \"r\" when " +
 				"exists @[crisp] ( $p : Person() and $d : Dog() ) " +
 				"then end",
 				
-				"rule \"r\" when " +
+				"rule \"r2\" when " +
 				" $p : exists Person() " +
-				"then end",							
+				"then end",
 				
+				"rule \"r3\" when " +
+				" $tup : exists ( Person() Car() )" +
+				"then end",			
 		};
-				
-		check(rule,testDRL);										
-	}
-	
-	@Test	
-	public void test_lhs_not() {
-		String rule = "rule";
-		String[] testDRL = {
+		rules.put(key,rule);
+		data.put(key,testDRL);
+		
+			
+		key = "test_lhs_not";
+		rule = "rule";
+		testDRL = new String[] {
 				"rule \"r\" when " +
 				"not @[crisp] ( $p : Person() and $d : Dog() ) " +
 				"then end",
 				
 				"rule \"r\" when " +
 				" not Person() " +
-				"then end",							
-				
+				"then end",										
 		};
-				
-		check(rule,testDRL);										
-	}
-	
-	@Test	
-	public void test_lhs_forall() {
-		String rule = "rule";
-		String[] testDRL = {
+		rules.put(key,rule);
+		data.put(key,testDRL);
+		
+		
+		key = "test_lhs_forall";
+		rule = "rule";
+		testDRL = new String[] {
 				"rule \"r\" when " +
 				"forall @[crisp] Person() " +
 				"then end",
@@ -458,19 +425,15 @@ public class Rule_Test {
 				"forall  ( ($p : Person() $d : Dog() )" +
 				"          (     Person()      Dog() ) " +
 				"        ) " +
-				"then end",							
-				
+				"then end",											
 		};
-				
-		check(rule,testDRL);										
-	}
-	
-	
-	
-	@Test	
-	public void test_lhs_label_atom_pattern() {
-		String rule = "rule";
-		String[] testDRL = {
+		rules.put(key,rule);
+		data.put(key,testDRL);
+		
+		
+		key = "test_lhs_label_atom_pattern";
+		rule = "rule";
+		testDRL = new String[] {
 				"rule \"r\" when " +
 				"$p : Person() " +
 				"then end",
@@ -479,90 +442,705 @@ public class Rule_Test {
 				"Person() @[crisp]" +
 				"then end",
 		};
-				
-		check(rule,testDRL);										
-	}
-	
-	
-	@Test	
-	public void test_constraints() {
-		String rule = "rule";
-		String[] testDRL = {
+		rules.put(key,rule);
+		data.put(key,testDRL);
+		
+		
+		key = "test_constraints";
+		rule = "rule";
+		testDRL = new String[] {
 				"rule \"r\" when " +
 				"Person( \"john\" , 18, height > 150) " +
 				"then end",
 		};
-				
-		check(rule,testDRL);										
-	}
-	
-	
-	@Test	
-	public void test_positional_constraint() {
-		String rule = "rule";
-		String[] testDRL = {
+		rules.put(key,rule);
+		data.put(key,testDRL);
+		
+		
+		key = "test_positional_constraint";
+		rule = "rule";
+		testDRL = new String[] {
 				"rule \"r\" when " +
 				"Person( \"john\" , 18, 2.0, true, null, new Dog(), {12, $x, \"test\" }, $var) " +
 				"then end",
 		};
+		rules.put(key,rule);
+		data.put(key,testDRL);
+		
+		
+		key = "test_nested";
+		rule = "rule";
+		testDRL = new String[] {
+				"rule \"inNest\" when " + "\n" +
+				"Person( name.firstPart == \"john\" ) " + "\n" +
+				"then end",
 				
-		check(rule,testDRL);										
-	}
+				"rule \"inNest2\" when " + "\n" +
+				"Person( name== \"mark\", address.#Address( city == \"london\", country == \"uk\") ) " + "\n" +
+				"then end",
+					
+				"rule \"inNest2\" when " + "\n" +
+				" $p : Person( $a : getAddresses()[ #LongAddress( location == \"london\") ] ) " + "\n" +
+				"then end",
+				
+				"rule \"inNest2\" when " + "\n" +
+				" Person( $p : | pets[ #Dog(color == \"red\") ].age * $v1 | == $v2 - 3 ) " +
+				"then end",
+		};
+		rules.put(key,rule);
+		data.put(key,testDRL);
+		
 	
-	
-	
-	@Test	
-	public void test_literal_object() {
-		String rule = "literal_object";
-		String[] testDRL = {
+		key = "test_literal_object";
+		rule = "literal_object";
+		testDRL = new String[] {
 				"new Thing(13, $var, true)"
 		};
-				
-		check(rule,testDRL);										
-	}
-	
-	
-	@Test	
-	public void test_method_args() {
-		String rule = "literal_object";
-		String[] testDRL = {
+		rules.put(key,rule);
+		data.put(key,testDRL);
+		
+		
+		key = "test_method_args";
+		rule = "literal_object";
+		testDRL = new String[] {
 				"new Obj(12 - 13*($var*2 + sqrt(4)))"
 		};
-				
-		check(rule,testDRL);										
-	}
-	
-	
-	public void test_meta_annotation() {
-		String rule = "rule";
-		String[] testDRL = {
-				"xx"	
-		};
-				
-		check(rule,testDRL);										
-	}
-	
-	
-	
-	
-	
-	@Test	
-	public void test_decl_dl() {
-		String rule = "type_declaration";
-		String[] testDRL = {
+		rules.put(key,rule);
+		data.put(key,testDRL);
+		
+		
+		key = "test_decl_dl";
+		rule = "type_declaration";
+		testDRL = new String[] {
 				"declare Student " + "\n" +
-				" defined Male() and Human() and (Slave() or worksAt some (School() or Prison()))" + "\n" +				
+				" as Male() and Human() and (Slave() or worksAt some (School() or Prison()))" + "\n" +				
 				" age  : int " + "\n" +
 				" name : String " + "\n" +
 				" end \n"
 		};
+		rules.put(key,rule);
+		data.put(key,testDRL);
+		
+		
+		key = "test_constr_implies";
+		rule = "rule";
+		testDRL = new String[] {
+				"rule test when " + "\n" +
+				" Person( name == \"john\" implies age < 18)" + "\n" +
+				"then end"
+		};
+		rules.put(key,rule);
+		data.put(key,testDRL);
+		
+		
+		key = "test_constr_or";
+		rule = "rule";
+		testDRL = new String[] {
+				"rule test when " + "\n" +
+				" Person( name == \"john\" implies age < 18 or age > 25)" + "\n" +
+				"then end"
+		};
+		rules.put(key,rule);
+		data.put(key,testDRL);
+		
 				
-		check(rule,testDRL);										
+		
+		key = "test_constr_diff";
+		rule = "rule";
+		testDRL = new String[] {
+				"rule test when " + "\n" +
+				" Person( age < 18 xor age > 25)" + "\n" +
+				"then end",
+				
+				"rule test when " + "\n" +
+				" Person( age < 18 equiv age > 25)" + "\n" +
+				"then end",			
+		};
+		rules.put(key,rule);
+		data.put(key,testDRL);
+		
+		
+		
+		key = "test_constr_and";
+		rule = "rule";
+		testDRL = new String[] {
+				"rule test when " + "\n" +
+				" Person( name == \"john\" and @crisp age < 18 and @kind(\"xx\") age > @id(\"..\") 25)" + "\n" +
+				"then end"
+		};
+		rules.put(key,rule);
+		data.put(key,testDRL);
+		
+		
+		key = "test_constr_unary";
+		rule = "rule";
+		testDRL = new String[] {
+				"rule test when " + "\n" +
+				" Person( neg very (name == \"john\" implies age < 18) )" + "\n" +
+				"then end"
+		};
+		rules.put(key,rule);
+		data.put(key,testDRL);
+		
+		
+		key = "test_restr_implies";
+		rule = "rule";
+		testDRL = new String[] {
+				"rule test when " + "\n" +
+				" Person( name == \"john\" -> == \"mark\")" + "\n" +
+				"then end"
+		};
+		rules.put(key,rule);
+		data.put(key,testDRL);
+		
+		
+		key = "test_restr_or";
+		rule = "rule";
+		testDRL = new String[] {
+				"rule test when " + "\n" +
+				" Person( age < 18 || > 25)" + "\n" +
+				"then end"
+		};
+		rules.put(key,rule);
+		data.put(key,testDRL);
+		
+		
+		key = "test_restr_diff";
+		rule = "rule";
+		testDRL = new String[] {
+				"rule test when " + "\n" +
+				" Person( age < 18 ^^ > 25)" + "\n" +
+				"then end",
+				
+				"rule test when " + "\n" +
+				" Person( age < 18 <> > 25)" + "\n" +
+				"then end",
+				
+		};
+		rules.put(key,rule);
+		data.put(key,testDRL);
+		
+		
+		key = "test_restr_and";
+		rule = "rule";
+		testDRL = new String[] {
+				"rule test when " + "\n" +
+				" Person( age < 18 && @kind(\"xx\") > @id(\"..\") 25)" + "\n" +
+				"then end"
+		};
+		rules.put(key,rule);
+		data.put(key,testDRL);
+		
+		
+		key = "test_restriction_root";
+		rule = "restriction_root";
+		testDRL = new String[] {				
+				" all == @crisp 18 + 2*$x#km " ,
+				// TODO
+				//" all == @crisp 18 + 2*$var "
+				// again, works only within a rule and not parsed standalone
+				// problem is var_literal, without measure unit
+		};
+		rules.put(key,rule);
+		data.put(key,testDRL);
+		
+		
+		key = "test_expression";
+		rule = "right_expression";
+		testDRL = new String[] {				
+				" 2*($x#km+1000) + 500*size.len ",
+				//" 2 * $p "
+				// as above
+		};
+		rules.put(key,rule);
+		data.put(key,testDRL);
+		
+		
+		
+		key = "test_expression_in_rule";
+		rule = "rule";
+		testDRL = new String[] {				
+				" rule test when " + "\n" +
+				"  Person( age all == @crisp 18 + 2*$var ) " + "\n" +
+				" then end ",
+		};
+		rules.put(key,rule);
+		data.put(key,testDRL);
+		
+		
+		key = "test_var_literal";
+		rule = "var_literal";
+		testDRL = new String[] {				
+				" $x ",
+				" $x#km ",
+				" $x#km#m ",
+		};
+		rules.put(key,rule);
+		data.put(key,testDRL);
+		
+		
+		key = "test_restriction_root_in_rule";
+		rule = "rule";
+		testDRL = new String[] {
+				"rule test when " + "\n" +
+				" Person( age all == @crisp 18+2*$x )" + "\n" +
+				"then end"
+		};
+		rules.put(key,rule);
+		data.put(key,testDRL);
+	
+		key = "test_left_expression";
+		rule = "left_expression";
+		testDRL = new String[] {				
+				" $a : age " + "\n",
+				
+				"| (age + 2) * $x + 4 * weight.subField |", 
+				
+				"$x : | $z + 4 * weight |",
+				
+				"$a : | (age * 2 + 4 * weight + height) |",								
+		};
+		rules.put(key,rule);
+		data.put(key,testDRL);
+		
+		
+		key = "test_left_expression_in_rule";
+		rule = "rule";
+		testDRL = new String[] {
+				"rule test when " + "\n" +
+				" Person( $a : age )" + "\n" +
+				"then end",
+							
+				"rule test when " + "\n" +
+				" Person( ($a : | age * 2 + 4 * weight |  == 18) implies (age < 25 and age > 4)  )" + "\n" +
+				"then end",								
+		};
+		rules.put(key,rule);
+		data.put(key,testDRL);
+		
+		
+		key = "test_accessor_path";
+		rule = "accessor_path";
+		testDRL = new String[] {				
+				" age ",
+				
+				" $var.field ",
+				
+				"address.city.street(2).number", 
+				
+				"$addr.city.#pack.Street( number == 2).subfield[4].subsubfield",												
+		};
+		rules.put(key,rule);
+		data.put(key,testDRL);
+		
+		
+		key = "test_accessor";
+		rule = "accessor";
+		testDRL = new String[] {				
+				" age ",
+				
+				" someMethod(\"p1\",2) ", 
+								
+				" #nested( age == 18 ) ",
+				
+				" pets[3] "
+		};
+		rules.put(key,rule);
+		data.put(key,testDRL);
+		
+		
+		key = "test_indexer";
+		rule = "indexer";
+		testDRL = new String[] {												
+				" [3] ",
+				" [\"rover\"] ",
+				" [ getId(2734) ]",
+				" [ #Pattern( age == 18) ]"
+				
+		};
+		rules.put(key,rule);
+		data.put(key,testDRL);
+		
+		
+		key = "test_from";
+		rule = "from";
+		testDRL = new String[] {												
+				" from entrypoint byId ",
+				" from entrypoint \"byStr\" ",
+				
+				" from $var.access ",
+				
+				" from collect ( Person() )",
+				" from collect ( $p : Person() from $source )",
+				
+				" from collect ( Person() )",														
+		};
+		rules.put(key,rule);
+		data.put(key,testDRL);
+		
+		
+		key = "test_from_rule";
+		rule = "rule";
+		testDRL = new String[] {																				
+				" rule test when " + " \n" +
+				" Person() from collect ( $p: Person() from list )" + "\n" +
+				" then end",				
+		};
+		rules.put(key,rule);
+		data.put(key,testDRL);
+		
+		
+		key = "test_label";
+		rule = "label";
+		testDRL = new String[] {
+				" $var : "
+		};
+		rules.put(key,rule);
+		data.put(key,testDRL);
+			
+		
+		key = "test_inner_quantifier";
+		rule = "inner_quantifier";
+		testDRL = new String[] {
+				"all",
+				"some",
+				"value",
+				"count @[5]",
+				"count @[min=1, max=10]",						
+		};
+		rules.put(key,rule);
+		data.put(key,testDRL);
+		
+		
+		key = "test_inner_quantifier_in_rule";
+		rule = "rule";
+		testDRL = new String[] {
+				"rule test when" + "\n" +
+				" Person( age count @[5] == @crisp 18 ) " + "\n" +
+				"then end",						
+		};
+		rules.put(key,rule);
+		data.put(key,testDRL);
+		
+		
+		key = "test_evaluator";
+		rule = "evaluator";
+		testDRL = new String[] {
+				"==",
+				"!=",
+				">",
+				">=",
+				"<",
+				"<=",
+				"~==",
+				"~!=",
+				"~>",
+				"~>=",
+				"~<",
+				"~<=",
+				"in",
+				"contains",
+				"custom"
+		};
+		rules.put(key,rule);
+		data.put(key,testDRL);
+		
+		
+		
+		key = "test_filter_chains";
+		rule = "rule";
+		testDRL = new String[] {
+				" rule test when " + "\n" +
+				" Person( age > 18) | window:length( 10 ) | window:time(2h)" + "\n" +
+				" then end ",
+				
+				" rule test when " + "\n" +
+				" 	( " + "\n" +
+				"		Person( age > 18)" + "\n" +
+				"		Person( ) " + "\n" +
+				"	) | window:length( 10 ) | window:time(2h)" + "\n" +
+				" then end ",							
+		};
+		rules.put(key,rule);
+		data.put(key,testDRL);
+		
+		
+		
+		
+		key = "test_right_expression";
+		rule = "rule";
+		testDRL = new String[] {												
+				" rule test when " + "\n" +
+				" Person( age > 2*$height + $z * weight * comput($k) )" + "\n" +
+				" then end ",
+				
+				" rule test when " + "\n" +
+				" Person( |2*age()| == 3*height*method(weight + 2 *$k*sqrt(x)) )" + "\n" +
+				" then end ",								
+		};
+		rules.put(key,rule);
+		data.put(key,testDRL);
+		
 	}
 	
 	
 	
-	//TODO : test filter & tree struct
+
+	@AfterClass
+	public static void tearDownAfterClass() throws Exception {
+		writer.flush();
+		writer.close();		
+	}
+
+	@Before
+	public void setUp() throws Exception {
+		
+	}
+
+	@After
+	public void tearDown() throws Exception {
+		
+	}
+	
+	
+	@Test	
+	public void test_compilation_unit() {		
+		check("test_compilation_unit");	 									
+	}	
+	@Test	
+	public void test_package_statement() {							
+		check("test_package_statement");										
+	}	
+	@Test	
+	public void test_global() {					
+		check("test_global");										
+	}
+	@Test	
+	public void test_data_type() {		
+		check("test_data_type");										
+	}	
+	@Test	
+	public void test_import_statement() {						
+		check("test_import_statement");										
+	}
+	@Test	
+	public void test_function_import_statement() {						
+		check("test_function_import_statement");										
+	}		
+	@Test	
+	public void test_function() {						
+		check("test_function");										
+	}
+	@Test	
+	public void test_parameters() {
+		check("test_parameters");		
+	}	
+	@Test	
+	public void test_type_declaration() {
+		check("test_type_declaration");										
+	}		
+	@Test	
+	public void test_type_declare_attribute() {		
+		check("test_type_declare_attribute");										
+	}		
+	@Test	
+	public void test_decl_field() {					
+		check("test_decl_field");										
+	}
+	@Test		
+	public void test_rule() {
+		check("test_rule");										
+	}	
+	@Test	
+	public void test_rule_attributes() {			
+		check("test_rule_attributes");										
+	}	  
+	@Test	
+	public void test_operator_attributes() {
+		check("test_operator_attributes");
+	}
+	@Test
+	public void test_lhs_root() {
+		check("test_lhs_root");									
+	}	
+	@Test
+	public void test_lhs_implies() {		
+		check("test_lhs_implies");								
+	}	
+	@Test
+	public void test_lhs_or() {
+		check("test_lhs_or");										
+	}	
+	@Test
+	public void test_lhs_diff() {
+		check("test_lhs_diff");
+	}	
+	@Test
+	public void test_lhs_and() {
+		check("test_lhs_and");										
+	}		
+	@Test
+	public void test_lhs_root_complex() {
+		check("test_lhs_root_complex");	
+	}	
+	@Test	
+	public void test_lhs_modified_unary() {
+		check("test_lhs_modified_unary");
+	}
+	@Test	
+	public void test_lhs_exists() {			
+		check("test_lhs_exists");								
+	}	
+	@Test	
+	public void test_lhs_not() {
+		check("test_lhs_not");										
+	}	
+	@Test	
+	public void test_lhs_forall() {
+		check("test_lhs_forall");										
+	}			
+	@Test	
+	public void test_lhs_label_atom_pattern() {
+		check("test_lhs_label_atom_pattern");										
+	}
+	@Test
+	public void test_constraints() {
+		check("test_constraints");										
+	}
+	@Test	
+	public void test_positional_constraint() {
+		check("test_positional_constraint");										
+	}
+	@Test	
+	public void test_nested() {
+		check("test_nested");										
+	}
+	@Test	
+	public void test_literal_object() {
+		check("test_literal_object");
+	}		
+	@Test	
+	public void test_method_args() {
+		check("test_method_args");										
+	}
+	@Test	
+	public void test_decl_dl() {
+		check("test_decl_dl");										
+	}
+	@Test	
+	public void test_constr_implies() {
+		check("test_constr_implies");								
+	}
+	@Test	
+	public void test_constr_or() {
+		check("test_constr_or");										
+	}
+	@Test	
+	public void test_constr_diff() {
+		check("test_constr_diff");										
+	}	
+	@Test	
+	public void test_constr_and() {
+		check("test_constr_and");										
+	}
+	@Test	
+	public void test_constr_unary() {
+		check("test_constr_unary");										
+	}
+	@Test	
+	public void test_restr_implies() {
+		check("test_restr_implies");										
+	}
+	@Test	
+	public void test_restr_or() {		
+		check("test_restr_or");									
+	}
+	@Test	
+	public void test_restr_diff() {
+		check("test_restr_diff");										
+	}	
+	@Test	
+	public void test_restr_and() {
+		check("test_restr_and");										
+	}
+	@Test	
+	public void test_restriction_root() {
+		check("test_restriction_root");										
+	}	
+	@Test	
+	public void test_expression() {
+		check("test_expression");										
+	}	
+	@Test	
+	public void test_expression_in_rule() {
+		check("test_expression_in_rule");										
+	}
+	@Test	
+	public void test_var_literal() {
+		check("test_var_literal");										
+	}
+	@Test	
+	public void test_restriction_root_in_rule() {
+		check("test_restriction_root_in_rule");										
+	}
+	@Test	
+	public void test_left_expression() {
+		check("test_left_expression");										
+	}
+	@Test	
+	public void test_left_expression_in_rule() {
+		check("test_left_expression_in_rule");										
+	}
+	@Test	
+	public void test_accessor_path() {
+		check("test_accessor_path");										
+	}
+	@Test	
+	public void test_accessor() {
+		check("test_accessor");										
+	}		
+	@Test	
+	public void test_indexer() {
+		check("test_indexer");									
+	}
+	@Test	
+	public void test_right_expression() {
+		check("test_right_expression");										
+	}
+	@Test	
+	public void test_from() {
+		check("test_from");										
+	}
+	@Test	
+	public void test_from_rule() {
+		check("test_from_rule");
+	}	
+	@Test	
+	public void test_label() {
+		check("test_label");	
+	}
+	@Test	
+	public void test_inner_quantifier() {
+		check("test_inner_quantifier");
+	}		
+	@Test	
+	public void test_inner_quantifier_in_rule() {	
+		check("test_inner_quantifier_in_rule");
+	}
+	@Test	
+	public void test_evaluator() {
+		check("test_evaluator");
+	}
+	@Test	
+	public void test_filter_chains() {
+		check("test_filter_chains");
+	}
+		
+	
+	
+	
+	
+	
 	
 	/*
 	@Test	
@@ -577,627 +1155,6 @@ public class Rule_Test {
 	*/
 	
 
-/*	  		  
-	
-		  
-	    
-	
-
-
-	// method expr roots can't start with () and have a slightly simpler structure than outer expressions
-	
-
-
-	constr_implies
-	  : left=constr_or (imp=imply_connective operator_attributes? right=constr_or)? 
-	    -> {imp != null}? ^($imp operator_attributes? $left $right)    
-	    -> ^($left)
-	  ;
-	  
-	constr_or
-	@init{
-	  Token orToken = null;
-	  ParserRuleReturnScope seq = null;
-	}
-	  : ld=constr_diff 
-	            {seq=ld;}
-	        ( lios=constr_or_sequitur[seq.getTree()]
-	      {seq=lios;}
-	  )*
-	          -> {lios==null}? ^($ld)
-	          -> ^($lios)
-	  ;
-	  
-	constr_or_sequitur[Object leftChild]
-	  : or=or_connective^ (atts=operator_attributes!)? rightChild=constr_diff!
-	             {
-	               Tree t = ((Tree) or.getTree());               
-	               if (atts != null)
-	                 t.addChild((Tree) atts.getTree());
-	              
-	             t.addChild((Tree) leftChild);
-	       t.addChild((Tree) rightChild.getTree());           
-	           } 
-	  ;
-	  
-	  
-
-
-	constr_diff
-	  : constr_and (( xor_connective^ | eq_connective^ ) operator_attributes? constr_and)?
-	  ;
-	    
-	  
-	  
-	  
-	      
-	constr_and
-	@init{
-	  Token orToken = null;
-	  ParserRuleReturnScope seq = null;
-	}
-	  : ld=constr_unary
-	            {seq=ld;}
-	        ( lias=constr_and_sequitur[seq.getTree()]
-	      {seq=lias;}
-	  )*
-	          -> {lias==null}? ^($ld)
-	          -> ^($lias)
-	  ;
-	  
-	constr_and_sequitur[Object leftChild]
-	  : and=and_connective^ (atts=operator_attributes!)? rightChild=constr_unary!
-	             {
-	               Tree t = ((Tree) and.getTree());                
-	               if (atts != null)
-	                 t.addChild((Tree) atts.getTree());
-	              
-	             t.addChild((Tree) leftChild);
-	       t.addChild((Tree) rightChild.getTree());           
-	           } 
-	  ;
-	  
-	  
-
-	constr_unary
-	  : unary_operator operator_attributes? constr_unary
-	  | constr_atom
-	  | LEFT_PAREN! constr_implies RIGHT_PAREN! 
-	  ;
-	  
-	constr_atom
-	  : left_expression restriction_root^? 
-	  ;
-	  
-
-	  
-	restriction_root
-	  : restr_implies
-	  ; 
-
-
-	restr_implies
-	  : left=restr_or (imp=imply_symbol operator_attributes? right=restr_or)? 
-	    -> {imp != null}? ^($imp operator_attributes? $left $right)    
-	    -> ^($left)
-	  ;
-	  
-	restr_or
-	@init{
-	  Token orToken = null;
-	  ParserRuleReturnScope seq = null;
-	}
-	  : ld=restr_diff 
-	            {seq=ld;}
-	        ( lios=restr_or_sequitur[seq.getTree()]
-	      {seq=lios;}
-	  )*
-	          -> {lios==null}? ^($ld)
-	          -> ^($lios)
-	  ;
-	  
-	restr_or_sequitur[Object leftChild]
-	  : or=or_symbol^ (atts=operator_attributes!)? rightChild=restr_diff!
-	             {
-	               Tree t = ((Tree) or.getTree());               
-	               if (atts != null)
-	                 t.addChild((Tree) atts.getTree());
-	              
-	             t.addChild((Tree) leftChild);
-	       t.addChild((Tree) rightChild.getTree());           
-	           } 
-	  ;
-	  
-	  
-
-
-	restr_diff
-	  : restr_and (( xor_symbol^ | eq_symbol^ ) operator_attributes? restr_and)?
-	  ;
-	    
-	  
-	  
-	  
-	      
-	restr_and
-	@init{
-	  Token orToken = null;
-	  ParserRuleReturnScope seq = null;
-	}
-	  : ld=restr_unary
-	            {seq=ld;}
-	        ( lias=restr_and_sequitur[seq.getTree()]
-	      {seq=lias;}
-	  )*
-	          -> {lias==null}? ^($ld)
-	          -> ^($lias)
-	  ; 
-	  
-	restr_and_sequitur[Object leftChild]
-	  : and=and_symbol^ (atts=operator_attributes!)? rightChild=restr_unary!
-	             {
-	               Tree t = ((Tree) and.getTree());                
-	               if (atts != null)
-	                 t.addChild((Tree) atts.getTree());
-	              
-	             t.addChild((Tree) leftChild);
-	       t.addChild((Tree) rightChild.getTree());           
-	           } 
-	  ;
-
-
-
-	restr_unary
-	  : unary_operator operator_attributes? restr_unary
-	  | LEFT_PAREN! restr_implies RIGHT_PAREN!
-	  | restr_atom
-	  ;
-
-
-	restr_atom
-	  : qnt=inner_quantifier? eval=evaluator operator_attributes? right_expression
-	    -> {qnt==null}? ^(evaluator operator_attributes? right_expression)
-	    -> ^(inner_quantifier ^(evaluator operator_attributes? right_expression))
-	  ;
-
-
-
-
-
-	  
-	left_expression
-	  : label
-	    ( 
-	      left_expr_atom 
-	      -> ^(VT_BINDING VAR ^(VT_FIELD left_expr_atom))
-	      | LEFT_PAREN left_expr_root RIGHT_PAREN 
-	      -> ^(VT_BINDING VAR ^(VT_EXPR left_expr_root))
-	    )
-	  | left_expr_root
-	    -> ^(VT_EXPR left_expr_root)
-	  ;
-
-	left_expr_atom
-	  : expr_atom
-	  ;
-
-
-	expr_atom
-	  : accessor_path 
-	  |   VAR
-	  | literal
-	  ; 
-	   
-
-	left_expr_root
-	  : accessor_path  ( (PLUS | MINUS) factor )*
-	  ;
-
-	factor
-	  : term ( (TIMES | SLASH) term )*  
-	  ; 
-	      
-	term
-	  : MINUS? expr_unary 
-	  ; 
-	  
-	expr_unary
-	  : expr_atom  
-	  | LEFT_PAREN! expr_root RIGHT_PAREN!
-	  ; 
-	  
-	expr_root
-	  : factor  ( (PLUS | MINUS) factor )*
-	  ; 
-
-
-
-
-	accessor_path
-	  :   accessor (DOT! accessor)*
-	  | VAR (DOT! accessor)+
-	  ;
-
-
-	accessor 
-	options{
-	  backtrack = true;
-	}
-	  : ID indexer?
-	  | method
-	  | nested_obj_pattern
-	  ;
-
-
-	nested_obj_pattern
-	  : GATE!  (ID (DOT! ID)*)?  LEFT_PAREN! constraints RIGHT_PAREN!
-	  ;
-
-
-	indexer
-	  : LEFT_SQUARE! 
-	    (
-	        INT
-	      | STRING
-	      | ID LEFT_PAREN! method_args RIGHT_PAREN!
-	      | GATE! lhs_label_atom_pattern      
-	    )?
-	    RIGHT_SQUARE!
-	  ;
-
-
-
-	right_expression
-	  : expr_root
-	  ;
-
-
-	over_clause
-	  : OVER^ over_elements (COMMA! over_elements)*
-	  ;
-
-	over_elements
-	  : id1=WINDOW COLON 
-	    (  id2=TIME paren_chunk
-	      -> ^(VT_BEHAVIOR $id1 $id2 paren_chunk)
-	    |  id2=LENGTH LEFT_PAREN INT RIGHT_PAREN
-	      -> ^(VT_BEHAVIOR $id1 $id2 INT) 
-	    ) 
-	  ;
-
-	from
-	  : FROM^
-	            (  accumulate_statement
-	              | collect_statement 
-	              | entrypoint_statement
-	              | from_source
-	            )
-	  ;
-
-
-
-
-	collect_statement
-	  : COLLECT 
-	    LEFT_PAREN 
-	      lhs_label_atom_pattern 
-	    RIGHT_PAREN 
-	  -> ^(COLLECT lhs_label_atom_pattern)
-	  ;
-
-	entrypoint_statement
-	  : ENTRYPOINT
-	    entrypoint_id
-	  -> ^(VT_ENTRYPOINT entrypoint_id)
-	  ;
-
-	entrypoint_id
-	  :   value=ID 
-	    -> VT_ENTRYPOINT_ID[$value]
-	  |   value=STRING 
-	    -> VT_ENTRYPOINT_ID[$value]
-	  ;
-
-	from_source
-	  : ID 
-	    //args=paren_chunk?
-	    //expression_chain?
-	    //-> ^(VT_FROM_SOURCE ID paren_chunk? expression_chain?)
-	  ;
-
-	//TODO
-	  
-	//expression_chain
-	//  : DOT ID ( paren_chunk | square_chunk )? expression_chain?
-	//    -> ^(VT_EXPRESSION_CHAIN[$DOT] ID square_chunk? paren_chunk? expression_chain?)
-	//  ;
-	//
-
-
-
-	accumulate_statement
-	  : ACCUMULATE  
-	    LEFT_PAREN 
-	      lhs_implies 
-	    COMMA? 
-	    ( accumulate_init_clause
-	    | accumulate_id_clause
-	    )
-	    RIGHT_PAREN 
-	    -> ^( ACCUMULATE lhs_implies accumulate_init_clause? accumulate_id_clause? )
-	  ;
-
-	accumulate_init_clause
-	  : INIT
-	    pc1=accumulate_paren_chunk cm1=COMMA? 
-	    ACTION pc2=accumulate_paren_chunk cm2=COMMA? 
-	  ( REVERSE pc3=accumulate_paren_chunk cm3=COMMA? )?
-	    res1=RESULT pc4=accumulate_paren_chunk
-	    -> ^(VT_ACCUMULATE_INIT_CLAUSE ^(INIT $pc1) ^(ACTION $pc2) ^(REVERSE $pc3)? ^(RESULT $pc4))
-	  ;
-
-
-	accumulate_paren_chunk
-	@init{
-	  String text = "";
-	} : pc=accumulate_paren_chunk_data[false] {text = $pc.text;} 
-	  -> VT_PAREN_CHUNK[$pc.start,text]
-	  ;
-
-	accumulate_paren_chunk_data[boolean isRecursive]
-	  : lp1=LEFT_PAREN    
-	    (any=~ ( LEFT_PAREN | RIGHT_PAREN ) | accumulate_paren_chunk_data[true] )* 
-	    rp1=RIGHT_PAREN
-	  ;
-
-	accumulate_id_clause
-	  : ID paren_chunk
-	  -> ^(VT_ACCUMULATE_ID_CLAUSE ID paren_chunk)
-	  ;
-
-
-	query   //TODO
-	  : QUERY ID 
-	    parameters? 
-	    lhs_root
-	    END
-	    -> ^(QUERY ID parameters? lhs_root)   
-	  ;
-
-
-	lhs_query
-	  : QUESTION_MARK ID LEFT_PAREN positional_constraints? RIGHT_PAREN
-	    -> ^(VT_QUERY_PATTERN ID positional_constraints?)
-	  ;
-
-
-
-
-
-	label
-	  : VAR COLON
-	  ;
-
-
-	inner_quantifier
-	  : ALL^
-	  | SOME^
-	  | VALUE^
-	  | COUNT^ (AT! LEFT_SQUARE! 
-	        (
-	          INT
-	          | (MAX^ EQUALS! INT)? (MIN^ EQUALS! INT)?
-	        )
-	       RIGHT_SQUARE!)?
-	  ;
-	  
-
-
-	evaluator
-	  : (TILDE!)?
-	    (
-	      simple_evaluator
-	    | complex_evaluator
-	    | custom_evaluator
-	    // TODO : | temporal_evaluator
-	    )
-	  
-	  ;
-
-	simple_evaluator
-	  : EQUAL^ 
-	  | GREATER^ 
-	  | GREATER_EQUAL^ 
-	  | LESS^ 
-	  | LESS_EQUAL^ 
-	  | NOT_EQUAL^ 
-	  ;   
-	  
-	complex_evaluator
-	  : IN
-	  | CONTAINS
-	  ; 
-	  
-	custom_evaluator
-	  : ID square_chunk?  //TODO: [] is for backward compat.
-	  ;
-
-
-
-
-
-
-
-	imply_connective
-	  : IMPLIES
-	    -> ^(VT_IMPLIES)
-	  ;
-
-	or_connective
-	  : OR
-	    -> ^(VT_OR)
-	  ;
-	      
-	and_connective
-	  : AND
-	    -> ^(VT_AND)
-	  ;     
-	  
-	xor_connective
-	  : XOR
-	    -> ^(VT_XOR)
-	  ;
-	  
-	eq_connective
-	  : EQUIV
-	    -> ^(VT_EQUIV)
-	  ;
-	  
-	  
-	imply_symbol
-	  : ARROW
-	    -> ^(VT_IMPLIES)
-	  ;
-
-	or_symbol
-	  : DOUBLE_PIPE
-	    -> ^(VT_OR)
-	  ;
-	      
-	and_symbol
-	  : DOUBLE_AMPER
-	    -> ^(VT_AND)
-	  ;     
-	  
-	xor_symbol
-	  : DOUBLE_CAP
-	    -> ^(VT_XOR)
-	  ;
-	  
-	eq_symbol
-	  : DOUBLE_ANG
-	    -> ^(VT_EQUIV)
-	  ; 
-	  
-
-	unary_operator
-	    : NEG
-	      -> ^(VT_NEG)    
-	    |   hedge^
-	    ;
-	  
-	    
-	hedge
-	    :     VERY
-	      -> ^(VT_HEDGE_VERY)
-	      | MOL
-	        -> ^(VT_HEDGE_VERY)
-	  ;
-	      
-
-
-
-	 
-	then_part  
-	  :     
-	      rhs_structured
-	    | rhs_chunk   
-	  ; 
-
-
-	rhs_structured
-	  : DO LEFT_CURLY!
-	    rhs_atom*
-	    RIGHT_CURLY!
-	  ;
-
-	rhs_atom
-	  :   rhs_insert
-	    | rhs_insert_logical
-	    | rhs_retract
-	    | rhs_retract_logical
-	    | rhs_update
-	    | rhs_modify
-	    | rhs_side_effect
-	  ; 
-	  
-	rhs_insert
-	  : INSERT^ literal_object
-	    SEMICOLON!
-	  ;
-
-	rhs_insert_logical
-	  : INSERT_LOG^ literal_object
-	    SEMICOLON!
-	  ;
-	  
-	rhs_retract
-	  : RETRACT^ 
-	    ( literal_object
-	    | VAR
-	    )
-	    SEMICOLON!
-	  ;
-
-	rhs_retract_logical
-	  : RETRACT_LOG^
-	    ( literal_object
-	    | VAR
-	    )
-	    SEMICOLON!
-	  ;
-
-	rhs_update
-	  : UPDATE^
-	      VAR
-	    SEMICOLON!  
-	  ;
-
-	rhs_modify
-	  : MODIFY^ LEFT_PAREN! VAR RIGHT_PAREN! 
-	    LEFT_CURLY!
-	      accessor_path
-	      (COMMA! accessor_path)*
-	    RIGHT_CURLY!
-	    SEMICOLON?
-	  ;
-	  
-	rhs_side_effect
-	@init{
-	  String text = "";
-	}
-	  : (DOUBLE_LESS | LESS dialect=(JAVA | MVEL) LESS)
-	    rc=side_effect_chunk {text = $rc.text;}
-	    DOUBLE_GREATER
-	    -> {dialect==null}? VT_RHS_CHUNK[$rc.start,text]
-	    -> ^(VT_DIALECT[dialect] VT_RHS_CHUNK[$rc.start,text])
-	  ;
-	  
-	side_effect_chunk
-	  : ~ ( END | DOUBLE_GREATER )*   
-	  ;
-
-
-
-
-
-
-	rhs_chunk
-	@init{
-	  String text = "";
-	} : THEN
-	    rc=rhs_chunk_data {text = $rc.text;}
-	    END 
-	    SEMICOLON?        
-	  -> VT_RHS_CHUNK[$rc.start,text]
-	  ;
-
-	rhs_chunk_data
-	  :     
-	      ~END*     
-	  ;
-	  
-	  */
 	
 	
 	
@@ -1210,40 +1167,38 @@ public class Rule_Test {
 	
 	
 	
-	
-	
-	
-	
-	
-	private void check(String rule, String testDRL) {
-		check(rule, new String[] {testDRL});		
+	private void check(String key) {
+		check(key,false);
 	}
 	
-	private void check(String rule, String[] testDRL) {
-		ParsingResult[] res = parseAndTest(rule, testDRL);
+	private void check(String key, boolean visual) {
+		ParsingResult[] res = parseAndTest(rules.get(key), data.get(key), visual);
 			
-		for (int j = 0; j < res.length; j++) {
-			log(rule, res[j].toString(true));
+		for (int j = 0; j < res.length; j++) {			
 			assertTrue(res[j].isSuccess());
-			System.out.println("Check " + rule + " >> " + res[j].getParseTime());
 		}	
 	}
 	
 	
 	
-	public ParsingResult[] parseAndTest(String rule, String[] drl) {
+	
+	
+	
+	public ParsingResult[] parseAndTest(String rulekey, String[] drl, boolean visual) {
 		ParsingResult[] ans = new ParsingResult[drl.length];
 		int j = 0;
 		
 		Method ruleM;
 		try {
-			ruleM = DRLv6Parser.class.getMethod(rule);
+			ruleM = DRLv6Parser.class.getMethod(rulekey);
 		} catch (SecurityException e) {
 			return null;
 		} catch (NoSuchMethodException e) {
 			return null;
 		}
 				
+				CommonTree fakeRoot = new CommonTree();
+					
 				
 				for (String drlString : drl) {
 					ParsingResult res = new ParsingResult();
@@ -1260,10 +1215,15 @@ public class Rule_Test {
 							root = (ParserRuleReturnScope) ruleM.invoke(parser);
 							long after = new Date().getTime();
 					
-							CommonTree resultTree = (CommonTree) root.getTree();
-									
+							final CommonTree resultTree = (CommonTree) root.getTree();
+							fakeRoot.addChild(resultTree);
+							
 						int errors = parser.getNumberOfSyntaxErrors();
 					
+						final String tree = DRLTreeFormatter.toIndentedStringTree(resultTree);
+						log.log(Level.INFO, tree);
+																																											
+						
 						res.setNumErrors(errors);
 						res.setTree(resultTree);
 						res.setParseTime(after-start);
@@ -1274,6 +1234,22 @@ public class Rule_Test {
 					} finally {
 						ans[j++] = res;
 					}
+				}
+				
+				
+				
+				if (visual) {							
+					StringBuilder source = new StringBuilder();
+						for (String s : drl) {
+							source.append(s).append("\n");
+						}
+					
+					JFrame view = ProTreeView.visualize_tree(DRLTreeMLFormatter.getAsStream(fakeRoot),
+							DRLTreeMLFormatter.FIELD,
+							source.toString(),	
+							DRLTreeFormatter.toIndentedStringTree(fakeRoot,"  "),
+							rulekey);
+					view.setVisible(true);
 				}
         
         return ans;
@@ -1296,7 +1272,15 @@ public class Rule_Test {
 	
 	
 	
-	
+	public static void main(String[] args) {
+		try {
+			setUpBeforeClass();
+				new Rule_Test().check("test_lhs_diff",true);
+			tearDownAfterClass();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 	
 	
 }

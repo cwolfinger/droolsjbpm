@@ -1,10 +1,9 @@
-parser grammar DRLv6Parser;
+parser grammar DRLv6Parser; 
  
 options {
   language = Java;
   output = AST;
   tokenVocab = DRLv6Lexer;
-  k=5; 
 }
       
      
@@ -207,7 +206,7 @@ argument
 
 
 
-/**************************** TEMPLATE *******************************************/
+/**************************** TYPE DECLARATION *******************************************/
 
 //TODO : What for?? proto-declare??
 /*
@@ -256,7 +255,9 @@ type_declare_id
 
 type_declare_attributes
   :      
-          type_declare_attribute+
+        (AT type_declare_attribute)+
+          -> ^(VT_ATTRIBUTES type_declare_attribute+)
+        | AT LEFT_SQUARE type_declare_attribute (COMMA type_declare_attribute)* RIGHT_SQUARE
           -> ^(VT_ATTRIBUTES type_declare_attribute+)                    
   ;
 
@@ -275,27 +276,27 @@ type_declare_att_semantic
   ;  
   
 tda_role
-  :     AT! ROLE^ LEFT_PAREN! ( EVENT | ENTITY | PROPERTY | TYPE ) RIGHT_PAREN!
+  :     ROLE^ LEFT_PAREN! ( EVENT | ENTITY | PROPERTY | TYPE ) RIGHT_PAREN!
   ;
   
 tda_namespace
-  :     AT! NAMESPACE^ LEFT_PAREN! ID EQUALS! STRING RIGHT_PAREN! 
+  :     NAMESPACE^ LEFT_PAREN! ID EQUALS! STRING RIGHT_PAREN! 
   ;  
   
 tda_disjoint
-  :    AT! DISJOINT^ LEFT_PAREN! ID RIGHT_PAREN!
+  :     DISJOINT^ LEFT_PAREN! ID RIGHT_PAREN!
   ;
 
 tda_inverse
-  :    AT! INVERSE^ LEFT_PAREN! ID RIGHT_PAREN!
+  :     INVERSE^ LEFT_PAREN! ID RIGHT_PAREN!
   ;  
   
 tda_symmetric
-  :   AT! SYMMETRIC^
+  :     SYMMETRIC^
   ;
   
  tda_transitive
-  :   AT! TRANSITIVE^
+  :     TRANSITIVE^
   ;  
   
   
@@ -355,11 +356,11 @@ dl_and
   -> {and==null}? dl_atom
   ->  ^(VT_AND dl_atom+)
   ;  
-
+ 
 dl_atom
   :   NEG dl_atom
       -> ^(VT_NEG dl_atom)
-  |   dl_type
+  |   dl_type 
   |   dl_prop
   ;
   
@@ -377,8 +378,10 @@ dl_class
 dl_prop
   :   ID (ALL | SOME)^ dl_type      
   ;  
+  
+  
 
-/**************************** RULES *******************************************/
+/******************************************************* RULES *******************************************/
 
 
 
@@ -387,7 +390,9 @@ dl_prop
 rule
   : RULE rule_id (EXTEND rule_id)?    
     rule_metadata* 
-    rule_attributes? 
+    rule_attributes?
+    deduction?  
+    implication?     
     when_part? 
     then_part
     -> ^(RULE rule_id ^(EXTEND rule_id)? rule_metadata* rule_attributes? when_part? then_part)
@@ -408,11 +413,22 @@ rule_metadata
 
 
 
+deduction  
+    :   A_DEDUCTION^ operator_attributes
+    ; 
+  
+  
+implication
+    :   A_IMPLICATION^ operator_attributes
+    ;
+
+
+
 /**************************** RULE ATTRIBS *******************************************/
 
 
 rule_attributes
-  : rule_attribute ( COMMA? rule_attribute)*
+  : AT rule_attribute ( COMMA? AT rule_attribute)*
     -> ^(VT_ATTRIBUTES rule_attribute+)
   ;
 
@@ -432,101 +448,79 @@ rule_attribute
   | ra_calendars
   | ra_defeats
   | ra_direction  
-  | ra_deduction  
-  | ra_implication
   ;
 
 ra_date_effective
-  : A_DATE_EFFECTIVE^ STRING
+  : A_DATE_EFFECTIVE^ LEFT_PAREN! STRING RIGHT_PAREN!
   ;
 
 ra_date_expires
-  : A_DATE_EXPIRES^ STRING
+  : A_DATE_EXPIRES^ LEFT_PAREN! STRING RIGHT_PAREN!
   ;
   
 ra_enabled
   : A_ENABLED^ 
-        ( BOOL 
-          | paren_chunk 
-          )
+    LEFT_PAREN! BOOL RIGHT_PAREN!
   ; 
 
 ra_salience
   : A_SALIENCE^
-    ( INT
-    | paren_chunk
-    )
+    LEFT_PAREN! INT RIGHT_PAREN!
   ;
 
 ra_no_loop
-  : A_NOLOOP^ BOOL?
+  : A_NOLOOP^ (LEFT_PAREN! BOOL RIGHT_PAREN!)?
   ;
 
 ra_auto_focus
-  : A_AUTOFOCUS^ BOOL?
+  : A_AUTOFOCUS^ (LEFT_PAREN! BOOL RIGHT_PAREN!)?
   ; 
   
 ra_activation_group
-  : A_ACTGROUP^ STRING
+  : A_ACTGROUP^ (LEFT_PAREN! STRING RIGHT_PAREN!)
   ;
 
 ra_ruleflow_group
-  : A_RULEFLOWGROUP^ STRING
+  : A_RULEFLOWGROUP^ (LEFT_PAREN! STRING RIGHT_PAREN!)
   ;
 
 ra_agenda_group
-  : A_AGENDAGROUP^ STRING
+  : A_AGENDAGROUP^ (LEFT_PAREN! STRING RIGHT_PAREN!)
   ;
 
 ra_timer
   : (A_DURATION^| A_TIMER^) 
-    (INT | paren_chunk )
+    LEFT_PAREN! INT RIGHT_PAREN!
   ; 
   
 ra_calendars
-  : A_CALENDAR^ string_list
-  ;
-
-string_list
-@init {
-    StringBuilder buf = new StringBuilder();
-}
-  : first=STRING { buf.append( "[ "+ $first.text ); }
-     (COMMA next=STRING { buf.append( ", " + $next.text ); } )* 
-  -> STRING[$first,buf.toString()+" ]"]
+  : A_CALENDAR^ LEFT_PAREN! string_list RIGHT_PAREN!
   ;
 
 
 ra_dialect
-  : A_DIALECT^ STRING
+  : A_DIALECT^ LEFT_PAREN! STRING RIGHT_PAREN!
   ;     
   
 ra_lock_on_active
-  : A_LOCKONACTIVE^ BOOL?
+  : A_LOCKONACTIVE^ (LEFT_PAREN! BOOL RIGHT_PAREN)!
   ;
-
-ra_deduction  
-    :   A_DEDUCTION^ operator_attributes
-    ; 
-  
-  
-ra_implication
-    :   A_IMPLICATION^ operator_attributes
-    ;
   
 ra_direction
   : A_DIRECTION^
   ;  
 
 ra_defeats
-  : DEFEATS^ STRING
+  : DEFEATS^ LEFT_PAREN! STRING RIGHT_PAREN!
   ;
 
 
 
 
 operator_attributes
-    : AT LEFT_SQUARE single_operator_attribute (COMMA single_operator_attribute)* RIGHT_SQUARE
+    : (AT single_operator_attribute)+
+      -> ^(VT_ATTRIBUTES single_operator_attribute+)
+      | AT LEFT_SQUARE single_operator_attribute (COMMA single_operator_attribute)* RIGHT_SQUARE
       -> ^(VT_ATTRIBUTES single_operator_attribute+)
     ;
   
@@ -537,7 +531,7 @@ single_operator_attribute
   | oa_params
   | oa_degree
   | oa_merge
-  | oa_filter
+  //| oa_filter
   | oa_missing
   | oa_defeat
   | oa_default
@@ -545,19 +539,19 @@ single_operator_attribute
   ;
 
 oa_kind
-  :   OA_KIND^ EQUALS STRING
+  :   OA_KIND^ LEFT_PAREN! STRING RIGHT_PAREN!
   ;
   
 oa_id
-  : OA_ID^ EQUALS STRING
+  : OA_ID^ LEFT_PAREN! STRING RIGHT_PAREN!
   ;
 
 oa_params
-  : OA_PARAMS^ EQUALS STRING
+  : OA_PARAMS^ LEFT_PAREN! STRING RIGHT_PAREN!
   ;
 
 oa_degree
-  : OA_DEGREE^ EQUALS STRING
+  : OA_DEGREE^ LEFT_PAREN! STRING RIGHT_PAREN!
   ;
   
 oa_crisp
@@ -565,15 +559,17 @@ oa_crisp
   ;   
 
 oa_merge
-  : OA_MERGE^ EQUALS STRING
+  : OA_MERGE^ LEFT_PAREN! STRING RIGHT_PAREN!
   ;   
-    
+
+/*    
 oa_filter
-  : OA_FILTER^ EQUALS STRING
+  : OA_FILTER^ LEFT_PAREN! STRING RIGHT_PAREN!
   ;
+*/
 
 oa_missing
-  : OA_MISSING^ EQUALS STRING
+  : OA_MISSING^ LEFT_PAREN! STRING RIGHT_PAREN!
   ;
         
 oa_defeat
@@ -672,7 +668,7 @@ lhs_and_sequitur[Object leftChild]
   ;
   
 lhs_unary
-  : lhs_modified_unary filter_chain?
+  : lhs_modified_unary filter_chain^?
   |   lhs_query
   ;
 
@@ -735,23 +731,25 @@ lhs_label_atom_pattern
     -> ^(VT_BINDING label lhs_atom_pattern)
   ;  
 
-lhs_atom_pattern
-  : ID LEFT_PAREN constraints? RIGHT_PAREN operator_attributes? /*over_clause?*/ from?
-  -> ^(VT_AND operator_attributes? VT_ENABLED ^(VT_PATTERN ID) constraints? /*over_clause?*/ from?)
-  ;
 
+/* over_clause obsolete, replaced by filters (see far below in lhs_unary)*/
+lhs_atom_pattern
+  : ID LEFT_PAREN constraints? RIGHT_PAREN operator_attributes?  from?  
+  -> ^(VT_AND operator_attributes? VT_ENABLED ^(VT_PATTERN ID) constraints? from? )
+  ;
 
 
 
 filter_chain
   :   PIPE filter filter_chain?
-  -> ^(VT_FILTER ID filter_chain?)
+  -> ^(VT_FILTER filter filter_chain?)
   ;
   
 filter
-  :   over_clause
+  :   over_elements
   |   FILTER ID  
   ;
+  
 /*********************************************** INSIDE PATTERN *****************************************/
 
 
@@ -775,7 +773,6 @@ slotted_constraints
   ;   
   
   
-
 positional_constraint[int j]
 @init{
   String idx = ""+j;
@@ -791,6 +788,18 @@ slotted_constraint
   ; 
 
 
+
+/********************************************* ATOMIC DATA DEFINITIONS ************************************************/
+
+
+string_list
+@init {
+    StringBuilder buf = new StringBuilder();
+}
+  : first=STRING { buf.append( "[ "+ $first.text ); }
+     (COMMA next=STRING { buf.append( ", " + $next.text ); } )* 
+  -> STRING[$first,buf.toString()+" ]"]
+  ;
 
 literal
 options{
@@ -815,12 +824,14 @@ var_literal
     :   VAR msr_unit?
     ;    
     
+label
+    :   var COLON!
+    ;
+    
 msr_unit
     :   GATE ID msr_unit?
     ;
-   
-  
-        
+       
     
 list
   : LEFT_CURLY list_members? RIGHT_CURLY  
@@ -841,6 +852,9 @@ literal_object
 literal_object_args
   :  method_args
   ;
+
+
+/**************************************************** METHODS AND EXPRESSIONS ***********************************************/
   
 method_args
   : method_arg (COMMA! method_arg)* 
@@ -848,43 +862,38 @@ method_args
 
 
 method_arg
-  : method_expr_root
+  : expr_root
   ;
-
-
-// method expr roots can't start with () and have a slightly simpler structure than outer expressions
-method_expr_root
-  : method_expr_atom  ( (PLUS | MINUS)^ method_factor )*
-  ;
-
-method_expr_recur
-  : method_factor  ( (PLUS | MINUS)^ method_factor )*
-  ;
-   
-method_factor
-  : method_term ( (TIMES | SLASH)^ method_term )*  
-  ; 
-      
-method_term
-  : MINUS^? method_expr_unary  
-  ; 
-  
-method_expr_unary
-  : method_expr_atom  
-  | LEFT_PAREN! method_expr_recur RIGHT_PAREN!
-  ; 
-  
-method_expr_atom
-  : var_literal
-  | literal   
-  | method 
-  ; 
   
 method
   : ID LEFT_PAREN args=method_args? RIGHT_PAREN msr_unit?
   -> {args==null}? ^(ID msr_unit? )
   -> ^(ID msr_unit? ^(VT_ARGS method_args?))
   ;
+
+expr_root
+  : factor  ( (PLUS | MINUS) factor )*
+  ; 
+  
+factor
+  : term ( (TIMES | SLASH) term )*  
+  ; 
+      
+term
+  : MINUS? expr_unary 
+  ; 
+       
+expr_unary
+  : expr_atom  
+  | LEFT_PAREN! expr_root RIGHT_PAREN! 
+  ;
+  
+expr_atom
+  : accessor_path
+  | var_literal
+  | literal 
+  ; 
+
 
 
 /************************************* SLOTTED CONSTRAINTS LOGIC HIERARCHY **********************************/
@@ -961,7 +970,7 @@ constr_and_sequitur[Object leftChild]
   
 
 constr_unary
-  : unary_operator operator_attributes? constr_unary
+  : unary_operator^ operator_attributes? constr_unary
   | constr_atom
   | LEFT_PAREN! constr_implies RIGHT_PAREN! 
   ;
@@ -1061,84 +1070,47 @@ restr_atom
     -> ^(inner_quantifier ^(evaluator operator_attributes? right_expression))
   ;
 
-
-
-
-
   
 left_expression
   : label
     ( 
-      left_expr_atom 
-      -> ^(VT_BINDING label ^(VT_FIELD left_expr_atom))
-      | LEFT_PAREN left_expr_root RIGHT_PAREN 
-      -> ^(VT_BINDING label ^(VT_EXPR left_expr_root))
+      accessor_path 
+      -> ^(VT_BINDING label ^(VT_FIELD accessor_path))
+      | PIPE expr_root PIPE
+      -> ^(VT_BINDING label ^(VT_EXPR expr_root))
     )
-  | left_expr_root
-    -> ^(VT_EXPR left_expr_root)
+  | PIPE expr_root PIPE
+    -> ^(VT_EXPR expr_root)
+  | accessor_path    
+    -> ^(VT_FIELD accessor_path)
   ;
 
-left_expr_atom
-  : expr_atom
+right_expression
+  : expr_root
   ;
 
 
-expr_atom
-  : accessor_path 
-  |   var_literal
-  | literal
-  ; 
-   
-
-left_expr_root
-  : accessor_path  ( (PLUS | MINUS) factor )*
-  ;
-
-factor
-  : term ( (TIMES | SLASH) term )*  
-  ; 
-      
-term
-  : MINUS? expr_unary 
-  ; 
   
-expr_unary
-  : expr_atom  
-  | LEFT_PAREN! expr_root RIGHT_PAREN!
-  ; 
-  
-expr_root
-  : factor  ( (PLUS | MINUS) factor )*
-  ; 
-
+/***************************************** ACCESSOR PATHS *******************************/
 
 
 
 accessor_path
-  :   accessor (DOT! accessor)*
+  : accessor (DOT! accessor)*
   | var (DOT! accessor)+
   ;
 
-/* 
-accessor 
-  : ID (LEFT_PAREN! method_args? RIGHT_PAREN!)? indexer?
-  | nested_obj_pattern
-  ;
-*/
 
-
-accessor 
-options{
-  backtrack = true;
-}
-  : ID indexer?
-  | method
+accessor
+  :
+  (ID LEFT_PAREN) => method indexer?
+  | ID indexer?  
   | nested_obj_pattern
   ;
 
 
 nested_obj_pattern
-  : GATE!  (ID (DOT! ID)*)?  LEFT_PAREN! constraints RIGHT_PAREN!
+  : GATE! (ID (DOT! ID)*)?  LEFT_PAREN! constraints RIGHT_PAREN!
   ;
 
 
@@ -1147,7 +1119,7 @@ indexer
     (
         INT
       | STRING
-      | ID LEFT_PAREN! method_args RIGHT_PAREN!
+      | method
       | GATE! lhs_label_atom_pattern      
     )?
     RIGHT_SQUARE!
@@ -1155,9 +1127,6 @@ indexer
 
 
 
-right_expression
-  : expr_root
-  ;
 
 
 /***************************************************   PATTERN SOURCES ******************************************/
@@ -1209,22 +1178,18 @@ entrypoint_id
   ;
 
 from_source
-  : ID 
+  : var
+    | accessor_path 
     //args=paren_chunk?
     //expression_chain?
     //-> ^(VT_FROM_SOURCE ID paren_chunk? expression_chain?)
   ;
 
-//TODO
-/*  
-expression_chain
-  : DOT ID ( paren_chunk | square_chunk )? expression_chain?
-    -> ^(VT_EXPRESSION_CHAIN[$DOT] ID square_chunk? paren_chunk? expression_chain?)
-  ;
-*/
 
 
-
+/**
+  TODO :
+*/ 
 accumulate_statement
   : ACCUMULATE  
     LEFT_PAREN 
@@ -1290,10 +1255,7 @@ lhs_query
 
 
 
-label
-  : var COLON
-  ;
-
+/*************************************** QUANTIFIERS AND EVALUATORS ***********************************/
 
 inner_quantifier
   : ALL^
@@ -1302,11 +1264,28 @@ inner_quantifier
   | COUNT^ (AT! LEFT_SQUARE! 
         (
           INT
-          | (MAX^ EQUALS! INT)? (MIN^ EQUALS! INT)?
+          | inner_attrs
         )
        RIGHT_SQUARE!)?
   ;
   
+attr_min
+  : (MIN^ EQUALS! INT)
+  ;
+
+attr_max
+  : (MAX^ EQUALS! INT)
+  ;
+  
+inner_attrs
+  : inner_attr (COMMA! inner_attr)?
+  ;  
+
+inner_attr
+  :
+    attr_min
+    | attr_max 
+  ;
 
 
 evaluator
@@ -1341,7 +1320,7 @@ custom_evaluator
 
 
 
-
+/******************************** VARIOUS OPERATORS *************************************/
 
 
 imply_connective
@@ -1411,7 +1390,7 @@ hedge
   ;
       
 
-
+/********************************************************* RHS STRUCTURE ****************************************************************/
 
  
 then_part  
@@ -1496,6 +1475,13 @@ side_effect_chunk
 
 
 
+
+
+
+
+
+
+/***************************************************************** CHUNKS *********************************************************************/
 
 
 rhs_chunk

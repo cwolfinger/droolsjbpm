@@ -3,7 +3,7 @@ lexer grammar DRLv6Lexer;
 options {
   language = Java; 
 }  
-
+  
 @lexer::header {
   package org.drools.lang;
 
@@ -357,9 +357,11 @@ MVEL
   : 'mvel'
   ;  
 
+
 NEG
   : 'neg'
   ;
+  
 
 NEW
   : 'new'
