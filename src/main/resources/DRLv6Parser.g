@@ -16,11 +16,14 @@ tokens {
   VT_DATA_TYPE;
   VT_DIM_SIZE;
   
+  VT_IMPORT;
   VT_FUNCTION_IMPORT;
-  VT_IMPORT_ID;
+  VT_STAR;  
+  VT_FUNCTION;
   VT_FUNCTION_ID;
   VT_PARAM;
   VT_PARAM_LIST;
+  VT_NAME;
 
   VT_TEMPLATE;
   VT_TEMPLATE_ID;
@@ -29,12 +32,19 @@ tokens {
   
   VT_TYPE_DECLARE;
   VT_TYPE_DECLARE_ID;
+  VT_EXTENDS;
   VT_DL_DEFINITION;
   VT_DL_TYPE;
+  VT_FIELD;
   
   VT_RULE_ID; 
   VT_ATTRIBUTES;
   VT_DIALECT;
+  
+  VT_LHS;
+  VT_ARROW;
+  VT_RHS;
+  
 
   VT_RHS_CHUNK;
   VT_CURLY_CHUNK;
@@ -44,6 +54,7 @@ tokens {
   VT_NEW_OBJ;
   VT_TYPE;
   VT_ARGS;
+  VT_MSR;
   
   VT_AND_IMPLICIT;
   VT_IMPLIES; 
@@ -61,15 +72,19 @@ tokens {
   VT_NEXISTS;
     
   VT_PATTERN;
+  VT_NESTED_PATTERN;
   VT_ENABLED;
-  VT_QUERY_PATTERN;
+  VT_QUERY_PATTERN;  
   
   VT_POSITIONAL_VAR;
   VT_POSITIONAL_CONST;
   VT_POSITIONAL_INDEX;
   
   VT_BINDING;
-  VT_FIELD;
+  VT_ACCESSOR;
+  VT_INDEXER;
+  VT_INDEX_ALL;
+  VT_METHOD;
   VT_EXPR;
   
   VT_FILTER;
@@ -115,9 +130,9 @@ package_statement
   ;
   
 package_id
-  : id+=ID ( id+=DOT id+=ID )*  
-    -> ^(VT_PACKAGE_ID ID+)
+  : fully_qualified_name 
   ;
+
 
 
 
@@ -152,8 +167,8 @@ data_type
 @init{
  int dim=0;
 }
-  : id+=ID ( DOT id+=ID )* (dimension_definition {dim++;})*
-    -> ^(VT_DATA_TYPE VT_DIM_SIZE[$start,""+dim] $id+ )
+  : fully_qualified_name (dimension_definition {dim++;})*
+    -> ^(VT_DATA_TYPE VT_DIM_SIZE[$start,""+dim] fully_qualified_name )
   ;
 dimension_definition
   : LEFT_SQUARE RIGHT_SQUARE 
@@ -163,24 +178,25 @@ dimension_definition
 /**************************** IMPORT *******************************************/
 import_statement
   : IMPORT import_name SEMICOLON?
-    -> ^(IMPORT import_name)
+    -> ^(VT_IMPORT import_name)
   ;
 
 function_import_statement
-  : imp=IMPORT FUNCTION import_name SEMICOLON?
-    -> ^(VT_FUNCTION_IMPORT[$imp] FUNCTION import_name)
+  : IMPORT FUNCTION import_name SEMICOLON?
+    -> ^(VT_FUNCTION_IMPORT import_name)
   ;
 
 import_name 
-  : id+=ID ( id+=DOT id+=ID )* id+=DOT_STAR?
-    -> ^(VT_IMPORT_ID ID+ DOT_STAR?)
+  : fully_qualified_name star=DOT_STAR?
+    -> {star==null}? fully_qualified_name 
+    -> ^(VT_STAR fully_qualified_name)
   ;
 
 
 /**************************** FUNCTION *******************************************/
 function
   : FUNCTION data_type? function_id parameters curly_chunk
-    -> ^(FUNCTION data_type? function_id parameters curly_chunk)
+    -> ^(VT_FUNCTION data_type? function_id parameters curly_chunk)
   ;
 
 function_id
@@ -249,8 +265,8 @@ type_declaration
   ;
  
 type_declare_id
-  :   id=ID
-     -> VT_TYPE_DECLARE_ID[$id]
+  :   fully_qualified_name
+     -> ^(VT_TYPE_DECLARE_ID fully_qualified_name)
   ;
 
 type_declare_attributes
@@ -301,7 +317,8 @@ tda_symmetric
   
   
 extend
-  :   EXTEND ID
+  :   EXTEND fully_qualified_name
+    -> ^(VT_EXTENDS fully_qualified_name)
   ;
 
 decl_field
@@ -391,11 +408,16 @@ rule
   : RULE rule_id (EXTEND rule_id)?    
     rule_metadata* 
     rule_attributes?
-    deduction?  
-    implication?     
+    rule_arrow?     
     when_part? 
     then_part
-    -> ^(RULE rule_id ^(EXTEND rule_id)? rule_metadata* rule_attributes? when_part? then_part)
+    -> ^(RULE rule_id 
+              ^(VT_EXTENDS rule_id)? 
+              rule_metadata* 
+              rule_attributes? 
+              rule_arrow?
+              when_part? 
+              then_part)
   ;
   
 
@@ -411,7 +433,13 @@ rule_metadata
   : AT! ID^ paren_chunk?
   ;
 
-
+rule_arrow
+  : (
+      (implication deduction?)
+      | (deduction implication?)
+    )
+     -> ^(VT_ARROW implication? deduction?)
+  ;
 
 deduction  
     :   A_DEDUCTION^ operator_attributes
@@ -503,7 +531,7 @@ ra_dialect
   ;     
   
 ra_lock_on_active
-  : A_LOCKONACTIVE^ (LEFT_PAREN! BOOL RIGHT_PAREN)!
+  : A_LOCKONACTIVE^ (LEFT_PAREN! BOOL RIGHT_PAREN!)
   ;
   
 ra_direction
@@ -587,13 +615,15 @@ oa_default
 
 
 when_part
-  : WHEN^
-    lhs_root
+  : WHEN
+    lhs_root?
+    -> ^(VT_LHS lhs_root?)
   ;
 
 lhs_root
-  : lhs_implies*
-  ->  ^(VT_AND_IMPLICIT lhs_implies*)
+  : lhs_implies more=lhs_implies*
+  ->  {more==null}? lhs_implies
+  ->  ^(VT_AND_IMPLICIT lhs_implies+)
   ;
 
 
@@ -735,7 +765,10 @@ lhs_label_atom_pattern
 /* over_clause obsolete, replaced by filters (see far below in lhs_unary)*/
 lhs_atom_pattern
   : ID LEFT_PAREN constraints? RIGHT_PAREN operator_attributes?  from?  
-  -> ^(VT_AND operator_attributes? VT_ENABLED ^(VT_PATTERN ID) constraints? from? )
+  -> ^(VT_PATTERN
+          ^(VT_AND operator_attributes? VT_ENABLED ^(VT_TYPE ID) constraints? )
+          from?
+      )    
   ;
 
 
@@ -792,6 +825,11 @@ slotted_constraint
 /********************************************* ATOMIC DATA DEFINITIONS ************************************************/
 
 
+fully_qualified_name
+  : ID ( DOT ID )*  
+    -> ^(VT_NAME ID+)
+  ;
+
 string_list
 @init {
     StringBuilder buf = new StringBuilder();
@@ -806,8 +844,12 @@ options{
 k=6;
 }
     :   STRING 
-    |   INT msr_unit? 
-    |   FLOAT msr_unit?
+    |   INT m=msr_unit?
+        -> {m==null}? INT
+        -> ^(VT_MSR INT $m)
+    |   FLOAT m=msr_unit?
+        -> {m==null}? FLOAT
+        -> ^(VT_MSR FLOAT $m)
     |   BOOL 
     |   NULL 
     | literal_object
@@ -821,7 +863,9 @@ var
     
     
 var_literal
-    :   VAR msr_unit?
+    :   VAR m=msr_unit?
+        -> {m==null}? VAR
+        -> ^(VT_MSR VAR $m)
     ;    
     
 label
@@ -829,7 +873,8 @@ label
     ;
     
 msr_unit
-    :   GATE ID msr_unit?
+    :   (GATE! ID)+
+    //-> ^(VT_MSR ID+) 
     ;
        
     
@@ -866,21 +911,27 @@ method_arg
   ;
   
 method
-  : ID LEFT_PAREN args=method_args? RIGHT_PAREN msr_unit?
-  -> {args==null}? ^(ID msr_unit? )
-  -> ^(ID msr_unit? ^(VT_ARGS method_args?))
+  : core=method_core m=msr_unit?
+    -> {m==null}? $core
+    -> ^(VT_MSR $core $m)
+  ;  
+  
+method_core
+  : ID LEFT_PAREN args=method_args? RIGHT_PAREN
+  -> {args==null}? ^(VT_METHOD ID )
+  -> ^(VT_METHOD ID ^(VT_ARGS method_args?))
   ;
 
 expr_root
-  : factor  ( (PLUS | MINUS) factor )*
+  : factor  ( (PLUS | MINUS)^ factor )*
   ; 
   
 factor
-  : term ( (TIMES | SLASH) term )*  
+  : term ( (TIMES | SLASH)^ term )*  
   ; 
       
 term
-  : MINUS? expr_unary 
+  : (MINUS^)? expr_unary 
   ; 
        
 expr_unary
@@ -976,8 +1027,23 @@ constr_unary
   ;
   
 constr_atom
-  : left_expression restriction_root^? 
+  : left=left_expression rest=restriction_root?
+    -> {rest==null}? ^(left_expression)
+    -> ^(VT_AND_IMPLICIT left_expression restriction_root)
   ;
+    /*
+    { 
+        if (rest != null) {
+              Tree t = ((Tree) rest.getTree());     
+              Tree temp = t.getChild(0);                                        
+              t.setChild(0,(Tree) left.getTree());
+              t.addChild(temp);
+        }  
+    }
+    -> {rest==null}? ^($left)
+    -> ^($rest)
+    */
+  
   
 
   
@@ -1075,18 +1141,19 @@ left_expression
   : label
     ( 
       accessor_path 
-      -> ^(VT_BINDING label ^(VT_FIELD accessor_path))
+      -> ^(VT_BINDING label accessor_path)
       | PIPE expr_root PIPE
       -> ^(VT_BINDING label ^(VT_EXPR expr_root))
     )
   | PIPE expr_root PIPE
     -> ^(VT_EXPR expr_root)
   | accessor_path    
-    -> ^(VT_FIELD accessor_path)
+    -> accessor_path
   ;
 
 right_expression
   : expr_root
+  -> ^(VT_EXPR expr_root)
   ;
 
 
@@ -1096,33 +1163,67 @@ right_expression
 
 
 accessor_path
-  : accessor (DOT! accessor)*
-  | var (DOT! accessor)+
+  : accessor (DOT accessor)*
+    -> ^(VT_ACCESSOR accessor+)
+  | var (DOT accessor)+
+    -> ^(VT_ACCESSOR var accessor+)
   ;
 
 
 accessor
   :
-  (ID LEFT_PAREN) => method indexer?
-  | ID indexer?  
+  (ID LEFT_PAREN) => m=method ix=indexer?
+    { 
+        if (ix != null ) {
+              Tree t = ((Tree) ix.getTree());     
+              Tree temp = t.getChild(0);                                        
+              t.setChild(0,(Tree) m.getTree());
+              t.addChild(temp);
+        }  
+    }
+    -> {ix==null}? ^($m)
+    -> ^($ix)
+  | id=ID ix=indexer?
+    { 
+        if (ix != null ) {
+              Tree t = ((Tree) ix.getTree());     
+              Tree temp = t.getChild(0);                                        
+              t.setChild(0,new CommonTree(new CommonToken(STRING,$id.text)));
+              t.addChild(temp);
+        }  
+    }  
+    -> {ix==null}? ^(ID)
+    -> ^($ix)
   | nested_obj_pattern
   ;
 
 
 nested_obj_pattern
-  : GATE! (ID (DOT! ID)*)?  LEFT_PAREN! constraints RIGHT_PAREN!
+  : GATE fqn=fully_qualified_name?  LEFT_PAREN constraints RIGHT_PAREN
+    -> {fqn==null}? ^(VT_NESTED_PATTERN constraints) 
+    -> ^(VT_NESTED_PATTERN 
+          ^(VT_AND ^(VT_TYPE fully_qualified_name) constraints)
+        )
   ;
 
 
 indexer
-  : LEFT_SQUARE! 
+  : LEFT_SQUARE
     (
         INT
+        -> ^(VT_INDEXER INT)
       | STRING
+        -> ^(VT_INDEXER STRING)
       | method
-      | GATE! lhs_label_atom_pattern      
-    )?
-    RIGHT_SQUARE!
+        -> ^(VT_INDEXER method)
+      | GATE lhs_label_atom_pattern
+        -> ^(VT_INDEXER lhs_label_atom_pattern)      
+    )
+    RIGHT_SQUARE
+   
+   | LEFT_SQUARE RIGHT_SQUARE
+   -> ^(VT_INDEXER VT_INDEX_ALL) 
+    
   ;
 
 
@@ -1396,7 +1497,10 @@ hedge
 then_part  
   :     
       rhs_structured
-    | rhs_chunk   
+      -> ^(VT_RHS rhs_structured)
+    | rhs_chunk
+      -> ^(VT_RHS rhs_chunk)   
+    
   ; 
 
 

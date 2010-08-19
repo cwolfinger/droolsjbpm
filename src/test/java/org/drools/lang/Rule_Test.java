@@ -2,16 +2,25 @@ package org.drools.lang;
 
 import static org.junit.Assert.assertTrue;
 
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.ByteArrayInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.Date;
+import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.JFrame;
+import javax.swing.JList;
+import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import org.antlr.runtime.ANTLRInputStream;
 import org.antlr.runtime.CommonTokenStream;
@@ -34,7 +43,11 @@ public class Rule_Test {
 	private static FileWriter writer;	
 	
 	private boolean visual = false;
+	public boolean isVisual() {	return visual; }
+	public void setVisual(boolean visual) {	this.visual = visual; }
 		
+	
+	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		log = Logger.getAnonymousLogger();
@@ -42,10 +55,6 @@ public class Rule_Test {
 		writer = new FileWriter("out/DRLv6Log.txt"); 	
 		
 	}
-	
-	
-	
-		
 
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
@@ -101,7 +110,9 @@ public class Rule_Test {
 		String rule = "global";
 		String[] testDRL = new String[]  {
 				"global int N ",
+				"global String[][] tab ",
 				"global org.it.pack.String strix ;"
+				
 		};
 		check(rule,testDRL);										
 	}
@@ -163,11 +174,22 @@ public class Rule_Test {
 	}	
 	
 	
+	@Test
+	public void test_fqn() {
+		String rule = "fully_qualified_name";
+		String[] testDRL = new String[] {
+				"Student",
+				"org.Student",
+				"org.other.Student"
+		};
+		check(rule,testDRL);
+	}
+	
 	@Test	
 	public void test_type_declaration() {
 		String rule = "type_declaration";
 		String[] testDRL = new String[] {
-				"declare Student extends Person" + "\n" +
+				"declare org.Student extends com.Person" + "\n" +
 				" @role(entity) " + "\n" +
 				" @namespace(myNS=\"http:\\\\www.stix.com\\domain\\subd#\") " + "\n" +				
 				" age  : int " + "\n" +
@@ -247,6 +269,20 @@ public class Rule_Test {
 				"when" + "\n" +
 				"then" + "\n" +
 				"end" + "\n" 	
+		};
+		check(rule,testDRL);									
+	}	
+	
+	
+	@Test		
+	public void test_rule_arrow() {
+		String rule = "rule";
+		String[] testDRL = new String[] {				
+				"rule test deduction @crisp when then end \n", 
+				"rule test implication @crisp when then end \n",
+				"rule test deduction @crisp implication @crisp when then end \n",
+				"rule test implication @crisp deduction @crisp when then end \n",
+				
 		};
 		check(rule,testDRL);									
 	}	
@@ -362,6 +398,10 @@ public class Rule_Test {
 		String[] testDRL = new String[] {
 				"rule test when " +
 				"Car() and Taxi() and Bus()" +
+				"then end",
+				
+				"rule test when " +
+				"Car() Taxi() Bus()" +
 				"then end"
 		};
 		check(rule,testDRL);											
@@ -538,11 +578,21 @@ public class Rule_Test {
 	public void test_literal_object() {
 		String rule = "literal_object";
 		String[] testDRL = new String[] {
-				"new Thing(13, $var, true)"
+				"new Thing(13, $var, true, new Obj(2))",				
 		};
 		check(rule,testDRL);	
 	}		
 	
+	
+	@Test	
+	public void test_method() {
+		String rule = "method";
+		String[] testDRL = new String[] {
+				"method(2.0, 3.0#km, \"xx\")",
+				"method()#km",
+		};
+		check(rule,testDRL);										
+	}
 	
 	
 	@Test	
@@ -632,7 +682,7 @@ public class Rule_Test {
 		String[] testDRL = new String[] {
 				"rule test when " + "\n" +
 				" Person( neg very (name == \"john\" implies age < 18) )" + "\n" +
-				"then end"
+				"then end",							
 		};
 		check(rule,testDRL);									
 	}
@@ -699,7 +749,7 @@ public class Rule_Test {
 	public void test_restriction_root() {
 		String rule = "restriction_root";
 		String[] testDRL = new String[] {				
-				" all == @crisp 18 + 2*$x#km " ,
+				" all == @crisp 18 + 2#ms*$x#km " ,
 				// TODO
 				//" all == @crisp 18 + 2*$var "
 				// again, works only within a rule and not parsed standalone
@@ -707,6 +757,28 @@ public class Rule_Test {
 		};
 		check(rule,testDRL);										
 	}	
+	
+	@Test	
+	public void test_msr_unit() {
+		String rule = "msr_unit";
+		String[] testDRL = new String[] {				
+				" #m#km#cm" ,				
+		};
+		check(rule,testDRL);										
+	}
+	
+	@Test	
+	public void test_literal_msr_unit() {
+		String rule = "literal";
+		String[] testDRL = new String[] {				
+				" 2#km ",
+				" 2.0#cm#m " ,				
+		};
+		check(rule,testDRL);										
+	}	
+	
+	
+	
 	
 	
 	
@@ -745,19 +817,7 @@ public class Rule_Test {
 		};
 		check(rule,testDRL);										
 	}
-	
-	
-	
-	@Test	
-	public void test_restriction_root_in_rule() {
-		String rule = "rule";
-		String[] testDRL = new String[] {
-				"rule test when " + "\n" +
-				" Person( age all == @crisp 18+2*$x )" + "\n" +
-				"then end"
-		};
-		check(rule,testDRL);									
-	}
+		
 	
 	
 	
@@ -864,8 +924,8 @@ public class Rule_Test {
 	public void test_from() {
 		String rule = "from";
 		String[] testDRL = new String[] {												
-				" from entrypoint byId ",
-				" from entrypoint \"byStr\" ",
+				" from entry-point byId ",
+				" from entry-point \"byStr\" ",
 				
 				" from $var.access ",
 				
@@ -896,6 +956,23 @@ public class Rule_Test {
 		String rule = "label";
 		String[] testDRL = new String[] {
 				" $var : "
+		};
+		check(rule,testDRL);
+	}
+	
+	
+	
+	@Test	
+	public void test_binding() {
+		String rule = "rule";
+		String[] testDRL = new String[] {
+				"rule test when" + "\n" +
+				" Person( $a : age ) " + "\n" +
+				"then end",	
+				
+				"rule test when" + "\n" +
+				" Person( $a : | age + 4 | ) " + "\n" +
+				"then end",
 		};
 		check(rule,testDRL);
 	}
@@ -974,8 +1051,80 @@ public class Rule_Test {
 	}
 		
 	
+	@Test	
+	public void test_dle_nested_objects() {
+		String rule = "lhs_atom_pattern";
+		String[] testDRL = {
+				"Person( name==  \"mark\", address.#( city == \"london\", country ==  \"uk\") )"
+		};
+				
+		check(rule,testDRL);										
+	}
+	
+	@Test	
+	public void test_dle_nested_objects_cast() {
+		String rule = "lhs_atom_pattern";
+		String[] testDRL = {
+				"Person( name==  \"mark\", address.#org.domain.LongAddress( city == \"london\", country ==  \"uk\") )"
+		};
+				
+		check(rule,testDRL);										
+	}
+	
+	@Test	
+	public void test_dle_positional() {
+		String rule = "lhs_atom_pattern";
+		String[] testDRL = {
+				"Person( \"mark\", 34, address.#(\"london\",  \"uk\") )"
+		};
+				
+		check(rule,testDRL);										
+	}
+	
+	@Test	
+	public void test_dle_mixed() {
+		String rule = "lhs_atom_pattern";
+		String[] testDRL = {
+				"Person( \"mark\", age == 34, address.#(\"london\",  \"uk\") )"
+		};
+				
+		check(rule,testDRL);										
+	}
 	
 	
+	@Test	
+	public void test_dle_methods() {
+		String rule = "lhs_atom_pattern";
+		String[] testDRL = {
+				"Person(  m1() == $x, address.m2() == $y, $z : m3() )"
+		};
+				
+		check(rule,testDRL);										
+	}
+	
+	@Test	
+	public void test_dle_mapsarrays() {
+		String rule = "lhs_atom_pattern";
+		String[] testDRL = {
+				"Person(  pets[0].age == 15 )",
+				"Person( pets[\"rover\"].age == 15 )"
+		};
+				
+		check(rule,testDRL);										
+	}
+	
+	@Test	
+	public void test_dle_xpath_filters() {
+		String rule = "lhs_label_atom_pattern";
+		String[] testDRL = {
+				"$per : Person( $pet: pets[ #Dog( age == 15 ) ] )",
+				"$per : Person( $a : mAddr()[ #LongAddress( loc == \"london\") ] )",
+				"$per : Person( $pet : pets[]  )",
+				"$per : Person( $pet : pets[ last() ]  )"
+		};
+				
+		check(rule,testDRL);										
+	}
 	
 	
 	
@@ -1131,7 +1280,44 @@ public class Rule_Test {
 				log = Logger.getAnonymousLogger();
 				log.setLevel(Level.INFO);
 				tester.setVisual(true);
-				tester.check("test_rule");
+				
+								
+				Vector<String> methods = new Vector<String>();
+					Class<?> klass = Rule_Test.class;
+					for (Method m : klass.getMethods())
+						if (m.getAnnotation(Test.class) != null)
+							methods.add(m.getName());
+					Collections.sort(methods);
+					
+				JList list = new JList(methods);				
+				ListSelectionModel lsm = list.getSelectionModel();
+			    	lsm.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+			    list.addMouseListener(new MouseListener() {										
+					public void mouseReleased(MouseEvent e) {}					
+					public void mousePressed(MouseEvent e) {}					
+					public void mouseExited(MouseEvent e) {}
+					public void mouseEntered(MouseEvent e) {}
+					public void mouseClicked(MouseEvent e) {
+						if (e.getClickCount() > 1) {
+							String methodName = ((JList)e.getSource()).getSelectedValue().toString();
+							Rule_Test tester = new Rule_Test();
+							tester.setVisual(true);
+							tester.check(methodName);
+						}
+							 							
+					}
+				});			    
+			    JScrollPane jsp = new JScrollPane(list);
+				
+				JFrame frame = new JFrame();
+				frame.setSize(200, 600);
+				frame.setLocation(200, 100);
+				frame.add(jsp);
+				frame.pack();
+				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+				frame.setVisible(true);
+				
+				//tester.check("test_package_statement");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -1139,13 +1325,7 @@ public class Rule_Test {
 
 
 
-	public boolean isVisual() {
-		return visual;
-	}
-
-	public void setVisual(boolean visual) {
-		this.visual = visual;
-	}
+	
 	
 	
 }

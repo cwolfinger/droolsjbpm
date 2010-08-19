@@ -84,9 +84,10 @@ public class ProTreeView extends Display {
     
     private LabelRenderer m_nodeRenderer;
     private EdgeRenderer m_edgeRenderer;
+    private NodeLinkTreeLayout treeLayout;
     
     private String m_label = "label";
-    private int m_orientation = Constants.ORIENT_LEFT_RIGHT;
+    private int m_orientation = Constants.ORIENT_TOP_BOTTOM;
     
     public ProTreeView(Tree t, String label) {
         super(new Visualization());
@@ -131,9 +132,9 @@ public class ProTreeView extends Display {
         m_vis.putAction("animatePaint", animatePaint);
         
         // create the tree layout action
-        NodeLinkTreeLayout treeLayout = new NodeLinkTreeLayout(tree,
+        treeLayout = new NodeLinkTreeLayout(tree,
                 m_orientation, 50, 0, 8);
-        treeLayout.setLayoutAnchor(new Point2D.Double(50,200));
+        treeLayout.setLayoutAnchor(new Point2D.Double(400,50));
         m_vis.putAction("treeLayout", treeLayout);
         
         CollapsedSubtreeLayout subLayout = 
@@ -228,6 +229,7 @@ public class ProTreeView extends Display {
             m_edgeRenderer.setHorizontalAlignment2(Constants.LEFT);
             m_edgeRenderer.setVerticalAlignment1(Constants.CENTER);
             m_edgeRenderer.setVerticalAlignment2(Constants.CENTER);
+            treeLayout.setLayoutAnchor(new Point2D.Double(50,200));
             break;
         case Constants.ORIENT_RIGHT_LEFT:
             m_nodeRenderer.setHorizontalAlignment(Constants.RIGHT);
@@ -235,6 +237,7 @@ public class ProTreeView extends Display {
             m_edgeRenderer.setHorizontalAlignment2(Constants.RIGHT);
             m_edgeRenderer.setVerticalAlignment1(Constants.CENTER);
             m_edgeRenderer.setVerticalAlignment2(Constants.CENTER);
+            treeLayout.setLayoutAnchor(new Point2D.Double(750,200));
             break;
         case Constants.ORIENT_TOP_BOTTOM:
             m_nodeRenderer.setHorizontalAlignment(Constants.CENTER);
@@ -242,6 +245,7 @@ public class ProTreeView extends Display {
             m_edgeRenderer.setHorizontalAlignment2(Constants.CENTER);
             m_edgeRenderer.setVerticalAlignment1(Constants.BOTTOM);
             m_edgeRenderer.setVerticalAlignment2(Constants.TOP);
+            treeLayout.setLayoutAnchor(new Point2D.Double(400,50));
             break;
         case Constants.ORIENT_BOTTOM_TOP:
             m_nodeRenderer.setHorizontalAlignment(Constants.CENTER);
@@ -249,6 +253,7 @@ public class ProTreeView extends Display {
             m_edgeRenderer.setHorizontalAlignment2(Constants.CENTER);
             m_edgeRenderer.setVerticalAlignment1(Constants.TOP);
             m_edgeRenderer.setVerticalAlignment2(Constants.BOTTOM);
+            treeLayout.setLayoutAnchor(new Point2D.Double(400,400));
             break;
         default:
             throw new IllegalArgumentException(
@@ -349,7 +354,7 @@ public class ProTreeView extends Display {
         
         
         JFrame frame = new JFrame(titleStr);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setContentPane(panel);
         frame.pack();
         
