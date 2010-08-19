@@ -1126,6 +1126,32 @@ public class Rule_Test {
 		check(rule,testDRL);										
 	}
 	
+	@Test	
+	public void test_dle_free_expr() {
+		String rule = "lhs_label_atom_pattern";
+		String[] testDRL = {			
+				"Person( |pets[\"rover\"].age| ==  ($otherAge.someMethod( $x ) + 3 ) / 2 )"
+		};
+		check(rule,testDRL);										
+	}
+
+	@Test
+	public void test_dle_rule_query() {
+		String rule = "rule";
+		String[] testDRL = {			
+				"rule test when " + "\n" +
+				" $p : Person() " + "\n" +
+				" ?queryName( \"literal\", $p, $unificationVar ) " + "\n" +
+				" then end"
+		};
+		check(rule,testDRL);										
+	}
+	
+	
+
+    
+
+       
 	
 	
 	/*
