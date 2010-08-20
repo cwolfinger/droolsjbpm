@@ -9,37 +9,48 @@ package org.drools.lang;
  * Nested Objects	-- done
  * 		will require .# syntax even if no cast is required
  * Casting Nested Objects -- done
- * Positional  Constraints -- done
+ * 		with #
+ * Positional Constraints -- done
+ * 		added positional restrictions and anonymous : X( 5, ?, ? == 12 )
  * POSL - Positional-Slotted Language -- done
  * Method Calls -- done
  * Maps and Arrays (Collections) -- done
  * Collections and XPath like filtering -- done
- * Free form Expressions -- done (simple)
+ * Free form Expressions -- done 
+ * 		basic arithmetic expressions. require || when used on the left of a constraint
  * Queries and Unification -- done
- * Ontologies and Relations via Triples with Hybrid POJO Graph Notation -- IN PROGRESS
+ * Ontologies and Relations via Triples with Hybrid POJO Graph Notation 
+ * 		IN PROGRESS
  * Escapes for Dialects -- done
  * Accumulate -- done
+ * 		kept compatible,
  * SQL Group Operators -- done
  * Pipes - Pass through Filters -- done
  * Unit support -- done
  * Otherwise -- done
+ * 		using evaluator metadata
  * Branch (Labelled Else) -- done
  * Rule Dependency Meta-Rule Language -- not a language problem
  * Parallel Meta-Rule Language -- future
  * MVCC -- future (not a language problem? - depends on Parallel Meta-Rule)
  * Slot-specific -- done
+ * 		used metadata
  * Field Versioning -- done
+ * 		no metadata, but field<<ver>> in accessor paths
  * Logical Modify -- done
+ * 		part of structured RHS
  * Lambda Support with Analysis -- not a language problem?
  * Rising / Falling edges -- done
  * Single Pass Insertion / Single Match -- not a language problem?
  * Query Based Backward Chaining with POSL -- done
- * Federated Data Sources for Queries -- done (using from)
+ * Federated Data Sources for Queries -- done 
+ * 		using from
  * Event Sequencing -- done
+ * 		used metadata to determine start/end node
  * Uncertainty / Vagueness -- done
+ * 		old story
  * Ordered facts -- done
- * 
- * 
+ * 		basic works
  */
 
 
