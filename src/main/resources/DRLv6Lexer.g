@@ -184,17 +184,15 @@ OA_DEFAULT
   : 'default'
   ;
 
-
+OA_OTHERWISE
+  : 'otherwise'
+  ;
 
 
 ACCUMULATE
-  : 'acc'
+  : ( 'acc' | 'accumulate' | 'accL')
   ;
   
-ACCUMULATE_LEFT
-  : 'accL'
-  ; 
-
 ACCUMULATE_RIGHT
   : 'accR'
   ;   
@@ -219,13 +217,29 @@ ATTRIBUTES
   : 'attributes'
   ;
 
+AVERAGE
+  : 'avg'
+  ;
+  
 BOOL
   : ('true'|'false') 
   ;
+
+BRANCH
+  : 'branch'
+  ; 
+  
+CLOSURE
+  : 'closure'
+  ;  
   
 COLLECT
   : 'collect'
   ;
+  
+COLLECT_LIST
+  : 'collectList'
+  ;  
 
 CONTAINS
   : 'contains'
@@ -247,6 +261,11 @@ DEFEATS
 DISJOINT
   :  'disjoint'
   ;
+
+DISTINCT
+  : 'distinct'
+  ;
+
 
 DO
   : 'do'
@@ -280,6 +299,10 @@ EXISTS
 EXTEND  
   : 'extends'
   ;
+ 
+FALLING
+  : 'falling'
+  ; 
   
 FILTER
   : 'filter'
@@ -341,6 +364,10 @@ LENGTH
   : 'length'
   ;
 
+LIMIT
+  : 'limit'
+  ;
+
 MAX 
   : 'max'
   ;
@@ -352,6 +379,10 @@ MIN
 MODIFY
   : 'modify'
   ; 
+  
+MODIFY_LOG  
+  : 'modifyLogical'
+  ;
   
 MVEL
   : 'mvel'
@@ -387,6 +418,14 @@ NULL
 OR
   : 'or'
   ;
+  
+ORDERBY
+  : 'orderby'
+  ;  
+  
+OTHERWISE
+  : 'OTHERWISE'
+  ;  
  
 OVER
   : 'over'
@@ -399,6 +438,10 @@ PACKAGE
 PROPERTY
   : 'property'
   ;  
+
+ONCHANGE
+  : 'onChange'
+  ;
 
 QUERY
   : 'query'
@@ -420,6 +463,10 @@ REVERSE
   : 'reverse'
   ;
   
+RISING
+  : 'rising'
+  ;
+  
 ROLE
   : 'role'
   ;  
@@ -427,12 +474,22 @@ ROLE
 RULE  
   : 'rule'
   ;
+  
+SEQ
+  : 'seq'
+  ;  
 
 SOME
   : 'some'
   ; 
-  
 
+START
+  : 'start'
+  ; 
+  
+SUM
+  : 'sum'
+  ;
   
 SYMMETRIC
   : 'symmetric'
@@ -446,6 +503,10 @@ THEN
   : 'then'
   ;
   
+THROTTLE
+  : 'throttle'
+  ;  
+  
 TIME
   : 'time'
   ;   
@@ -457,6 +518,10 @@ TRANSITIVE
 TYPE
   : 'type'
   ;  
+
+UNIQUE
+  : 'unique'
+  ;
 
 UPDATE
   : 'update'
@@ -516,6 +581,7 @@ DOUBLE_AMPER
   : '&&'
   ;
 
+   
 DOUBLE_ANG
   : '<>'  
   ;
@@ -523,6 +589,14 @@ DOUBLE_ANG
 DOUBLE_CAP
   : '^^'
   ; 
+
+DOUBLE_HYPEN 
+  : '--'
+  ;
+
+DOUBLE_DOT 
+  : '..'
+  ;
 
 DOUBLE_GREATER
   : '>>'
@@ -536,6 +610,13 @@ DOUBLE_PIPE
   : '||'
   ;
     
+DOUBLE_SQUARE_LEFT
+  : '[['
+  ;
+
+DOUBLE_SQUARE_RIGHT
+  : ']]'
+  ;
 
 EQUAL
   : '=='
@@ -555,11 +636,15 @@ GREATER
 
 GREATER_EQUAL
   : '>='
-  ; 
+  ;   
 
 LESS
   : '<'
   ;
+
+LESS_PERCENT
+  : '<%'
+  ;  
 
 LESS_EQUAL
   : '<='
@@ -569,9 +654,21 @@ MINUS
   : '-'
   ;
 
+NEG_MARK
+  : '!'
+  ;
+
 NOT_EQUAL
   : '!='
   ;
+  
+PERCENT
+  : '%'
+  ;  
+  
+PERCENT_GREATER
+  : '%>'
+  ;  
 
 PIPE
   : '|'
@@ -658,7 +755,7 @@ ID
   
 MISC  :
     //'!' | '%' | '^' | '*' | '-' | '+'  | '?' | '/' | '\'' | '\\' | '|' | '&' 
-    '!' | '%' | '^' | '\'' | '\\' | '&' 
+    '^' | '\'' | '\\' | '&' 
   ;
  
 

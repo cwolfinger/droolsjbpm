@@ -1,5 +1,48 @@
 package org.drools.lang;
 
+
+
+/**
+ * Test for future Drools Language Enhancements as of
+ * 
+ * 
+ * Nested Objects	-- done
+ * 		will require .# syntax even if no cast is required
+ * Casting Nested Objects -- done
+ * Positional  Constraints -- done
+ * POSL - Positional-Slotted Language -- done
+ * Method Calls -- done
+ * Maps and Arrays (Collections) -- done
+ * Collections and XPath like filtering -- done
+ * Free form Expressions -- done (simple)
+ * Queries and Unification -- done
+ * Ontologies and Relations via Triples with Hybrid POJO Graph Notation -- IN PROGRESS
+ * Escapes for Dialects -- done
+ * Accumulate -- done
+ * SQL Group Operators -- done
+ * Pipes - Pass through Filters -- done
+ * Unit support -- done
+ * Otherwise -- done
+ * Branch (Labelled Else) -- done
+ * Rule Dependency Meta-Rule Language -- not a language problem
+ * Parallel Meta-Rule Language -- future
+ * MVCC -- future (not a language problem? - depends on Parallel Meta-Rule)
+ * Slot-specific -- done
+ * Field Versioning -- done
+ * Logical Modify -- done
+ * Lambda Support with Analysis -- not a language problem?
+ * Rising / Falling edges -- done
+ * Single Pass Insertion / Single Match -- not a language problem?
+ * Query Based Backward Chaining with POSL -- done
+ * Federated Data Sources for Queries -- done (using from)
+ * Event Sequencing -- done
+ * Uncertainty / Vagueness -- done
+ * Ordered facts -- done
+ * 
+ * 
+ */
+
+
 import static org.junit.Assert.assertTrue;
 
 import java.awt.event.MouseEvent;
@@ -19,8 +62,6 @@ import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 import org.antlr.runtime.ANTLRInputStream;
 import org.antlr.runtime.CommonTokenStream;
@@ -542,7 +583,7 @@ public class Rule_Test {
 		String rule = "rule";
 		String[] testDRL = new String[] {
 				"rule \"r\" when " +
-				"Person( \"john\" , 18, 2.0, true, null, new Dog(), {12, $x, \"test\" }, $var) " +
+				"Person( \"john\" , 18, 2.0, ?, ?, true, null, new Dog(), {12, $x, \"test\" }, $var, ? == 3) " +
 				"then end",
 		};
 		check(rule,testDRL);	
@@ -590,6 +631,7 @@ public class Rule_Test {
 		String[] testDRL = new String[] {
 				"method(2.0, 3.0#km, \"xx\")",
 				"method()#km",
+				"method( new Obj(), [[ 3, 4 ]] )",
 		};
 		check(rule,testDRL);										
 	}
@@ -758,6 +800,29 @@ public class Rule_Test {
 		check(rule,testDRL);										
 	}	
 	
+	@Test
+	public void test_lhs_query() {
+		String rule = "lhs_query";
+		String[] testDRL = {							
+				" ?queryName( \"literal\", $p, $unificationVar ) from federatedDataTable"  
+				
+		};
+		check(rule,testDRL);										
+	}
+	
+	
+	@Test
+	public void test_query() {
+		String rule = "query";
+		String[] testDRL = {							
+				" query queryName(int arg1, String arg2, Obj arg3)" + "\n" +
+				"  $o1 : Object1( field1 == arg1 ) " + "\n" +
+				"  Object2( field1 == $o1, field2 == $arg3) " + "\n" +
+				" end "				
+		};
+		check(rule,testDRL);										
+	}
+	
 	@Test	
 	public void test_msr_unit() {
 		String rule = "msr_unit";
@@ -777,6 +842,54 @@ public class Rule_Test {
 		check(rule,testDRL);										
 	}	
 	
+	/*
+	lhs_branch
+	  : BRANCH 
+	      LEFT_PAREN  
+	        lhs_base?
+	        branch_alternative+
+	      RIGHT_PAREN  
+	      -> ^(VT_BRANCH ^(VT_BRANCH_DEFAULT lhs_base)? branch_alternative+ )
+	  ;	  
+	
+	*/
+	
+	@Test	
+	public void test_branch() {
+		String rule = "rule";
+		String[] testDRL = new String[] {
+				" rule test when " + "\n" +
+				"  branch (" + "\n" +
+				"	Person( ) " + "\n" +
+				"	[b1] Person( ) " + "\n" +
+				"	[b2] ( neg @crisp exists Person( ) ) " + "\n" +
+				" ) " + "\n" +
+				" then end ",
+		};
+		check(rule,testDRL);										
+	}
+	
+	@Test	
+	public void test_branch_alternative() {
+		String rule = "branch_alternative";
+		String[] testDRL = new String[] {				
+				" [label] Person() ",				
+				" [! label] Person() ",
+				" [label] ( rising Person() ) ",	
+				" [label] ( ( Person() or Person() ) | unique )",
+		};
+		check(rule,testDRL);										
+	}
+	
+	@Test	
+	public void test_branch_label() {
+		String rule = "branch_label";
+		String[] testDRL = new String[] {				
+				" [label] ",				
+				" [! label] ",
+		};
+		check(rule,testDRL);										
+	}
 	
 	
 	
@@ -882,7 +995,11 @@ public class Rule_Test {
 								
 				" #nested( age == 18 ) ",
 				
-				" pets[3] "
+				" pets[3] ",
+				
+				" age<<1>> ",
+				
+				" age<<0 .. -5>> ",
 		};
 		check(rule,testDRL);										
 	}		
@@ -933,9 +1050,23 @@ public class Rule_Test {
 				" from collect ( $p : Person() from $source )",
 				
 				" from collect ( Person() )",														
+				
+				" from [\"str1\", \"str2\"]",
+				
+				" from [ 1,2,3,4,5 ]",
+				" from [ $v1, $v2, $v3 ]",
+				
+				" from accumulate ( Person() ) ",
+				" from acc ( Person() ) ",
+				" from accL ( Person() ) ",
+				" from accR ( Person() ) ",
 		};
 		check(rule,testDRL);									
 	}
+	
+	
+	
+	
 	
 	
 	
@@ -949,6 +1080,30 @@ public class Rule_Test {
 		};
 		check(rule,testDRL);
 	}	
+	
+	
+	@Test	
+	public void test_accumulate() {
+		String rule = "rule";
+		String[] testDRL = {
+				"rule other1 when " + "\n" +	
+				" List( ) from acc ( Person() ) " + "\n" +
+				"then end ",
+				
+				"rule other1 when " + "\n" +	
+				" List( ) from acc ( " + "\n" +
+				"	Person(), " + "\n" +
+				"	init( int j = 0; ) " + "\n" +
+				"	action( j++; ) " + "\n" +
+				"	reverse( j--; ) " + "\n" +
+				"	result( j; ) " + "\n" +
+				") " + "\n" +
+				"then end ",
+		};
+				
+		check(rule,testDRL);										
+	}
+	
 	
 	
 	@Test	
@@ -1046,10 +1201,77 @@ public class Rule_Test {
 				"		Person( ) " + "\n" +
 				"	) | window:length( 10 ) | window:time(2h)" + "\n" +
 				" then end ",							
+				
+				" rule test when " + "\n" +
+				" 	( " + "\n" +
+				"		Person( )" + "\n" +
+				"		Person( ) " + "\n" +
+				"	) | unique | throttle(30)" + "\n" +
+				" then end ",
 		};
 		check(rule,testDRL);
 	}
 		
+	
+	@Test	
+	public void test_rhs_side_effect() {
+		String rule = "then_part";
+		String[] testDRL = new String[] {
+				" then <% ... %> end ",
+				 
+				" then " + "\n" +
+				"   < java % " + "\n" +
+				"		System.out.println(); " + "\n" +
+				"		Math.abs(12); " + "\n" +
+				"	%> " + "\n" +
+				"  <% System.out.println(); %> " + "\n" +
+				" end ",
+				
+				" then < mvel % ... %> end",
+		};
+		check(rule,testDRL);
+	}
+	
+	
+	@Test	
+	public void test_rhs() {
+		String rule = "then_part";
+		String[] testDRL = new String[] {				
+				 
+				" then " + "\n" +
+				"  insert new Object(); " + "\n" +
+				"  insert [[ \"st\", 22, getit(), new Obj() ]]; " + "\n" +
+				"  insertLogical new String(\"test\");" + "\n" +				
+				"  retract new Object(); " + "\n" +
+				"  retract $x; " + "\n" +				
+				"  retractLogical new Object(); " + "\n" +
+				"  retractLogical $x; " + "\n" +
+				"  update $x; " + "\n" +
+				" end ",
+				
+				" then " + "\n" +
+				"  modify ($x) { " + "\n" +
+				"    age = 18; " + "\n" +
+				"    name = \"john\"; " + "\n" +
+				"    address.city = ask(); " + "\n" +
+				"  } " + "\n" +
+				" end ",
+				
+		};
+		check(rule,testDRL);
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	@Test	
 	public void test_dle_nested_objects() {
@@ -1065,7 +1287,7 @@ public class Rule_Test {
 	public void test_dle_nested_objects_cast() {
 		String rule = "lhs_atom_pattern";
 		String[] testDRL = {
-				"Person( name==  \"mark\", address.#org.domain.LongAddress( city == \"london\", country ==  \"uk\") )"
+				"Person( name==  \"mark\", address.#org.domain.LongAddress( city == \"london\", country ==  \"uk\").subfield )"
 		};
 				
 		check(rule,testDRL);										
@@ -1148,23 +1370,214 @@ public class Rule_Test {
 	}
 	
 	
-
-    
-
-       
+	@Test
+	public void test_dle_slot_specific() {
+		String rule = "rule";
+		String[] testDRL = {			
+				"rule test when " + "\n" +
+				" $p : Person() @onChange(*,!name)" + "\n" +
+				" $p2 : Person() @onChange(name, age)" + "\n" +
+				" then end"
+		};
+		check(rule,testDRL);										
+	}
 	
 	
-	/*
+	@Test
+	public void test_dle_edges() {
+		String rule = "rule";
+		String[] testDRL = {			
+				"rule test when " + "\n" +
+				" rising Person() " + "\n" +
+				" falling ($p : Person() ) " + "\n" +
+				" then end"
+		};
+		check(rule,testDRL);										
+	}
+	
+	
+	@Test
+	public void test_dle_version() {
+		String rule = "rule";
+		String[] testDRL = {			
+				"rule test when " + "\n" +
+				" Person( age<<-1>> == field.val<<-2>>.someother ) " + "\n" +
+				" then end"
+		};
+		check(rule,testDRL);										
+	}
+	
+	@Test
+	public void test_dle_closure() {
+		String rule = "rule";
+		String[] testDRL = {			
+				"rule test when " + "\n" +	
+				" then " + "\n" +
+				"   <% System.out.println(\"true\"); %>" + "\n" +
+				" closure" + "\n" +
+				"   <% System.out.println(\"no more\"); %> " + "\n" +
+				" end" 
+		};
+		check(rule,testDRL);										
+	}
+	
+	
 	@Test	
-	public void test_ {
-		String rule = "";
+	public void test_dle_otherwise() {
+		String rule = "rule";
 		String[] testDRL = {
-				""
+				"rule other1 when " + "\n" +	
+				" Person( name == @otherwise(\"og1\") \"john\" )" + "\n" +
+				"then end ",			
+				
+				"rule other2 when " + "\n" +	
+				" Person( name == @otherwise(\"og1\") \"mark\" )" + "\n" +
+				"then end",
+				
+				"rule otherDef when " + "\n" +	
+				" Person( name == @otherwise(\"og1\") OTHERWISE )" + "\n" +
+				"then end",
 		};
 				
 		check(rule,testDRL);										
 	}
-	*/
+	
+
+
+	
+	@Test	
+	public void test_dle_accumulate() {
+		String rule = "accumulate_statement";
+		String[] testDRL = {
+				"acc ( " + "\n" +
+				"  $n : Number() from [-9 .. -5] " + "\n" +
+				") ",
+				
+				"acc ( " + "\n" +
+				"  $n : Number() from [1 .. 5], " + "\n" +
+				"  collectList( | $n + 1 | ) " + "\n" +
+				") ",
+				
+				"acc ( " + "\n" +
+				"  $user : User() from users, " + "\n" +
+				"  $parentNames : collectList( $user.parent.name ) " + "\n" +
+				") ",	
+				
+				"acc ( " + "\n" +
+				"  ( $user : User() from users" + "\n" +
+				"    $parent : Parent( age > 30 ) from $user.parent ), " + "\n" +
+				"  $parentNames : collectList( $parent.name ) " + "\n" +
+				") ",
+				
+				"acc ( " + "\n" +
+				"  $s : String() from [\"foo\" , \"bar\"], " + "\n" +
+				"  collectList( $s.toUpperCase() ) " + "\n" +
+				") ",
+				
+				"acc ( " + "\n" +
+				"  $n : Number() from [2,4,8,16,32], " + "\n" +
+				"  collectList( | $n | < 10  ) " + "\n" +
+				") ",
+				
+				"acc ( " + "\n" +
+				"  $n : Number( | intValue / 2 | == 0 ) " + "\n" +
+				"     from acc( $n2 : Number() from [0 .. 10], " + "\n" +
+				"               collectList( |$n2*$n2| )" + "\n" +
+				"             ), " + "\n" +
+				"  collectList( $n ) " + "\n" +
+				") ",
+																
+				
+		};				
+		check(rule,testDRL);										
+	}
+	
+	
+	@Test	
+	public void test_dle_accumulate_functions() {
+		String rule = "accumulate_statement";
+		String[] testDRL = {
+				"acc ( " + "\n" +
+				"  $p : Person(), " + "\n" +
+				"  $num : count( ) " + "\n" +
+				") ",
+				
+				"acc ( " + "\n" +
+				"  $p : Person( $h : height, $w : weight ), " + "\n" +
+				"  avg( $h * $w / 100 ) " + "\n" +
+				") ",
+				
+				"acc ( " + "\n" +
+				"  $p : Person( $h : height, $w : weight ), " + "\n" +
+				"  sum( $w ) " + "\n" +
+				") ",
+				
+				"acc ( " + "\n" +
+				"  $p : Person( $h : height, $w : weight ), " + "\n" +
+				"  min( $w ) " + "\n" +
+				") ",
+				
+				"acc ( " + "\n" +
+				"  $p : Person( $h : height, $w : weight ), " + "\n" +
+				"  max( $w ) " + "\n" +
+				") ",
+				
+				"acc ( " + "\n" +
+				"  $p : Person( $h : height, $w : weight ), " + "\n" +
+				"  limit( 100 ) " + "\n" +
+				") ",
+				
+				"acc ( " + "\n" +
+				"  $p : Person( $h : height, $w : weight ), " + "\n" +
+				"  orderby( $h.val[3].fld , $w ) " + "\n" +
+				") ",
+				
+				"acc ( " + "\n" +
+				"  $p : Person( $h : height, $w : weight ), " + "\n" +
+				"  distinct( $p ) " + "\n" +
+				") ",
+				
+																				
+		};				
+		check(rule,testDRL);										
+	}
+	
+	
+	
+	@Test	
+	public void test_dle_ordered_patterns() {
+		String rule = "rule";
+		String[] testDRL = {
+				"rule test when " + "\n" +
+				" Person( age != 18)" +
+				" [[ 23, ?, \"mark\", ? , ? != 18 ]]" + "\n" +
+				"then end",
+		};
+				
+		check(rule,testDRL);										
+	}
+	
+	
+	
+	@Test	
+	public void test_dle_sequence() {
+		String rule = "lhs_sequence";
+		String[] testDRL = {
+				"seq (" + "\n" +
+				" begin @start C() >> finish @end; "  + "\n" +
+				"  "  + "\n" +
+				" mynode @start $d : D() >> finish @end; "  + "\n" +
+				"  "  + "\n" +
+				" begin @start $e : E() >> midstate $f : F( this after $e) >> name; "  + "\n" +
+				"  "  + "\n" +
+				" name (C() or B()) >> finish @end;  "  + "\n" +
+				"  "  + "\n" +
+				")",						
+		};
+				
+		check(rule,testDRL);										
+	}
+	
 	
 
 	

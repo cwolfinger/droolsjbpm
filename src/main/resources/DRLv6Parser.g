@@ -43,9 +43,19 @@ tokens {
   
   VT_LHS;
   VT_ARROW;
-  VT_RHS;
   
-
+  VT_RHS;
+  VT_THEN;
+  VT_CLOSURE;
+  
+  VT_BRANCH;
+  VT_BRANCH_DEFAULT;
+  VT_BRANCH_LABEL;
+  VT_NEG_BRANCH_LABEL;
+  
+  VT_RISING_EDGE;
+  VT_FALLING_EDGE;
+  
   VT_RHS_CHUNK;
   VT_CURLY_CHUNK;
   VT_SQUARE_CHUNK;
@@ -79,17 +89,26 @@ tokens {
   VT_POSITIONAL_VAR;
   VT_POSITIONAL_CONST;
   VT_POSITIONAL_INDEX;
+  VT_POSITIONAL_SKIP;
   
   VT_BINDING;
   VT_ACCESSOR;
+  VT_VERSION;
   VT_INDEXER;
   VT_INDEX_ALL;
   VT_METHOD;
   VT_EXPR;
+  VT_OTHERWISE;
   
   VT_FILTER;
+  VT_SET;
+  
+  VT_SEQUENCE;
+  VT_TRAIL;
+  VT_TRAIL_NODE;
   
   VT_LIST;
+  VT_RANGE;
   
   VT_BEHAVIOR;
   VT_ENTRYPOINT;
@@ -97,8 +116,16 @@ tokens {
   VT_FROM_SOURCE;
   VT_EXPRESSION_CHAIN;
   
-  VT_ACCUMULATE_INIT_CLAUSE;
-  VT_ACCUMULATE_ID_CLAUSE;
+  VT_ACCUMULATE_LEFT;
+  VT_ACCUMULATE_RIGHT;
+  VT_ACCUMULATE_ITERATION;
+  VT_ACCUMULATE_FUNCTION;
+  VT_ACC_ITER_INIT;
+  VT_ACC_ITER_ACT;
+  VT_ACC_ITER_REV;
+  VT_ACC_ITER_RES;
+  
+  VT_COLLECT_LIST;
 }
   
 @parser::header {
@@ -223,35 +250,6 @@ argument
 
 
 /**************************** TYPE DECLARATION *******************************************/
-
-//TODO : What for?? proto-declare??
-/*
-template
-  : 
-    TEMPLATE template_id 
-    semi1=SEMICOLON?
-    template_slot+
-    end=END semi2=SEMICOLON?
-    -> ^(TEMPLATE template_id template_slot+ END)
-  ;
-
-template_id
-  :   id=ID
-     -> VT_TEMPLATE_ID[$id]
-  |   id=STRING
-     -> VT_TEMPLATE_ID[$id]
-  ;
-
-template_slot
-  : data_type slot_id SEMICOLON?
-    -> ^(VT_SLOT data_type slot_id)
-  ;
-
-slot_id
-  : id=ID
-    -> VT_SLOT_ID[$id]
-  ;
-*/
 
 
 
@@ -404,15 +402,16 @@ dl_prop
 
 
 
-rule
-  : RULE rule_id (EXTEND rule_id)?    
+rule 
+  : RULE rule_id parameters? (EXTEND rule_id)?    
     rule_metadata* 
     rule_attributes?
     rule_arrow?     
     when_part? 
     then_part
     -> ^(RULE rule_id 
-              ^(VT_EXTENDS rule_id)? 
+              ^(VT_EXTENDS rule_id)?
+              parameters? 
               rule_metadata* 
               rule_attributes? 
               rule_arrow?
@@ -522,7 +521,7 @@ ra_timer
   ; 
   
 ra_calendars
-  : A_CALENDAR^ LEFT_PAREN! string_list RIGHT_PAREN!
+  : A_CALENDAR^ LEFT_PAREN! literal_list RIGHT_PAREN!
   ;
 
 
@@ -564,6 +563,7 @@ single_operator_attribute
   | oa_defeat
   | oa_default
   | oa_crisp
+  | oa_otherwise
   ;
 
 oa_kind
@@ -608,8 +608,69 @@ oa_default
   : OA_DEFAULT^
   ;
 
+oa_otherwise
+  : OA_OTHERWISE^ LEFT_PAREN! STRING RIGHT_PAREN!
+  ;
 
 
+
+
+
+pattern_attributes
+  : (AT single_pattern_attribute)+
+    -> ^(VT_ATTRIBUTES single_pattern_attribute+)
+    | AT LEFT_SQUARE single_pattern_attribute (COMMA single_pattern_attribute)* RIGHT_SQUARE
+    -> ^(VT_ATTRIBUTES single_pattern_attribute+)
+  ;
+    
+single_pattern_attribute
+  : single_operator_attribute
+  | pa_onChange
+  ;
+  
+pa_onChange
+  : ONCHANGE^ LEFT_PAREN!
+    (
+      TIMES (COMMA! NEG_MARK! ID)*
+      | ID (COMMA! ID)*
+    )
+    RIGHT_PAREN!
+  ;     
+
+
+
+query_attributes
+    : (AT single_query_attribute)+
+      -> ^(VT_ATTRIBUTES single_query_attribute+)
+      | AT LEFT_SQUARE single_query_attribute (COMMA single_query_attribute)* RIGHT_SQUARE
+      -> ^(VT_ATTRIBUTES single_query_attribute+)
+    ;
+
+single_query_attribute
+  :
+  ;
+  
+  
+  
+trail_attributes
+  :  (AT single_trail_attribute)+
+      -> ^(VT_ATTRIBUTES single_trail_attribute+)
+      | AT LEFT_SQUARE single_trail_attribute (COMMA single_trail_attribute)* RIGHT_SQUARE
+      -> ^(VT_ATTRIBUTES single_trail_attribute+)
+    ;
+
+single_trail_attribute
+  : ta_trail_start
+  | ta_trail_end
+  ;
+
+ta_trail_start
+  : START
+  ;
+
+ta_trail_end
+  : END
+  ;  
 
 /**************************** LHS *******************************************/
 
@@ -626,6 +687,10 @@ lhs_root
   ->  ^(VT_AND_IMPLICIT lhs_implies+)
   ;
 
+lhs_base
+  :   LEFT_PAREN! lhs_root RIGHT_PAREN!
+  | lhs_atom_pattern  
+  ;
 
 
 lhs_implies
@@ -707,8 +772,13 @@ lhs_modified_unary
     unary_operator^  operator_attributes? lhs_modified_unary
   | LEFT_PAREN! lhs_root RIGHT_PAREN!    
   | lhs_quantifiexpr
+  | lhs_edge
+  | lhs_branch
+  | lhs_sequence
   | lhs_label_atom_pattern
   ;
+
+
 
 
 lhs_quantifiexpr
@@ -720,13 +790,12 @@ lhs_quantifiexpr
 
 lhs_exists  
   : lab=label? EXISTS operator_attributes?
-  (
-    LEFT_PAREN lhs_root RIGHT_PAREN
-  | lhs_atom_pattern  
-  )
-  -> {lab==null}? ^(VT_EXISTS operator_attributes? lhs_root? lhs_atom_pattern?)
-  -> ^(VT_BINDING label ^(VT_EXISTS operator_attributes? lhs_root? lhs_atom_pattern?)) 
+    lhs_base
+  -> {lab==null}? ^(VT_EXISTS operator_attributes? lhs_base)
+  -> ^(VT_BINDING label ^(VT_EXISTS operator_attributes? lhs_base)) 
   ;
+  
+
 
 lhs_forall  
   : FORALL operator_attributes?
@@ -739,49 +808,100 @@ lhs_forall
   ; 
   
 lhs_not   
-  : NOT operator_attributes?
-  (
-    LEFT_PAREN lhs_root RIGHT_PAREN
-  | lhs_atom_pattern  
-  )
-  -> ^(VT_NEXISTS operator_attributes? lhs_root? lhs_atom_pattern?)
+  : NOT operator_attributes? lhs_base
+  -> ^(VT_NEXISTS operator_attributes? lhs_base)
   ; 
 
-/*
-lhs_atom_pattern
-  : lab=label? ID LEFT_PAREN constraints? RIGHT_PAREN operator_attributes? over_clause? from?
-    -> {lab==null}? ^(VT_AND operator_attributes? VT_ENABLED ^(VT_PATTERN ID) constraints? over_clause? from?)
-    -> ^(label ^(VT_AND operator_attributes? VT_ENABLED ^(VT_PATTERN ID) constraints? over_clause? from?))
-  ; 
-*/
 
 lhs_label_atom_pattern
-  : lab=label? lhs_atom_pattern
-    -> {lab==null}? lhs_atom_pattern 
-    -> ^(VT_BINDING label lhs_atom_pattern)
+  : lab=label? ( lhs_atom_pattern | ordered_obj_pattern )
+    -> {lab==null}? lhs_atom_pattern? ordered_obj_pattern? 
+    -> ^(VT_BINDING label lhs_atom_pattern ordered_obj_pattern?)  
   ;  
 
 
 /* over_clause obsolete, replaced by filters (see far below in lhs_unary)*/
 lhs_atom_pattern
-  : ID LEFT_PAREN constraints? RIGHT_PAREN operator_attributes?  from?  
+  : ID LEFT_PAREN constraints? RIGHT_PAREN pattern_attributes?  from?  
   -> ^(VT_PATTERN
-          ^(VT_AND operator_attributes? VT_ENABLED ^(VT_TYPE ID) constraints? )
+          ^(VT_AND pattern_attributes? VT_ENABLED ^(VT_TYPE ID) constraints? )
           from?
-      )    
+      )       
   ;
+
+
+
+/************************************************ LHS CONSTRUCTS *************************/
+
+
+lhs_edge
+  : RISING lhs_base
+    -> ^(VT_RISING_EDGE lhs_base)
+   | FALLING lhs_base     
+    -> ^(VT_FALLING_EDGE lhs_base)
+  ;
+
+
+lhs_branch
+  : BRANCH  
+      LEFT_PAREN  
+        lhs_base?
+        branch_alternative+
+      RIGHT_PAREN  
+      -> ^(VT_BRANCH ^(VT_BRANCH_DEFAULT lhs_base)? branch_alternative+ )
+  ;
+  
+branch_alternative
+  :  branch_label^ lhs_base    
+  ;  
+  
+branch_label
+  : LEFT_SQUARE neg=NEG_MARK? ID RIGHT_SQUARE
+  -> {neg!=null}? ^(VT_NEG_BRANCH_LABEL ID)
+  -> ^(VT_BRANCH_LABEL ID)
+  ;  
 
 
 
 filter_chain
-  :   PIPE filter filter_chain?
-  -> ^(VT_FILTER filter filter_chain?)
+  :   PIPE filter (PIPE filter)*
+  -> ^(VT_FILTER filter+ )
   ;
   
 filter
-  :   over_elements
+  :   over_filter
+  |   unique_filter
+  |   throttle_filter
   |   FILTER ID  
   ;
+  
+  
+   
+  
+lhs_sequence
+  : 
+   SEQ LEFT_PAREN
+      trail+
+  RIGHT_PAREN   
+  -> ^(VT_SEQUENCE trail+)
+  ;
+
+trail
+  : trail_path 
+  -> ^(VT_TRAIL trail_path)          
+  ;  
+  
+trail_path
+  : trail_node
+    (lhs_root DOUBLE_GREATER! trail_node)+       
+    SEMICOLON!    
+  ;  
+
+trail_node
+  : ID trail_attributes?
+  -> ^(VT_TRAIL_NODE ID trail_attributes?)
+  ;
+  
   
 /*********************************************** INSIDE PATTERN *****************************************/
 
@@ -811,16 +931,35 @@ positional_constraint[int j]
   String idx = ""+j;
 }
   : literal  
-    -> ^(VT_POSITIONAL_CONST VT_POSITIONAL_INDEX[$start,idx] literal)   
+    -> ^(VT_POSITIONAL_CONST VT_POSITIONAL_INDEX[$start,idx] ^(EQUAL ^(VT_EXPR literal)))   
   | var_literal 
-    -> ^(VT_POSITIONAL_VAR VT_POSITIONAL_INDEX[$start,idx] var_literal) 
+    -> ^(VT_POSITIONAL_VAR VT_POSITIONAL_INDEX[$start,idx] ^(EQUAL ^(VT_EXPR var_literal)))
+  | QUESTION_MARK rest=restriction_root?
+    ->{rest==null}? ^(VT_POSITIONAL_SKIP VT_POSITIONAL_INDEX[$start,idx])
+    -> ^(VT_POSITIONAL_CONST VT_POSITIONAL_INDEX[$start,idx] restriction_root)   
   ;
                 
 slotted_constraint
-  :   constr_implies
+  :   constr_implies  
   ; 
-
-
+  
+/*  
+ordered_constraints
+  : ordered_constraint[j++] (COMMA! ordered_constraint[j++])*
+  ;  
+  
+ordered_constraint[int j]
+@init{
+  String idx = ""+j;
+}
+: literal  
+    -> ^(VT_POSITIONAL_CONST VT_POSITIONAL_INDEX[$start,idx] literal)   
+  | var_literal 
+    -> ^(VT_POSITIONAL_VAR VT_POSITIONAL_INDEX[$start,idx] var_literal)
+  | QUESTION_MARK restriction_root?
+    -> ^(VT_POSITIONAL_SKIP VT_POSITIONAL_INDEX[$start,idx])   
+  ;
+*/
 
 /********************************************* ATOMIC DATA DEFINITIONS ************************************************/
 
@@ -830,20 +969,44 @@ fully_qualified_name
     -> ^(VT_NAME ID+)
   ;
 
-string_list
-@init {
-    StringBuilder buf = new StringBuilder();
-}
-  : first=STRING { buf.append( "[ "+ $first.text ); }
-     (COMMA next=STRING { buf.append( ", " + $next.text ); } )* 
-  -> STRING[$first,buf.toString()+" ]"]
+
+gen_accessor_list
+  : first=general_accessor_path (COMMA next=general_accessor_path)* 
+  -> ^(VT_LIST general_accessor_path+)
   ;
+ 
+literal_list
+  : first=literal (COMMA next=literal)* 
+  -> ^(VT_LIST literal+)
+  ;  
+
+var_list
+  : first=VAR (COMMA next=VAR)* 
+  -> ^(VT_LIST VAR+)
+  ;
+  
+members_list
+  : (literal|var_literal) (COMMA! (literal|var_literal))*
+  ;  
+
+integer_range
+  : INT DOUBLE_DOT INT
+  -> ^(VT_RANGE INT INT)
+  ;
+
+list_literal
+  : LEFT_CURLY members_list? RIGHT_CURLY  
+    ->^(VT_LIST members_list?)  
+  ; 
+
 
 literal
 options{
 k=6;
 }
-    :   STRING 
+    :   STRING m=msr_unit?
+        -> {m==null}? STRING
+        -> ^(VT_MSR STRING $m)
     |   INT m=msr_unit?
         -> {m==null}? INT
         -> ^(VT_MSR INT $m)
@@ -853,7 +1016,7 @@ k=6;
     |   BOOL 
     |   NULL 
     | literal_object
-    | list 
+    | list_literal 
     ;
     
     
@@ -874,29 +1037,34 @@ label
     
 msr_unit
     :   (GATE! ID)+
-    //-> ^(VT_MSR ID+) 
     ;
        
     
-list
-  : LEFT_CURLY list_members? RIGHT_CURLY  
-    ->^(VT_LIST list_members?)  
-  ; 
 
-list_members
-  : (literal|var_literal) (COMMA! (literal|var_literal))*
-  ;
+
+
     
   
     
 literal_object
+  : new_object
+    | ordered_object_literal
+  ;   
+  
+new_object
   : NEW ID LEFT_PAREN literal_object_args? RIGHT_PAREN
     -> ^(VT_NEW_OBJ ^(VT_TYPE ID) ^(VT_ARGS literal_object_args)?)
-  ;   
+  ;  
   
 literal_object_args
   :  method_args
   ;
+  
+  
+//TODO : time format strings
+time_string
+  : STRING
+  ;  
 
 
 /**************************************************** METHODS AND EXPRESSIONS ***********************************************/
@@ -1154,6 +1322,8 @@ left_expression
 right_expression
   : expr_root
   -> ^(VT_EXPR expr_root)
+  | OTHERWISE
+  -> ^(VT_OTHERWISE)
   ;
 
 
@@ -1161,6 +1331,10 @@ right_expression
 /***************************************** ACCESSOR PATHS *******************************/
 
 
+general_accessor_path
+  : var
+  | accessor_path
+  ;
 
 accessor_path
   : accessor (DOT accessor)*
@@ -1183,20 +1357,31 @@ accessor
     }
     -> {ix==null}? ^($m)
     -> ^($ix)
-  | id=ID ix=indexer?
+  | id=versioned_accessor ix=indexer?
     { 
         if (ix != null ) {
               Tree t = ((Tree) ix.getTree());     
               Tree temp = t.getChild(0);                                        
-              t.setChild(0,new CommonTree(new CommonToken(STRING,$id.text)));
+              t.setChild(0,(Tree) id.getTree());
               t.addChild(temp);
         }  
     }  
-    -> {ix==null}? ^(ID)
+    -> {ix==null}? ^($id)
     -> ^($ix)
   | nested_obj_pattern
   ;
 
+
+versioned_accessor
+  : ID v=version?
+  -> {v!=null}? ^(VT_VERSION ID version)
+  -> ID
+  ;
+
+version
+  : DOUBLE_LESS! INT DOUBLE_GREATER!
+  | DOUBLE_LESS! integer_range DOUBLE_GREATER!
+  ;
 
 nested_obj_pattern
   : GATE fqn=fully_qualified_name?  LEFT_PAREN constraints RIGHT_PAREN
@@ -1230,13 +1415,10 @@ indexer
 
 
 
-/***************************************************   PATTERN SOURCES ******************************************/
 
-over_clause
-  : OVER^ over_elements (COMMA! over_elements)*
-  ;
+/************************************************** FILTERS ******************************/
 
-over_elements
+over_filter
   : id1=WINDOW COLON 
     (  id2=TIME paren_chunk
       -> ^(VT_BEHAVIOR $id1 $id2 paren_chunk)
@@ -1244,6 +1426,19 @@ over_elements
       -> ^(VT_BEHAVIOR $id1 $id2 INT) 
     ) 
   ;
+  
+unique_filter
+  : UNIQUE
+    -> ^(VT_BEHAVIOR UNIQUE) 
+  ;  
+  
+throttle_filter
+  : THROTTLE LEFT_PAREN INT RIGHT_PAREN
+    -> ^(VT_BEHAVIOR THROTTLE INT)
+  ;  
+
+
+/***************************************************   PATTERN SOURCES ******************************************/
 
 from
   : FROM^
@@ -1281,76 +1476,170 @@ entrypoint_id
 from_source
   : var
     | accessor_path 
-    //args=paren_chunk?
-    //expression_chain?
-    //-> ^(VT_FROM_SOURCE ID paren_chunk? expression_chain?)
+    | LEFT_SQUARE! literal_list RIGHT_SQUARE!
+    | LEFT_SQUARE! var_list RIGHT_SQUARE!
+    | LEFT_SQUARE! integer_range RIGHT_SQUARE!    
   ;
 
 
 
-/**
-  TODO :
-*/ 
+
 accumulate_statement
-  : ACCUMULATE  
-    LEFT_PAREN 
-      lhs_implies 
-    COMMA? 
-    ( accumulate_init_clause
-    | accumulate_id_clause
-    )
-    RIGHT_PAREN 
-    -> ^( ACCUMULATE lhs_implies accumulate_init_clause? accumulate_id_clause? )
+  : acc_left
+  | acc_right
+  ;
+  
+  
+acc_left
+  : ACCUMULATE accumulate_body
+  -> ^(VT_ACCUMULATE_LEFT accumulate_body)
   ;
 
-accumulate_init_clause
-  : INIT
-    pc1=accumulate_paren_chunk cm1=COMMA? 
-    ACTION pc2=accumulate_paren_chunk cm2=COMMA? 
-  ( REVERSE pc3=accumulate_paren_chunk cm3=COMMA? )?
-    res1=RESULT pc4=accumulate_paren_chunk
-    -> ^(VT_ACCUMULATE_INIT_CLAUSE ^(INIT $pc1) ^(ACTION $pc2) ^(REVERSE $pc3)? ^(RESULT $pc4))
+acc_right
+  : ACCUMULATE_RIGHT accumulate_body
+  -> ^(VT_ACCUMULATE_RIGHT accumulate_body)
+  ;    
+
+accumulate_body
+  : LEFT_PAREN 
+      lhs_root 
+    ( COMMA?
+      ( accumulate_iteration
+      | l=label? accumulate_functions )
+    )?     
+    RIGHT_PAREN
+    -> {l==null}? lhs_root accumulate_iteration? accumulate_functions?
+    -> lhs_root ^(VT_BINDING label accumulate_functions?)
   ;
 
 
+accumulate_functions
+  : acc_collect_list
+  | acc_avg
+  | acc_min
+  | acc_max
+  | acc_sum
+  | acc_count
+  | acc_distinct
+  | acc_orderby
+  | acc_limit
+  ;
+
+ 
+acc_collect_list
+  : COLLECT_LIST 
+      LEFT_PAREN
+        (constr_implies
+        | var)
+      RIGHT_PAREN
+    -> ^(VT_COLLECT_LIST constr_implies? var?)
+  ;
+
+acc_avg
+  : AVERAGE LEFT_PAREN expr_root RIGHT_PAREN
+  -> ^(VT_ACCUMULATE_FUNCTION AVERAGE ^(VT_EXPR expr_root))
+  ;
+  
+acc_min
+  : MIN LEFT_PAREN expr_root RIGHT_PAREN
+  -> ^(VT_ACCUMULATE_FUNCTION MIN ^(VT_EXPR expr_root))
+  ;
+
+acc_max
+  : MAX LEFT_PAREN expr_root RIGHT_PAREN
+  -> ^(VT_ACCUMULATE_FUNCTION MAX ^(VT_EXPR expr_root))
+  ;
+
+acc_sum
+  : SUM LEFT_PAREN expr_root RIGHT_PAREN
+  -> ^(VT_ACCUMULATE_FUNCTION SUM ^(VT_EXPR expr_root))
+  ;
+  
+acc_count
+  : COUNT LEFT_PAREN RIGHT_PAREN
+  -> ^(VT_ACCUMULATE_FUNCTION COUNT)
+  ;
+  
+acc_distinct
+  : DISTINCT LEFT_PAREN gen_accessor_list RIGHT_PAREN
+  -> ^(VT_ACCUMULATE_FUNCTION DISTINCT gen_accessor_list)
+  ;
+
+acc_orderby
+  : ORDERBY LEFT_PAREN gen_accessor_list RIGHT_PAREN
+  -> ^(VT_ACCUMULATE_FUNCTION ORDERBY gen_accessor_list)
+  ;
+  
+acc_limit
+  : LIMIT LEFT_PAREN INT RIGHT_PAREN
+  -> ^(VT_ACCUMULATE_FUNCTION LIMIT INT)
+  ;
+
+
+
+accumulate_iteration
+  : INIT pc1=accumulate_paren_chunk COMMA?  
+    ACTION pc2=accumulate_paren_chunk COMMA?
+    REVERSE pc3=accumulate_paren_chunk COMMA?
+    RESULT pc4=accumulate_paren_chunk COMMA?   
+    -> ^(VT_ACCUMULATE_ITERATION ^(VT_ACC_ITER_INIT $pc1) ^(VT_ACC_ITER_ACT $pc2) ^(VT_ACC_ITER_REV $pc3)? ^(VT_ACC_ITER_RES $pc4))
+  ;
+  
+  
 accumulate_paren_chunk
 @init{
   String text = "";
-} : pc=accumulate_paren_chunk_data[false] {text = $pc.text;} 
+} 
+  : pc=accumulate_paren_chunk_data[false] {text = $pc.text;} 
   -> VT_PAREN_CHUNK[$pc.start,text]
   ;
 
 accumulate_paren_chunk_data[boolean isRecursive]
-  : lp1=LEFT_PAREN    
-    (any=~ ( LEFT_PAREN | RIGHT_PAREN ) | accumulate_paren_chunk_data[true] )* 
-    rp1=RIGHT_PAREN
-  ;
-
-accumulate_id_clause
-  : ID paren_chunk
-  -> ^(VT_ACCUMULATE_ID_CLAUSE ID paren_chunk)
+  : LEFT_PAREN
+    (any=~ ( LEFT_PAREN | RIGHT_PAREN )   
+    | accumulate_paren_chunk_data[true] )* 
+    RIGHT_PAREN    
   ;
 
 
+/******************************************* QUICK OBJS **********************/
 
 
+ordered_object_literal
+  : DOUBLE_SQUARE_LEFT
+      method_args
+    DOUBLE_SQUARE_RIGHT
+    -> ^(VT_NEW_OBJ ^(VT_ARGS method_args))
+  ;
+
+ordered_obj_pattern
+  : DOUBLE_SQUARE_LEFT
+      positional_constraints
+    DOUBLE_SQUARE_RIGHT
+    -> ^(VT_AND positional_constraints)
+  ;
 
 /***************************************************   QUERIES ******************************************/
 
 
 query   //TODO
-  : QUERY ID 
-    //parameters? 
-    lhs_root
+  : QUERY ID parameters? 
+      query_body+
     END
-    -> ^(QUERY ID /*parameters?*/ lhs_root)   
+    -> ^(QUERY ID parameters? ^(VT_AND_IMPLICIT query_body+) )   
+  ;
+
+query_body
+  : lhs_label_atom_pattern 
+  | lhs_query 
   ;
 
 
 lhs_query
-  : QUESTION_MARK ID LEFT_PAREN positional_constraints? RIGHT_PAREN
-    -> ^(VT_QUERY_PATTERN ID positional_constraints?)
+  : QUESTION_MARK ID LEFT_PAREN positional_constraints? RIGHT_PAREN query_attributes? from?
+    -> ^(VT_QUERY_PATTERN ID query_attributes? positional_constraints? from?)
   ;
+
 
 
 
@@ -1496,19 +1785,29 @@ hedge
  
 then_part  
   :     
-      rhs_structured
-      -> ^(VT_RHS rhs_structured)
-    | rhs_chunk
-      -> ^(VT_RHS rhs_chunk)   
-    
+      rhs_structured      
+ //   | rhs_chunk
+ //     -> ^(VT_RHS rhs_chunk)      
   ; 
 
 
 rhs_structured
-  : DO LEFT_CURLY!
-    rhs_atom*
-    RIGHT_CURLY!
+  : THEN then? (CLOSURE closure)? END    
+    -> ^(VT_RHS then? closure?)
+    
+  | DO! LEFT_CURLY! rhs_atom* RIGHT_CURLY!    
   ;
+  
+then
+  : rhs_atom+
+  -> ^(VT_THEN rhs_atom+)
+  ;  
+
+closure
+  : rhs_atom+
+  -> ^(VT_CLOSURE rhs_atom+)
+  ;   
+  
 
 rhs_atom
   :   rhs_insert
@@ -1517,6 +1816,7 @@ rhs_atom
     | rhs_retract_logical
     | rhs_update
     | rhs_modify
+    | rhs_modify_logical
     | rhs_side_effect
   ; 
   
@@ -1555,25 +1855,45 @@ rhs_update
 rhs_modify
   : MODIFY^ LEFT_PAREN! var RIGHT_PAREN! 
     LEFT_CURLY!
-      accessor_path
-      (COMMA! accessor_path)*
+      set_action+
     RIGHT_CURLY!
     SEMICOLON?
   ;
+  
+rhs_modify_logical
+  : MODIFY_LOG^ LEFT_PAREN! var RIGHT_PAREN! 
+    LEFT_CURLY!
+      set_action+
+    RIGHT_CURLY!
+    SEMICOLON?
+  ;  
+  
+set_action
+  : accessor_path EQUALS right_expression SEMICOLON   
+  -> ^(VT_SET accessor_path right_expression)
+  ;  
+  
   
 rhs_side_effect
 @init{
   String text = "";
 }
-  : (DOUBLE_LESS | LESS dialect=(JAVA | MVEL) LESS)
-    rc=side_effect_chunk {text = $rc.text;}
-    DOUBLE_GREATER
-    -> {dialect==null}? VT_RHS_CHUNK[$rc.start,text]
-    -> ^(VT_DIALECT[dialect] VT_RHS_CHUNK[$rc.start,text])
+  :     
+    LESS_PERCENT rc=side_effect_chunk {text = $rc.text;} PERCENT_GREATER
+    -> VT_RHS_CHUNK[$rc.start,text]
+    | LESS dialect PERCENT
+        rc=side_effect_chunk {text = $rc.text;}
+      PERCENT_GREATER 
+    -> ^(VT_DIALECT dialect VT_RHS_CHUNK[$rc.start,text])         
+  ;
+  
+dialect
+  : JAVA 
+  | MVEL
   ;
   
 side_effect_chunk
-  : ~ ( END | DOUBLE_GREATER )*   
+  : ~ ( END | (PERCENT_GREATER) )*   
   ;
 
 
