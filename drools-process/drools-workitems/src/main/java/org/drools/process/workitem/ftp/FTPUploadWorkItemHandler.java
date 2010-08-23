@@ -17,21 +17,19 @@
 package org.drools.process.workitem.ftp;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.SocketException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.apache.commons.net.ftp.FTP;
-import org.drools.process.instance.WorkItemHandler;
-import org.drools.runtime.process.WorkItem;
-import org.drools.runtime.process.WorkItemManager;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPReply;
+import org.drools.process.instance.WorkItemHandler;
 import org.drools.process.workitem.email.Connection;
+import org.drools.runtime.process.WorkItem;
+import org.drools.runtime.process.WorkItemManager;
 
 
 
