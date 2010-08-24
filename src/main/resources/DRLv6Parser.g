@@ -1009,7 +1009,7 @@ iri
 
   
 nodeID
-  : DOUBLE_HYPEN ID
+  : BLANK_ID
   ;  
   
 full_iri

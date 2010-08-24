@@ -955,6 +955,10 @@ PREFIXED_ID
   { state.text = $text.substring(1, $text.length() - 1);  }
   ;  
   
+BLANK_ID
+  : '_' IdentifierStart IdentifierPart*  
+  { state.text = $text.substring(1, $text.length() - 1);  }
+  ;    
   
 MISC  :
     //'!' | '%' | '^' | '*' | '-' | '+'  | '?' | '/' | '\'' | '\\' | '|' | '&' 
@@ -970,7 +974,7 @@ fragment
 IdentifierStart
     :   //'\u0024'
         '\u0041'..'\u005a'
-    |   '\u005f'
+        // |   '\u005f'
     |   '\u0061'..'\u007a'
     |   '\u00a2'..'\u00a5'
     |   '\u00aa'
