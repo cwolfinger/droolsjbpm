@@ -3,7 +3,7 @@ parser grammar DRLv6Parser;
 options {
   language = Java;
   output = AST;
-  tokenVocab = DRLv6Lexer;
+  tokenVocab = DRLv6Lexer;  
 }
       
      
@@ -11,6 +11,10 @@ tokens {
   VT_COMPILATION_UNIT;
   VT_PACKAGE_ID;
   VT_PACKAGE;
+  VT_IMPORT_SECTION;
+  VT_ONTOLOGY_SECTION;
+  VT_DECLARATION_SECTION;
+  VT_RULEBASE_SECTION;
   
   VT_GLOBAL_ID;
   VT_DATA_TYPE;
@@ -36,6 +40,8 @@ tokens {
   VT_DL_DEFINITION;
   VT_DL_TYPE;
   VT_FIELD;
+  
+  VT_ENTITY_TYPE;
   
   VT_RULE_ID; 
   VT_ATTRIBUTES;
@@ -80,6 +86,10 @@ tokens {
   VT_EXISTS;
   VT_FORALL;
   VT_NEXISTS;
+  VT_COUNT;
+  VT_MIN;
+  VT_MAX;
+  VT_VALUE;
     
   VT_PATTERN;
   VT_NESTED_PATTERN;
@@ -126,6 +136,43 @@ tokens {
   VT_ACC_ITER_RES;
   
   VT_COLLECT_LIST;
+  
+  
+  VT_ONTOLOGY;
+  VT_IRI;
+  VT_PREFIX;
+  VT_ANNOTATIONS;
+  VT_ANNOTATION;
+  VT_DL_DEFINITION;
+  VT_FIELD;
+  
+  VT_DL_TYPE;    
+  VT_DL_PROP;
+  VT_DL_RESTRICTION;
+  VT_DL_RESTRICTED_TYPE;
+  
+  VT_EQUIVALENTTO;
+  VT_SUBCLASSOF;
+  VT_DISJOINTWITH;
+  VT_DISJOINTUNIONOF;
+  VT_SUBPROPERTYOF; 
+  VT_INVERSEOF;
+  VT_SUBPROPERTYCHAIN;
+  VT_DOMAIN;
+  VT_RANGE; 
+  
+  VT_FACTS;
+  VT_FACT;
+  VT_TYPES;
+  VT_SAMEAS;
+  VT_DIFFERENTFROM;
+  
+  VT_EQV_CLASS;
+  VT_DIF_CLASS;
+  VT_EQV_PROP;
+  VT_DIF_PROP;
+  VT_EQV_INDV;
+  VT_DIF_INDV;
 }
   
 @parser::header {
@@ -135,15 +182,24 @@ tokens {
   import java.util.LinkedList;
 }
 
- 
+  
 
 /**************************** SCOPE *******************************************/
 
 compilation_unit
   : package_statement?
-    statement*
+    general_import_statement*
+    declaration_statement*
+    ontology_section?
+    rulebase_statement*
     EOF
-    -> ^(VT_COMPILATION_UNIT package_statement? statement*) 
+    -> ^(VT_COMPILATION_UNIT 
+        package_statement?
+        ^(VT_IMPORT_SECTION general_import_statement*) 
+        ^(VT_DECLARATION_SECTION declaration_statement*)
+        ^(VT_ONTOLOGY_SECTION ontology_section?)
+        ^(VT_RULEBASE_SECTION rulebase_statement*)
+        ) 
   ;
   
   
@@ -166,16 +222,25 @@ package_id
 
 /**************************** STATEMENTS *******************************************/
 
-statement
+
+general_import_statement
   : function_import_statement   
-  | import_statement  
-  | global  
+  | import_statement 
+  ;
+ 
+declaration_statement
+  : global  
   | function
-  // | template
-  | type_declaration
-  | rule
+  ;
+
+ontology_section
+  : manDL_ontology 
+//  | type_declaration*
+  ;
+
+rulebase_statement
+  : rule
   | query
-  //| rule_attribute    // why???
   ;
 
 
@@ -189,13 +254,24 @@ global_id
   : id=ID 
     -> VT_GLOBAL_ID[$id]
   ;
+
+
   
-data_type
+  
+primitive_type 
+  : TYPE_STRING
+  | TYPE_INTEGER
+  | TYPE_FLOAT
+  | TYPE_DOUBLE
+  | TYPE_BOOLEAN
+  ;
+  
+data_type returns [int dim]
 @init{
- int dim=0;
+ $dim=0;
 }
-  : fully_qualified_name (dimension_definition {dim++;})*
-    -> ^(VT_DATA_TYPE VT_DIM_SIZE[$start,""+dim] fully_qualified_name )
+  : fully_qualified_name (dimension_definition {$dim++;})*
+    -> ^(VT_DATA_TYPE VT_DIM_SIZE[$start,""+$dim] fully_qualified_name )
   ;
 dimension_definition
   : LEFT_SQUARE RIGHT_SQUARE 
@@ -249,7 +325,8 @@ argument
 
 
 
-/**************************** TYPE DECLARATION *******************************************/
+/****************************************** 
+*     TYPE DECLARATION 
 
 
 
@@ -300,17 +377,17 @@ tda_namespace
 tda_disjoint
   :     DISJOINT^ LEFT_PAREN! ID RIGHT_PAREN!
   ;
-
+ 
 tda_inverse
-  :     INVERSE^ LEFT_PAREN! ID RIGHT_PAREN!
+  :     INVERSEOF^ LEFT_PAREN! ID RIGHT_PAREN!
   ;  
   
 tda_symmetric
-  :     SYMMETRIC^
+  :     MDA_SYMMETRIC^
   ;
   
  tda_transitive
-  :     TRANSITIVE^
+  :     MDA_TRANSITIVE^
   ;  
   
   
@@ -319,33 +396,7 @@ extend
     -> ^(VT_EXTENDS fully_qualified_name)
   ;
 
-decl_field
-  : ID  
-    decl_field_initialization? 
-    COLON 
-    data_type
-    decl_field_attributes?
-    -> ^(VT_FIELD decl_field_attributes? ID data_type decl_field_initialization? )
-  ;
 
-decl_field_initialization
-  : EQUALS paren_chunk
-  -> ^(EQUALS paren_chunk)
-  ;
-
- 
-decl_field_attributes
-  :
-      AT LEFT_SQUARE
-          decl_field_attribute (COMMA decl_field_attribute)*         
-      RIGHT_SQUARE
-      -> ^(VT_ATTRIBUTES decl_field_attribute+)      
-  ;
-
-decl_field_attribute
-  :
-    KEY 
-  ;
 
 
 
@@ -391,9 +442,581 @@ dl_class
   ;  
   
 dl_prop
-  :   ID (ALL | SOME)^ dl_type      
+  :   ID (ONLY | SOME)^ dl_type      
   ;  
   
+*/
+
+decl_fields
+  : decl_field more=decl_field*
+  -> ^(VT_EQUIVALENTTO ^(VT_DL_DEFINITION ^(VT_AND decl_field+)))
+  //-> {more==null?} ^(VT_EQUIVALENTTO ^(VT_DL_DEFINITION decl_field ))
+  //-> ^(VT_EQUIVALENTTO ^(VT_DL_DEFINITION ^(VT_AND decl_field* )))
+  ;
+
+                          //^("min" "1" decl_field)
+                          //^("max" "1" decl_field)
+decl_field
+  : ID      
+    COLON 
+    data_type
+    decl_field_attributes?
+    //-> ^(VT_FIELD decl_field_attributes? ID data_type )
+    -> {$data_type.dim==0}? 
+        ^(VT_AND 
+          decl_field_attributes?
+          ^(VT_COUNT ID ^(VT_MIN INT["1"]) data_type)
+          ^(VT_COUNT ID ^(VT_MAX INT["1"]) data_type)
+          ^(VT_FORALL ID data_type)
+        )
+    ->  ^(VT_AND 
+          decl_field_attributes?
+          ^(VT_EXISTS ID data_type)
+          ^(VT_FORALL ID data_type)
+        ) 
+  ;
+
+ 
+decl_field_attributes
+  :
+      AT LEFT_SQUARE
+          decl_field_attribute (COMMA decl_field_attribute)*         
+      RIGHT_SQUARE
+      -> ^(VT_ATTRIBUTES decl_field_attribute+)      
+  ;
+
+decl_field_attribute
+  :
+    KEY 
+  ;
+ 
+ 
+/*******************************************************************
+*                         MANCHESTER SYNTAX
+*******************************************************************/  
+  
+manDL_ontology
+  : manDL_prefix*
+    ONTOLOGY COLON iri+
+    manDL_inport*
+    manDL_annotations?
+    manDL_type_declaration*
+    -> ^(VT_ONTOLOGY ^(VT_NAME iri+) manDL_prefix* manDL_inport* manDL_annotations? manDL_type_declaration*)    
+  ;   
+  
+manDL_prefix
+  : PREFIX COLON ID COLON full_iri
+  -> ^(VT_PREFIX ID full_iri)
+  ;  
+  
+  
+manDL_inport  // :)
+  : IMPORT COLON iri   
+  -> ^(VT_IMPORT iri)
+  ;  
+  
+  
+manDL_type_declaration
+  :   manDL_datatype_def
+      | manDL_class
+      | manDL_event
+      | manDL_objectProperty
+      | manDL_dataProperty
+      | manDL_annotationProperty
+      | manDL_namedIndividual  
+      | manDL_misc
+  ;  
+  
+  
+  
+manDL_datatype_def
+  : (AT type=DATATYPE DECLARE
+    | type=DATATYPE COLON )
+      iri
+      manDL_datatype_frame*
+    END?
+  -> ^(VT_TYPE_DECLARE ^(VT_ENTITY_TYPE[$type]) ^(VT_TYPE_DECLARE_ID iri) manDL_datatype_frame*)
+  ;
+
+manDL_class
+  : ( (AT type=CLASS)? DECLARE
+    | type=CLASS COLON )
+      
+      iri
+      manDL_class_frame*
+      decl_fields?         
+    END?
+  -> {type!=null}? ^(VT_TYPE_DECLARE ^(VT_ENTITY_TYPE[$type]) ^(VT_TYPE_DECLARE_ID iri) manDL_class_frame* decl_fields?)
+  -> ^(VT_TYPE_DECLARE ^(VT_ENTITY_TYPE["Class"]) ^(VT_TYPE_DECLARE_ID iri) manDL_class_frame* decl_fields?)
+  ;
+
+
+manDL_event
+  : ( AT type=EVENT DECLARE
+    | type=EVENT COLON ) 
+    
+      iri
+      manDL_class_frame*
+    END?
+  -> ^(VT_TYPE_DECLARE ^(VT_ENTITY_TYPE[$type]) ^(VT_TYPE_DECLARE_ID iri) manDL_class_frame*)
+  ;
+ 
+manDL_objectProperty
+  : ( AT type=PROPERTY_OBJECT DECLARE
+    | type=PROPERTY_OBJECT COLON)
+      iri
+      (AT manDL_attribute)* 
+      manDL_objProp_frame*
+    END?
+  -> ^(VT_TYPE_DECLARE ^(VT_ENTITY_TYPE[$type]) ^(VT_TYPE_DECLARE_ID iri) ^(VT_ATTRIBUTES manDL_attribute*)? manDL_objProp_frame*)
+  ;
+    
+manDL_dataProperty
+  : (AT type=PROPERTY_DATA DECLARE
+    | type=PROPERTY_DATA COLON) 
+      iri
+      (AT manDL_attribute)* 
+      manDL_dataProp_frame*
+    END?
+  -> ^(VT_TYPE_DECLARE ^(VT_ENTITY_TYPE[$type]) ^(VT_TYPE_DECLARE_ID iri) manDL_dataProp_frame*)
+  ;
+  
+manDL_annotationProperty
+  : ( AT type=PROPERTY_ANNOTATION DECLARE
+    | type=PROPERTY_ANNOTATION COLON)
+     iri
+      manDL_annProp_frame*
+    END?
+  -> ^(VT_TYPE_DECLARE ^(VT_ENTITY_TYPE[$type]) ^(VT_TYPE_DECLARE_ID iri) manDL_annProp_frame*)
+  ;
+  
+manDL_namedIndividual
+  : (AT type=INDIVIDUAL DECLARE
+    | type=INDIVIDUAL COLON)  
+      iri
+      manDL_indiv_frame*
+    END?
+  -> ^(VT_TYPE_DECLARE ^(VT_ENTITY_TYPE[$type]) ^(VT_NAME iri) manDL_indiv_frame*)
+  ;  
+  
+
+  
+ 
+manDL_datatype_frame
+  : manDL_annotations
+  | manDL_equivalentTo  
+  ;  
+  
+manDL_class_frame
+  : manDL_annotations
+  | manDL_disjointUnionOf
+  | manDL_disjointWith
+  | manDL_equivalentTo
+  | manDL_subClassOf
+  | manDL_hasKey
+  ;
+  
+manDL_dataProp_frame
+  : manDL_annotations
+  | manDL_domain  
+  | manDL_range  
+  | manDL_attributes    
+  | manDL_disjointWith
+  | manDL_equivalentTo
+  | manDL_subPropertyOf  
+  ;    
+  
+manDL_objProp_frame
+  : manDL_annotations
+  | manDL_attributes
+  | manDL_disjointWith
+  | manDL_equivalentTo
+  | manDL_inverseOf
+  | manDL_domain  
+  | manDL_range
+  | manDL_subPropertyOf
+  | manDL_subPropChain
+  ;
+  
+  
+manDL_annProp_frame
+  : manDL_annotations
+  | manDL_domain  
+  | manDL_range
+  | manDL_subPropertyOf
+  ;  
+  
+manDL_indiv_frame 
+  : manDL_annotations
+  | manDL_types
+  | manDL_facts
+  | manDL_sameAs
+  | manDL_differentFrom
+  ;
+
+
+manDL_misc
+  : (eq=EQUIVALENT_CLASSES | df=DISJOINT_CLASSES) COLON
+      manDL_annotations? manDL_description (COMMA manDL_description)+
+      -> {eq!=null}? ^(VT_EQV_CLASS manDL_annotations? manDL_description+)
+      -> ^(VT_DIF_CLASS manDL_annotations? manDL_description+)
+      
+  | (eq=EQUIVALENT_PROPERTIES | df=DISJOINT_PROPERTIES) COLON
+      manDL_annotations? manDL_property_expression (COMMA manDL_property_expression)+
+      -> {eq!=null}? ^(VT_EQV_PROP manDL_annotations? manDL_property_expression+)
+      -> ^(VT_DIF_PROP manDL_annotations? manDL_property_expression+)
+      
+  | (eq=SAME_INDIVIDUAL | df=DIFFERENT_INDIVIDUALS) COLON
+      manDL_annotations? manDL_individual (COMMA manDL_individual)+
+      -> {eq!=null}? ^(VT_EQV_INDV manDL_annotations? manDL_individual+)
+      -> ^(VT_DIF_INDV manDL_annotations? manDL_individual+)
+  ;
+   
+manDL_annotations
+  : AT ANNOTATIONS LEFT_PAREN manDL_annotation_list RIGHT_PAREN
+  -> ^(VT_ANNOTATIONS manDL_annotation_list)
+  | ANNOTATIONS COLON manDL_annotation_list
+  ->  ^(VT_ANNOTATIONS manDL_annotation_list)  
+  ;  
+
+manDL_disjointUnionOf
+  : DISJOINT_UNION COLON manDL_disjointUnionOf_list
+    -> ^(VT_DISJOINTUNIONOF manDL_disjointUnionOf_list)
+  ;
+
+manDL_disjointUnionOf_list
+  : manDL_annotated_description (COMMA! manDL_annotated_description)+ 
+  ;
+
+
+manDL_disjointWith
+  : DISJOINT COLON manDL_annotated_description_list
+  -> ^(VT_DISJOINTWITH manDL_annotated_description_list)
+  ;
+
+manDL_equivalentTo
+  : ( AS | EQUIVALENTTO COLON)  manDL_annotated_description_list
+  -> ^(VT_EQUIVALENTTO manDL_annotated_description_list)  
+  ;
+  
+manDL_subClassOf
+  : SUBCLASSOF COLON manDL_annotated_description_list
+  -> ^(VT_SUBCLASSOF manDL_annotated_description_list)
+  ;
+  
+manDL_subPropertyOf
+  : SUBPROPERTYOF COLON manDL_property_list
+  -> ^(VT_SUBPROPERTYOF manDL_property_list)
+  ;  
+  
+manDL_hasKey
+  : HASKEY^ COLON! manDL_annotations manDL_property_expression+
+  ;
+
+manDL_domain
+  : DOMAIN COLON manDL_annotated_description_list
+  -> ^(VT_DOMAIN manDL_annotated_description_list)
+  ;
+  
+manDL_range
+  : RANGE COLON manDL_annotated_description_list  
+  -> ^(VT_RANGE manDL_annotated_description_list)
+  ;
+  
+manDL_inverseOf
+  : INVERSEOF COLON manDL_property_list
+  -> ^(VT_INVERSEOF manDL_property_list)
+  ;  
+
+manDL_subPropChain
+  : SUBPROPERTYCHAIN COLON manDL_annotations? manDL_property_expression ( CHAIN_SEP manDL_property_expression )*
+  -> ^(VT_SUBPROPERTYCHAIN manDL_annotations? manDL_property_expression+)
+  ;
+  
+manDL_attributes
+  : CHARACTERISTICS COLON (manDL_annotations? manDL_attribute) (COMMA  manDL_annotations? manDL_attribute)*
+  -> ^(VT_ATTRIBUTES ^(manDL_attribute manDL_annotations?)+)   
+  ;
+
+manDL_types
+  : TYPES COLON manDL_annotated_description_list
+  -> ^(VT_TYPES manDL_annotated_description_list)
+  ;
+  
+manDL_facts
+  : FACTS COLON manDL_fact_annotated_list
+  -> ^(VT_FACTS manDL_fact_annotated_list)
+  ;
+  
+manDL_sameAs
+  : SAMEAS COLON manDL_individual_list
+  -> ^(VT_SAMEAS manDL_individual_list)
+  ;
+  
+manDL_differentFrom
+  : DIFFERENTFROM COLON manDL_individual_list
+  -> ^(VT_DIFFERENTFROM manDL_individual_list)
+  ; 
+
+manDL_individual_list
+  : manDL_annotated_individual (COMMA! manDL_annotated_individual)*
+  ;
+  
+manDL_annotated_individual
+  : ^(manDL_individual manDL_annotations?) 
+  ; 
+
+manDL_fact_annotated_list
+  : manDL_annotated_fact (COMMA! manDL_annotated_fact)*
+  ;
+
+manDL_annotated_fact
+  : ^(manDL_fact manDL_annotations?)   
+  ; 
+  
+manDL_fact
+  : neg=NOT? manDL_property_expression (manDL_individual | literal)
+  -> {neg==null}? ^(VT_FACT manDL_property_expression manDL_individual? literal?)
+  -> ^(VT_NEG ^(VT_FACT manDL_property_expression manDL_individual? literal?))
+  ;  
+
+manDL_attribute
+  : manDL_att_functional
+  | manDL_att_inverseFunctional
+  | manDL_att_reflexive
+  | manDL_att_irreflexive
+  | manDL_att_symmetric
+  | manDL_att_asymmetric
+  | manDL_att_transitive
+  ;
+  
+  
+
+manDL_att_functional
+  : MDA_FUNCTIONAL
+  ;
+  
+manDL_att_inverseFunctional
+  : MDA_FUNCTIONAL_INV
+  ;
+  
+manDL_att_reflexive
+  : MDA_REFLEXIVE
+  ;
+  
+manDL_att_irreflexive
+  : MDA_REFLEXIVE_INV
+  ;
+  
+manDL_att_symmetric
+  : MDA_SYMMETRIC
+  ;
+  
+manDL_att_asymmetric
+  : MDA_SYMMETRIC_INV
+  ;
+
+manDL_att_transitive
+  : MDA_TRANSITIVE
+  ;
+  
+  
+
+manDL_annotated_description_list
+  : manDL_annotated_description (COMMA! manDL_annotated_description)*
+  ;
+
+
+manDL_annotated_description
+  : manDL_annotations? manDL_description
+  -> ^(VT_DL_DEFINITION manDL_annotations? manDL_description)
+  ;
+  
+
+
+manDL_description 
+  : manDL_conjunction (or=OR manDL_conjunction)*
+  -> {or==null}? manDL_conjunction
+  -> ^(VT_OR manDL_conjunction+)
+  ;
+  
+manDL_conjunction
+  : manDL_primary (and=AND manDL_primary)*
+  -> {and==null}? manDL_primary
+  -> ^(VT_AND manDL_primary+)
+  | manDL_classIRI THAT manDL_restriction (AND manDL_restriction)*
+  -> ^(VT_AND ^(VT_DL_TYPE manDL_classIRI) manDL_restriction+)
+  ;  
+
+
+manDL_primary
+  : manDL_restriction | manDL_atomic  
+  ;
+  
+manDL_atomic
+  : not=NOT? manDL_atomic_core
+  -> {not!=null}? ^(VT_NEG manDL_atomic_core)
+  -> manDL_atomic_core
+  ;
+
+manDL_atomic_core
+  : manDL_classIRI
+  -> ^(VT_DL_TYPE manDL_classIRI)
+  | manDL_datatype
+  -> ^(VT_DL_TYPE manDL_datatype)
+  | LEFT_CURLY! literal_list RIGHT_CURLY!
+  | manDL_data_type_restriction
+  -> manDL_data_type_restriction
+  | LEFT_PAREN! manDL_description RIGHT_PAREN!
+  ;  
+
+manDL_restriction
+  : not=NOT? manDL_quantified_restriction_core
+  -> {not!=null}? ^(VT_NEG manDL_quantified_restriction_core)
+  -> manDL_quantified_restriction_core
+  ;
+ 
+
+manDL_quantified_restriction_core
+  : manDL_property_expression SOME manDL_primary
+  -> ^(VT_EXISTS manDL_property_expression manDL_primary)
+  | manDL_property_expression ONLY manDL_primary
+  -> ^(VT_FORALL manDL_property_expression manDL_primary) 
+  | manDL_property_expression manDL_primary
+  -> ^(VT_AND ^(VT_EXISTS manDL_property_expression manDL_primary) ^(VT_FORALL manDL_property_expression manDL_primary)) 
+  | manDL_property_expression VALUE (manDL_individual | literal)
+  -> ^(VT_VALUE manDL_property_expression manDL_individual? literal?)
+  | manDL_property_expression SELF
+  -> ^(SELF manDL_property_expression)
+  | manDL_property_expression MIN INT manDL_primary?
+  -> ^(VT_COUNT manDL_property_expression ^(VT_MIN INT) manDL_primary?)
+  | manDL_property_expression MAX INT (manDL_primary)?
+  -> ^(VT_COUNT manDL_property_expression ^(VT_MAX INT) manDL_primary?)
+  | manDL_property_expression EXACTLY INT (manDL_primary)?
+  -> ^(VT_AND 
+        ^(VT_COUNT manDL_property_expression ^(VT_MIN INT) manDL_primary?)
+        ^(VT_COUNT manDL_property_expression ^(VT_MAX INT) manDL_primary?)
+      )  
+  ;
+
+  
+manDL_property_expression  
+  : inv=INVERSE? manDL_propertyIRI
+  -> ^(VT_DL_PROP manDL_propertyIRI $inv?)     
+  ;
+  
+
+manDL_data_type_restriction
+  : manDL_datatype LEFT_SQUARE manDL_facets RIGHT_SQUARE
+  -> ^(VT_DL_RESTRICTED_TYPE manDL_datatype manDL_facets)
+  ;
+  
+manDL_facets
+  : manDL_facet manDL_restriction_value more=(COMMA manDL_facet manDL_restriction_value)*
+  -> {more==null}? ^(VT_DL_RESTRICTION manDL_facet manDL_restriction_value)
+  -> ^(VT_AND ^(VT_DL_RESTRICTION manDL_facet manDL_restriction_value)+)
+  ;  
+
+manDL_restriction_value
+  : literal
+  ; 
+
+manDL_facet
+  : LENGTH
+  | LENGTH_MIN
+  | LENGTH_MAX
+  | PATTERN
+  | PATTERN_LANG
+  | GREATER_EQUAL
+  | GREATER
+  | LESS_EQUAL
+  | LESS
+  ;  
+  
+  
+  
+manDL_annotation_list
+  : manDL_annotation (COMMA! manDL_annotation)* 
+  ;  
+
+manDL_annotation
+  : manDL_annotations? manDL_annotationPropertyIRI manDL_annotation_target
+  -> ^(VT_ANNOTATION manDL_annotations? manDL_annotationPropertyIRI manDL_annotation_target )
+  ;
+  
+manDL_annotation_target  
+  : manDL_individual | literal 
+  ;  
+  
+  
+  
+  
+manDL_property_list
+  : manDL_annotatedProperty (COMMA! manDL_annotatedProperty)?
+  ; 
+  
+manDL_annotatedProperty
+  : manDL_annotations? manDL_property_expression
+  ;
+  
+    
+  
+  
+manDL_classIRI 
+  : iri
+  ;
+
+manDL_datatype
+  : manDL_datatypeIRI   
+  ;
+  
+manDL_datatypeIRI 
+  : primitive_type
+  ;
+  
+manDL_objectPropertyIRI 
+  : iri
+  ;
+  
+manDL_dataPropertyIRI 
+  : iri
+  ;
+  
+manDL_annotationPropertyIRI 
+  : iri
+  ;
+  
+manDL_propertyIRI
+  : iri
+  ;  
+  
+manDL_individual 
+  : manDL_individualIRI 
+  | nodeID
+  ;
+  
+manDL_individualIRI 
+  : iri  
+  ;
+
+ 
+iri 
+  : full_iri
+  -> ^(VT_IRI full_iri? )  
+  | ID (PREFIXED_ID)?  
+  -> ^(VT_IRI ID PREFIXED_ID? ) 
+  ;
+
+  
+nodeID
+  : DOUBLE_HYPEN ID
+  ;  
+  
+full_iri
+  : LESS ID GREATER
+  ;
+  
+ 
   
 
 /******************************************************* RULES *******************************************/
@@ -822,7 +1445,7 @@ lhs_label_atom_pattern
 
 /* over_clause obsolete, replaced by filters (see far below in lhs_unary)*/
 lhs_atom_pattern
-  : ID LEFT_PAREN constraints? RIGHT_PAREN pattern_attributes?  from?  
+  : fully_qualified_name LEFT_PAREN constraints? RIGHT_PAREN pattern_attributes?  from?  
   -> ^(VT_PATTERN
           ^(VT_AND pattern_attributes? VT_ENABLED ^(VT_TYPE ID) constraints? )
           from?
@@ -965,8 +1588,10 @@ ordered_constraint[int j]
 
 
 fully_qualified_name
-  : ID ( DOT ID )*  
+  : ID ( DOT ID )* 
     -> ^(VT_NAME ID+)
+    | (ID DOT)* primitive_type
+    -> ^(VT_NAME ID* primitive_type)
   ;
 
 
@@ -1052,7 +1677,7 @@ literal_object
   ;   
   
 new_object
-  : NEW ID LEFT_PAREN literal_object_args? RIGHT_PAREN
+  : NEW data_type LEFT_PAREN literal_object_args? RIGHT_PAREN
     -> ^(VT_NEW_OBJ ^(VT_TYPE ID) ^(VT_ARGS literal_object_args)?)
   ;  
   
@@ -1419,7 +2044,7 @@ indexer
 /************************************************** FILTERS ******************************/
 
 over_filter
-  : id1=WINDOW COLON 
+  : id1=WINDOW DOUBLE_COLON 
     (  id2=TIME paren_chunk
       -> ^(VT_BEHAVIOR $id1 $id2 paren_chunk)
     |  id2=LENGTH LEFT_PAREN INT RIGHT_PAREN
@@ -1648,23 +2273,27 @@ lhs_query
 /*************************************** QUANTIFIERS AND EVALUATORS ***********************************/
 
 inner_quantifier
-  : ALL^
-  | SOME^
-  | VALUE^
-  | COUNT^ (AT! LEFT_SQUARE! 
+  : ONLY -> VT_FORALL
+  | SOME -> VT_EXISTS
+  | VALUE -> VT_VALUE
+  | COUNT (AT LEFT_SQUARE
         (
-          INT
+          val=INT
           | inner_attrs
         )
-       RIGHT_SQUARE!)?
+       RIGHT_SQUARE)
+    -> {val!=null}? ^(VT_COUNT ^(VT_MIN $val) ^(VT_MAX $val))
+    -> ^(VT_COUNT inner_attrs )   
   ;
   
 attr_min
-  : (MIN^ EQUALS! INT)
+  : (MIN EQUALS INT)
+  -> ^(VT_MIN INT)
   ;
 
 attr_max
-  : (MAX^ EQUALS! INT)
+  : (MAX EQUALS INT)
+  -> ^(VT_MAX INT)
   ;
   
 inner_attrs

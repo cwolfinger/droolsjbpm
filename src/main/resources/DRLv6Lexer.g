@@ -1,5 +1,5 @@
 lexer grammar DRLv6Lexer;
-  
+   
 options {
   language = Java; 
 }  
@@ -8,6 +8,9 @@ options {
   package org.drools.lang;
 
 }
+
+
+
 
 WS      :       ( ' '
                 | '\t'
@@ -142,6 +145,39 @@ A_DIRECTION
   | 'equivalence'
   ; 
   
+  
+  
+  
+MDA_FUNCTIONAL
+  :  'functional' | 'Functional'
+  ;
+  
+MDA_FUNCTIONAL_INV
+  : 'inverseFunctional' | 'InverseFunctional'
+  ;    
+  
+MDA_REFLEXIVE
+  : 'reflexive' | 'Reflexive'
+  ;
+  
+MDA_REFLEXIVE_INV
+  : 'irreflexive' | 'Irreflexive'
+  ;    
+  
+MDA_SYMMETRIC
+  : 'symmetric' | 'Symmetric'
+  ;  
+
+MDA_SYMMETRIC_INV
+  : 'asymmetric' | 'Asymmetric'
+  ;  
+  
+MDA_TRANSITIVE
+  :  'transitive' | 'Transitive'
+  ;  
+  
+  
+  
 OA_KIND
   :   'kind'
   ;
@@ -200,14 +236,14 @@ ACCUMULATE_RIGHT
 ACTION
   : 'action'
   ;
-
-ALL
-  : 'all'
-  ;
   
 AND
   : 'and'
   ;
+  
+ANNOTATIONS
+  : 'annotations' | 'Annotations'
+  ;  
 
 AS
   : 'as'
@@ -229,6 +265,14 @@ BRANCH
   : 'branch'
   ; 
   
+CHARACTERISTICS
+  : 'Characteristics'
+  ;  
+  
+CLASS
+  : 'Class' | 'class'
+  ;  
+  
 CLOSURE
   : 'closure'
   ;  
@@ -248,6 +292,10 @@ CONTAINS
 COUNT
   : 'count'
   ;
+  
+DATATYPE
+  : 'Datatype'
+  ;  
 
 DECLARE
   : 'declare'
@@ -257,10 +305,29 @@ DEFEATS
   : 'defeats'
   ;
 
+DIFFERENTFROM
+  : 'differentFrom' | 'DifferentFrom'
+  ;
+
+DIFFERENT_INDIVIDUALS
+  : 'differentIndividuals' | 'DifferentIndividuals'
+  ;
 
 DISJOINT
-  :  'disjoint'
+  : 'disjointWith' | 'DisjointWith'
   ;
+
+DISJOINT_CLASSES
+  : 'disjointClasses' | 'DisjointClasses'
+  ;
+    
+DISJOINT_PROPERTIES
+  : 'disjointProperties' | 'DisjointProperties'
+  ;
+  
+DISJOINT_UNION
+  : 'disjointUnionOf' | 'DisjointUnionOf'
+  ;  
 
 DISTINCT
   : 'distinct'
@@ -271,13 +338,17 @@ DO
   : 'do'
   ;
 
+DOMAIN
+  : 'domain' | 'Domain'
+  ;
+
 END
   : 'end'
   ;
 
   
 ENTITY
-  : 'entity'
+  : 'Entity' | 'entity'
   ; 
   
 ENTRYPOINT
@@ -288,8 +359,24 @@ EQUIV
   : 'equiv'
   ; 
 
+EQUIVALENT_CLASSES
+  : 'equivalentClasses' | 'EquivalentClasses'
+  ;
+    
+EQUIVALENT_PROPERTIES
+  : 'equivalentProperties' | 'EquivalentProperties'
+  ;
+    
+EQUIVALENTTO
+  : 'equivalentTo' | 'EquivalentTo'
+  ;  
+
 EVENT
-  : 'event'
+  : 'Event' | 'event'
+  ;
+
+EXACTLY
+  : 'exactly'
   ;
 
 EXISTS
@@ -299,6 +386,10 @@ EXISTS
 EXTEND  
   : 'extends'
   ;
+ 
+FACTS
+  : 'facts' | 'Facts'
+  ; 
  
 FALLING
   : 'falling'
@@ -319,27 +410,35 @@ FROM
 FUNCTION
   :   'function'  
   ;
-  
+    
 GLOBAL
   : 'global'
   ; 
 
+HASKEY
+  : 'HasKey'
+  ;
+  
 IMPLIES
   : 'implies'
   ;
 
 IMPORT  
-  : 'import'
+  : 'import' | 'Import'
   ;
 
 IN
   : 'in'
   ;
+  
+INDIVIDUAL  
+  : 'individual' | 'Individual'
+  ;
 
 INIT
   : 'init'
   ;
-
+ 
 INSERT
   : 'insert'
   ;
@@ -351,6 +450,10 @@ INSERT_LOG
 INVERSE
   : 'inverse'
   ;   
+
+INVERSEOF
+  : 'inverseOf' | 'InverseOf'
+  ;
     
 JAVA
   :  'java'
@@ -363,7 +466,15 @@ KEY
 LENGTH
   : 'length'
   ;
-
+  
+LENGTH_MIN
+  : 'minLength'
+  ;
+ 
+LENGTH_MAX
+  : 'maxLength'
+  ;
+  
 LIMIT
   : 'limit'
   ;
@@ -406,13 +517,20 @@ MOL
   : 'mol'
   ; 
 
-
 NAMESPACE
   : 'namespace'
   ;
 
 NULL  
   : 'null'
+  ;
+
+ONLY
+  : 'only' | 'all'
+  ;
+
+ONTOLOGY
+  : 'ontology' | 'Ontology'
   ;
 
 OR
@@ -432,12 +550,36 @@ OVER
   ;
 
 PACKAGE 
-  :   'package'
+  : 'package'
+  ;
+
+PATTERN
+  : 'pattern'
+  ;
+  
+PATTERN_LANG
+  : 'langPattern'
+  ;  
+
+PREFIX 
+  : 'Prefix'
   ;
 
 PROPERTY
   : 'property'
+  ;
+
+PROPERTY_OBJECT
+  : 'ObjectProperty'
   ;  
+
+PROPERTY_DATA
+  : 'DataProperty'
+  ;
+
+PROPERTY_ANNOTATION
+  : 'AnnotationProperty'
+  ;
 
 ONCHANGE
   : 'onChange'
@@ -446,6 +588,10 @@ ONCHANGE
 QUERY
   : 'query'
   ;
+  
+RANGE
+  : 'range' | 'Range'
+  ;  
   
 RESULT
   : 'result'
@@ -475,6 +621,18 @@ RULE
   : 'rule'
   ;
   
+SAMEAS
+  : 'sameAs' | 'SameAs'
+  ;  
+  
+SAME_INDIVIDUAL
+  : 'sameIndividual' | 'SameIndividual'
+  ;  
+
+SELF
+  : 'Self'
+  ;
+  
 SEQ
   : 'seq'
   ;  
@@ -483,20 +641,32 @@ SOME
   : 'some'
   ; 
 
+SUBCLASSOF
+  : 'SubClassOf'
+  ;
+  
+SUBPROPERTYCHAIN
+  : 'SubPropertyChain'
+  ;  
+  
+SUBPROPERTYOF
+  : 'SubPropertyOf'
+  ;  
+
 START
   : 'start'
   ; 
   
 SUM
   : 'sum'
-  ;
-  
-SYMMETRIC
-  : 'symmetric'
-  ;  
+  ;    
   
 TEMPLATE
   : 'template'
+  ;
+
+THAT
+  : 'that'
   ;
 
 THEN
@@ -511,12 +681,32 @@ TIME
   : 'time'
   ;   
   
-TRANSITIVE
-  :  'transitive'
-  ;  
-  
 TYPE
   : 'type'
+  ;  
+
+TYPES
+  : 'types' | 'Types'
+  ;
+  
+TYPE_STRING
+  : 'string' | 'String'
+  ;
+  
+TYPE_INTEGER
+  : 'integer' | 'Integer'
+  ;
+  
+TYPE_FLOAT
+  : 'float' | 'Float'
+  ;
+  
+TYPE_DOUBLE
+  : 'double' | 'Double'
+  ;
+  
+TYPE_BOOLEAN
+  : 'boolean' | 'Boolean'
   ;  
 
 UNIQUE
@@ -559,6 +749,10 @@ ARROW
   : '->'
   ;
 
+CHAIN_SEP
+  : 'o'
+  ;
+
 COLON
   : ':'
   ;
@@ -589,6 +783,10 @@ DOUBLE_ANG
 DOUBLE_CAP
   : '^^'
   ; 
+
+DOUBLE_COLON
+  : '::'
+  ;
 
 DOUBLE_HYPEN 
   : '--'
@@ -751,6 +949,11 @@ ID
   | '`' IdentifierStart IdentifierPart* '`'
   { state.text = $text.substring(1, $text.length() - 1);  }
   ;
+  
+PREFIXED_ID 
+  : ':' IdentifierStart IdentifierPart*  
+  { state.text = $text.substring(1, $text.length() - 1);  }
+  ;  
   
   
 MISC  :
