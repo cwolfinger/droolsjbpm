@@ -518,7 +518,7 @@ MOL
   ; 
 
 NAMESPACE
-  : 'namespace'
+  : 'namespace' | 'Namespace'
   ;
 
 NULL  
@@ -774,8 +774,13 @@ DOT_STAR
 DOUBLE_AMPER
   : '&&'
   ;
+  
+DOUBLE_PLUS
+  : '++'
+  ;  
 
-   
+
+  
 DOUBLE_ANG
   : '<>'  
   ;
@@ -806,6 +811,10 @@ DOUBLE_LESS
   
 DOUBLE_PIPE
   : '||'
+  ;
+    
+DOUBLE_SLASH
+  : '//'
   ;
     
 DOUBLE_SQUARE_LEFT
@@ -935,7 +944,7 @@ SH_STYLE_SINGLE_LINE_COMMENT
 */       
         
 C_STYLE_SINGLE_LINE_COMMENT 
-  : '//' (~('\r'|'\n'))* EOL?
+  : '/*' (~('\r'|'\n'))* EOL?
                 { $channel=HIDDEN; }
     ;
 
@@ -952,12 +961,12 @@ ID
   
 PREFIXED_ID 
   : ':' IdentifierStart IdentifierPart*  
-  { state.text = $text.substring(1, $text.length() - 1);  }
+  { state.text = $text.substring(1, $text.length() );  }
   ;  
   
 BLANK_ID
   : '_' IdentifierStart IdentifierPart*  
-  { state.text = $text.substring(1, $text.length() - 1);  }
+  { state.text = $text.substring(1, $text.length() );  }
   ;    
   
 MISC  :
