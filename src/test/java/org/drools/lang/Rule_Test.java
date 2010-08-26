@@ -629,7 +629,7 @@ public class Rule_Test {
 		String rule = "rule";
 		String[] testDRL = new String[] {
 				"rule test when " + "\n" +
-				" Person( name == \"john\" implies age < 18)" + "\n" +
+				" Person( name == \"john\" -> age < 18)" + "\n" +
 				"then end"
 		};
 		check(rule,testDRL);	
@@ -641,7 +641,7 @@ public class Rule_Test {
 		String rule = "rule";
 		String[] testDRL = new String[] {
 				"rule test when " + "\n" +
-				" Person( name == \"john\" implies age < 18 or age > 25)" + "\n" +
+				" Person( name == \"john\" -> age < 18 || age > 25)" + "\n" +
 				"then end"
 		};
 		check(rule,testDRL);											
@@ -654,11 +654,11 @@ public class Rule_Test {
 		String rule = "rule";
 		String[] testDRL = new String[] {
 				"rule test when " + "\n" +
-				" Person( age < 18 xor age > 25)" + "\n" +
+				" Person( age < 18 ++ age > 25)" + "\n" +
 				"then end",
 				
 				"rule test when " + "\n" +
-				" Person( age < 18 equiv age > 25)" + "\n" +
+				" Person( age < 18 :: age > 25)" + "\n" +
 				"then end",			
 		};
 		check(rule,testDRL);											
@@ -671,7 +671,7 @@ public class Rule_Test {
 		String rule = "rule";
 		String[] testDRL = new String[] {
 				"rule test when " + "\n" +
-				" Person( name == \"john\" and @crisp age < 18 and @kind(\"xx\") age > @id(\"..\") 25)" + "\n" +
+				" Person( name == \"john\" && @crisp age < 18 && @kind(\"xx\") age > @id(\"..\") 25)" + "\n" +
 				"then end"
 		};
 		check(rule,testDRL);										
@@ -684,7 +684,7 @@ public class Rule_Test {
 		String rule = "rule";
 		String[] testDRL = new String[] {
 				"rule test when " + "\n" +
-				" Person( neg very (name == \"john\" implies age < 18) )" + "\n" +
+				" Person( neg very (name == \"john\" -> age < 18) )" + "\n" +
 				"then end",							
 		};
 		check(rule,testDRL);									
@@ -921,7 +921,7 @@ public class Rule_Test {
 				"then end",
 							
 				"rule test when " + "\n" +
-				" Person( ($a : | age * 2 + 4 * weight |  == 18) implies (age < 25 and age > 4)  )" + "\n" +
+				" Person( ($a : | age * 2 + 4 * weight |  == 18) -> (age < 25 && age > 4)  )" + "\n" +
 				"then end",								
 		};
 		check(rule,testDRL);										

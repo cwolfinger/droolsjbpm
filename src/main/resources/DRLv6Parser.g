@@ -5,6 +5,7 @@ options {
   output = AST;
   tokenVocab = DRLv6Lexer;  
   ASTLabelType=CommonTree;
+  backtrack=true;
 }
       
      
@@ -1195,7 +1196,6 @@ single_operator_attribute
   | oa_params
   | oa_degree
   | oa_merge
-  //| oa_filter
   | oa_missing
   | oa_defeat
   | oa_default
@@ -1226,12 +1226,6 @@ oa_crisp
 oa_merge
   : OA_MERGE^ LEFT_PAREN! STRING RIGHT_PAREN!
   ;   
-
-/*    
-oa_filter
-  : OA_FILTER^ LEFT_PAREN! STRING RIGHT_PAREN!
-  ;
-*/
 
 oa_missing
   : OA_MISSING^ LEFT_PAREN! STRING RIGHT_PAREN!
@@ -1737,7 +1731,7 @@ expr_atom
 /************************************* SLOTTED CONSTRAINTS LOGIC HIERARCHY **********************************/
 
 constr_implies
-  : left=constr_or (imp=imply_connective operator_attributes? right=constr_or)? 
+  : left=constr_or (imp=imply_symbol operator_attributes? right=constr_or)? 
     -> {imp != null}? ^($imp operator_attributes? $left $right)    
     -> ^($left)
   ;
@@ -1753,7 +1747,7 @@ constr_or
   ;
   
 constr_or_sequitur[Tree leftChild]
-  : or=or_connective^ (atts=operator_attributes!)? rightChild=constr_diff!
+  : or=or_symbol^ (atts=operator_attributes!)? rightChild=constr_diff!
              {
                Tree t = $or.tree;               
                if (atts != null)
@@ -1768,7 +1762,7 @@ constr_or_sequitur[Tree leftChild]
 
 
 constr_diff
-  : constr_and (( xor_connective^ | eq_connective^ ) operator_attributes? constr_and)?
+  : constr_and (( xor_symbol^ | eq_symbol^ ) operator_attributes? constr_and)?
   ;
     
   
@@ -1786,7 +1780,7 @@ constr_and
   ;
   
 constr_and_sequitur[Tree leftChild]
-  : and=and_connective^ (atts=operator_attributes!)? rightChild=constr_unary!
+  : and=and_symbol^ (atts=operator_attributes!)? rightChild=constr_unary!
              {
                Tree t = $and.tree;               
                if (atts != null)
@@ -1826,23 +1820,32 @@ restr_implies
   ;
   
 restr_or
+scope{
+  Tree seqTree;
+}
 @init{
   ParserRuleReturnScope seq = null;
 }
   : ld=restr_diff {seq=ld;}
-    ( lios=restr_or_sequitur[(Tree) seq.getTree()] {seq=lios;} )*
+    ( 
+      lios=restr_or_sequitur 
+        {
+          seq=lios;
+          $restr_or::seqTree = (Tree) seq.getTree();
+        } 
+    )*
   -> {lios==null}? ^($ld)
   -> ^($lios)
   ;
   
-restr_or_sequitur[Tree leftChild]
+restr_or_sequitur
   : or=or_symbol^ (atts=operator_attributes!)? rightChild=restr_diff!
              {
                Tree t = $or.tree;               
                if (atts != null)
                  t.addChild($atts.tree);
                                
-               t.addChild(leftChild);
+               t.addChild($restr_or::seqTree);
                t.addChild($rightChild.tree);           
            } 
   ;
@@ -1859,23 +1862,32 @@ restr_diff
   
       
 restr_and
+scope{
+  Tree seqTree;
+}
 @init{
   ParserRuleReturnScope seq = null;
 }
   : ld=restr_unary {seq=ld;}
-    ( lias=restr_and_sequitur[(Tree) seq.getTree()] {seq=lias;} )*
+    ( 
+      lias=restr_and_sequitur 
+        {
+          seq=lias;
+          $restr_and::seqTree = (Tree) seq.getTree();
+        } 
+    )*
   -> {lias==null}? ^($ld)
   -> ^($lias)
   ; 
   
-restr_and_sequitur[Tree leftChild]
+restr_and_sequitur
   : and=and_symbol^ (atts=operator_attributes!)? rightChild=restr_unary!
              {
                Tree t = $and.tree;               
                if (atts != null)
                  t.addChild($atts.tree);
                                
-               t.addChild(leftChild);
+               t.addChild($restr_and::seqTree);
                t.addChild($rightChild.tree);           
            } 
   ;
