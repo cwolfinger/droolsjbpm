@@ -760,9 +760,6 @@ COLON
 COMMA : ','
   ;
 
-DOLLAR
-  : '$'
-  ;
       
 DOT : '.'
   ; 

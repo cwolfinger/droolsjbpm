@@ -6,6 +6,7 @@ options {
   tokenVocab = DRLv6Lexer;  
   ASTLabelType=CommonTree;
   backtrack=true;
+  memoize=true;
 }
       
      
@@ -1534,17 +1535,19 @@ trail_node
 
 
 constraints
-  : positional_constraints
-    -> ^(VT_AND positional_constraints)
-  | slotted_constraints
+  : slotted_constraints
     -> ^(VT_AND slotted_constraints)
+  | positional_constraints
+    -> ^(VT_AND positional_constraints) 
   ;
   
 positional_constraints
-@init{
-  int j = 0;
+scope {
+  int j;
 }
-  : positional_constraint[j++] (COMMA! positional_constraint[j++])* (COMMA! slotted_constraint)*
+  : positional_constraint {$positional_constraints::j++;} 
+  (COMMA! positional_constraint {$positional_constraints::j++;})* 
+  (COMMA! slotted_constraint)*
   ;
     
 slotted_constraints
@@ -1552,9 +1555,9 @@ slotted_constraints
   ;   
   
   
-positional_constraint[int j]
+positional_constraint
 @init{
-  String idx = ""+j;
+  String idx = ""+$positional_constraints::j;
 }
   : literal  
     -> ^(VT_POSITIONAL_CONST VT_POSITIONAL_INDEX[$start,idx] ^(EQUAL ^(VT_EXPR literal)))   
@@ -1794,17 +1797,40 @@ constr_and_sequitur[Tree leftChild]
   
 
 constr_unary
-  : unary_operator^ operator_attributes? constr_unary
-  | constr_atom
-  | LEFT_PAREN! constr_implies RIGHT_PAREN! 
+  : {System.out.println(">>>>>>U1 " + input.LT(-1)  + input.LT(0) + " " + input.LT(1) + " " + input.LT(2) );} 
+    unary_operator^ operator_attributes? constr_unary
+  | {System.out.println(">>>>>>U2 " + input.LT(-1) + input.LT(0) + " " + input.LT(1) + " " + input.LT(2) );}
+    constr_atom
+  | {System.out.println(">>>>>>U3 " + input.LT(-1)  + input.LT(0) + " " + input.LT(1) + " " + input.LT(2) );}
+    LEFT_PAREN! constr_implies RIGHT_PAREN! 
   ;
   
+/*  
 constr_atom
   : left=left_expression rest=restriction_root?
     -> {rest==null}? ^(left_expression)
     -> ^(VT_AND_IMPLICIT left_expression restriction_root)
   ;   
-  
+*/
+ 
+constr_atom
+  :  {System.out.println(">>>>>>U11 " + input.LT(-1)  + input.LT(0) + " " + input.LT(1) + " " + input.LT(2) );}
+      label expr_root restr=restriction_root? 
+      -> {restr==null}? ^(VT_BINDING label ^(VT_EXPR expr_root))
+      -> ^(VT_AND_IMPLICIT
+            ^(VT_BINDING label ^(VT_EXPR expr_root))
+            $restr 
+         )   
+    
+    |  {System.out.println(">>>>>>U12 " + input.LT(-1)  + input.LT(0) + " " + input.LT(1) + " " + input.LT(2) );}
+      expr_root restr=restriction_root? 
+      -> {restr==null}? ^(VT_EXPR expr_root restriction_root?)
+      -> ^(VT_AND_IMPLICIT
+            ^(VT_EXPR expr_root restriction_root?)
+            $restr 
+         )
+         
+  ;    
   
 
   
@@ -1907,19 +1933,19 @@ restr_atom
     -> ^(inner_quantifier ^(evaluator operator_attributes? right_expression))
   ;
 
-  
+   
 left_expression
-  : label
+  : (VAR COLON) => label
     ( 
-      accessor_path 
-      -> ^(VT_BINDING label accessor_path)
-      | PIPE expr_root PIPE
+      //accessor_path 
+      //-> ^(VT_BINDING label accessor_path)
+      expr_root 
       -> ^(VT_BINDING label ^(VT_EXPR expr_root))
     )
-  | PIPE expr_root PIPE
+  | expr_root 
     -> ^(VT_EXPR expr_root)
-  | accessor_path    
-    -> accessor_path
+  //| accessor_path    
+  //  -> accessor_path
   ;
 
 right_expression

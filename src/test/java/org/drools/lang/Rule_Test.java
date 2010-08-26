@@ -568,7 +568,7 @@ public class Rule_Test {
 				"then end",
 				
 				"rule \"inNest2\" when " + "\n" +
-				" Person( $p : | pets[ #Dog(color == \"red\") ].age * $v1 | == $v2 - 3 ) " +
+				" Person( $p : (pets[ #Dog(color == \"red\") ].age * $v1)  == $v2 - 3 ) " +
 				"then end",
 		};
 		check(rule,testDRL);										
@@ -677,6 +677,25 @@ public class Rule_Test {
 		check(rule,testDRL);										
 	}
 	
+	
+	@Test	
+	public void test_constr_atom() {
+		String rule = "constr_atom";
+		String[] testDRL = new String[] {
+				"$a : age" + "\n" ,
+				
+				"$a : age > 18" + "\n" ,
+				
+				"$a : (2*age) > 18" + "\n" ,
+				
+				" age > 18 " + "\n" ,
+				
+				" 2*age > height*weight" + "\n" ,
+				
+				
+		};
+		check(rule,testDRL);										
+	}
 	
 	
 	@Test	
@@ -901,11 +920,11 @@ public class Rule_Test {
 		String[] testDRL = new String[] {				
 				" $a : age " + "\n",
 				
-				"| (age + 2) * $x + 4 * weight.subField |", 
+				" (age + 2) * $x + 4 * weight.subField ", 
 				
-				"$x : | $z + 4 * weight |",
+				"$x : $z + 4 * weight ",
 				
-				"$a : | (age * 2 + 4 * weight + height) |",								
+				"$a : (age * 2 + 4 * weight + height) ",								
 		};
 		check(rule,testDRL);								
 	}
@@ -917,11 +936,11 @@ public class Rule_Test {
 		String rule = "rule";
 		String[] testDRL = new String[] {
 				"rule test when " + "\n" +
-				" Person( $a : age )" + "\n" +
+				" Person( $a: age )" + "\n" +
 				"then end",
 							
 				"rule test when " + "\n" +
-				" Person( ($a : | age * 2 + 4 * weight |  == 18) -> (age < 25 && age > 4)  )" + "\n" +
+				" Person( ($a : ( age * 2 + 4 * weight ) == 18) -> (age < 25 && age > 4)  )" + "\n" +
 				"then end",								
 		};
 		check(rule,testDRL);										
@@ -991,7 +1010,7 @@ public class Rule_Test {
 				" then end ",
 				
 				" rule test when " + "\n" +
-				" Person( |2*age()| == 3*height*method(weight + 2 *$k*sqrt(x)) )" + "\n" +
+				" Person( 2*age() == 3*height*method(weight + 2 *$k*sqrt(x)) )" + "\n" +
 				" then end ",								
 		};
 		check(rule,testDRL);										
@@ -1086,9 +1105,9 @@ public class Rule_Test {
 				" Person( $a : age ) " + "\n" +
 				"then end",	
 				
-				"rule test when" + "\n" +
-				" Person( $a : | age + 4 | ) " + "\n" +
-				"then end",
+//				"rule test when" + "\n" +
+//				" Person( $a : ( age + 4 ) ) " + "\n" +
+//				"then end",
 		};
 		check(rule,testDRL);
 	}
@@ -1313,7 +1332,7 @@ public class Rule_Test {
 	public void test_dle_free_expr() {
 		String rule = "lhs_label_atom_pattern";
 		String[] testDRL = {			
-				"Person( |pets[\"rover\"].age| ==  ($otherAge.someMethod( $x ) + 3 ) / 2 )"
+				"Person( pets[\"rover\"].age ==  ($otherAge.someMethod( $x ) + 3 ) / 2 )"
 		};
 		check(rule,testDRL);										
 	}
@@ -1416,7 +1435,7 @@ public class Rule_Test {
 				
 				"acc ( " + "\n" +
 				"  $n : Number() from [1 .. 5], " + "\n" +
-				"  collectList( | $n + 1 | ) " + "\n" +
+				"  collectList( $n + 1  ) " + "\n" +
 				") ",
 				
 				"acc ( " + "\n" +
@@ -1437,13 +1456,13 @@ public class Rule_Test {
 				
 				"acc ( " + "\n" +
 				"  $n : Number() from [2,4,8,16,32], " + "\n" +
-				"  collectList( | $n | < 10  ) " + "\n" +
+				"  collectList( $n < 10  ) " + "\n" +
 				") ",
 				
 				"acc ( " + "\n" +
-				"  $n : Number( | intValue / 2 | == 0 ) " + "\n" +
+				"  $n : Number( intValue / 2 == 0 ) " + "\n" +
 				"     from acc( $n2 : Number() from [0 .. 10], " + "\n" +
-				"               collectList( |$n2*$n2| )" + "\n" +
+				"               collectList( $n2*$n2 )" + "\n" +
 				"             ), " + "\n" +
 				"  collectList( $n ) " + "\n" +
 				") ",
