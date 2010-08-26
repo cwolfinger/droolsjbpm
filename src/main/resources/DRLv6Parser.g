@@ -4,6 +4,7 @@ options {
   language = Java;
   output = AST;
   tokenVocab = DRLv6Lexer;  
+  ASTLabelType=CommonTree;
 }
       
      
@@ -40,7 +41,7 @@ tokens {
   VT_DL_DEFINITION;
   VT_DL_TYPE;
   VT_FIELD;
-  
+   
   VT_ENTITY_TYPE;
   
   VT_RULE_ID; 
@@ -450,12 +451,9 @@ dl_prop
 decl_fields
   : decl_field more=decl_field*
   -> ^(VT_EQUIVALENTTO ^(VT_DL_DEFINITION ^(VT_AND decl_field+)))
-  //-> {more==null?} ^(VT_EQUIVALENTTO ^(VT_DL_DEFINITION decl_field ))
-  //-> ^(VT_EQUIVALENTTO ^(VT_DL_DEFINITION ^(VT_AND decl_field* )))
   ;
 
-                          //^("min" "1" decl_field)
-                          //^("max" "1" decl_field)
+                          
 decl_field
   : ID      
     COLON 
@@ -505,7 +503,7 @@ manDL_ontology
   ;   
   
 manDL_prefix
-  : PREFIX COLON ID COLON full_iri
+  : (PREFIX | NAMESPACE) COLON ID COLON? full_iri
   -> ^(VT_PREFIX ID full_iri)
   ;  
   
@@ -1013,11 +1011,27 @@ nodeID
   ;  
   
 full_iri
-  : LESS ID GREATER
+  : LESS!
+      any_iri 
+      //scheme COLON ihier-part iquery ifragment
+      // ?iquery, #ifragment 
+    GREATER!
   ;
   
- 
   
+any_iri
+@init{
+  String text = "";
+}
+  : cc=any_iri_content {text = $cc.text;}
+  -> ^(VT_PAREN_CHUNK[$cc.start,text])  
+  ;  
+  
+any_iri_content
+  : (~ (GREATER | SLASH) | SLASH)*
+  ;  
+ 
+    
 
 /******************************************************* RULES *******************************************/
 
@@ -1322,32 +1336,31 @@ lhs_implies
     -> ^($left)
   ;
   
+  
 lhs_or
 @init{
-  Token orToken = null;
   ParserRuleReturnScope seq = null;
 }
-  : ld=lhs_diff 
-            {seq=ld;}
-        ( lios=lhs_or_sequitur[seq.getTree()]
-      {seq=lios;}
-  )*
-          -> {lios==null}? ^($ld)
-          -> ^($lios)
+  : ld=lhs_diff {seq=ld;}
+    ( lios=lhs_or_sequitur[(Tree) seq.getTree()] {seq=lios;} )*
+  -> {lios==null}? ^($ld)
+  -> ^($lios)
   ;
   
-lhs_or_sequitur[Object leftChild]
+lhs_or_sequitur[Tree leftChild]
   : or=or_connective^ (atts=operator_attributes!)? rightChild=lhs_diff!
              {
-               Tree t = ((Tree) or.getTree());               
+               Tree t = $or.tree;               
                if (atts != null)
-                 t.addChild((Tree) atts.getTree());
-              
-             t.addChild((Tree) leftChild);
-       t.addChild((Tree) rightChild.getTree());           
+                 t.addChild($atts.tree);
+                               
+               t.addChild(leftChild);
+               t.addChild($rightChild.tree);           
            } 
   ;
-  
+
+
+ 
   
 
 
@@ -1361,28 +1374,24 @@ lhs_diff
       
 lhs_and
 @init{
-  Token orToken = null;
   ParserRuleReturnScope seq = null;
 }
-  : ld=lhs_unary
-            {seq=ld;}
-        ( lias=lhs_and_sequitur[seq.getTree()]
-      {seq=lias;}
-  )*
-          -> {lias==null}? ^($ld)
-          -> ^($lias)
+  : ld=lhs_unary {seq=ld;}
+    ( lias=lhs_and_sequitur[(Tree) seq.getTree()] {seq=lias;} )*
+  -> {lias==null}? ^($ld)
+  -> ^($lias)
   ;
   
-lhs_and_sequitur[Object leftChild]
+lhs_and_sequitur[Tree leftChild]
   : and=and_connective^ (atts=operator_attributes!)? rightChild=lhs_unary!
-             {
-               Tree t = ((Tree) and.getTree());                
+            {
+               Tree t = $and.tree;               
                if (atts != null)
-                 t.addChild((Tree) atts.getTree());
-              
-             t.addChild((Tree) leftChild);
-       t.addChild((Tree) rightChild.getTree());           
-           } 
+                 t.addChild($atts.tree);
+                               
+               t.addChild(leftChild);
+               t.addChild($rightChild.tree);           
+           }             
   ;
   
 lhs_unary
@@ -1447,7 +1456,7 @@ lhs_label_atom_pattern
 lhs_atom_pattern
   : fully_qualified_name LEFT_PAREN constraints? RIGHT_PAREN pattern_attributes?  from?  
   -> ^(VT_PATTERN
-          ^(VT_AND pattern_attributes? VT_ENABLED ^(VT_TYPE ID) constraints? )
+          ^(VT_AND pattern_attributes? VT_ENABLED ^(VT_TYPE fully_qualified_name) constraints? )
           from?
       )       
   ;
@@ -1565,24 +1574,7 @@ positional_constraint[int j]
 slotted_constraint
   :   constr_implies  
   ; 
-  
-/*  
-ordered_constraints
-  : ordered_constraint[j++] (COMMA! ordered_constraint[j++])*
-  ;  
-  
-ordered_constraint[int j]
-@init{
-  String idx = ""+j;
-}
-: literal  
-    -> ^(VT_POSITIONAL_CONST VT_POSITIONAL_INDEX[$start,idx] literal)   
-  | var_literal 
-    -> ^(VT_POSITIONAL_VAR VT_POSITIONAL_INDEX[$start,idx] var_literal)
-  | QUESTION_MARK restriction_root?
-    -> ^(VT_POSITIONAL_SKIP VT_POSITIONAL_INDEX[$start,idx])   
-  ;
-*/
+
 
 /********************************************* ATOMIC DATA DEFINITIONS ************************************************/
 
@@ -1661,7 +1653,8 @@ label
     ;
     
 msr_unit
-    :   (GATE! ID)+
+    :   (GATE! iri)+    
+    |   (DOUBLE_CAP! iri)+
     ;
        
     
@@ -1678,7 +1671,7 @@ literal_object
   
 new_object
   : NEW data_type LEFT_PAREN literal_object_args? RIGHT_PAREN
-    -> ^(VT_NEW_OBJ ^(VT_TYPE ID) ^(VT_ARGS literal_object_args)?)
+    -> ^(VT_NEW_OBJ ^(VT_TYPE data_type) ^(VT_ARGS literal_object_args)?)
   ;  
   
 literal_object_args
@@ -1686,9 +1679,10 @@ literal_object_args
   ;
   
   
-//TODO : time format strings
 time_string
-  : STRING
+  : STRING m=msr_unit?
+    -> {m==null}? STRING
+    -> ^(VT_MSR STRING $m)
   ;  
 
 
@@ -1750,27 +1744,23 @@ constr_implies
   
 constr_or
 @init{
-  Token orToken = null;
   ParserRuleReturnScope seq = null;
 }
-  : ld=constr_diff 
-            {seq=ld;}
-        ( lios=constr_or_sequitur[seq.getTree()]
-      {seq=lios;}
-  )*
-          -> {lios==null}? ^($ld)
-          -> ^($lios)
+  : ld=constr_diff {seq=ld;}
+    ( lios=constr_or_sequitur[(Tree) seq.getTree()] {seq=lios;} )*
+   -> {lios==null}? ^($ld)
+   -> ^($lios)
   ;
   
-constr_or_sequitur[Object leftChild]
+constr_or_sequitur[Tree leftChild]
   : or=or_connective^ (atts=operator_attributes!)? rightChild=constr_diff!
              {
-               Tree t = ((Tree) or.getTree());               
+               Tree t = $or.tree;               
                if (atts != null)
-                 t.addChild((Tree) atts.getTree());
-              
-             t.addChild((Tree) leftChild);
-       t.addChild((Tree) rightChild.getTree());           
+                 t.addChild($atts.tree);
+                               
+               t.addChild(leftChild);
+               t.addChild($rightChild.tree);           
            } 
   ;
   
@@ -1787,27 +1777,23 @@ constr_diff
       
 constr_and
 @init{
-  Token orToken = null;
   ParserRuleReturnScope seq = null;
 }
-  : ld=constr_unary
-            {seq=ld;}
-        ( lias=constr_and_sequitur[seq.getTree()]
-      {seq=lias;}
-  )*
-          -> {lias==null}? ^($ld)
-          -> ^($lias)
+  : ld=constr_unary {seq=ld;}
+    ( lias=constr_and_sequitur[(Tree) seq.getTree()] {seq=lias;} )*
+   -> {lias==null}? ^($ld)
+   -> ^($lias)
   ;
   
-constr_and_sequitur[Object leftChild]
+constr_and_sequitur[Tree leftChild]
   : and=and_connective^ (atts=operator_attributes!)? rightChild=constr_unary!
              {
-               Tree t = ((Tree) and.getTree());                
+               Tree t = $and.tree;               
                if (atts != null)
-                 t.addChild((Tree) atts.getTree());
-              
-             t.addChild((Tree) leftChild);
-       t.addChild((Tree) rightChild.getTree());           
+                 t.addChild($atts.tree);
+                               
+               t.addChild(leftChild);
+               t.addChild($rightChild.tree);           
            } 
   ;
   
@@ -1823,19 +1809,7 @@ constr_atom
   : left=left_expression rest=restriction_root?
     -> {rest==null}? ^(left_expression)
     -> ^(VT_AND_IMPLICIT left_expression restriction_root)
-  ;
-    /*
-    { 
-        if (rest != null) {
-              Tree t = ((Tree) rest.getTree());     
-              Tree temp = t.getChild(0);                                        
-              t.setChild(0,(Tree) left.getTree());
-              t.addChild(temp);
-        }  
-    }
-    -> {rest==null}? ^($left)
-    -> ^($rest)
-    */
+  ;   
   
   
 
@@ -1853,27 +1827,23 @@ restr_implies
   
 restr_or
 @init{
-  Token orToken = null;
   ParserRuleReturnScope seq = null;
 }
-  : ld=restr_diff 
-            {seq=ld;}
-        ( lios=restr_or_sequitur[seq.getTree()]
-      {seq=lios;}
-  )*
-          -> {lios==null}? ^($ld)
-          -> ^($lios)
+  : ld=restr_diff {seq=ld;}
+    ( lios=restr_or_sequitur[(Tree) seq.getTree()] {seq=lios;} )*
+  -> {lios==null}? ^($ld)
+  -> ^($lios)
   ;
   
-restr_or_sequitur[Object leftChild]
+restr_or_sequitur[Tree leftChild]
   : or=or_symbol^ (atts=operator_attributes!)? rightChild=restr_diff!
              {
-               Tree t = ((Tree) or.getTree());               
+               Tree t = $or.tree;               
                if (atts != null)
-                 t.addChild((Tree) atts.getTree());
-              
-             t.addChild((Tree) leftChild);
-       t.addChild((Tree) rightChild.getTree());           
+                 t.addChild($atts.tree);
+                               
+               t.addChild(leftChild);
+               t.addChild($rightChild.tree);           
            } 
   ;
   
@@ -1890,27 +1860,23 @@ restr_diff
       
 restr_and
 @init{
-  Token orToken = null;
   ParserRuleReturnScope seq = null;
 }
-  : ld=restr_unary
-            {seq=ld;}
-        ( lias=restr_and_sequitur[seq.getTree()]
-      {seq=lias;}
-  )*
-          -> {lias==null}? ^($ld)
-          -> ^($lias)
+  : ld=restr_unary {seq=ld;}
+    ( lias=restr_and_sequitur[(Tree) seq.getTree()] {seq=lias;} )*
+  -> {lias==null}? ^($ld)
+  -> ^($lias)
   ; 
   
-restr_and_sequitur[Object leftChild]
+restr_and_sequitur[Tree leftChild]
   : and=and_symbol^ (atts=operator_attributes!)? rightChild=restr_unary!
              {
-               Tree t = ((Tree) and.getTree());                
+               Tree t = $and.tree;               
                if (atts != null)
-                 t.addChild((Tree) atts.getTree());
-              
-             t.addChild((Tree) leftChild);
-       t.addChild((Tree) rightChild.getTree());           
+                 t.addChild($atts.tree);
+                               
+               t.addChild(leftChild);
+               t.addChild($rightChild.tree);           
            } 
   ;
 
@@ -2384,12 +2350,12 @@ and_symbol
   ;     
   
 xor_symbol
-  : DOUBLE_CAP
+  : DOUBLE_PLUS
     -> ^(VT_XOR)
   ;
   
 eq_symbol
-  : DOUBLE_ANG
+  : DOUBLE_COLON
     -> ^(VT_EQUIV)
   ; 
   

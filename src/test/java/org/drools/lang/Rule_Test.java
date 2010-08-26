@@ -55,12 +55,15 @@ package org.drools.lang;
 
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.ByteArrayInputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collections;
@@ -719,11 +722,11 @@ public class Rule_Test {
 		String rule = "rule";
 		String[] testDRL = new String[] {
 				"rule test when " + "\n" +
-				" Person( age < 18 ^^ > 25)" + "\n" +
+				" Person( age < 18 ++ > 25)" + "\n" +
 				"then end",
 				
 				"rule test when " + "\n" +
-				" Person( age < 18 <> > 25)" + "\n" +
+				" Person( age < 18 :: > 25)" + "\n" +
 				"then end",
 				
 		};
@@ -1571,6 +1574,13 @@ public class Rule_Test {
 				"	Annotations: rdfsComment year creationYear 2008, " +
 				"mainClass Person," +
 				"	@annotations(meta target) annotationProp annotationTgt",
+				
+				
+				" Annotations:" + "\n" + 
+				" rdfs:seeAlsso \"http://xmlns.com/foaf/0.1/\"^^xsd:anyURI, " + "\n" +
+				" dc:description \"The Friend of a Friend (FOAF) RDF vocabulary, described using W3C RDF Schema and the Web Ontology Language.\", " + "\n" + 
+				" dc:title \"Friend of a Friend (FOAF) vocabulary\", " + "\n" + 
+				" dc:date \"$Date: 2006/01/29 22:38:45 $\" ",
 		};
 				
 		check(rule,testDRL);										
@@ -1581,7 +1591,7 @@ public class Rule_Test {
 		String rule = "manDL_type_declaration";
 		String[] testDRL = {
 				"@Class " + "\n" +
-				"declare org.com.Foo " + "\n" +
+				"declare Foo " + "\n" +
 				" Annotations: creatory sotty " + "\n" +
 				" DisjointUnionOf: @annotations(guess what) Child, Adult" + "\n" +
 				" SubClassOf: Person and Worker" + "\n" +
@@ -1592,7 +1602,7 @@ public class Rule_Test {
 				
 				
 				"@Class " + "\n" +
-				"declare org.com.Foo2 " + "\n" +				
+				"declare Foo2 " + "\n" +				
 				" as Person or Worker and hasAge Integer[ < 33 ]" + "\n" +								
 				"end",
 				
@@ -1784,19 +1794,42 @@ public class Rule_Test {
 	}
 	
 	
-	/*
-	public void test_() {
-		String rule = "";
+	@Test
+	public void test_manDL_prefix() {
+		String rule = "manDL_prefix";
 		String[] testDRL = {
-				"  " +"\n" +
-				"  " +"\n" +
-				"  " +"\n" +
-				"  " +"\n",
+				" Prefix: g: <someIRI> " +"\n",
+				" Namespace: g <someIRI> " +"\n",
+				" Namespace: dc <http://purl.org/dc/elements/1.1/>",
+				
 											
 		};	
 		check(rule,testDRL);										
 	}
-	*/
+	
+	
+	
+	@Test
+	public void test_foaf_ontology() {
+		String rule = "manDL_ontology";
+		InputStream stream = Rule_Test.class.getClassLoader().getResourceAsStream("foaf.manchester");
+		assertNotNull(stream);
+
+		try {
+			byte[] buf = new byte[stream.available()];
+			stream.read(buf);
+			String source = new String(buf);
+
+			check(rule,new String[] {source});
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+			fail();
+		}
+		
+		
+
+	}
+	
 	
     
     
