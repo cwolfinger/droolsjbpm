@@ -22,19 +22,23 @@ import java.util.List;
 
 import org.drools.repository.AssetItem;
 import org.drools.repository.PackageItem;
-import org.drools.repository.RepositorySessionUtil;
+import org.drools.repository.RepositoryTestCase;
 import org.drools.repository.RulesRepository;
 import org.drools.scm.CompositeScmAction;
 import org.drools.scm.ScmAction;
 import org.drools.scm.ScmActionFactory;
 import org.drools.scm.ScmEntry;
-import org.drools.scm.jcr.JcrActionFactory.AddFile;
 import org.drools.scm.jcr.JcrActionFactory.AddDirectory;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public class JcrActionFactoryTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
+public class JcrActionFactoryTest extends RepositoryTestCase {
+
+	@Test
     public void testMapPathNameToPackage() {
         JcrActionFactory fact = new JcrActionFactory( null );
         assertEquals( "org.foo.bar",
@@ -50,8 +54,9 @@ public class JcrActionFactoryTest extends TestCase {
                       fact.toDirectoryName( "foo" ) );
     }
 
+	@Test
     public void testAddDirectories() throws Exception {
-        ScmActionFactory svn = new JcrActionFactory( RepositorySessionUtil.getRepository() );
+        ScmActionFactory svn = new JcrActionFactory( getRepo() );
 
         CompositeScmAction actions = new CompositeScmAction();
 
@@ -101,8 +106,9 @@ public class JcrActionFactoryTest extends TestCase {
         assertTrue( list.contains( "folder3/folder3_1/folder3_1_1/folder3_1_1_1" ) );
     }
 
+	@Test
     public void testAddFiles() throws Exception {
-        RulesRepository repo = RepositorySessionUtil.getRepository();
+        RulesRepository repo = getRepo();
 
         repo.createPackage( "testAddFiles.package",
                             "just for testing" );
@@ -130,8 +136,9 @@ public class JcrActionFactoryTest extends TestCase {
                       asset.getStateDescription() );
     }
 
+	@Test
     public void testUpdateFiles() throws Exception {
-        RulesRepository repo = RepositorySessionUtil.getRepository();
+        RulesRepository repo = getRepo();
         PackageItem pkg = repo.loadDefaultPackage();
         AssetItem asset = pkg.addAsset( "testUpdateFilesSVN",
                                         "something" );

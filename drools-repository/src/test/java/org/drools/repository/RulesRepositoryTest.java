@@ -18,7 +18,6 @@ package org.drools.repository;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.IOException;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -27,30 +26,30 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
-import javax.jcr.LoginException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
-import javax.jcr.PathNotFoundException;
-import javax.jcr.Repository;
-import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.SimpleCredentials;
 import javax.jcr.Workspace;
 
-import org.apache.jackrabbit.core.TransientRepository;
 import org.drools.repository.RulesRepository.DateQuery;
 import org.drools.repository.migration.MigrateDroolsPackage;
 
-import junit.framework.TestCase;
+import org.junit.Ignore;
+import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.fail;
 
-public class RulesRepositoryTest extends TestCase {
+public class RulesRepositoryTest extends RepositoryTestCase {
 	int running = 0;
 
+	@Test
     public void testDefaultPackage() throws Exception {
-        RulesRepository repo = RepositorySessionUtil.getRepository();
+        RulesRepository repo = getRepo();
 
         Iterator it = repo.listPackages();
         boolean foundDefault = false;
@@ -76,9 +75,10 @@ public class RulesRepositoryTest extends TestCase {
         assertTrue( repo.initialized );
 
     }
-
+	
+	@Test
     public void testCategoryRename() throws Exception {
-        RulesRepository repo = RepositorySessionUtil.getRepository();
+        RulesRepository repo = getRepo();
 
         CategoryItem root = repo.loadCategory( "/" );
         root.addCategory( "testCatRename",
@@ -123,8 +123,9 @@ public class RulesRepositoryTest extends TestCase {
 
     }
 
+	@Test
     public void testAddVersionARule() throws Exception {
-        RulesRepository repo = RepositorySessionUtil.getRepository();
+        RulesRepository repo = getRepo();
         PackageItem pack = repo.createPackage( "testAddVersionARule",
                                                "description" );
         repo.save();
@@ -161,8 +162,9 @@ public class RulesRepositoryTest extends TestCase {
 
     }
 
+	@Test
     public void testFindByState() throws Exception {
-        RulesRepository repo = RepositorySessionUtil.getRepository();
+        RulesRepository repo = getRepo();
         PackageItem pkg = repo.createPackage( "testFindByStatePackage",
                                               "heheheh" );
         AssetItem asset1 = pkg.addAsset( "asset1",
@@ -185,8 +187,9 @@ public class RulesRepositoryTest extends TestCase {
 
     }
 
+	@Test
     public void testFindRulesByName() throws Exception {
-        RulesRepository repo = RepositorySessionUtil.getRepository();
+        RulesRepository repo = getRepo();
 
         repo.loadDefaultPackage().addAsset( "findRulesByNamex1",
                                             "X" );
@@ -225,8 +228,9 @@ public class RulesRepositoryTest extends TestCase {
 
     }
 
+	@Test
     public void testQueryText() throws Exception {
-        RulesRepository repo = RepositorySessionUtil.getRepository();
+        RulesRepository repo = getRepo();
         PackageItem pkg = repo.createPackage( "testQueryTest",
                                               "" );
         AssetItem asset = pkg.addAsset( "asset1",
@@ -274,8 +278,9 @@ public class RulesRepositoryTest extends TestCase {
 
     }
 
+	@Test
     public void testQuery() throws Exception {
-        RulesRepository repo = RepositorySessionUtil.getRepository();
+        RulesRepository repo = getRepo();
 
         AssetItem asset = repo.loadDefaultPackage().addAsset( "testQuery",
                                                               "wanklerotaryengine1cc" );
@@ -421,8 +426,9 @@ public class RulesRepositoryTest extends TestCase {
 
     }
 
+	@Test
     public void testLoadRuleByUUIDWithConcurrentSessions() throws Exception {
-        RulesRepository repo = RepositorySessionUtil.getRepository();
+        RulesRepository repo = getRepo();
 
         PackageItem rulePackageItem = repo.loadDefaultPackage();
         AssetItem rule = rulePackageItem.addAsset( "testLoadRuleByUUID",
@@ -492,8 +498,9 @@ public class RulesRepositoryTest extends TestCase {
                       asset2.getContent() );
     }
 
+	@Test
     public void testAddRuleCalendarWithDates() {
-        RulesRepository rulesRepository = RepositorySessionUtil.getRepository();
+        RulesRepository rulesRepository = getRepo();
 
         Calendar effectiveDate = Calendar.getInstance();
         Calendar expiredDate = Calendar.getInstance();
@@ -513,8 +520,9 @@ public class RulesRepositoryTest extends TestCase {
         ruleItem1.checkin( "ho " );
     }
 
+	@Test
     public void testGetState() {
-        RulesRepository rulesRepository = RepositorySessionUtil.getRepository();
+        RulesRepository rulesRepository = getRepo();
 
         StateItem state0 = rulesRepository.createState( "testGetState" );
         assertNotNull( state0 );
@@ -533,8 +541,9 @@ public class RulesRepositoryTest extends TestCase {
                       stateItem2 );
     }
 
+	@Test
     public void testGetTag() {
-        RulesRepository rulesRepository = RepositorySessionUtil.getRepository();
+        RulesRepository rulesRepository = getRepo();
 
         CategoryItem root = rulesRepository.loadCategory( "/" );
         CategoryItem tagItem1 = root.addCategory( "testGetTag",
@@ -562,8 +571,9 @@ public class RulesRepositoryTest extends TestCase {
                       tagItem3.getFullPath() );
     }
 
+	@Test
     public void testListPackages() {
-        RulesRepository rulesRepository = RepositorySessionUtil.getRepository();
+        RulesRepository rulesRepository = getRepo();
         rulesRepository.createPackage( "testListPackages",
                                        "desc" );
 
@@ -590,8 +600,9 @@ public class RulesRepositoryTest extends TestCase {
         assertFalse( foundGlobalArea );
     }
 
+	@Test
     public void testFindAssetsByState() throws Exception {
-        RulesRepository repo = RepositorySessionUtil.getRepository();
+        RulesRepository repo = getRepo();
         repo.loadCategory( "/" ).addCategory( "testFindAssetsByStateCat",
                                               "X" );
 
@@ -631,8 +642,9 @@ public class RulesRepositoryTest extends TestCase {
                       ((AssetItem) apl.assets.get( 0 )).getName() );
     }
 
+	@Test
     public void testFindAssetsByCategory() throws Exception {
-        RulesRepository repo = RepositorySessionUtil.getRepository();
+        RulesRepository repo = getRepo();
         repo.loadCategory( "/" ).addCategory( "testFindAssetsByCategoryUsingFilterCat",
                                               "X" );
 
@@ -763,6 +775,7 @@ public class RulesRepositoryTest extends TestCase {
 
     }
 
+	@Test
     public void testFunnyOrdering() throws Exception {
 
     }
@@ -770,8 +783,9 @@ public class RulesRepositoryTest extends TestCase {
     /**
      * Here we are testing to make sure that category links don't pick up stuff in snapshots area.
      */
+	@Test
     public void testCategoriesAndSnapshots() throws Exception {
-        RulesRepository repo = RepositorySessionUtil.getRepository();
+        RulesRepository repo = getRepo();
         repo.loadCategory( "/" ).addCategory( "testCategoriesAndSnapshots",
                                               "X" );
 
@@ -811,8 +825,9 @@ public class RulesRepositoryTest extends TestCase {
 
     }
 
+	@Test
     public void testMoveRulePackage() throws Exception {
-        RulesRepository repo = RepositorySessionUtil.getRepository();
+        RulesRepository repo = getRepo();
         PackageItem pkg = repo.createPackage( "testMove",
                                               "description" );
         AssetItem r = pkg.addAsset( "testMove",
@@ -857,9 +872,10 @@ public class RulesRepositoryTest extends TestCase {
         assertEquals( uuid,
                       r.getUUID() );
     }
-
+	
+	@Test
     public void testCopyAsset() throws Exception {
-        RulesRepository repo = RepositorySessionUtil.getRepository();
+        RulesRepository repo = getRepo();
         repo.createPackage( "testCopyAsset",
                             "asset" );
         AssetItem item = repo.loadDefaultPackage().addAsset( "testCopyAssetSource",
@@ -886,8 +902,9 @@ public class RulesRepositoryTest extends TestCase {
                       dest.getVersionNumber() );
     }
 
+	@Test
     public void testRenameAsset() throws Exception {
-        RulesRepository repo = RepositorySessionUtil.getRepository();
+        RulesRepository repo = getRepo();
         repo.createPackage( "testRenameAsset",
                             "asset" );
         AssetItem item = repo.loadPackage( "testRenameAsset" ).addAsset( "testRenameAssetSource",
@@ -914,8 +931,9 @@ public class RulesRepositoryTest extends TestCase {
 
     }
 
+	@Test
     public void testRenamePackage() throws Exception {
-        RulesRepository repo = RepositorySessionUtil.getRepository();
+        RulesRepository repo = getRepo();
         PackageItem original = repo.createPackage( "testRenamePackage",
                                                    "asset" );
         List packagesOriginal = iteratorToList( repo.listPackages() );
@@ -948,8 +966,9 @@ public class RulesRepositoryTest extends TestCase {
 
     }
 
+	@Test
     public void testCopyPackage() throws Exception {
-        RulesRepository repo = RepositorySessionUtil.getRepository();
+        RulesRepository repo = getRepo();
         PackageItem source = repo.createPackage( "testCopyPackage",
                                                  "asset" );
         AssetItem item = source.addAsset( "testCopyPackage",
@@ -990,8 +1009,9 @@ public class RulesRepositoryTest extends TestCase {
 
     }
 
+	@Test
     public void testListStates() {
-        RulesRepository repo = RepositorySessionUtil.getRepository();
+        RulesRepository repo = getRepo();
         StateItem[] items = repo.listStates();
         assertTrue( items.length > 0 );
 
@@ -1002,8 +1022,9 @@ public class RulesRepositoryTest extends TestCase {
                       items2.length );
     }
 
+	@Test
     public void testRenameState() {
-        RulesRepository repo = RepositorySessionUtil.getRepository();
+        RulesRepository repo = getRepo();
         StateItem[] items = repo.listStates();
         assertTrue( items.length > 0 );
 
@@ -1031,8 +1052,9 @@ public class RulesRepositoryTest extends TestCase {
         assertNotNull( repo.loadState( newName ) );
     }
 
+	@Test
     public void testRemoveState() {
-        RulesRepository repo = RepositorySessionUtil.getRepository();
+        RulesRepository repo = getRepo();
         StateItem[] items = repo.listStates();
         assertTrue( items.length > 0 );
 
@@ -1058,8 +1080,9 @@ public class RulesRepositoryTest extends TestCase {
 
     }
 
-    public void xtestImportExport() {
-		RulesRepository repo = RepositorySessionUtil.getRepository();
+	@Test
+    public void testImportExport() {
+		RulesRepository repo = getRepo();
 		byte[] repository_unitest;
 		byte[] repository_backup;
 
@@ -1087,8 +1110,9 @@ public class RulesRepositoryTest extends TestCase {
 		assertTrue(repo.containsPackage("testImportExport"));
 	}
 
+	@Test
 	public void testShareableNodes() throws Exception {
-		RulesRepository repo = RepositorySessionUtil.getRepository();
+		RulesRepository repo = getRepo();
 		AssetItem item = repo.loadDefaultPackage().addAsset("testShareableNodeOriginal", "desc");
 		item.updateContent("la");
 		item.getNode().addMixin("mix:shareable");
@@ -1112,8 +1136,9 @@ public class RulesRepositoryTest extends TestCase {
 	    originalItem.remove();
 	}
 	
+	@Test
 	public void testShareableNodesWithQuery() throws Exception {
-		RulesRepository repo = RepositorySessionUtil.getRepository();
+		RulesRepository repo = getRepo();
 		AssetItem item = repo.loadGlobalArea().addAsset("testShareableNodesWithQueryOriginal", "desc");
 		item.updateFormat("xyz");
 		item.getNode().addMixin("mix:shareable");
@@ -1146,19 +1171,20 @@ public class RulesRepositoryTest extends TestCase {
         assertTrue(list.get( 0 ) instanceof AssetItem);
 	}	
 	
+	@Test @Ignore
 	public void xtestImportExportWithShareableNodes() throws Exception {
-		RulesRepository repo = RepositorySessionUtil.getRepository();
-		AssetItem item = repo.loadDefaultPackage().addAsset("testShareableNodeOriginal", "desc");
+		RulesRepository repo = getRepo();
+		AssetItem item = repo.loadDefaultPackage().addAsset("testImportExportShareableNodeOriginal", "desc");
 		item.updateContent("la");
 		item.getNode().addMixin("mix:shareable");
-		PackageItem source = repo.createPackage("testShareableNodesPackage", "desc");
+		PackageItem source = repo.createPackage("testImportExportShareableNodesPackage", "desc");
 		repo.save();
 
 		source.checkout();
 		
 		Session session = repo.getSession();
 		Workspace workspace = session.getWorkspace();
-		String path = "/drools:repository/drools:package_area/testShareableNodesPackage/assets/testShareableNodeShared";
+		String path = "/drools:repository/drools:package_area/testImportExportShareableNodesPackage/assets/testImportExportShareableNodeShared";
 		workspace.clone(workspace.getName(), item.getNode().getPath(), path, false);		
 		repo.save();
 		
@@ -1171,13 +1197,14 @@ public class RulesRepositoryTest extends TestCase {
 
 		repo.importRulesRepositoryFromStream(new ByteArrayInputStream(
 				repository_backup));
-		assertTrue(repo.containsPackage("testShareableNodesPackage"));
-		assertTrue(repo.loadPackage("testShareableNodesPackage").containsAsset("testShareableNodeOriginal"));
+		assertTrue(repo.containsPackage("testImportExportShareableNodesPackage"));
+		assertTrue(repo.loadPackage("testImportExportShareableNodesPackage").containsAsset("testImportExportShareableNodeOriginal"));
 	}
 	
 	//In this test case we expect an ItemExistException from the second thread,
         //other than ending up with two packages with same name.
 	//https://jira.jboss.org/jira/browse/GUVNOR-346
+	@Test
     public void testConcurrentCopyPackage() throws Exception {
        // set up testing data               
        RulesRepository repo = RepositorySessionUtil.getMultiThreadedRepository();

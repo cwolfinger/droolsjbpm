@@ -34,15 +34,88 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
    <dependencies>
       <!-- Internal dependencies -->
       <!-- External dependencies -->
-      <!-- first the deps for the repo API itself (Jackrabbit based) -->
-      <dependency>
-         <groupId>org.apache.jackrabbit</groupId>
-         <artifactId>jackrabbit-core</artifactId>
-      </dependency>
+      <!-- first the deps for the repo API itself (ModeShape based) -->
       <dependency>
          <groupId>javax.jcr</groupId>
          <artifactId>jcr</artifactId>
       </dependency>
+      <dependency>
+	      <artifactId>drools-repository-jcr-api</artifactId>
+	      <groupId>org.drools</groupId>
+	      <version>5.2.0.SNAPSHOT</version>
+      </dependency>
+      <dependency>
+	      <groupId>com.google.collections</groupId>
+	      <artifactId>google-collections</artifactId>
+        <version>1.0-rc3</version>
+	    </dependency>
+      <!--
+      <dependency>
+	      <artifactId>drools-repository-jcr-jackrabbit</artifactId>
+	      <groupId>org.drools</groupId>
+	      <version>5.2.0.SNAPSHOT</version>
+      </dependency>
+      -->
+      <dependency>
+	      <artifactId>drools-repository-jcr-modeshape</artifactId>
+	      <groupId>org.drools</groupId>
+	      <version>5.2.0.SNAPSHOT</version>
+      </dependency>
+      
+      <!--  
+      <dependency>
+        <groupId>org.modeshape</groupId>
+        <artifactId>modeshape-jcr</artifactId>
+        <version>2.1-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.security</groupId>
+        <artifactId>jboss-idtrust</artifactId>
+        <version>2.0.2.CR1</version>
+      </dependency>
+	    <dependency>
+	      <groupId>com.google.collections</groupId>
+	      <artifactId>google-collections</artifactId>
+        <version>1.0-rc3</version>
+	    </dependency>
+      <dependency>
+        <groupId>org.jboss.security</groupId>
+        <artifactId>jboss-security-spi-bare</artifactId>
+        <version>2.0.2.SP6</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.security</groupId>
+        <artifactId>jbosssx-bare</artifactId>
+        <version>2.0.2.SP6</version>
+        <scope>test</scope>
+        <exclusions>
+          <exclusion>
+            <groupId>apache-xalan</groupId>
+            <artifactId>xalan</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>apache-xalan</groupId>
+            <artifactId>serializer</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      -->
+
+      <!-- first the deps for the repo API itself (Jackrabbit based) 
+      <dependency>
+         <groupId>org.apache.jackrabbit</groupId>
+         <artifactId>jackrabbit-core</artifactId>
+           
+				 <exclusions>
+				  	<exclusion>
+				   		<groupId>org.apache.lucene</groupId>
+				   		<artifactId>lucene-core</artifactId>
+				   	</exclusion>
+				</exclusions>
+				
+      </dependency>
+      -->
       <dependency>
          <groupId>org.tmatesoft</groupId>
          <artifactId>svnkit</artifactId>
@@ -81,4 +154,5 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
         </dependency>
         -->
    </dependencies>
+ 
 </project>

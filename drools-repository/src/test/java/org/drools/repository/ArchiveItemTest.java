@@ -20,18 +20,15 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
-public class ArchiveItemTest extends TestCase {
+public class ArchiveItemTest extends RepositoryTestCase {
 
-    private RulesRepository getRepo() {
-        return RepositorySessionUtil.getRepository();
-    }
-
-    private PackageItem getDefaultPackage() {
-        return getRepo().loadDefaultPackage();
-    }
-
+	@Test
     public void testFindArchivedAssets() throws Exception {
         RulesRepository repo = RepositorySessionUtil.getRepository();
 
@@ -66,6 +63,7 @@ public class ArchiveItemTest extends TestCase {
         assertTrue( item.isArchived() );
     }
 
+	@Test
     public void testArchiveBooleanFlag() throws Exception {
         AssetItem item = RepositorySessionUtil.getRepository().loadDefaultPackage().addAsset( "testArchiveBooleanFlag",
                                                                                               "yeah" );
@@ -78,12 +76,14 @@ public class ArchiveItemTest extends TestCase {
         item.checkin( "lalalala" );
     }
 
+	@Test
     public void testLoadArchivedAsset() throws Exception {
         AssetItem item = RepositorySessionUtil.getRepository().loadDefaultPackage().loadAsset( "testArchiveBooleanFlag" );
         System.out.println( item );
         assertTrue( item.isArchived() );
     }
 
+	@Test
     public void testFindArchivedAssetsByCategory() {
         getRepo().loadCategory( "/" ).addCategory( "testFindRulesByCatArchive",
                                                    "yeah" );
@@ -120,6 +120,7 @@ public class ArchiveItemTest extends TestCase {
         return list;
     }
 
+    @Test
     public void testLoadPackages() {
         RulesRepository repo = getRepo();
         PackageItem item = repo.createPackage( "testListPackagesblah",
@@ -154,6 +155,7 @@ public class ArchiveItemTest extends TestCase {
                       list.size() );
     }
 
+    @Test
     public void testFindRulesByNameArchived() throws Exception {
         RulesRepository repo = RepositorySessionUtil.getRepository();
 
@@ -224,6 +226,7 @@ public class ArchiveItemTest extends TestCase {
 
     }
 
+    @Test
     public void testlistbyformatArchived() {
 
     }
