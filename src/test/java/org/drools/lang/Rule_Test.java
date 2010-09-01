@@ -128,6 +128,18 @@ public class Rule_Test {
 	}
 	
 	
+	 
+	@Test	
+	public void test_key() {		
+		String rule = "rule_attributes";
+		String[] testDRL = new String[] {
+				"@no-loop (true)",
+				
+		};
+		check(rule,testDRL);											
+	}	
+	
+	
 	@Test	
 	public void test_compilation_unit() {	
 		String rule = "compilation_unit";
@@ -137,15 +149,18 @@ public class Rule_Test {
 				" " + "\n" +	
 				"global int N; \n" +				
 				" " + "\n" +
-				"Ontology : test" + "\n" +
+				"Ontology : " + "\n" +
 				" @Class declare Test end " + "\n" +
 				" " + "\n" +
 				"rule \"ruel\"\n" +
 				"when\n" +
 				"then\n" +
-				"end\n"
+				"end\n",
+				
+				
 				};	
-		check(rule,testDRL);	 									
+		check(rule,testDRL);
+				
 	}	
 	
 	
@@ -233,7 +248,7 @@ public class Rule_Test {
 	
 	@Test
 	public void test_fqn() {
-		String rule = "fully_qualified_name";
+		String rule = "procedural_name";
 		String[] testDRL = new String[] {
 				"Student",
 				"org.Student",
@@ -243,14 +258,6 @@ public class Rule_Test {
 	}
 			
 	
-	@Test	
-	public void test_decl_field() {
-		String rule = "decl_field";
-		String[] testDRL = new String[] {
-				"field : datatype[][] @[key]"
-		};
-		check(rule,testDRL);	
-	}
 	
 	
 	
@@ -260,7 +267,7 @@ public class Rule_Test {
 		String[] testDRL = new String[] {
 				"rule \"ruleName\" extends \"anotherRule\" " + "\n" +
 				" @salience(100) " + "\n" +
-				" @no-loop " + "\n" +
+//				" @no-loop " + "\n" +
 				" @calendar( \"s1\" , \"s2\" )" + "\n" +
 				"deduction @crisp" + "\n" +
 				"implication @[crisp]" + "\n" +
@@ -295,17 +302,16 @@ public class Rule_Test {
 				"@agenda-group(\"test-group\")",
 				"@activation-group(\"act-group\")",
 				"@auto-focus(false)",
-				"@effective(\"2010-04-12\")",
-				"@expires(\"2010-04-12\")",
+				"@date-effective(\"2010-04-12\")",
+				"@date-expires(\"2010-04-12\")",
 				"@enabled(true)",
 				"@ruleflow-group(\"act-group\")",
 				"@agenda-group(\"act-group\")",
 				"@duration(100)",
 				"@timer(100)",
-//TODO: fails as stand-alone, but works in context..				
-//				"calendar \"s1\" , \"s2\" ",
+				"@calendar (\"s1\" , \"s2\" )",
 				"@dialect( \"java\" )",
-				"@lock-on-active(true)",
+				"@lock-on-active (true)",
 				"@defeats(\"anotherRule\")",
 				"@deductive",
 				"@abductive",
@@ -505,6 +511,27 @@ public class Rule_Test {
 	
 	
 	
+	@Test	
+	public void test_lhs_semantic_joins() {		
+		String rule = "rule";
+		String[] testDRL = new String[] {
+				"rule \"r\" when " +
+				" Person() :isFatherOf another $p : Person() :isFriendOf Person()" +
+				"then end",
+				
+				
+				"rule \"r\" when " +
+				" Person() " +
+				" :hasFriend " +
+				" :hasChild " +
+				" another Person( gender == \"male\") " +
+				"then end",
+										
+		};
+		check(rule,testDRL);								
+	}	
+	
+	
 	
 	@Test	
 	public void test_lhs_label_atom_pattern() {
@@ -526,17 +553,40 @@ public class Rule_Test {
 	}
 	
 	
+	@Test	
+	public void test_lhs_label_atom_pattern_bare() {
+		String rule = "lhs_label_atom_pattern";
+		String[] testDRL = new String[] {				
+				"$p : Person() ",				
+		};
+		check(rule,testDRL);											
+	}
+	
+	
 	
 	@Test
 	public void test_constraints() {
 		String rule = "rule";
 		String[] testDRL = new String[] {
 				"rule \"r\" when " +
-				"Person( \"john\" , 18, height > 150) " +
+				"Person( \"john\" , 18, age > 13) " +
 				"then end",
 		};
 		check(rule,testDRL);										
 	}
+	
+	
+	@Test
+	public void test_constraints_alone() {
+		String rule = "constraints";
+		String[] testDRL = new String[] {
+				
+				" \"john\" , 18, age > 13 ",
+								
+		};
+		check(rule,testDRL);										
+	}
+		
 	
 	
 	@Test	
@@ -544,7 +594,11 @@ public class Rule_Test {
 		String rule = "rule";
 		String[] testDRL = new String[] {
 				"rule \"r\" when " +
-				"Person( \"john\" , 18, 2.0, ?, ?, true, null, new Dog(), {12, $x, \"test\" }, $var, ? == 3) " +
+				"Person( \"john\" , 18, 2.0, ?, ?, true, null, new Dog(), {12, $x, \"test\" }, $var, ? == 3, 4*3+$var) " +
+				"then end",
+				
+				"rule \"r\" when " +
+				"Person(  \"john\") " +
 				"then end",
 		};
 		check(rule,testDRL);	
@@ -609,18 +663,7 @@ public class Rule_Test {
 	
 	
 	
-	@Test	
-	public void test_decl_dl() {
-		String rule = "manDL_type_declaration";
-		String[] testDRL = new String[] {
-				"declare Student " + "\n" +
-				" as Male and Human and (Slave or worksAt some (School or Prison))" + "\n" +				
-				" age  : int " + "\n" +
-				" name : String " + "\n" +
-				" end \n"
-		};
-		check(rule,testDRL);											
-	}
+	
 	
 	
 	
@@ -644,7 +687,9 @@ public class Rule_Test {
 				" Person( name == \"john\" -> age < 18 || age > 25)" + "\n" +
 				"then end"
 		};
-		check(rule,testDRL);											
+		check(rule,testDRL);	
+		
+		
 	}
 	
 	
@@ -654,7 +699,7 @@ public class Rule_Test {
 		String rule = "rule";
 		String[] testDRL = new String[] {
 				"rule test when " + "\n" +
-				" Person( age < 18 ++ age > 25)" + "\n" +
+				" Person( age < 18 <> age > 25)" + "\n" +
 				"then end",
 				
 				"rule test when " + "\n" +
@@ -741,7 +786,7 @@ public class Rule_Test {
 		String rule = "rule";
 		String[] testDRL = new String[] {
 				"rule test when " + "\n" +
-				" Person( age < 18 ++ > 25)" + "\n" +
+				" Person( age < 18 <> > 25)" + "\n" +
 				"then end",
 				
 				"rule test when " + "\n" +
@@ -841,8 +886,8 @@ public class Rule_Test {
 				" rule test when " + "\n" +
 				"  branch (" + "\n" +
 				"	Person( ) " + "\n" +
-				"	[b1] Person( ) " + "\n" +
-				"	[b2] ( neg @crisp exists Person( ) ) " + "\n" +
+				"	<b1> Person( ) " + "\n" +
+				"	<b2> ( neg @crisp exists Person( ) ) " + "\n" +
 				" ) " + "\n" +
 				" then end ",
 		};
@@ -853,10 +898,10 @@ public class Rule_Test {
 	public void test_branch_alternative() {
 		String rule = "branch_alternative";
 		String[] testDRL = new String[] {				
-				" [label] Person() ",				
-				" [! label] Person() ",
-				" [label] ( rising Person() ) ",	
-				" [label] ( ( Person() or Person() ) | unique )",
+				" <label> Person() ",				
+				" <! label> Person() ",
+				" <label> ( rising Person() ) ",	
+				" <label> ( ( Person() or Person() ) | unique )",
 		};
 		check(rule,testDRL);										
 	}
@@ -865,8 +910,8 @@ public class Rule_Test {
 	public void test_branch_label() {
 		String rule = "branch_label";
 		String[] testDRL = new String[] {				
-				" [label] ",				
-				" [! label] ",
+				" <label> ",				
+				" <! label> ",
 		};
 		check(rule,testDRL);										
 	}
@@ -880,8 +925,9 @@ public class Rule_Test {
 		String rule = "right_expression";
 		String[] testDRL = new String[] {				
 				" 2*($x#km+1000) + 500*size.len ",
-				//" 2 * $p "
-				// as above
+				
+				" (age / 2) * $x + 4 * weight.subField ", 
+				
 		};
 		check(rule,testDRL);										
 	}	
@@ -915,19 +961,19 @@ public class Rule_Test {
 	
 	
 	@Test	
-	public void test_left_expression() {
-		String rule = "left_expression";
+	public void test_bound_expr() {
+		String rule = "bound_expr";
 		String[] testDRL = new String[] {				
 				" $a : age " + "\n",
-				
-				" (age + 2) * $x + 4 * weight.subField ", 
-				
-				"$x : $z + 4 * weight ",
+											
+				"$x : ($z + 4 * weight) ",
 				
 				"$a : (age * 2 + 4 * weight + height) ",								
 		};
 		check(rule,testDRL);								
 	}
+	
+
 	
 	
 	
@@ -957,12 +1003,27 @@ public class Rule_Test {
 				" $var.field ",
 				
 				"address.city.street(2).number", 
-				
-				"$addr.city.#pack.Street( number == 2).subfield[4].subsubfield",												
+																			
 		};
 		check(rule,testDRL);											
 	}
 	
+	
+	@Test	
+	public void test_nested_accessor_path() {
+		String rule = "nested_accessor_path";
+		String[] testDRL = new String[] {				
+								
+				" #nested( age == 18 ) ",
+				
+				" #some.cast.Nested( age == 18 ) ",
+				
+				" field.meth().#nested( age == 18 ) ",
+
+				" $addr.city.#pack.Street( number == 2, subfield[4].subsubfield > 10 )",
+		};
+		check(rule,testDRL);										
+	}
 	
 	
 	@Test	
@@ -973,7 +1034,7 @@ public class Rule_Test {
 				
 				" someMethod(\"p1\",2) ", 
 								
-				" #nested( age == 18 ) ",
+				" pets[ #nested( age == 18 ) ] ",
 				
 				" pets[3] ",
 				
@@ -984,6 +1045,8 @@ public class Rule_Test {
 		check(rule,testDRL);										
 	}		
 	
+	
+
 	
 	
 	@Test	
@@ -1102,12 +1165,12 @@ public class Rule_Test {
 		String rule = "rule";
 		String[] testDRL = new String[] {
 				"rule test when" + "\n" +
-				" Person( $a : age ) " + "\n" +
+				" Person( $a: age ) " + "\n" +
 				"then end",	
 				
-//				"rule test when" + "\n" +
-//				" Person( $a : ( age + 4 ) ) " + "\n" +
-//				"then end",
+				"rule test when" + "\n" +
+				" Person( $a : ( age + 4 ) ) " + "\n" +
+				"then end",
 		};
 		check(rule,testDRL);
 	}
@@ -1214,6 +1277,15 @@ public class Rule_Test {
 	
 	
 	@Test	
+	public void test_empty_rhs() {
+		String rule = "then_part";
+		String[] testDRL = new String[] {				
+			" then end",
+		};
+		check(rule,testDRL);
+	}
+	
+	@Test	
 	public void test_rhs() {
 		String rule = "then_part";
 		String[] testDRL = new String[] {				
@@ -1267,7 +1339,7 @@ public class Rule_Test {
 	public void test_dle_nested_objects_cast() {
 		String rule = "lhs_atom_pattern";
 		String[] testDRL = {
-				"Person( name==  \"mark\", address.#org.dom.LongAddress( city == \"london\", country ==  \"uk\").subfield )"
+				"Person( name==  \"mark\", address.#org.dom.LongAddress( city == \"london\", country ==  \"uk\") )"
 		};
 				
 		check(rule,testDRL);										
@@ -1343,7 +1415,7 @@ public class Rule_Test {
 		String[] testDRL = {			
 				"rule test when " + "\n" +
 				" $p : Person() " + "\n" +
-				" ?queryName( \"literal\", $p, $unificationVar ) " + "\n" +
+				" ?queryName( \"literal\", $p, $unificationVar, 3*4+2 ) " + "\n" +
 				" then end"
 		};
 		check(rule,testDRL);										
@@ -1376,12 +1448,23 @@ public class Rule_Test {
 	}
 	
 	
+	
+	@Test
+	public void test_versioned_accessor() {
+		String rule = "versioned_accessor";
+		String[] testDRL = {			
+				"age<<-1>>",
+		};
+		check(rule,testDRL);										
+	}
+	
+	
 	@Test
 	public void test_dle_version() {
 		String rule = "rule";
 		String[] testDRL = {			
 				"rule test when " + "\n" +
-				" Person( age<<-1>> == field.val<<-2>>.someother ) " + "\n" +
+				" Person( age<<-1>> == field.val<<2>>.someother ) " + "\n" +
 				" then end"
 		};
 		check(rule,testDRL);										
@@ -1578,21 +1661,20 @@ public class Rule_Test {
 				
 		check(rule,testDRL);										
 	}
-	
+	   
 	
 	
 	@Test	
 	public void test_manDL_annotations() {
 		String rule = "manDL_annotations";
-		String[] testDRL = {
-				"@annotations( creator sotty, author davide )",
+		String[] testDRL = {				
 				
 				"Annotations : creator sotty",
 				
 				"Annotations : creator sotty, " +
 				"	Annotations: rdfsComment year creationYear 2008, " +
 				"mainClass Person," +
-				"	@annotations(meta target) annotationProp annotationTgt",
+				"	Annotations: meta target annotationProp annotationTgt",
 				
 				
 				" Annotations:" + "\n" + 
@@ -1612,9 +1694,9 @@ public class Rule_Test {
 				"@Class " + "\n" +
 				"declare Foo " + "\n" +
 				" Annotations: creatory sotty " + "\n" +
-				" DisjointUnionOf: @annotations(guess what) Child, Adult" + "\n" +
+				" DisjointUnionOf: Annotations: guess what Child, Adult" + "\n" +
 				" SubClassOf: Person and Worker" + "\n" +
-				" EquivalentTo: @annotations(guess again) Person" + "\n" +
+				" EquivalentTo: Annotations: guess again Person" + "\n" +
 				" DisjointWith: Person" + "\n" +
 				" HasKey: Annotations: annkey targt hasSSN" + "\n" + 
 				"end",
@@ -1622,7 +1704,7 @@ public class Rule_Test {
 				
 				"@Class " + "\n" +
 				"declare Foo2 " + "\n" +				
-				" as Person or Worker and hasAge Integer[ < 33 ]" + "\n" +								
+				" as Person or Worker and hasAge : Integer[ < 33 ]" + "\n" +								
 				"end",
 				
 		};
@@ -1631,11 +1713,15 @@ public class Rule_Test {
 	}
 	
 	
+	
+	
+	
+	
 	@Test	
 	public void test_manDL_datatype_declaration() {
 		String rule = "manDL_type_declaration";
 		String[] testDRL = {
-				"Datatype: NegInt " + "\n" +				
+				"Datatype: NegInt " + "\n" +								
 				" EquivalentTo: Annotations: creator sotty Integer[ < 0 ], NegativeInteger" + "\n",
 				
 				"@Datatype declare NegInt " + "\n" +				
@@ -1652,18 +1738,21 @@ public class Rule_Test {
 	public void test_manDL_annotated_description() {
 		String rule = "manDL_annotated_description";
 		String[] testDRL = {
-				"@annotations(tell me) Human or Animal or Robot and not Alien",
+				
+				"hasAge exactly 1 and hasAge only not NegInt",
+				
+				"Annotations: tell me Human or Animal or Robot and not Alien",
 				
 				"Person and (" +
 				"	hasChildren exactly 3 Male or hasChildren min 2 Female ) ",
 				
-				"hasChildren Male",
+				"hasChild Male",
 				
 				"Person and hasChildren some Male ",
-				
+								
 				"Person and hasChildren only Male ",
 				
-				//TODO individual "Person and hasChildren value john ",
+				"Person and hasChildren value john ",
 				
 				"Person and hasChildren min 3 ",
 				
@@ -1673,11 +1762,13 @@ public class Rule_Test {
 				
 				"Thing that hasFirstName exactly 1 and hasFirstName only String[minLength 1]",
 				
-				"hasAge exactly 1 and hasAge only not NegInt",
+				
 				
 				"hasGender exactly 1 and hasGender only {\"female\", \"male\"}",
 				
 				"hasFirstName value \"John\" or hasFirstName value \"Joe\" ",
+				
+				"Person or hasChildren only Male ",
 				
 				
 		};
@@ -1686,9 +1777,42 @@ public class Rule_Test {
 	}
 	
 	
+	@Test
+	public void test_manDL_quantified_restriction_core() {
+		String rule = "manDL_quantified_restriction_core";
+		String[] testDRL = {
+								
+				
+				
+				"hasChildren some Male ",
+								
+				"hasChildren only Male ",
+				
+				"hasChildren value john ",
+				
+				"hasChildren min 3 ",
+				
+				"hasChildren max 5 ",
+				
+				"hasChildren exactly 10",
+				
+				"hasChildren Male",
+				
+					
+				
+		};
+				
+		check(rule,testDRL);										
+	}
+	
+	
+
+	
+	
+	
 	@Test	
 	public void test_manDL_objectprop() {
-		String rule = "manDL_type_declaration";
+		String rule = "manDL_objectProperty";
 		String[] testDRL = {
 				"ObjectProperty: hasWife" + "\n" +				
 				" Annotations: creator sotty " + "\n" +
@@ -1700,7 +1824,7 @@ public class Rule_Test {
 				" EquivalentTo: isMarriedTo " + "\n" +
 				" DisjointWith: hates " + "\n" +
 				" InverseOf: hasSpouse, inverse hasSpouse" + "\n" +
-				" SubPropertyChain: hasChild o hasParent " + "\n",		
+				" SubPropertyChain: hasChild o hasParent " + "\n",	
 				
 				
 				"@ObjectProperty declare hasWife" + "\n" +				
@@ -1710,9 +1834,9 @@ public class Rule_Test {
 				" @Irreflexive " +
 				" @Asymmetric " +
 				" @Transitive " + "\n" +
-				" domain : Person" + "\n" +         
+				" domain : Person " + "\n" +         
 				" range : Woman " + "\n" +
-				"end ",
+				"end ",	
 			
 		};
 				
@@ -1723,7 +1847,7 @@ public class Rule_Test {
 	
 	@Test
 	public void test_manDL_dataprop() {
-		String rule = "manDL_type_declaration";
+		String rule = "manDL_dataProperty";
 		String[] testDRL = {
 				"DataProperty: hasAge" + "\n" +				
 				" Annotations: creator sotty " + "\n" +
@@ -1785,16 +1909,53 @@ public class Rule_Test {
 	public void test_manDL_misc() {
 		String rule = "manDL_type_declaration";
 		String[] testDRL = {
-				"EquivalentClasses: Annotations: creator sotty q:Rock, q:Scissors, q:Paper ",
-				"DisjointClasses: Annotations: creator sotty Rock, Scissors, Paper ",
+				"EquivalentClasses: Annotations: creator sotty Rock, Scissors, Paper ",
+				 
+				"DisjointClasses: Annotations: creator sotty q:Rock, q:Scissors, Paper ",
+				
 				"EquivalentProperties: Annotations: creator sotty h:loves, h:hates ",
+				
 				"DisjointProperties: Annotations: creator sotty loves, hates ",
+				
 				"SameIndividual: Annotations: creator sotty John, Joe, Jack ",
+				
 				"DifferentIndividuals: Annotations: creator sotty John, Joe, Jack ",
 			
 		};	
 		check(rule,testDRL);										
 	}
+	
+	
+	@Test	
+	public void test_manDL_decl_field() {
+		String rule = "manDL_decl_field";
+		String[] testDRL = new String[] {
+				"field : datatype ;",
+				
+				"field : datatype[][] ;",
+				
+				"field : datatype[][][ > 18 ] ;",
+		};
+		check(rule,testDRL);	
+	}
+	
+	
+	
+	@Test	
+	public void test_manDL_data_type_restriction() {
+		String rule = "manDL_data_type_restriction";
+		String[] testDRL = new String[] {
+				
+				"Integer",
+				
+				"Custom",
+				
+				
+				"Integer[ length 3, > 342 ]",
+		};
+		check(rule,testDRL);	
+	}
+	
 	
 	
 	@Test
@@ -1805,7 +1966,7 @@ public class Rule_Test {
 				" Ontology : myOnto v1 " +"\n" +
 				" Import: anotherOnto " + "\n" +
 				" Annotations: creator sotty" + "\n" +
-				"  " +"\n" +
+				"  " +"\n" + 
 				" declare g:Test end " +"\n",
 											
 		};	
@@ -1824,6 +1985,50 @@ public class Rule_Test {
 											
 		};	
 		check(rule,testDRL);										
+	}
+	
+	
+	
+	
+	@Test	
+	public void test_manDL_bean() {
+		String rule = "manDL_type_declaration";
+		String[] testDRL = {
+				"@Class " + "\n" +
+				"declare Person " + "\n" +				
+				" DisjointUnionOf: Child, Adult" + "\n" +
+				" SubClassOf: Mammal" + "\n" +
+				" EquivalentTo: Mankind" + "\n" +
+				" DisjointWith: Vegetal" + "\n" +
+				" HasKey: hasage" + "\n" +
+				" " + "\n" +
+				" name : String @key ;" + "\n" +
+				" age : Integer ;" + "\n" +
+				" hasRelation String[ minLength 10 ] ;" + "\n" +
+				" hasAddress : Address[][] ;" + "\n" +
+				" hasAddress some Address ;" + "\n" +
+				" " + "\n" +
+				" " + "\n" +
+				"end",
+											
+		};
+				
+		check(rule,testDRL);										
+	}
+	
+	
+	
+	@Test	
+	public void test_manDL_backwardtype_declaration() {
+		String rule = "manDL_type_declaration";
+		String[] testDRL = new String[] {
+				"declare Student " + "\n" +
+				" as Male and Human and (Slave or worksAt some (School or Prison))" + "\n" +				
+				" age  : int ;" + "\n" +
+				" name : String ;" + "\n" +
+				" end \n"
+		};
+		check(rule,testDRL);											
 	}
 	
 	
@@ -1893,6 +2098,8 @@ public class Rule_Test {
 		for (int j = 0; j < res.length; j++) {			
 			assertTrue(res[j].isSuccess());
 		}	
+		
+		 
 	}
 	
 	
@@ -1922,7 +2129,8 @@ public class Rule_Test {
 						
 					try {
 						DRLv6Lexer lexer = new DRLv6Lexer( new ANTLRInputStream( new ByteArrayInputStream(drlString.getBytes()) ));			
-						DRLv6Parser parser = new DRLv6Parser(new CommonTokenStream( lexer ));	
+						DRLv6Parser parser = new DRLv6Parser(new CommonTokenStream( lexer ),true);
+						
 						
 					
 						long start = new Date().getTime();
@@ -1933,11 +2141,15 @@ public class Rule_Test {
 							final CommonTree resultTree = (CommonTree) root.getTree();
 							fakeRoot.addChild(resultTree);
 							
-						int errors = parser.getNumberOfSyntaxErrors();
+						int errors = parser.getHelper().errors.size();
+						
+						
 					
 						final String tree = DRLTreeFormatter.toIndentedStringTree(resultTree);
 						log.log(Level.INFO, tree);
-																																											
+						
+						for (String emsg : parser.getErrorMessages())
+							log.log(Level.SEVERE,emsg);
 						
 						res.setNumErrors(errors);
 						res.setTree(resultTree);

@@ -3,747 +3,429 @@ lexer grammar DRLv6Lexer;
 options {
   language = Java; 
 }  
+    
+ 
+    
+tokens {
+  UP;
+  DOWN;
+
+  VT_COMPILATION_UNIT;
+  VT_PACKAGE_ID;
+  VT_PACKAGE;
+  VT_IMPORT_SECTION;
+  VT_ONTOLOGY_SECTION;
+  VT_DECLARATION_SECTION;
+  VT_RULEBASE_SECTION;
   
+  VT_GLOBAL_ID;
+  VT_DATA_TYPE;
+  VT_DIM_SIZE;
+  
+  VT_IMPORT;
+  VT_FUNCTION_IMPORT;
+  VT_STAR;  
+  VT_FUNCTION;
+  VT_FUNCTION_ID;
+  VT_PARAM;
+  VT_PARAM_LIST;
+  VT_NAME;
+
+  VT_TEMPLATE;
+  VT_TEMPLATE_ID;
+  VT_SLOT;
+  VT_SLOT_ID;
+  
+  VT_TYPE_DECLARE;
+  VT_TYPE_DECLARE_ID;
+  VT_EXTENDS;
+  VT_DL_DEFINITION;
+  VT_DL_TYPE;
+  VT_FIELD;
+   
+  VT_ENTITY_TYPE;
+  
+  VT_RULE_ID; 
+  VT_ATTRIBUTES;
+  VT_DIALECT;
+  
+  VT_LHS;
+  VT_ARROW;
+  
+  VT_RHS;
+  VT_THEN;
+  VT_CLOSURE;
+  
+  VT_BRANCH;
+  VT_BRANCH_DEFAULT;
+  VT_BRANCH_LABEL;
+  VT_NEG_BRANCH_LABEL;
+  
+  VT_RISING_EDGE;
+  VT_FALLING_EDGE;
+  
+  VT_RHS_CHUNK;
+  VT_CURLY_CHUNK;
+  VT_SQUARE_CHUNK;
+  VT_PAREN_CHUNK;
+  
+  VT_NEW_OBJ;
+  VT_TYPE;
+  VT_ARGS;
+  VT_MSR;
+  
+  VT_AND_IMPLICIT;
+  VT_IMPLIES; 
+  VT_OR;
+  VT_NEG;
+  VT_XOR;
+  VT_EQUIV;
+  VT_AND;
+  
+  VT_HEDGE_VERY;
+  VT_HEDGE_MOL;
+  
+  VT_EXISTS;
+  VT_FORALL;
+  VT_NEXISTS;
+  VT_COUNT;
+  VT_MIN;
+  VT_MAX;
+  VT_VALUE;
+    
+  VT_PATTERN;
+  VT_NESTED_PATTERN;
+  VT_ENABLED;
+  VT_QUERY_PATTERN;  
+  
+  VT_POSITIONAL_VAR;
+  VT_POSITIONAL_CONST;
+  VT_POSITIONAL_INDEX;
+  VT_POSITIONAL_SKIP;
+  
+  VT_BINDING;
+  VT_ACCESSOR;
+  VT_VERSION;
+  VT_INDEXER;
+  VT_INDEX_ALL;
+  VT_METHOD;
+  VT_EXPR;
+  VT_DEBUG_LEFT_EXPR;
+  VT_DEBUG_RIGHT_EXPR;
+  VT_OTHERWISE;
+  
+  VT_FILTER;
+  VT_SET;
+  
+  VT_SEQUENCE;
+  VT_TRAIL;
+  VT_TRAIL_NODE;
+  
+  VT_LIST;
+  VT_RANGE;
+  
+  VT_BEHAVIOR;
+  VT_ENTRYPOINT;
+  VT_ENTRYPOINT_ID;
+  VT_FROM_SOURCE;
+  VT_EXPRESSION_CHAIN;
+  
+  VT_ACCUMULATE_LEFT;
+  VT_ACCUMULATE_RIGHT;
+  VT_ACCUMULATE_ITERATION;
+  VT_ACCUMULATE_FUNCTION;
+  VT_ACC_ITER_INIT;
+  VT_ACC_ITER_ACT;
+  VT_ACC_ITER_REV;
+  VT_ACC_ITER_RES;
+  
+  VT_COLLECT_LIST;
+  
+  
+  VT_ONTOLOGY;
+  VT_IRI;
+  VT_PREFIX;
+  VT_ANNOTATIONS;
+  VT_ANNOTATION;
+  VT_DL_DEFINITION;
+  VT_FIELD;
+  VT_KEYS;
+  
+  VT_DL_TYPE;    
+  VT_DL_PROP;
+  VT_DL_RESTRICTION;
+  VT_DL_RESTRICTED_TYPE;
+  
+  VT_EQUIVALENTTO;
+  VT_SUBCLASSOF;
+  VT_DISJOINTWITH;
+  VT_DISJOINTUNIONOF;
+  VT_SUBPROPERTYOF; 
+  VT_INVERSEOF;
+  VT_SUBPROPERTYCHAIN;
+  VT_DOMAIN;
+  VT_RANGE; 
+  
+  VT_FACTS;
+  VT_FACT;
+  VT_TYPES;
+  VT_SAMEAS;
+  VT_DIFFERENTFROM;
+  
+  VT_EQV_CLASS;
+  VT_DIF_CLASS;
+  VT_EQV_PROP;
+  VT_DIF_PROP;
+  VT_EQV_INDV;
+  VT_DIF_INDV;
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  VK_A_ACTGROUP;
+  VK_A_AGENDAGROUP;
+  VK_A_AUTOFOCUS;
+  VK_A_CALENDAR;
+  VK_A_DATE_EFFECTIVE;
+  VK_A_DATE_EXPIRES;
+  VK_A_DEDUCTION;
+  VK_A_DIALECT;
+  VK_A_DIRECTION_ABDUCTIVE;
+  VK_A_DIRECTION_DEDUCTIVE;
+  VK_A_DIRECTION_EQUIVALENCE;
+  VK_A_DURATION;
+  VK_A_ENABLED;
+  VK_A_IMPLICATION;
+  VK_A_LOCKONACTIVE;
+  VK_A_NOLOOP;
+  VK_A_RULEFLOWGROUP;
+  VK_A_SALIENCE;
+  VK_A_TIMER;
+  VK_ACC;
+  VK_ACCL;
+  VK_ACCUMULATE;
+  VK_ACCUMULATE_RIGHT;
+  VK_ACTION;
+  VK_ACTIVATION;
+  VK_ACTIVE;
+  VK_AGENDA;
+  VK_ALL;
+  VK_AND;
+  VK_ANNOTATIONS;
+  VK_ANOTHER;
+  VK_AS;
+  VK_ATTRIBUTES;
+  VK_AUTO;
+  VK_AVERAGE;
+  VK_BOOL;
+  VK_BOOLEAN;
+  VK_BRANCH;
+  VK_BYTE;
+  VK_CALENDARS;
+  VK_CHAR;
+  VK_CHARACTERISTICS;
+  VK_CLASS;
+  VK_CLOSURE;
+  VK_COLLECT;
+  VK_COLLECT_LIST;
+  VK_CONTAINS;
+  VK_COUNT;
+  VK_DATATYPE;
+  VK_DATE;
+  VK_DECLARE;
+  VK_DEFEATS;
+  VK_DIALECT;
+  VK_DIFFERENT_INDIVIDUALS;
+  VK_DIFFERENTFROM;
+  VK_DISJOINT;
+  VK_DISJOINT_CLASSES;
+  VK_DISJOINT_PROPERTIES;
+  VK_DISJOINT_UNION;
+  VK_DISTINCT;
+  VK_DO;
+  VK_DOMAIN;
+  VK_DOUBLE;
+  VK_DURATION;
+  VK_EFFECTIVE;
+  VK_ENABLED;
+  VK_END;
+  VK_ENTITY;
+  VK_ENTRY;
+  VK_ENTRYPOINT;
+  VK_EQUIV;
+  VK_EQUIVALENT_CLASSES;
+  VK_EQUIVALENT_PROPERTIES;
+  VK_EQUIVALENTTO;
+  VK_EVAL;
+  VK_EVENT;
+  VK_EXACTLY;
+  VK_EXCLUDES;
+  VK_EXISTS;
+  VK_EXPIRES;
+  VK_EXTEND;
+  VK_EXTENDS;
+  VK_FACTS;
+  VK_FALLING;
+  VK_FILTER;
+  VK_FLOAT;
+  VK_FOCUS;
+  VK_FORALL;
+  VK_FROM;
+  VK_FUNCTION;
+  VK_GLOBAL;
+  VK_GROUP;
+  VK_HASKEY;
+  VK_IMPLIES;
+  VK_IMPORT;
+  VK_IN;
+  VK_INDIVIDUAL;
+  VK_INIT;
+  VK_INSERT;
+  VK_INSERT_LOG;
+  VK_INSTANCEOF;
+  VK_INT;
+  VK_INVERSE;
+  VK_INVERSEOF;
+  VK_JAVA;
+  VK_KEY;
+  VK_LENGTH;
+  VK_LENGTH_MAX;
+  VK_LENGTH_MIN;
+  VK_LIMIT;
+  VK_LOCK;
+  VK_LONG;
+  VK_LOOP;
+  VK_MATCHES;
+  VK_MAX;
+  VK_MDA_FUNCTIONAL;
+  VK_MDA_FUNCTIONAL_INV;
+  VK_MDA_REFLEXIVE;
+  VK_MDA_REFLEXIVE_INV;
+  VK_MDA_SYMMETRIC;
+  VK_MDA_SYMMETRIC_INV;
+  VK_MDA_TRANSITIVE;
+  VK_MEMBEROF;
+  VK_MIN;
+  VK_MODIFY;
+  VK_MODIFY_LOG;
+  VK_MOL;
+  VK_MVEL;
+  VK_NAMESPACE;
+  VK_NEG;
+  VK_NEW;
+  VK_NO;
+  VK_NOT;
+  VK_NULL;
+  VK_OA_CRISP;
+  VK_OA_DEFAULT;
+  VK_OA_DEFEAT;
+  VK_OA_DEGREE;
+  VK_OA_ID;
+  VK_OA_KIND;
+  VK_OA_MERGE;
+  VK_OA_MISSING;
+  VK_OA_OTHERWISE;
+  VK_OA_PARAMS;
+  VK_ON;
+  VK_ONCHANGE;
+  VK_ONLY;
+  VK_ONTOLOGY;
+  VK_OR;
+  VK_ORDERBY;
+  VK_OTHERWISE;
+  VK_OVER;
+  VK_PACKAGE;
+  VK_PATTERN;
+  VK_PATTERN_LANG;
+  VK_POINT;
+  VK_PREFIX;
+  VK_PROPERTY;
+  VK_PROPERTY_ANNOTATION;
+  VK_PROPERTY_DATA;
+  VK_PROPERTY_OBJECT;
+  VK_QUERY;
+  VK_RANGE;
+  VK_RESULT;
+  VK_RETRACT;
+  VK_RETRACT_LOG;
+  VK_REVERSE;
+  VK_RISING;
+  VK_ROLE;
+  VK_RULE;
+  VK_RULEFLOW;
+  VK_SALIENCE;
+  VK_SAME_INDIVIDUAL;
+  VK_SAMEAS;
+  VK_SELF;
+  VK_SEQ;
+  VK_SHORT;
+  VK_SOME;
+  VK_SOUNDSLIKE;
+  VK_START;
+  VK_SUBCLASSOF;
+  VK_SUBPROPERTYCHAIN;
+  VK_SUBPROPERTYOF;
+  VK_SUM;
+  VK_SUPER;
+  VK_TEMPLATE;
+  VK_THAT;
+  VK_THEN;
+  VK_THIS;
+  VK_THROTTLE;
+  VK_TIME;
+  VK_TIMER;
+  VK_TYPE;
+  VK_TYPE_BOOLEAN;
+  VK_TYPE_DOUBLE;
+  VK_TYPE_FLOAT;
+  VK_TYPE_INTEGER;
+  VK_TYPE_STRING;
+  VK_TYPES;
+  VK_UNIQUE;
+  VK_UPDATE;
+  VK_VALUE;
+  VK_VERY;
+  VK_VOID;
+  VK_WHEN;
+  VK_WINDOW;
+  VK_XOR;
+  VK_OPERATOR;
+  VK_LOCK_ON_ACTIVE;
+  VK_DATE_EFFECTIVE;
+  VK_DATE_EXPIRES;
+  VK_NO_LOOP;
+  VK_AUTO_FOCUS;
+  VK_ACTIVATION_GROUP;
+  VK_AGENDA_GROUP;
+  VK_RULEFLOW_GROUP;
+  VK_ENTRY_POINT;
+  VK_PRIMITIVE_TYPE;
+   
+}
+    
+    
 @lexer::header {
   package org.drools.lang;
 
 }
-
-
-
-
-WS      :       ( ' '
-                | '\t'
-                | '\f'
-                | EOL
-                )+
-                { $channel=HIDDEN; }
-        ;
-  
-fragment
-EOL   :      
-      (       ( '\r\n' )=> '\r\n'  // Evil DOS
-                |       '\r'    // Macintosh
-                |       '\n'    // Unix (the right way)
-                )
-        ;
-        
-FLOAT
-options { k=*; }
-  : ('-')?('0'..'9')+ '.' ('0'..'9')+
-  ;
-
-INT
-options { k=*; }  
-  : ('-')?('0'..'9')+
-    ;
-
-STRING
-      :   ('"' ( EscapeSequence | ~('\\'|'"') )+ '"')
-      |   ('\'' ( EscapeSequence | ~('\\'|'\'') )+ '\'')
-        ;
-
-fragment
-HexDigit : ('0'..'9'|'a'..'f'|'A'..'F') ;
-
-fragment
-EscapeSequence
-    :   '\\' ('b'|'B'|'t'|'n'|'f'|'r'|'\"'|'\''|'\\'|'.'|'o'|
-              'x'|'a'|'e'|'c'|'d'|'D'|'s'|'S'|'w'|'W'|'p'|'A'|
-              'G'|'Z'|'z'|'Q'|'E'|'*'|'['|']'|'('|')'|'$'|'^'|
-              '{'|'}'|'?'|'+'|'-'|'&'|'|')
-    |   UnicodeEscape
-    |   OctalEscape
-    ;
-
-fragment
-OctalEscape
-    :   '\\' ('0'..'3') ('0'..'7') ('0'..'7')
-    |   '\\' ('0'..'7') ('0'..'7')
-    |   '\\' ('0'..'7')
-    ;
-
-fragment
-UnicodeEscape
-    :   '\\' 'u' HexDigit HexDigit HexDigit HexDigit
-    ;
-
-
-
-  
-  
-  
-  
-A_DATE_EFFECTIVE
-  : 'effective'
-  ;
-
-A_DATE_EXPIRES
-  : 'expires'
-  ;
-  
-A_ENABLED
-  : 'enabled'
-  ; 
-
-A_SALIENCE
-  : 'salience'
-  ;
-
-A_NOLOOP
-  : 'no-loop'
-  ;
-
-A_AUTOFOCUS
-  : 'auto-focus'
-  ; 
-  
-A_ACTGROUP
-  : 'activation-group'
-  ;
-
-A_RULEFLOWGROUP
-  : 'ruleflow-group'
-  ;
-
-A_AGENDAGROUP
-  : 'agenda-group'
-  ;
-
-A_DURATION
-  : 'duration'
-  ;
-  
-A_TIMER 
-  : 'timer'
-  ;
-  
-A_CALENDAR
-  : 'calendar'
-  ;
-
-
-A_DIALECT
-  : 'dialect'
-  ;     
-  
-A_LOCKONACTIVE
-  : 'lock-on-active'
-  ;
-  
-A_DEDUCTION 
-  :   'deduction'
-  ;
-  
-A_IMPLICATION
-  : 'implication'
-  ;
-  
-A_DIRECTION
-  : 'deductive' 
-  | 'abductive'
-  | 'equivalence'
-  ; 
-  
-  
-  
-  
-MDA_FUNCTIONAL
-  :  'functional' | 'Functional'
-  ;
-  
-MDA_FUNCTIONAL_INV
-  : 'inverseFunctional' | 'InverseFunctional'
-  ;    
-  
-MDA_REFLEXIVE
-  : 'reflexive' | 'Reflexive'
-  ;
-  
-MDA_REFLEXIVE_INV
-  : 'irreflexive' | 'Irreflexive'
-  ;    
-  
-MDA_SYMMETRIC
-  : 'symmetric' | 'Symmetric'
-  ;  
-
-MDA_SYMMETRIC_INV
-  : 'asymmetric' | 'Asymmetric'
-  ;  
-  
-MDA_TRANSITIVE
-  :  'transitive' | 'Transitive'
-  ;  
-  
-  
-  
-OA_KIND
-  :   'kind'
-  ;
-  
-OA_ID
-  : 'id'
-  ;
-
-OA_PARAMS
-  : 'params'
-  ;
-
-OA_DEGREE
-  : 'degree'
-  ;
-  
-OA_CRISP
-  : 'crisp'
-  ;   
-
-OA_MERGE
-  : 'merge'
-  ;   
-
-/*    
-OA_FILTER
-  : 'filter'
-  ;
-*/
-
-OA_MISSING
-  : 'missing'
-  ;
-        
-OA_DEFEAT
-  : 'defeat'  
-  ;
-
-OA_DEFAULT
-  : 'default'
-  ;
-
-OA_OTHERWISE
-  : 'otherwise'
-  ;
-
-
-ACCUMULATE
-  : ( 'acc' | 'accumulate' | 'accL')
-  ;
-  
-ACCUMULATE_RIGHT
-  : 'accR'
-  ;   
-
-ACTION
-  : 'action'
-  ;
-  
-AND
-  : 'and'
-  ;
-  
-ANNOTATIONS
-  : 'annotations' | 'Annotations'
-  ;  
-
-AS
-  : 'as'
-  ;
-
-ATTRIBUTES
-  : 'attributes'
-  ;
-
-AVERAGE
-  : 'avg'
-  ;
-  
-BOOL
-  : ('true'|'false') 
-  ;
-
-BRANCH
-  : 'branch'
-  ; 
-  
-CHARACTERISTICS
-  : 'Characteristics'
-  ;  
-  
-CLASS
-  : 'Class' | 'class'
-  ;  
-  
-CLOSURE
-  : 'closure'
-  ;  
-  
-COLLECT
-  : 'collect'
-  ;
-  
-COLLECT_LIST
-  : 'collectList'
-  ;  
-
-CONTAINS
-  : 'contains'
-  ;
-
-COUNT
-  : 'count'
-  ;
-  
-DATATYPE
-  : 'Datatype'
-  ;  
-
-DECLARE
-  : 'declare'
-  ;
-
-DEFEATS
-  : 'defeats'
-  ;
-
-DIFFERENTFROM
-  : 'differentFrom' | 'DifferentFrom'
-  ;
-
-DIFFERENT_INDIVIDUALS
-  : 'differentIndividuals' | 'DifferentIndividuals'
-  ;
-
-DISJOINT
-  : 'disjointWith' | 'DisjointWith'
-  ;
-
-DISJOINT_CLASSES
-  : 'disjointClasses' | 'DisjointClasses'
-  ;
     
-DISJOINT_PROPERTIES
-  : 'disjointProperties' | 'DisjointProperties'
-  ;
-  
-DISJOINT_UNION
-  : 'disjointUnionOf' | 'DisjointUnionOf'
-  ;  
-
-DISTINCT
-  : 'distinct'
-  ;
-
-
-DO
-  : 'do'
-  ;
-
-DOMAIN
-  : 'domain' | 'Domain'
-  ;
-
-END
-  : 'end'
-  ;
-
-  
-ENTITY
-  : 'Entity' | 'entity'
-  ; 
-  
-ENTRYPOINT
-  : 'entry-point'
-  ; 
-
-EQUIV
-  : 'equiv'
-  ; 
-
-EQUIVALENT_CLASSES
-  : 'equivalentClasses' | 'EquivalentClasses'
-  ;
     
-EQUIVALENT_PROPERTIES
-  : 'equivalentProperties' | 'EquivalentProperties'
-  ;
     
-EQUIVALENTTO
-  : 'equivalentTo' | 'EquivalentTo'
-  ;  
-
-EVENT
-  : 'Event' | 'event'
-  ;
-
-EXACTLY
-  : 'exactly'
-  ;
-
-EXISTS
-  : 'exists'
-  ;
-
-EXTEND  
-  : 'extends'
-  ;
+    
  
-FACTS
-  : 'facts' | 'Facts'
-  ; 
- 
-FALLING
-  : 'falling'
-  ; 
-  
-FILTER
-  : 'filter'
-  ;  
- 
-FORALL
-  : 'forall'
-  ;
-  
-FROM
-  : 'from'
-  ; 
-  
-FUNCTION
-  :   'function'  
-  ;
-    
-GLOBAL
-  : 'global'
-  ; 
-
-HASKEY
-  : 'HasKey'
-  ;
-  
-IMPLIES
-  : 'implies'
-  ;
-
-IMPORT  
-  : 'import' | 'Import'
-  ;
-
-IN
-  : 'in'
-  ;
-  
-INDIVIDUAL  
-  : 'individual' | 'Individual'
-  ;
-
-INIT
-  : 'init'
-  ;
- 
-INSERT
-  : 'insert'
-  ;
-
-INSERT_LOG
-  : 'insertLogical'
-  ;
-   
-INVERSE
-  : 'inverse'
-  ;   
-
-INVERSEOF
-  : 'inverseOf' | 'InverseOf'
-  ;
-    
-JAVA
-  :  'java'
-  ;    
-    
-KEY
-  :  'key'
-  ;    
-    
-LENGTH
-  : 'length'
-  ;
-  
-LENGTH_MIN
-  : 'minLength'
-  ;
- 
-LENGTH_MAX
-  : 'maxLength'
-  ;
-  
-LIMIT
-  : 'limit'
-  ;
-
-MAX 
-  : 'max'
-  ;
-
-MIN 
-  : 'min'
-  ; 
-
-MODIFY
-  : 'modify'
-  ; 
-  
-MODIFY_LOG  
-  : 'modifyLogical'
-  ;
-  
-MVEL
-  : 'mvel'
-  ;  
-
-
-NEG
-  : 'neg'
+AMPER 
+  : '&' 
   ;
   
 
-NEW
-  : 'new'
+AT  
+  : '@'
   ;
-
-NOT
-  : 'not'
-  ;
-
-MOL 
-  : 'mol'
-  ; 
-
-NAMESPACE
-  : 'namespace' | 'Namespace'
-  ;
-
-NULL  
-  : 'null'
-  ;
-
-ONLY
-  : 'only' | 'all'
-  ;
-
-ONTOLOGY
-  : 'ontology' | 'Ontology'
-  ;
-
-OR
-  : 'or'
-  ;
-  
-ORDERBY
-  : 'orderby'
-  ;  
-  
-OTHERWISE
-  : 'OTHERWISE'
-  ;  
- 
-OVER
-  : 'over'
-  ;
-
-PACKAGE 
-  : 'package'
-  ;
-
-PATTERN
-  : 'pattern'
-  ;
-  
-PATTERN_LANG
-  : 'langPattern'
-  ;  
-
-PREFIX 
-  : 'Prefix'
-  ;
-
-PROPERTY
-  : 'property'
-  ;
-
-PROPERTY_OBJECT
-  : 'ObjectProperty'
-  ;  
-
-PROPERTY_DATA
-  : 'DataProperty'
-  ;
-
-PROPERTY_ANNOTATION
-  : 'AnnotationProperty'
-  ;
-
-ONCHANGE
-  : 'onChange'
-  ;
-
-QUERY
-  : 'query'
-  ;
-  
-RANGE
-  : 'range' | 'Range'
-  ;  
-  
-RESULT
-  : 'result'
-  ;
-  
-RETRACT
-  : 'retract'
-  ;
-  
-RETRACT_LOG
-  : 'retractLogical'    
-  ;
-
-REVERSE
-  : 'reverse'
-  ;
-  
-RISING
-  : 'rising'
-  ;
-  
-ROLE
-  : 'role'
-  ;  
-
-RULE  
-  : 'rule'
-  ;
-  
-SAMEAS
-  : 'sameAs' | 'SameAs'
-  ;  
-  
-SAME_INDIVIDUAL
-  : 'sameIndividual' | 'SameIndividual'
-  ;  
-
-SELF
-  : 'Self'
-  ;
-  
-SEQ
-  : 'seq'
-  ;  
-
-SOME
-  : 'some'
-  ; 
-
-SUBCLASSOF
-  : 'SubClassOf'
-  ;
-  
-SUBPROPERTYCHAIN
-  : 'SubPropertyChain'
-  ;  
-  
-SUBPROPERTYOF
-  : 'SubPropertyOf'
-  ;  
-
-START
-  : 'start'
-  ; 
-  
-SUM
-  : 'sum'
-  ;    
-  
-TEMPLATE
-  : 'template'
-  ;
-
-THAT
-  : 'that'
-  ;
-
-THEN
-  : 'then'
-  ;
-  
-THROTTLE
-  : 'throttle'
-  ;  
-  
-TIME
-  : 'time'
-  ;   
-  
-TYPE
-  : 'type'
-  ;  
-
-TYPES
-  : 'types' | 'Types'
-  ;
-  
-TYPE_STRING
-  : 'string' | 'String'
-  ;
-  
-TYPE_INTEGER
-  : 'integer' | 'Integer'
-  ;
-  
-TYPE_FLOAT
-  : 'float' | 'Float'
-  ;
-  
-TYPE_DOUBLE
-  : 'double' | 'Double'
-  ;
-  
-TYPE_BOOLEAN
-  : 'boolean' | 'Boolean'
-  ;  
-
-UNIQUE
-  : 'unique'
-  ;
-
-UPDATE
-  : 'update'
-  ;
-
-VALUE 
-  : 'value'
-  ;
-
-
-VERY  
-  : 'very'
-  ;
-  
-WHEN
-  : 'when'
-  ;
-
-WINDOW
-  : 'window'
-  ;
-
-XOR
-  : 'xor'
-  ;
-
-
-
-
-AT  : '@'
-  ;
-
 
 ARROW
   : '->'
@@ -757,7 +439,8 @@ COLON
   : ':'
   ;
 
-COMMA : ','
+COMMA 
+  : ','
   ;
 
       
@@ -790,7 +473,7 @@ DOUBLE_COLON
   : '::'
   ;
 
-DOUBLE_HYPEN 
+DOUBLE_MINUS 
   : '--'
   ;
 
@@ -856,6 +539,10 @@ LESS_EQUAL
 
 MINUS
   : '-'
+  ; 
+  
+MOD 
+  : '%'
   ;
 
 NEG_MARK
@@ -865,10 +552,7 @@ NEG_MARK
 NOT_EQUAL
   : '!='
   ;
-  
-PERCENT
-  : '%'
-  ;  
+    
   
 PERCENT_GREATER
   : '%>'
@@ -901,7 +585,49 @@ TILDE
 TIMES
   : '*'
   ;
+  
+TRIPLE_GREATER
+	:	'>>>'
+	;  
+  
+XOR
+  : '^'
+  ; 
+  
+    
 
+PLUS_ASSIGN
+	: '+='
+	;
+	
+MINUS_ASSIGN
+	:	'-='
+	;
+	
+	
+MULT_ASSIGN
+	:	'*='
+	;
+	
+DIV_ASSIGN
+	:	'/='
+	;
+	
+AND_ASSIGN
+	:	'&='
+	;
+	
+OR_ASSIGN
+	:	'|='
+	;
+	
+XOR_ASSIGN
+	:	'^='
+	;
+
+MOD_ASSIGN
+	:	'%='
+	;
 
 
 
@@ -930,15 +656,45 @@ RIGHT_CURLY
         ;
         
 
-  
 
 
-/*  removed due to the use of '#'
-SH_STYLE_SINGLE_LINE_COMMENT  
-  : '#' (~('\r'|'\n'))* EOL?
-                { $channel=HIDDEN; setText("//"+getText().substring(1));}
+
+
+
+HEX   : '0' ('x'|'X') HexDigit+ IntegerTypeSuffix? ;
+
+DECIMAL : MINUS? ('0' | '1'..'9' '0'..'9'*) IntegerTypeSuffix? ;
+
+OCTAL   : '0' ('0'..'7')+ IntegerTypeSuffix? ;
+
+
+
+FLOAT
+    :   MINUS? ('0'..'9')+ '.' ('0'..'9')* Exponent? FloatTypeSuffix?
+    |   MINUS? '.' ('0'..'9')+ Exponent? FloatTypeSuffix?
+    |   MINUS? ('0'..'9')+ Exponent FloatTypeSuffix?
+    |   MINUS? ('0'..'9')+ FloatTypeSuffix
   ;
-*/       
+
+
+BOOL
+  	:	'true'
+  	| 	'false'
+  	;
+
+
+
+
+
+
+
+STRING
+      :   ('"' ( EscapeSequence | ~('\\'|'"') )+ '"')
+      |   ('\'' ( EscapeSequence | ~('\\'|'\'') )+ '\'')
+      ;
+
+
+
         
 C_STYLE_SINGLE_LINE_COMMENT 
   : '/*' (~('\r'|'\n'))* EOL?
@@ -955,32 +711,112 @@ ID
   | '`' IdentifierStart IdentifierPart* '`'
   { state.text = $text.substring(1, $text.length() - 1);  }
   ;
-  
+
+/*  
 PREFIXED_ID 
   : ':' IdentifierStart IdentifierPart*  
   { state.text = $text.substring(1, $text.length() );  }
   ;  
+*/  
   
 BLANK_ID
   : '_' IdentifierStart IdentifierPart*  
   { state.text = $text.substring(1, $text.length() );  }
-  ;    
+  ; 
   
-MISC  :
-    //'!' | '%' | '^' | '*' | '-' | '+'  | '?' | '/' | '\'' | '\\' | '|' | '&' 
-    '^' | '\'' | '\\' | '&' 
-  ;
- 
-
+  
+  
 VAR 
   : '$' IdentifierPart+ 
   ;
+  
+  
+  
+   
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+MISC  :
+    '\'' | '\\'  
+  ;
+ 
+
+
+WS      :       ( ' '
+                | '\t'
+                | '\f'
+                | EOL
+                )+
+                { $channel=HIDDEN; }
+        ;
+  
+fragment
+EOL   :      
+      (       ( '\r\n' )=> '\r\n'  // Evil DOS
+                |       '\r'    // Macintosh
+                |       '\n'    // Unix (the right way)
+                )
+        ;
+        
+
+fragment
+HexDigit : ('0'..'9'|'a'..'f'|'A'..'F') ;
+
+fragment
+EscapeSequence
+    :   '\\' ('b'|'B'|'t'|'n'|'f'|'r'|'\"'|'\''|'\\'|'.'|'o'|
+              'x'|'a'|'e'|'c'|'d'|'D'|'s'|'S'|'w'|'W'|'p'|'A'|
+              'G'|'Z'|'z'|'Q'|'E'|'*'|'['|']'|'('|')'|'$'|'^'|
+              '{'|'}'|'?'|'+'|'-'|'&'|'|')
+    |   UnicodeEscape
+    |   OctalEscape
+    ;
+
+fragment
+OctalEscape
+    :   '\\' ('0'..'3') ('0'..'7') ('0'..'7')
+    |   '\\' ('0'..'7') ('0'..'7')
+    |   '\\' ('0'..'7')
+    ;
+
+fragment
+UnicodeEscape
+    :   '\\' 'u' HexDigit HexDigit HexDigit HexDigit
+    ;
+
+fragment
+IntegerTypeSuffix : ('l'|'L') ;
+
+fragment
+Exponent : ('e'|'E') ('+'|'-')? ('0'..'9')+ ;
+
+fragment
+FloatTypeSuffix : ('f'|'F'|'d'|'D') ;
+  
+  
+
+  
+
+    
+
 
 fragment
 IdentifierStart
-    :   //'\u0024'
+    :   //'\u0024'              //  $
         '\u0041'..'\u005a'
-        // |   '\u005f'
+//    |   '\u005f'              //  _
     |   '\u0061'..'\u007a'
     |   '\u00a2'..'\u00a5'
     |   '\u00aa'
