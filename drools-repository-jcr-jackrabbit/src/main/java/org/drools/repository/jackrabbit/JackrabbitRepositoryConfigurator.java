@@ -23,6 +23,7 @@ import java.util.Properties;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.Workspace;
 
 import org.apache.jackrabbit.commons.cnd.CndImporter;
 import org.apache.jackrabbit.core.TransientRepository;
@@ -56,7 +57,7 @@ public class JackrabbitRepositoryConfigurator extends JCRRepositoryConfigurator 
 
     }
     
-    public void registerNodeTypesFromCndFile(String cndFileName, Session session) throws RepositoryException {
+    public void registerNodeTypesFromCndFile(String cndFileName, Session session, Workspace workspace) throws RepositoryException {
         try {
             //Read in the CND file
             Reader in = new InputStreamReader(this.getClass().getResourceAsStream( cndFileName ));
