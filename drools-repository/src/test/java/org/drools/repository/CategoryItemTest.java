@@ -16,9 +16,22 @@
 
 package org.drools.repository;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.jcr.Node;
+import javax.jcr.Property;
+import javax.jcr.PropertyIterator;
+import javax.jcr.Repository;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import javax.jcr.SimpleCredentials;
+import javax.jcr.Value;
+import javax.jcr.Workspace;
+
+import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -27,6 +40,8 @@ import static org.junit.Assert.fail;
 
 public class CategoryItemTest extends RepositoryTestCase {
 
+	
+	
 	@Test
     public void testTagItem() throws Exception {
 
@@ -95,6 +110,11 @@ public class CategoryItemTest extends RepositoryTestCase {
 
 	@Test
     public void testGetChildTags() {
+		
+		final CategoryItem root = getRepo().loadCategory("/");
+
+        root.addCategory("TestTag", "nothing to see");
+        
         CategoryItem tagItem1 = getRepo().loadCategory("TestTag");
         assertNotNull(tagItem1);
         assertEquals("TestTag", tagItem1.getName());
@@ -190,8 +210,63 @@ public class CategoryItemTest extends RepositoryTestCase {
         as.archiveItem(true);
 
         repo.loadCategory("testRemoveCategoryWithArchivedCat").remove();
+        
         repo.save();
 
-        // as.remove();
+        as.remove();
     }
+	/**
+	 * This removed the complexity of testRemoveCategoryLinkedWithArchived, and
+	 * was added to show a problem in ModeShape: https://jira.jboss.org/browse/MODE-877
+	 */
+	@Test 
+	public void simpleRemoveCategoryLinkedWithArchived() {
+		try {
+			RulesRepository repo = getRepo();	
+			Session session = repo.getSession();
+
+			Node rn = session.getRootNode();
+			Node asset = rn.addNode("asset","drools:assetNodeType");
+			//Adding some required properties
+			asset.setProperty("drools:packageName", "one");
+			asset.setProperty("drools:title", "title");
+			asset.setProperty("drools:format", "format");
+			asset.setProperty("drools:description", "description");
+			Calendar lastModified = Calendar.getInstance();
+			asset.setProperty("drools:lastModified", lastModified);
+            //Adding a category
+			Node category = rn.addNode("category","drools:categoryNodeType");
+			//adding the category to the asset
+			Value[] newTagValues = new Value[1];
+            newTagValues[0] = asset.getSession().getValueFactory().createValue( category );
+            asset.setProperty( "drools:categoryReference",
+                    newTagValues );
+            //save the session
+			session.save();
+			//checking that is there.
+			PropertyIterator pi = category.getReferences();
+			while (pi.hasNext()) {
+				Property property = pi.nextProperty();
+				String name = property.getName();
+				System.out.println("Name=" + name);
+				assertEquals("drools:categoryReference", name);
+			}
+			//removing the category from the asset
+			Value[] updatedTagValues = new Value[1];
+			updatedTagValues[0] = null;
+			asset.setProperty( "drools:categoryReference",
+					updatedTagValues );
+			//session.save();
+			//removing the category itself
+			category.remove();
+	        //saving the session, leads to a Referential Integrity Exception on ModeShape: 
+			//https://jira.jboss.org/browse/MODE-877
+			session.save();
+
+		} catch (RepositoryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			fail();
+		}
+	}
 }
