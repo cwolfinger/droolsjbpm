@@ -23,12 +23,13 @@
  */
 package org.drools.repository;
 
+import org.junit.After;
 import org.junit.AfterClass;
 
 public abstract class RepositoryTestCase {
 
-    @AfterClass
-    public static void tearDown() throws Exception {
+    @After
+    public  void tearDown() throws Exception {
         RepositorySessionUtil.shutdown();
     }
 

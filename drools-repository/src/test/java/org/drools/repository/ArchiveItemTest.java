@@ -77,7 +77,11 @@ public class ArchiveItemTest extends RepositoryTestCase {
     }
 
 	@Test
-    public void testLoadArchivedAsset() throws Exception {
+	public void testLoadArchivedAsset() throws Exception {
+		AssetItem itemAdd = RepositorySessionUtil.getRepository().loadDefaultPackage().addAsset( "testArchiveBooleanFlag",
+        "yeah" );
+		itemAdd.archiveItem( true );
+		
         AssetItem item = RepositorySessionUtil.getRepository().loadDefaultPackage().loadAsset( "testArchiveBooleanFlag" );
         System.out.println( item );
         assertTrue( item.isArchived() );

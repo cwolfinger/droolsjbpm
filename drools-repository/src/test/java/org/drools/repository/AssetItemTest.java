@@ -523,7 +523,7 @@ public class AssetItemTest extends RepositoryTestCase {
             StateItem stateItem1 = ruleItem1.getState();
             assertEquals(StateItem.DRAFT_STATE_NAME, stateItem1.getName());
 
-
+            getRepo().createState( "TestState1" );
 
             ruleItem1.updateState("TestState1");
             assertNotNull(ruleItem1.getState());
