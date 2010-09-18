@@ -39,13 +39,21 @@ import org.drools.RuntimeDroolsException;
  */
 public class KeyStoreHelper {
 
+    // true if packages should be signed during serialization
     public static final String PROP_SIGN       = "drools.serialisation.sign";
+    // the URL to the key store where the private key is stored
     public static final String PROP_PVT_KS_URL = "drools.serialisation.private.keyStoreURL";
+    // the key store password
     public static final String PROP_PVT_KS_PWD = "drools.serialisation.private.keyStorePwd";
+    // the private key identifier
     public static final String PROP_PVT_ALIAS  = "drools.serialisation.private.keyAlias";
+    // the private key password
     public static final String PROP_PVT_PWD    = "drools.serialisation.private.keyPwd";
+    // the URL to the key store where the public key is stored
     public static final String PROP_PUB_KS_URL = "drools.serialisation.public.keyStoreURL";
+    // the key store password
     public static final String PROP_PUB_KS_PWD = "drools.serialisation.public.keyStorePwd";
+    // the public key identifier
     public static final String PROP_PUB_ALIAS  = "drools.serialisation.public.keyAlias";
 
     private boolean            signed;
