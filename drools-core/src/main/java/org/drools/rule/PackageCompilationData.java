@@ -25,8 +25,13 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.security.AccessController;
+import java.security.InvalidKeyException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivilegedAction;
 import java.security.ProtectionDomain;
+import java.security.SignatureException;
+import java.security.UnrecoverableKeyException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -35,6 +40,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.drools.CheckedDroolsException;
+import org.drools.RuleBaseConfiguration;
 import org.drools.RuntimeDroolsException;
 import org.drools.base.accumulators.JavaAccumulatorFunctionExecutor;
 import org.drools.common.DroolsObjectInputStream;
@@ -43,6 +49,7 @@ import org.drools.spi.Consequence;
 import org.drools.spi.EvalExpression;
 import org.drools.spi.PredicateExpression;
 import org.drools.spi.ReturnValueExpression;
+import org.drools.util.KeyStoreHelper;
 
 public class PackageCompilationData
     implements
@@ -66,7 +73,7 @@ public class PackageCompilationData
     private transient PackageClassLoader  classLoader;
 
     private transient ClassLoader         parentClassLoader;
-    
+
     private boolean                       dirty;
 
     static {
@@ -92,7 +99,7 @@ public class PackageCompilationData
         this.lineMappings = new HashMap();
         this.dirty = false;
     }
-    
+
     public boolean isDirty() {
         return this.dirty;
     }
@@ -111,15 +118,46 @@ public class PackageCompilationData
      *
      */
     public void writeExternal(final ObjectOutput stream) throws IOException {
-        stream.writeObject( this.store );
+        KeyStoreHelper helper = new KeyStoreHelper();
+        
+        stream.writeBoolean( helper.isSigned() );
+
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutput out = new ObjectOutputStream( bos );
+        out.writeObject( this.store );
+        byte[] buff = bos.toByteArray();
+        stream.writeObject( buff );
+        if ( helper.isSigned() ) {
+            sign( stream,
+                  helper,
+                  buff );
+        }
+
         stream.writeObject( this.AST );
 
         // Rules must be restored by an ObjectInputStream that can resolve using a given ClassLoader to handle seaprately by storing as
         // a byte[]
-        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        final ObjectOutput out = new ObjectOutputStream( bos );
+        bos = new ByteArrayOutputStream();
+        out = new ObjectOutputStream( bos );
         out.writeObject( this.invokerLookups );
-        stream.writeObject( bos.toByteArray() );
+        buff = bos.toByteArray();
+        stream.writeObject( buff );
+        if ( helper.isSigned() ) {
+            sign( stream,
+                  helper,
+                  buff );
+        }
+    }
+
+    private void sign(final ObjectOutput stream,
+                      KeyStoreHelper helper,
+                      byte[] buff) {
+        try {
+            stream.writeObject( helper.signDataWithPrivateKey( buff ) );
+        } catch ( Exception e ) {
+            throw new RuntimeDroolsException( "Error signing object store: " + e.getMessage(),
+                                              e );
+        }
     }
 
     /**
@@ -130,23 +168,66 @@ public class PackageCompilationData
      */
     public void readExternal(final ObjectInput stream) throws IOException,
                                                       ClassNotFoundException {
+        KeyStoreHelper helper = new KeyStoreHelper();
         if ( stream instanceof DroolsObjectInputStream ) {
             DroolsObjectInputStream droolsStream = (DroolsObjectInputStream) stream;
             initClassLoader( droolsStream.getClassLoader() );
         } else {
             initClassLoader( Thread.currentThread().getContextClassLoader() );
         }
+        
+        boolean signed = stream.readBoolean();
+        if( signed && helper.getPubKeyStore() == null ) {
+            throw new RuntimeDroolsException("The package was serialized with a signature. Please configure a public keystore with the public key to check the signature. Deserialization aborted.");
+        }
 
-        this.store = (Map) stream.readObject();
+        // Return the object stored as a byte[]
+        byte[] bytes = (byte[]) stream.readObject();
+        if ( signed ) {
+            checkSignature( stream,
+                            helper,
+                            bytes );
+        }
+        this.store = (Map) new DroolsObjectInputStream( new ByteArrayInputStream( bytes ),
+                                                        this.classLoader ).readObject();
         this.AST = stream.readObject();
 
         // Return the rules stored as a byte[]
-        final byte[] bytes = (byte[]) stream.readObject();
-
+        bytes = (byte[]) stream.readObject();
+        if ( signed ) {
+            checkSignature( stream,
+                            helper,
+                            bytes );
+        }
         //  Use a custom ObjectInputStream that can resolve against a given classLoader
         final DroolsObjectInputStream streamWithLoader = new DroolsObjectInputStream( new ByteArrayInputStream( bytes ),
                                                                                       this.classLoader );
         this.invokerLookups = (Map) streamWithLoader.readObject();
+    }
+
+    private void checkSignature(final ObjectInput stream,
+                                KeyStoreHelper helper,
+                                byte[] bytes) throws ClassNotFoundException,
+                                             IOException {
+        byte[] signature = (byte[]) stream.readObject();
+        try {
+            if ( !helper.checkDataWithPublicKey( bytes,
+                                                 signature ) ) {
+                throw new RuntimeDroolsException( "Signature does not match serialized package. This is a security violation. Deserialisation aborted." );
+            }
+        } catch ( InvalidKeyException e ) {
+            throw new RuntimeDroolsException( "Invalid key checking signature: " + e.getMessage(),
+                                              e );
+        } catch ( KeyStoreException e ) {
+            throw new RuntimeDroolsException( "Error accessing Key Store: " + e.getMessage(),
+                                              e );
+        } catch ( NoSuchAlgorithmException e ) {
+            throw new RuntimeDroolsException( "No algorithm available: " + e.getMessage(),
+                                              e );
+        } catch ( SignatureException e ) {
+            throw new RuntimeDroolsException( "Signature Exception: " + e.getMessage(),
+                                              e );
+        }
     }
 
     public ClassLoader getClassLoader() {
@@ -157,7 +238,7 @@ public class PackageCompilationData
         byte[] bytes = null;
 
         if ( this.store != null ) {
-            bytes = ( byte[] ) this.store.get( resourceName );
+            bytes = (byte[]) this.store.get( resourceName );
         }
         return bytes;
     }

@@ -156,8 +156,8 @@ public class Package
         stream.writeBoolean( this.valid );
 
 
-        // Rules must be restored by an ObjectInputStream that can resolve using a given ClassLoader to handle seaprately by storing as
-        // a byte[]
+        // Rules must be restored by an ObjectInputStream that can resolve using a given 
+        // ClassLoader to handle separately by storing as a byte[]
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         final ObjectOutput out = new ObjectOutputStream( bos );
         out.writeObject( this.rules );
