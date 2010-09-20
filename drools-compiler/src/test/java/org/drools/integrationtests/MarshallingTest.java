@@ -1110,30 +1110,29 @@ public class MarshallingTest extends TestCase {
     }
 
     /*
-     *  Deserializing an unsigned rulebase should always work 
+     *  A client environment configured to use signed serialization
+     *  should refuse any non-signed serialized rulebase 
      */
     public void testSignedSerialization4() throws Exception {
+
+        //Compile a package
+        PackageBuilder builder = new PackageBuilder();
+        builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_Dynamic1_0.drl" ) ) );
+
+        // Create a rulebase
+        RuleBase ruleBase = RuleBaseFactory.newRuleBase();
+        ruleBase.addPackage( builder.getPackage() );
+
+        // Test rulebase serialization/deserialization
+        byte[] serializedRulebase = serializeOut( ruleBase );
+
         try {
             // set only the deserialisation properties, but not the serialization
             setPublicKeyProperties();
-
-            //Compile a package
-            PackageBuilder builder = new PackageBuilder();
-            builder.addPackageFromDrl( new InputStreamReader( getClass().getResourceAsStream( "test_Dynamic1_0.drl" ) ) );
-
-            // Create a rulebase
-            RuleBase ruleBase = RuleBaseFactory.newRuleBase();
-            ruleBase.addPackage( builder.getPackage() );
-
-            // Test rulebase serialization/deserialization
-            byte[] serializedRulebase = serializeOut( ruleBase );
-
-            try {
-                ruleBase = (RuleBase) serializeIn( serializedRulebase );
-            } catch ( Exception e ) {
-                fail( "Deserialisation should have worked." );
-                e.printStackTrace();
-            }
+            ruleBase = (RuleBase) serializeIn( serializedRulebase );
+            fail( "Should not deserialize an unsigned rulebase on an environment configured to work with signed rulebases." );
+        } catch ( Exception e ) {
+            // success
         } finally {
             unsetPublicKeyProperties();
         }
@@ -1142,21 +1141,21 @@ public class MarshallingTest extends TestCase {
     private void setPublicKeyProperties() {
         // Set the client properties to de-serialise the signed packages
         URL clientKeyStoreURL = getClass().getResource( "droolsClient.keystore" );
+        System.setProperty( KeyStoreHelper.PROP_SIGN,
+                            "true" );
         System.setProperty( KeyStoreHelper.PROP_PUB_KS_URL,
                             clientKeyStoreURL.toExternalForm() );
         System.setProperty( KeyStoreHelper.PROP_PUB_KS_PWD,
                             "clientpwd" );
-        System.setProperty( KeyStoreHelper.PROP_PUB_ALIAS,
-                            "droolsKey" );
     }
 
     private void unsetPublicKeyProperties() {
         // Un-set the client properties to de-serialise the signed packages
+        System.setProperty( KeyStoreHelper.PROP_SIGN,
+                            "" );
         System.setProperty( KeyStoreHelper.PROP_PUB_KS_URL,
                             "" );
         System.setProperty( KeyStoreHelper.PROP_PUB_KS_PWD,
-                            "" );
-        System.setProperty( KeyStoreHelper.PROP_PUB_ALIAS,
                             "" );
     }
 

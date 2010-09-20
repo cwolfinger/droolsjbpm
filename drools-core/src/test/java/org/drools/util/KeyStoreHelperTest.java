@@ -42,16 +42,17 @@ public class KeyStoreHelperTest extends TestCase {
         System.setProperty( KeyStoreHelper.PROP_SIGN, "true" );
         System.setProperty( KeyStoreHelper.PROP_PUB_KS_URL, clientKeyStoreURL.toExternalForm() );
         System.setProperty( KeyStoreHelper.PROP_PUB_KS_PWD, "clientpwd" );
-        System.setProperty( KeyStoreHelper.PROP_PUB_ALIAS, "droolsKey" );
         // client needs no password to access the certificate and public key
         KeyStoreHelper clientHelper = new KeyStoreHelper( );
 
         // check the signature against the data
-        assertTrue( clientHelper.checkDataWithPublicKey( data,
+        assertTrue( clientHelper.checkDataWithPublicKey( "droolsKey",
+                                                         data,
                                                          signature ) );
 
         // check some fake data
-        assertFalse( clientHelper.checkDataWithPublicKey( "fake".getBytes( "UTF8" ), 
+        assertFalse( clientHelper.checkDataWithPublicKey( "droolsKey",
+                                                          "fake".getBytes( "UTF8" ), 
                                                           signature ) );
     }
 

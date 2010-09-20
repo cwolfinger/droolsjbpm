@@ -31,7 +31,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PrivilegedAction;
 import java.security.ProtectionDomain;
 import java.security.SignatureException;
-import java.security.UnrecoverableKeyException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -40,7 +39,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.drools.CheckedDroolsException;
-import org.drools.RuleBaseConfiguration;
 import org.drools.RuntimeDroolsException;
 import org.drools.base.accumulators.JavaAccumulatorFunctionExecutor;
 import org.drools.common.DroolsObjectInputStream;
@@ -119,8 +117,11 @@ public class PackageCompilationData
      */
     public void writeExternal(final ObjectOutput stream) throws IOException {
         KeyStoreHelper helper = new KeyStoreHelper();
-        
+
         stream.writeBoolean( helper.isSigned() );
+        if ( helper.isSigned() ) {
+            stream.writeObject( helper.getPvtKeyAlias() );
+        }
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ObjectOutput out = new ObjectOutputStream( bos );
@@ -175,10 +176,20 @@ public class PackageCompilationData
         } else {
             initClassLoader( Thread.currentThread().getContextClassLoader() );
         }
-        
+
         boolean signed = stream.readBoolean();
-        if( signed && helper.getPubKeyStore() == null ) {
-            throw new RuntimeDroolsException("The package was serialized with a signature. Please configure a public keystore with the public key to check the signature. Deserialization aborted.");
+        if ( helper.isSigned() != signed ) {
+            throw new RuntimeDroolsException( "This environment is configured to work with " +
+                                              (helper.isSigned() ? "signed" : "unsigned") +
+                                              " serialized objects, but the given object is " +
+                                              (signed ? "signed" : "unsigned") + ". Deserialization aborted." );
+        }
+        String pubKeyAlias = null;
+        if ( signed ) {
+            pubKeyAlias = (String) stream.readObject();
+            if ( helper.getPubKeyStore() == null ) {
+                throw new RuntimeDroolsException( "The package was serialized with a signature. Please configure a public keystore with the public key to check the signature. Deserialization aborted." );
+            }
         }
 
         // Return the object stored as a byte[]
@@ -186,7 +197,8 @@ public class PackageCompilationData
         if ( signed ) {
             checkSignature( stream,
                             helper,
-                            bytes );
+                            bytes,
+                            pubKeyAlias );
         }
         this.store = (Map) new DroolsObjectInputStream( new ByteArrayInputStream( bytes ),
                                                         this.classLoader ).readObject();
@@ -197,7 +209,8 @@ public class PackageCompilationData
         if ( signed ) {
             checkSignature( stream,
                             helper,
-                            bytes );
+                            bytes,
+                            pubKeyAlias );
         }
         //  Use a custom ObjectInputStream that can resolve against a given classLoader
         final DroolsObjectInputStream streamWithLoader = new DroolsObjectInputStream( new ByteArrayInputStream( bytes ),
@@ -206,12 +219,14 @@ public class PackageCompilationData
     }
 
     private void checkSignature(final ObjectInput stream,
-                                KeyStoreHelper helper,
-                                byte[] bytes) throws ClassNotFoundException,
-                                             IOException {
+                                final KeyStoreHelper helper,
+                                final byte[] bytes,
+                                final String pubKeyAlias) throws ClassNotFoundException,
+                                                         IOException {
         byte[] signature = (byte[]) stream.readObject();
         try {
-            if ( !helper.checkDataWithPublicKey( bytes,
+            if ( !helper.checkDataWithPublicKey( pubKeyAlias,
+                                                 bytes,
                                                  signature ) ) {
                 throw new RuntimeDroolsException( "Signature does not match serialized package. This is a security violation. Deserialisation aborted." );
             }
