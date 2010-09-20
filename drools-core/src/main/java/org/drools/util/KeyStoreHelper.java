@@ -77,7 +77,7 @@ public class KeyStoreHelper {
         try {
             Properties prop = System.getProperties();
             this.signed = Boolean.valueOf( prop.getProperty( PROP_SIGN,
-                                                             "false" ) );
+                                                             "false" ) ).booleanValue();
             String url = prop.getProperty( PROP_PVT_KS_URL,
                                            "" );
             if ( url.length() > 0 ) {
