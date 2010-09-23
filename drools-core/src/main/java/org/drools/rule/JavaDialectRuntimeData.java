@@ -17,14 +17,21 @@ package org.drools.rule;
  */
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInput;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
 import java.security.AccessController;
+import java.security.InvalidKeyException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivilegedAction;
 import java.security.ProtectionDomain;
+import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -34,7 +41,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.drools.RuntimeDroolsException;
-import org.drools.common.DroolsObjectInput;
+import org.drools.core.util.KeyStoreHelper;
 import org.drools.spi.Wireable;
 import org.drools.util.StringUtils;
 
@@ -84,11 +91,30 @@ public class JavaDialectRuntimeData
      *
      */
     public void writeExternal(ObjectOutput stream) throws IOException {
-        stream.writeInt( this.store.size() );
+        KeyStoreHelper helper = new KeyStoreHelper();
+
+        stream.writeBoolean( helper.isSigned() );
+        if ( helper.isSigned() ) {
+            stream.writeObject( helper.getPvtKeyAlias() );
+        }
+
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutput out = new ObjectOutputStream( bos );
+
+        out.writeInt( this.store.size() );
         for ( Iterator it = this.store.entrySet().iterator(); it.hasNext(); ) {
             Entry entry = (Entry) it.next();
-            stream.writeObject( entry.getKey() );
-            stream.writeObject( entry.getValue() );
+            out.writeObject( entry.getKey() );
+            out.writeObject( entry.getValue() );
+        }
+        out.flush();
+        out.close();
+        byte[] buff = bos.toByteArray();
+        stream.writeObject( buff );
+        if ( helper.isSigned() ) {
+            sign( stream,
+                          helper,
+                          buff );
         }
 
         stream.writeInt( this.invokerLookups.size() );
@@ -96,6 +122,17 @@ public class JavaDialectRuntimeData
             Entry entry = (Entry) it.next();
             stream.writeObject( entry.getKey() );
             stream.writeObject( entry.getValue() );
+        }
+    }
+
+    private void sign(final ObjectOutput stream,
+                                                 KeyStoreHelper helper,
+                                                 byte[] buff) {
+        try {
+            stream.writeObject( helper.signDataWithPrivateKey( buff ) );
+        } catch ( Exception e ) {
+            throw new RuntimeDroolsException( "Error signing object store: " + e.getMessage(),
+                                                                         e );
         }
     }
 
@@ -107,17 +144,71 @@ public class JavaDialectRuntimeData
      */
     public void readExternal(ObjectInput stream) throws IOException,
                                                 ClassNotFoundException {
-        DroolsObjectInput droolsStream = (DroolsObjectInput) stream;
-        for ( int i = 0, length = stream.readInt(); i < length; i++ ) {
-            this.store.put( stream.readObject(),
-                            stream.readObject() );
+        KeyStoreHelper helper = new KeyStoreHelper();
+        boolean signed = stream.readBoolean();
+        if ( helper.isSigned() != signed ) {
+            throw new RuntimeDroolsException( "This environment is configured to work with " +
+                                                      (helper.isSigned() ? "signed" : "unsigned") +
+                                                      " serialized objects, but the given object is " +
+                                                      (signed ? "signed" : "unsigned") + ". Deserialization aborted." );
         }
+        String pubKeyAlias = null;
+        if ( signed ) {
+            pubKeyAlias = (String) stream.readObject();
+            if ( helper.getPubKeyStore() == null ) {
+                throw new RuntimeDroolsException( "The package was serialized with a signature. Please configure a public keystore with the public key to check the signature. Deserialization aborted." );
+            }
+        }
+
+        // Return the object stored as a byte[]
+        byte[] bytes = (byte[]) stream.readObject();
+        if ( signed ) {
+            checkSignature( stream,
+                                    helper,
+                                    bytes,
+                                    pubKeyAlias );
+        }
+
+        ObjectInputStream in = new ObjectInputStream( new ByteArrayInputStream( bytes ) );
+        for ( int i = 0, length = in.readInt(); i < length; i++ ) {
+            this.store.put( in.readObject(),
+                                    in.readObject() );
+        }
+        in.close();
+
         for ( int i = 0, length = stream.readInt(); i < length; i++ ) {
             this.invokerLookups.put( stream.readObject(),
                                      stream.readObject() );
         }
         // mark it as dirty, so that it reloads everything.
         this.dirty = true;
+    }
+
+    private void checkSignature(final ObjectInput stream,
+                                                                     final KeyStoreHelper helper,
+                                                                     final byte[] bytes,
+                                                                     final String pubKeyAlias) throws ClassNotFoundException,
+                                                                                              IOException {
+        byte[] signature = (byte[]) stream.readObject();
+        try {
+            if ( !helper.checkDataWithPublicKey( pubKeyAlias,
+                                                                                      bytes,
+                                                                                      signature ) ) {
+                throw new RuntimeDroolsException( "Signature does not match serialized package. This is a security violation. Deserialisation aborted." );
+            }
+        } catch ( InvalidKeyException e ) {
+            throw new RuntimeDroolsException( "Invalid key checking signature: " + e.getMessage(),
+                                                                                   e );
+        } catch ( KeyStoreException e ) {
+            throw new RuntimeDroolsException( "Error accessing Key Store: " + e.getMessage(),
+                                                                                   e );
+        } catch ( NoSuchAlgorithmException e ) {
+            throw new RuntimeDroolsException( "No algorithm available: " + e.getMessage(),
+                                                                                   e );
+        } catch ( SignatureException e ) {
+            throw new RuntimeDroolsException( "Signature Exception: " + e.getMessage(),
+                                                                                   e );
+        }
     }
 
     public void onAdd(DialectRuntimeRegistry registry,
@@ -128,7 +219,7 @@ public class JavaDialectRuntimeData
                                                    this.rootClassLoader );
         this.rootClassLoader.addClassLoader( this.classLoader );
     }
-    
+
     public void onRemove() {
         this.rootClassLoader.removeClassLoader( this.classLoader );
     }
@@ -294,7 +385,7 @@ public class JavaDialectRuntimeData
                                             IllegalAccessException {
         final Object invoker = getInvokers().get( className );
         if ( invoker != null ) {
-            wire( className,        
+            wire( className,
                   invoker );
         }
     }
@@ -381,8 +472,8 @@ public class JavaDialectRuntimeData
             throw new RuntimeDroolsException( e );
         } catch ( final InstantiationException e ) {
             throw new RuntimeDroolsException( e );
-        } 
-        
+        }
+
         this.dirty = false;
     }
 
