@@ -15,7 +15,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
       <camel-version>2.4.0</camel-version>	  
 	  <cxf-version>2.2.9</cxf-version>	  
 	  <springframework-version>2.5.6</springframework-version>
-	  
+      <gwt.version>2.0.4</gwt.version>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
    </properties>
    <prerequisites>
@@ -966,6 +966,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
          <dependency>
             <groupId>org.drools</groupId>
             <artifactId>drools-guvnor</artifactId>
+            <type>war</type>
             <version>${project.version}</version>
          </dependency>
          <dependency>
@@ -1308,7 +1309,17 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
          <dependency>
             <groupId>com.google.gwt</groupId>
             <artifactId>gwt-servlet</artifactId>
-            <version>2.0.4</version>
+            <version>${gwt.version}</version>
+         </dependency>
+         <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-user</artifactId>
+            <version>${gwt.version}</version>
+         </dependency>
+         <dependency><!-- Only use for a plugin dependency, not as a normal dependency -->
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-dev</artifactId>
+            <version>${gwt.version}</version>
          </dependency>
          <dependency>
             <groupId>commons-fileupload</groupId>
