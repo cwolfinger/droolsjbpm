@@ -77,6 +77,11 @@ import org.drools.spi.Tuple;
 import org.drools.util.LinkedList;
 
 public class PackageBuilderTest extends DroolsTestCase {
+    
+    public void setUp() {
+        System.setProperty( org.drools.util.KeyStoreHelper.PROP_SIGN,
+                            "false" );
+    }
 
     public void testErrors() throws Exception {
         final PackageBuilder builder = new PackageBuilder();

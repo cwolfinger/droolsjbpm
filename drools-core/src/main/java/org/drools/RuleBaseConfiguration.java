@@ -44,7 +44,7 @@ public class RuleBaseConfiguration
     Serializable {
     private Map                properties;
     
-    public static final String          DEFAULT_SIGN_ON_SERIALIZATION = "false";
+    public static final String          DEFAULT_SIGN_ON_SERIALIZATION = "true";
 
     private boolean            immutable;
 
