@@ -43,6 +43,8 @@ public class RuleBaseConfiguration
     implements
     Serializable {
     private Map                properties;
+    
+    public static final String          DEFAULT_SIGN_ON_SERIALIZATION = "false";
 
     private boolean            immutable;
 
