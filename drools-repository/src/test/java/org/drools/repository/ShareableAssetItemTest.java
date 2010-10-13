@@ -22,9 +22,16 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
+
+import javax.jcr.Node;
+import javax.jcr.PathNotFoundException;
+import javax.jcr.RepositoryException;
+import javax.jcr.ValueFormatException;
+import javax.jcr.Workspace;
 import javax.jcr.version.Version;
 import javax.jcr.version.VersionIterator;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -164,6 +171,62 @@ public class ShareableAssetItemTest extends RepositoryTestCase {
         assertEquals("More", linkedAsset.getStringProperty("AField"));
         assertEquals("more content", asset.getContent());
     }
+    /*
+     * https://jira.jboss.org/browse/MODE-879
+     */
+    @Test
+    public void testSimpleGetPackageItemHistoricalForShareableAsset() throws Exception {
+        
+    	Node node = getRepo().getSession().getNode("/drools:repository/drools:package_area/globalArea/");
+    	Node assetNode = node.getNode("assets").addNode("testKurt","drools:assetNodeType");
+    	//Adding some required properties
+    	assetNode.setProperty("drools:packageName", "one");
+    	assetNode.setProperty("drools:title", "title");
+    	assetNode.setProperty("drools:format", "format");
+    	assetNode.setProperty("drools:description", "description");
+		Calendar lastModified = Calendar.getInstance();
+		assetNode.setProperty("drools:lastModified", lastModified);
+    	getRepo().getSession().save();
+    	assetNode.checkin();
+    	findAndPrintNodeName(assetNode);
+    	
+    	//Creating a shared Node
+		assetNode.checkout();
+		assetNode.addMixin("mix:shareable");
+		getRepo().getSession().save();
+		assetNode.checkin();
+    	Workspace workspace = getRepo().getSession().getWorkspace();
+    	String srcPath   = "/drools:repository/drools:package_area/globalArea/assets/testKurt";
+    	String path    = "/drools:repository/drools:package_area/defaultPackage/assets/testKurt";
+    	workspace.clone(workspace.getName(), srcPath, path, false);	
+    	
+        findAndPrintNodeName(assetNode);
+        
+        // Test package snapshot
+        String packageName = getDefaultPackage().getName();
+        try {
+            Node snaps = getRepo().getAreaNode( "drools:packagesnapshot_area" );
+            if ( !snaps.hasNode( packageName ) ) {
+                snaps.addNode( packageName,
+                               "nt:folder" );
+                getRepo().save();
+            }
+            
+            String source = "/drools:repository/drools:package_area/defaultPackage";
+            String newName = "/drools:repository/drools:packagesnapshot_area/defaultPackage/SNAP";
+            getRepo().getSession().getWorkspace().copy( source, newName );
+        } catch ( Exception e ) {
+            fail();
+        }
+        findAndPrintNodeName(assetNode);
+        //asset.updateDescription("yeah !");
+    }
+    
+    private void findAndPrintNodeName(Node node) throws ValueFormatException, PathNotFoundException, RepositoryException {
+    	String UUID = node.getProperty("jcr:baseVersion").getString();
+        Node nodeFound = getRepo().getSession().getNodeByUUID(UUID);
+        System.out.println("Node:" + nodeFound.getName());
+    }
 
     @Test
     public void testGetPackageItemHistoricalForShareableAsset() throws Exception {
@@ -173,6 +236,7 @@ public class ShareableAssetItemTest extends RepositoryTestCase {
         AssetItem linkedAsset = getDefaultPackage().addAssetImportedFromGlobalArea(asset.getName());
 
         // Test package snapshot
+        String name = getDefaultPackage().getName();
         getRepo().createPackageSnapshot(getDefaultPackage().getName(), "SNAP");
 
         PackageItem pkgSnap = getRepo().loadPackageSnapshot(getDefaultPackage().getName(), "SNAP");
