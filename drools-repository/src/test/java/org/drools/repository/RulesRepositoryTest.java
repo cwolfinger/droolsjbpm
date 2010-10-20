@@ -19,6 +19,7 @@ package org.drools.repository;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -29,6 +30,8 @@ import java.util.Random;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
+import javax.jcr.PathNotFoundException;
+import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.SimpleCredentials;
 import javax.jcr.Workspace;
@@ -1079,6 +1082,23 @@ public class RulesRepositoryTest extends RepositoryTestCase {
         }
 
     }
+	/*
+	 * http://jira.jboss.org/browse/MODE-882
+	 */
+	@Test
+    public void testSimpleImportExport() throws PathNotFoundException, IOException, RepositoryException {
+		RulesRepository repo = getRepo();
+	
+		byte[] repository_backup;
+
+		ByteArrayOutputStream bout = new ByteArrayOutputStream();
+		Session session = getRepo().getSession();
+		session.refresh( false );
+        session.exportSystemView( "/" + "drools:repository", bout, false, false );
+		repository_backup = bout.toByteArray();
+		repo.importRulesRepositoryFromStream(new ByteArrayInputStream(
+				repository_backup));
+	}
 
 	@Test
     public void testImportExport() {
@@ -1109,6 +1129,39 @@ public class RulesRepositoryTest extends RepositoryTestCase {
 		repo.importRepository(new ByteArrayInputStream(repository_unitest));
 		assertTrue(repo.containsPackage("testImportExport"));
 	}
+	
+	 /*
+     * https://jira.jboss.org/browse/MODE-883
+     */
+    @Test
+    public void testSimpleShareableNodes() throws Exception {
+        
+    	Node node = getRepo().getSession().getNode("/drools:repository/drools:package_area/globalArea/");
+    	Node assetNode = node.getNode("assets").addNode("testKurt","drools:assetNodeType");
+    	//Adding some required properties
+    	assetNode.setProperty("drools:packageName", "one");
+    	assetNode.setProperty("drools:title", "title");
+    	assetNode.setProperty("drools:format", "format");
+    	assetNode.setProperty("drools:description", "description");
+		Calendar lastModified = Calendar.getInstance();
+		assetNode.setProperty("drools:lastModified", lastModified);
+    	getRepo().getSession().save();
+    	assetNode.checkin();
+    	
+    	
+    	//Creating a shared Node
+		assetNode.checkout();
+		assetNode.addMixin("mix:shareable");
+		getRepo().getSession().save();
+		assetNode.checkin();
+    	Workspace workspace = getRepo().getSession().getWorkspace();
+    	String srcPath   = "/drools:repository/drools:package_area/globalArea/assets/testKurt";
+    	String path    = "/drools:repository/drools:package_area/defaultPackage/assets/testKurt";
+    	workspace.clone(workspace.getName(), srcPath, path, false);	
+    	
+    	assetNode.remove();
+       
+    }
 
 	@Test
 	public void testShareableNodes() throws Exception {
@@ -1202,12 +1255,12 @@ public class RulesRepositoryTest extends RepositoryTestCase {
 	}
 	
 	//In this test case we expect an ItemExistException from the second thread,
-        //other than ending up with two packages with same name.
+    //other than ending up with two packages with same name.
 	//https://jira.jboss.org/jira/browse/GUVNOR-346
 	@Test
     public void testConcurrentCopyPackage() throws Exception {
        // set up testing data               
-       RulesRepository repo = RepositorySessionUtil.getMultiThreadedRepository();
+	   RulesRepository repo = RepositorySessionUtil.getMultiThreadedRepository();
        PackageItem source = repo.createPackage("testConcurrentCopyPackage",
                "asset");
        AssetItem item = source.addAsset("testCopyPackage", "desc");
@@ -1217,9 +1270,9 @@ public class RulesRepositoryTest extends RepositoryTestCase {
 
        int NUM_ITERATIONS = 40;
        int NUM_SESSIONS = 2;
-              for (int n = 0; n < NUM_ITERATIONS; n++) {
+       for (int n = 0; n < NUM_ITERATIONS; n++) {
            Node folderNode = repo.getAreaNode(RulesRepository.RULE_PACKAGE_AREA);
-                      // cleanup
+           // cleanup
            while (folderNode.hasNode("testConcurrentCopyPackage2")) {
                folderNode.getNode("testConcurrentCopyPackage2").remove();
                repo.save();
@@ -1237,8 +1290,9 @@ public class RulesRepositoryTest extends RepositoryTestCase {
            for (int i = 0; i < threads.length; i++) {
                threads[i].join();
            }
-
+           
            //Node folderNode = repo.getAreaNode(RulesRepository.RULE_PACKAGE_AREA);
+           folderNode.refresh(true);
            NodeIterator results = folderNode.getNodes("testConcurrentCopyPackage2");
            assertEquals(1, results.getSize());
        }        }
@@ -1247,7 +1301,7 @@ public class RulesRepositoryTest extends RepositoryTestCase {
        String identity;
        Random r;
        RulesRepository localRepo;
-              ConcurrentCopySession(String identity) {
+       ConcurrentCopySession(String identity) {
            this.identity = identity;
            r = new Random();
            localRepo = RepositorySessionUtil.getMultiThreadedRepository();
@@ -1266,11 +1320,12 @@ public class RulesRepositoryTest extends RepositoryTestCase {
                //This returns different repository instances for different threads
                localRepo.copyPackage("testConcurrentCopyPackage",
                        "testConcurrentCopyPackage2");
-               PackageItem dest = localRepo
-                       .loadPackage("testConcurrentCopyPackage2");
+               PackageItem dest = localRepo.loadPackage("testConcurrentCopyPackage2");
                assertNotNull(dest);
-               randomSleep();                       } catch (RulesRepositoryException rre) {
+               randomSleep();                       
+           } catch (RulesRepositoryException rre) {
                //expected
+        	   System.out.println("Expected");
            } finally {
            }
        }
