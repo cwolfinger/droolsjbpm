@@ -306,8 +306,10 @@ public class AssetItem extends CategorisableItem {
 		checkIsUpdateable();
 		checkout();
 		try {
-			this.node.setProperty(DATE_EFFECTIVE_PROPERTY_NAME,
+			if (newDateEffective!=null || this.node.hasProperty(DATE_EFFECTIVE_PROPERTY_NAME)) {
+				this.node.setProperty(DATE_EFFECTIVE_PROPERTY_NAME,
 					newDateEffective);
+			}
 		} catch (RepositoryException e) {
 			log.error("Caught Exception", e);
 			throw new RulesRepositoryException(e);
@@ -367,7 +369,9 @@ public class AssetItem extends CategorisableItem {
 		checkout();
 
 		try {
-			this.node.setProperty(DATE_EXPIRED_PROPERTY_NAME, newDateExpired);
+			if (newDateExpired!=null || this.node.hasProperty(DATE_EXPIRED_PROPERTY_NAME)) {
+				this.node.setProperty(DATE_EXPIRED_PROPERTY_NAME, newDateExpired);
+			}
 		} catch (Exception e) {
 			log.error("Caught Exception", e);
 			throw new RulesRepositoryException(e);
