@@ -149,9 +149,9 @@ public void setupRepository(Session session) throws RepositoryException {
 	}
 }
 
-public void shutdown() {
-	jcrRepositoryConfigurator.shutdown();
-	System.out.println("SHUTDOWN RULES CONFIG");
-	rulesRepositoryConfigurator = null;
-}
+	public void shutdown() {
+		jcrRepositoryConfigurator.shutdown();
+		System.out.println("SHUTDOWN RULES CONFIG");
+		rulesRepositoryConfigurator = null;
+	}
 }
