@@ -1,0 +1,1290 @@
+Namespace: dc <http://purl.org/dc/elements/1.1/>
+Namespace: amino-acid <http://www.co-ode.org/ontologies/amino-acid/2005/10/11/amino-acid.owl#>
+Namespace:  <http://www.co-ode.org/ontologies/amino-acid/2005/10/11/amino-acid.owl#>
+Namespace: rdfs <http://www.w3.org/2000/01/rdf-schema#>
+Namespace: owl2xml <http://www.w3.org/2006/12/owl2-xml#>
+Namespace: owl <http://www.w3.org/2002/07/owl#>
+Namespace: xsd <http://www.w3.org/2001/XMLSchema#>
+Namespace: rdf <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+Namespace: daml <http://www.daml.org/2001/03/daml+oil#>
+Namespace: meta <http://www.co-ode.org/ontologies/meta/2005/06/15/meta.owl#>
+
+
+
+Ontology: <http://www.co-ode.org/ontologies/amino-acid/2005/10/11/amino-acid.owl>
+Import: <http://www.co-ode.org/ontologies/meta/2005/06/15/meta.owl>
+
+Annotations: 
+    owl:versionInfo "version 1.0, copyright The University of Manchester,  Nick Drummond, Georgina Moulton, Robert Stevens, Phil Lord"^^xsd:string,
+    rdfs:comment "Amino acids and their properties"@en
+
+ObjectProperty: hasSize
+
+    Characteristics: 
+        Functional
+    
+    Domain: 
+        AminoAcid
+    
+    Range: 
+        Size
+    
+    
+
+
+
+ObjectProperty: hasHydrophobicity
+
+    Characteristics: 
+        Functional
+    
+    Domain: 
+        AminoAcid
+    
+    Range: 
+        Hydrophobicity
+    
+    
+
+
+
+ObjectProperty: hasPolarity
+
+    Characteristics: 
+        Functional
+    
+    Domain: 
+        AminoAcid
+    
+    Range: 
+        Polarity
+    
+    
+
+
+
+ObjectProperty: hasCharge
+
+    Characteristics: 
+        Functional
+    
+    Domain: 
+        AminoAcid
+    
+    Range: 
+        Charge
+    
+    
+
+
+
+ObjectProperty: hasSideChainStructure
+
+    Characteristics: 
+        Functional
+    
+    Domain: 
+        AminoAcid
+    
+    Range: 
+        SideChainStructure
+    
+    
+
+
+
+Class: F
+
+    Annotations: 
+        rdfs:label "Phenylalanine"^^xsd:string
+    
+    SubClassOf: 
+        SpecificAminoAcid,
+        hasCharge some Neutral,
+        hasHydrophobicity some Hydrophobic,
+        hasPolarity some Non-Polar,
+        hasSideChainStructure some Aromatic,
+        hasSize some Large,
+        hasCharge only Neutral,
+        hasHydrophobicity only Hydrophobic,
+        hasPolarity only Non-Polar,
+        hasSideChainStructure only Aromatic,
+        hasSize only Large
+    
+    DisjointWith: 
+        V,
+        I,
+        G,
+        N,
+        P,
+        S,
+        Y,
+        R,
+        H,
+        L,
+        A,
+        Q,
+        T,
+        K,
+        E,
+        W,
+        D,
+        C,
+        M
+    
+    
+
+
+
+Class: V
+
+    Annotations: 
+        rdfs:label "Valine"^^xsd:string
+    
+    SubClassOf: 
+        SpecificAminoAcid,
+        hasCharge some Neutral,
+        hasHydrophobicity some Hydrophobic,
+        hasPolarity some Non-Polar,
+        hasSideChainStructure some Aliphatic,
+        hasSize some Small,
+        hasCharge only Neutral,
+        hasHydrophobicity only Hydrophobic,
+        hasPolarity only Non-Polar,
+        hasSideChainStructure only Aliphatic,
+        hasSize only Small
+    
+    DisjointWith: 
+        F,
+        I,
+        G,
+        N,
+        P,
+        S,
+        Y,
+        L,
+        R,
+        H,
+        A,
+        Q,
+        T,
+        K,
+        E,
+        W,
+        D,
+        M,
+        C
+    
+    
+
+
+
+Class: AromaticAminoAcid
+
+    EquivalentTo: 
+        AminoAcid
+        and (hasSideChainStructure some Aromatic)
+    
+    
+
+
+
+Class: I
+
+    Annotations: 
+        rdfs:label "Isoleucine"^^xsd:string
+    
+    SubClassOf: 
+        SpecificAminoAcid,
+        hasCharge some Neutral,
+        hasHydrophobicity some Hydrophobic,
+        hasPolarity some Non-Polar,
+        hasSideChainStructure some Aliphatic,
+        hasSize some Large,
+        hasCharge only Neutral,
+        hasHydrophobicity only Hydrophobic,
+        hasPolarity only Non-Polar,
+        hasSideChainStructure only Aliphatic,
+        hasSize only Large
+    
+    DisjointWith: 
+        F,
+        V,
+        G,
+        P,
+        N,
+        S,
+        Y,
+        H,
+        L,
+        R,
+        A,
+        Q,
+        T,
+        K,
+        E,
+        W,
+        D,
+        M,
+        C
+    
+    
+
+
+
+Class: Tiny
+
+    SubClassOf: 
+        Size
+    
+    DisjointWith: 
+        Small,
+        Large
+    
+    
+
+
+
+Class: G
+
+    Annotations: 
+        rdfs:label "Glycine"^^xsd:string
+    
+    SubClassOf: 
+        SpecificAminoAcid,
+        hasCharge some Neutral,
+        hasHydrophobicity some Hydrophobic,
+        hasPolarity some Non-Polar,
+        hasSideChainStructure some Aliphatic,
+        hasSize some Tiny,
+        hasCharge only Neutral,
+        hasHydrophobicity only Hydrophobic,
+        hasPolarity only Non-Polar,
+        hasSideChainStructure only Aliphatic,
+        hasSize only Tiny
+    
+    DisjointWith: 
+        F,
+        V,
+        I,
+        N,
+        P,
+        S,
+        Y,
+        H,
+        R,
+        L,
+        A,
+        Q,
+        T,
+        K,
+        E,
+        W,
+        D,
+        C,
+        M
+    
+    
+
+
+
+Class: Small
+
+    SubClassOf: 
+        Size
+    
+    DisjointWith: 
+        Tiny,
+        Large
+    
+    
+
+
+
+Class: N
+
+    Annotations: 
+        rdfs:label "Asparagine"^^xsd:string,
+        owl:versionInfo "TODO: Should this be Aliphatic?"^^xsd:string
+    
+    SubClassOf: 
+        SpecificAminoAcid,
+        hasCharge some Neutral,
+        hasHydrophobicity some Hydrophilic,
+        hasPolarity some Polar,
+        hasSideChainStructure some Aliphatic,
+        hasSize some Small,
+        hasCharge only Neutral,
+        hasHydrophobicity only Hydrophilic,
+        hasPolarity only Polar,
+        hasSideChainStructure only Aliphatic,
+        hasSize only Small
+    
+    DisjointWith: 
+        F,
+        V,
+        I,
+        G,
+        P,
+        S,
+        Y,
+        R,
+        L,
+        H,
+        A,
+        Q,
+        T,
+        K,
+        E,
+        W,
+        D,
+        C,
+        M
+    
+    
+
+
+
+Class: Hydrophobic
+
+    SubClassOf: 
+        Hydrophobicity
+    
+    DisjointWith: 
+        Hydrophilic
+    
+    
+
+
+
+Class: Positive
+
+    SubClassOf: 
+        Charge
+    
+    DisjointWith: 
+        Negative,
+        Neutral
+    
+    
+
+
+
+Class: Neutral
+
+    SubClassOf: 
+        Charge
+    
+    DisjointWith: 
+        Negative,
+        Positive
+    
+    
+
+
+
+Class: AminoAcid
+
+    EquivalentTo: 
+        A
+        or C
+        or D
+        or E
+        or F
+        or G
+        or H
+        or I
+        or K
+        or L
+        or M
+        or N
+        or P
+        or Q
+        or R
+        or S
+        or T
+        or V
+        or W
+        or Y
+    
+    
+
+
+
+Class: LargeAliphaticAminoAcid
+
+    EquivalentTo: 
+        AminoAcid
+        and (hasSideChainStructure some Aliphatic)
+        and (hasSize some Large)
+    
+    
+
+
+
+Class: L
+
+    Annotations: 
+        rdfs:label "Leucine"^^xsd:string
+    
+    SubClassOf: 
+        SpecificAminoAcid,
+        hasCharge some Neutral,
+        hasHydrophobicity some Hydrophobic,
+        hasPolarity some Non-Polar,
+        hasSideChainStructure some Aliphatic,
+        hasSize some Large,
+        hasCharge only Neutral,
+        hasHydrophobicity only Hydrophobic,
+        hasPolarity only Non-Polar,
+        hasSideChainStructure only Aliphatic,
+        hasSize only Large
+    
+    DisjointWith: 
+        F,
+        V,
+        I,
+        G,
+        N,
+        P,
+        S,
+        Y,
+        H,
+        R,
+        A,
+        Q,
+        T,
+        K,
+        E,
+        W,
+        D,
+        C,
+        M
+    
+    
+
+
+
+Class: H
+
+    Annotations: 
+        rdfs:label "Histidine"^^xsd:string
+    
+    SubClassOf: 
+        SpecificAminoAcid,
+        hasCharge some Positive,
+        hasHydrophobicity some Hydrophilic,
+        hasPolarity some Polar,
+        hasSideChainStructure some Aromatic,
+        hasSize some Large,
+        hasCharge only Positive,
+        hasHydrophobicity only Hydrophilic,
+        hasPolarity only Polar,
+        hasSideChainStructure only Aromatic,
+        hasSize only Large
+    
+    DisjointWith: 
+        F,
+        V,
+        I,
+        G,
+        P,
+        N,
+        S,
+        Y,
+        L,
+        R,
+        A,
+        Q,
+        T,
+        K,
+        E,
+        W,
+        D,
+        M,
+        C
+    
+    
+
+
+
+Class: Aliphatic
+
+    SubClassOf: 
+        SideChainStructure
+    
+    DisjointWith: 
+        Aromatic
+    
+    
+
+
+
+Class: Negative
+
+    SubClassOf: 
+        Charge
+    
+    DisjointWith: 
+        Positive,
+        Neutral
+    
+    
+
+
+
+Class: NegativeChargedAminoAcid
+
+    EquivalentTo: 
+        AminoAcid
+        and (hasCharge some Negative)
+    
+    
+
+
+
+Class: Charge
+
+    EquivalentTo: 
+        Negative
+        or Neutral
+        or Positive
+    
+    SubClassOf: 
+        meta:ValuePartition,
+        owl:Thing
+    
+    
+
+
+
+Class: A
+
+    Annotations: 
+        rdfs:label "Alanine"^^xsd:string
+    
+    SubClassOf: 
+        SpecificAminoAcid,
+        hasCharge some Neutral,
+        hasHydrophobicity some Hydrophobic,
+        hasPolarity some Non-Polar,
+        hasSideChainStructure some Aliphatic,
+        hasSize some Tiny,
+        hasCharge only Neutral,
+        hasHydrophobicity only Hydrophobic,
+        hasPolarity only Non-Polar,
+        hasSideChainStructure only Aliphatic,
+        hasSize only Tiny
+    
+    DisjointWith: 
+        F,
+        V,
+        I,
+        G,
+        P,
+        N,
+        S,
+        Y,
+        H,
+        R,
+        L,
+        Q,
+        T,
+        K,
+        E,
+        W,
+        D,
+        M,
+        C
+    
+    
+
+
+
+Class: TinyPolarAminoAcid
+
+    EquivalentTo: 
+        AminoAcid
+        and (hasPolarity some Polar)
+        and (hasSize some Tiny)
+    
+    
+
+
+
+Class: W
+
+    Annotations: 
+        rdfs:label "Tryptophan"^^xsd:string
+    
+    SubClassOf: 
+        SpecificAminoAcid,
+        hasCharge some Neutral,
+        hasHydrophobicity some Hydrophobic,
+        hasPolarity some Non-Polar,
+        hasSideChainStructure some Aromatic,
+        hasSize some Large,
+        hasCharge only Neutral,
+        hasHydrophobicity only Hydrophobic,
+        hasPolarity only Non-Polar,
+        hasSideChainStructure only Aromatic,
+        hasSize only Large
+    
+    DisjointWith: 
+        F,
+        V,
+        I,
+        G,
+        P,
+        N,
+        S,
+        Y,
+        H,
+        L,
+        R,
+        A,
+        Q,
+        T,
+        K,
+        E,
+        D,
+        C,
+        M
+    
+    
+
+
+
+Class: Large
+
+    SubClassOf: 
+        Size
+    
+    DisjointWith: 
+        Tiny,
+        Small
+    
+    
+
+
+
+Class: D
+
+    Annotations: 
+        rdfs:label "Aspartate"^^xsd:string,
+        owl:versionInfo "TODO: Aspartate?"^^xsd:string
+    
+    SubClassOf: 
+        SpecificAminoAcid,
+        hasCharge some Negative,
+        hasHydrophobicity some Hydrophilic,
+        hasPolarity some Polar,
+        hasSideChainStructure some Aliphatic,
+        hasSize some Small,
+        hasCharge only Negative,
+        hasHydrophobicity only Hydrophilic,
+        hasPolarity only Polar,
+        hasSideChainStructure only Aliphatic,
+        hasSize only Small
+    
+    DisjointWith: 
+        F,
+        V,
+        I,
+        G,
+        P,
+        N,
+        S,
+        Y,
+        R,
+        H,
+        L,
+        A,
+        Q,
+        T,
+        K,
+        E,
+        W,
+        C,
+        M
+    
+    
+
+
+
+Class: Polar
+
+    SubClassOf: 
+        Polarity
+    
+    DisjointWith: 
+        Non-Polar
+    
+    
+
+
+
+Class: P
+
+    Annotations: 
+        rdfs:label "Proline"^^xsd:string
+    
+    SubClassOf: 
+        SpecificAminoAcid,
+        hasCharge some Neutral,
+        hasHydrophobicity some Hydrophobic,
+        hasPolarity some Non-Polar,
+        hasSideChainStructure some Aliphatic,
+        hasSize some Small,
+        hasCharge only Neutral,
+        hasHydrophobicity only Hydrophobic,
+        hasPolarity only Non-Polar,
+        hasSideChainStructure only Aliphatic,
+        hasSize only Small
+    
+    DisjointWith: 
+        F,
+        V,
+        I,
+        G,
+        N,
+        S,
+        Y,
+        H,
+        R,
+        L,
+        A,
+        Q,
+        T,
+        K,
+        E,
+        W,
+        D,
+        M,
+        C
+    
+    
+
+
+
+Class: S
+
+    Annotations: 
+        rdfs:label "Serine"^^xsd:string
+    
+    SubClassOf: 
+        SpecificAminoAcid,
+        hasCharge some Neutral,
+        hasHydrophobicity some Hydrophilic,
+        hasPolarity some Polar,
+        hasSideChainStructure some Aliphatic,
+        hasSize some Tiny,
+        hasCharge only Neutral,
+        hasHydrophobicity only Hydrophilic,
+        hasPolarity only Polar,
+        hasSideChainStructure only Aliphatic,
+        hasSize only Tiny
+    
+    DisjointWith: 
+        F,
+        V,
+        I,
+        G,
+        N,
+        P,
+        Y,
+        L,
+        H,
+        R,
+        A,
+        Q,
+        T,
+        K,
+        E,
+        W,
+        D,
+        M,
+        C
+    
+    
+
+
+
+Class: Y
+
+    Annotations: 
+        rdfs:label "Tyrosine"^^xsd:string
+    
+    SubClassOf: 
+        SpecificAminoAcid,
+        hasCharge some Neutral,
+        hasHydrophobicity some Hydrophobic,
+        hasPolarity some Polar,
+        hasSideChainStructure some Aromatic,
+        hasSize some Large,
+        hasCharge only Neutral,
+        hasHydrophobicity only Hydrophobic,
+        hasPolarity only Polar,
+        hasSideChainStructure only Aromatic,
+        hasSize only Large
+    
+    DisjointWith: 
+        F,
+        V,
+        I,
+        G,
+        N,
+        P,
+        S,
+        H,
+        R,
+        L,
+        A,
+        Q,
+        T,
+        K,
+        E,
+        W,
+        D,
+        M,
+        C
+    
+    
+
+
+
+Class: Non-Polar
+
+    SubClassOf: 
+        Polarity
+    
+    DisjointWith: 
+        Polar
+    
+    
+
+
+
+Class: Hydrophobicity
+
+    EquivalentTo: 
+        Hydrophilic
+        or Hydrophobic
+    
+    SubClassOf: 
+        meta:ValuePartition,
+        owl:Thing
+    
+    
+
+
+
+Class: SideChainStructure
+
+    EquivalentTo: 
+        Aliphatic
+        or Aromatic
+    
+    SubClassOf: 
+        meta:ValuePartition,
+        owl:Thing
+    
+    
+
+
+
+Class: owl:Thing
+
+    
+
+
+
+Class: SpecificAminoAcid
+
+    SubClassOf: 
+        AminoAcid
+    
+    
+
+
+
+Class: AliphaticAminoAcid
+
+    EquivalentTo: 
+        AminoAcid
+        and (hasSideChainStructure some Aliphatic)
+    
+    
+
+
+
+Class: R
+
+    Annotations: 
+        rdfs:label "Arginine"^^xsd:string
+    
+    SubClassOf: 
+        SpecificAminoAcid,
+        hasCharge some Positive,
+        hasHydrophobicity some Hydrophilic,
+        hasPolarity some Polar,
+        hasSideChainStructure some Aliphatic,
+        hasSize some Large,
+        hasCharge only Positive,
+        hasHydrophobicity only Hydrophilic,
+        hasPolarity only Polar,
+        hasSideChainStructure only Aliphatic,
+        hasSize only Large
+    
+    DisjointWith: 
+        F,
+        V,
+        I,
+        G,
+        P,
+        N,
+        S,
+        Y,
+        H,
+        L,
+        A,
+        Q,
+        T,
+        K,
+        E,
+        W,
+        D,
+        C,
+        M
+    
+    
+
+
+
+Class: PositiveChargedAminoAcid
+
+    EquivalentTo: 
+        AminoAcid
+        and (hasCharge some Positive)
+    
+    
+
+
+
+Class: Hydrophilic
+
+    SubClassOf: 
+        Hydrophobicity
+    
+    DisjointWith: 
+        Hydrophobic
+    
+    
+
+
+
+Class: Q
+
+    Annotations: 
+        rdfs:label "Glutamine"^^xsd:string
+    
+    SubClassOf: 
+        SpecificAminoAcid,
+        hasCharge some Neutral,
+        hasHydrophobicity some Hydrophilic,
+        hasPolarity some Polar,
+        hasSideChainStructure some Aliphatic,
+        hasSize some Large,
+        hasCharge only Neutral,
+        hasHydrophobicity only Hydrophilic,
+        hasPolarity only Polar,
+        hasSideChainStructure only Aliphatic,
+        hasSize only Large
+    
+    DisjointWith: 
+        F,
+        V,
+        I,
+        G,
+        P,
+        N,
+        S,
+        Y,
+        L,
+        R,
+        H,
+        A,
+        T,
+        K,
+        E,
+        W,
+        D,
+        C,
+        M
+    
+    
+
+
+
+Class: T
+
+    Annotations: 
+        rdfs:label "Threonine"^^xsd:string
+    
+    SubClassOf: 
+        SpecificAminoAcid,
+        hasCharge some Neutral,
+        hasHydrophobicity some Hydrophilic,
+        hasPolarity some Polar,
+        hasSideChainStructure some Aliphatic,
+        hasSize some Tiny,
+        hasCharge only Neutral,
+        hasHydrophobicity only Hydrophilic,
+        hasPolarity only Polar,
+        hasSideChainStructure only Aliphatic,
+        hasSize only Tiny
+    
+    DisjointWith: 
+        F,
+        V,
+        I,
+        G,
+        N,
+        P,
+        S,
+        Y,
+        L,
+        R,
+        H,
+        A,
+        Q,
+        K,
+        E,
+        W,
+        D,
+        M,
+        C
+    
+    
+
+
+
+Class: meta:ValuePartition
+
+    
+
+
+
+Class: K
+
+    Annotations: 
+        rdfs:label "Lysine"^^xsd:string
+    
+    SubClassOf: 
+        SpecificAminoAcid,
+        hasCharge some Positive,
+        hasHydrophobicity some Hydrophilic,
+        hasPolarity some Polar,
+        hasSideChainStructure some Aliphatic,
+        hasSize some Large,
+        hasCharge only Positive,
+        hasHydrophobicity only Hydrophilic,
+        hasPolarity only Polar,
+        hasSideChainStructure only Aliphatic,
+        hasSize only Large
+    
+    DisjointWith: 
+        F,
+        V,
+        I,
+        G,
+        P,
+        N,
+        S,
+        Y,
+        R,
+        L,
+        H,
+        A,
+        Q,
+        T,
+        E,
+        W,
+        D,
+        M,
+        C
+    
+    
+
+
+
+Class: Size
+
+    EquivalentTo: 
+        Large
+        or Small
+        or Tiny
+    
+    SubClassOf: 
+        meta:ValuePartition,
+        owl:Thing
+    
+    
+
+
+
+Class: Aromatic
+
+    SubClassOf: 
+        SideChainStructure
+    
+    DisjointWith: 
+        Aliphatic
+    
+    
+
+
+
+Class: E
+
+    Annotations: 
+        rdfs:label "Glutamate"^^xsd:string
+    
+    SubClassOf: 
+        SpecificAminoAcid,
+        hasCharge some Negative,
+        hasHydrophobicity some Hydrophilic,
+        hasPolarity some Polar,
+        hasSideChainStructure some Aliphatic,
+        hasSize some Small,
+        hasCharge only Negative,
+        hasHydrophobicity only Hydrophilic,
+        hasPolarity only Polar,
+        hasSideChainStructure only Aliphatic,
+        hasSize only Small
+    
+    DisjointWith: 
+        F,
+        V,
+        I,
+        G,
+        P,
+        N,
+        S,
+        Y,
+        L,
+        H,
+        R,
+        A,
+        Q,
+        T,
+        K,
+        W,
+        D,
+        C,
+        M
+    
+    
+
+
+
+Class: Polarity
+
+    EquivalentTo: 
+        Non-Polar
+        or Polar
+    
+    SubClassOf: 
+        meta:ValuePartition,
+        owl:Thing
+    
+    
+
+
+
+Class: M
+
+    Annotations: 
+        rdfs:label "Methionine"^^xsd:string
+    
+    SubClassOf: 
+        SpecificAminoAcid,
+        hasCharge some Neutral,
+        hasHydrophobicity some Hydrophobic,
+        hasPolarity some Non-Polar,
+        hasSideChainStructure some Aliphatic,
+        hasSize some Large,
+        hasCharge only Neutral,
+        hasHydrophobicity only Hydrophobic,
+        hasPolarity only Non-Polar,
+        hasSideChainStructure only Aliphatic,
+        hasSize only Large
+    
+    DisjointWith: 
+        F,
+        V,
+        I,
+        G,
+        P,
+        N,
+        S,
+        Y,
+        H,
+        R,
+        L,
+        A,
+        Q,
+        T,
+        K,
+        E,
+        W,
+        D,
+        C
+    
+    
+
+
+
+Class: C
+
+    Annotations: 
+        rdfs:label "Cysteine"^^xsd:string
+    
+    SubClassOf: 
+        SpecificAminoAcid,
+        hasCharge some Neutral,
+        hasHydrophobicity some Hydrophobic,
+        hasPolarity some Polar,
+        hasSideChainStructure some Aliphatic,
+        hasSize some Small,
+        hasCharge only Neutral,
+        hasHydrophobicity only Hydrophobic,
+        hasPolarity only Polar,
+        hasSideChainStructure only Aliphatic,
+        hasSize only Small
+    
+    DisjointWith: 
+        F,
+        V,
+        I,
+        G,
+        N,
+        P,
+        S,
+        Y,
+        R,
+        H,
+        L,
+        A,
+        Q,
+        T,
+        K,
+        E,
+        W,
+        D,
+        M
+    
+    
+
+
+

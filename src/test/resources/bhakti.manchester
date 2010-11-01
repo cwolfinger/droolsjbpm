@@ -1,0 +1,656 @@
+Namespace:  <http://www.owl-ontologies.com/unnamed.owl#>
+Namespace: rdfs <http://www.w3.org/2000/01/rdf-schema#>
+Namespace: protege <http://protege.stanford.edu/plugins/owl/protege#>
+Namespace: owl2xml <http://www.w3.org/2006/12/owl2-xml#>
+Namespace: owl <http://www.w3.org/2002/07/owl#>
+Namespace: xsd <http://www.w3.org/2001/XMLSchema#>
+Namespace: rdf <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+Namespace: unnamed <http://www.owl-ontologies.com/unnamed.owl#>
+
+
+
+Ontology: <http://www.owl-ontologies.com/unnamed.owl>
+Import: <http://protege.stanford.edu/plugins/owl/protege>
+
+DataProperty: rdf__Sanskrit_name
+
+    Annotations: 
+        rdfs:label "rdf_:Sanskrit_name"
+    
+    Range: 
+        string
+    
+    
+
+
+
+DataProperty: rdf__rasa
+
+    Annotations: 
+        rdfs:label "rdf_:rasa"
+    
+    Range: 
+        string
+    
+    
+
+
+
+DataProperty: rdf__Reference
+
+    Annotations: 
+        rdfs:label "rdf_:Reference",
+        rdfs:comment "Vedic Scriptural reference"^^xsd:string
+    
+    Domain: 
+        Gaudiya_Bhakti
+    
+    Range: 
+        string
+    
+    
+
+
+
+DataProperty: rdf__Primary_rasa
+
+    Annotations: 
+        rdfs:label "rdf_:Primary_rasa"
+    
+    Domain: 
+        Bhavas
+        or Sentiments
+    
+    Range: 
+        string
+    
+    
+
+
+
+DataProperty: rdf__Secondary_rasa
+
+    Annotations: 
+        rdfs:label "rdf_:Secondary_rasa"
+    
+    Domain: 
+        Bhavas
+        or Sentiments
+    
+    Range: 
+        string
+    
+    
+
+
+
+Class: Mana
+
+    Annotations: 
+        rdfs:label "rdf_:Mana"
+    
+    SubClassOf: 
+        Pure_Love_of_Godhead
+    
+    
+
+
+
+Class: Endeavors
+
+    Annotations: 
+        rdfs:label "rdf_:Endeavors",
+        rdfs:comment "Sanskrit: cesta-rupa"^^xsd:string
+    
+    SubClassOf: 
+        Devotional_Activities
+    
+    
+
+
+
+Class: Neutrality
+
+    Annotations: 
+        rdfs:comment "Sanskrit: santa-rasa"^^xsd:string,
+        rdfs:label "rdf_:Neutrality"
+    
+    SubClassOf: 
+        Permanent_Sentiment
+    
+    
+
+
+
+Class: Devotional_Activities
+
+    Annotations: 
+        rdfs:comment "Sanskrit: Krsnanusilana
+Description: Cultivation of activities for Sri Krsna"^^xsd:string,
+        rdfs:label "rdf_:Devotional_Activities"
+    
+    SubClassOf: 
+        Gaudiya_Bhakti
+    
+    
+
+
+
+Class: Permanent_Sentiment
+
+    Annotations: 
+        rdfs:comment "Sanskrit: sthayi-bhava-rupa"^^xsd:string,
+        rdfs:label "rdf_:Permanent_sentiment"
+    
+    SubClassOf: 
+        Sentiments
+    
+    
+
+
+
+Class: Sneha
+
+    Annotations: 
+        rdfs:comment "Sanskrit:"^^xsd:string,
+        rdfs:label "rdf_:Sneha"
+    
+    SubClassOf: 
+        Pure_Love_of_Godhead
+    
+    
+
+
+
+Class: Attachment
+
+    Annotations: 
+        rdfs:label "rdf_:Attachment",
+        rdfs:comment "Sanskrit: rati"^^xsd:string
+    
+    SubClassOf: 
+        Spontaneous_Devotional_Service
+    
+    
+
+
+
+Class: Ecstatic_Love
+
+    Annotations: 
+        rdfs:comment "Sanskrit: bhava"^^xsd:string,
+        rdfs:label "rdf_:Ecstatic_Love"
+    
+    SubClassOf: 
+        Spontaneous_Devotional_Service
+    
+    
+
+
+
+Class: Regulative_Devotional_Service
+
+    Annotations: 
+        rdfs:label "rdf_:Regulative_Devotional_Service",
+        rdfs:comment "Sanskrit: vaidhi-bhakti"^^xsd:string
+    
+    SubClassOf: 
+        Stages_of_Devotion
+    
+    
+
+
+
+Class: Pure_Love_of_Godhead
+
+    Annotations: 
+        rdfs:comment "Sanskrit: prema-bhakti"^^xsd:string,
+        rdfs:label "rdf_:Pure_Love_of_Godhead"
+    
+    SubClassOf: 
+        Stages_of_Devotion
+    
+    
+
+
+
+Class: Sthayi-bhava
+
+    Annotations: 
+        rdfs:label "rdf_:Sthayi-bhava"
+    
+    SubClassOf: 
+        Bhavas
+    
+    
+
+
+
+Class: Training
+
+    Annotations: 
+        rdfs:comment "Sanskrit: sadhana-rupa
+Description: effort in the preliminary cultivation of devotional service, leading to bhava."^^xsd:string,
+        rdfs:label "rdf_:Training"
+    
+    SubClassOf: 
+        Endeavors
+    
+    
+
+
+
+Class: Raga
+
+    Annotations: 
+        rdfs:label "rdf_:Raga"
+    
+    SubClassOf: 
+        Pure_Love_of_Godhead
+    
+    
+
+
+
+Class: Taste
+
+    Annotations: 
+        rdfs:comment "Sanskrit: ruci"^^xsd:string,
+        rdfs:label "rdf_:Taste"
+    
+    SubClassOf: 
+        Spontaneous_Devotional_Service
+    
+    
+
+
+
+Class: Anger
+
+    Annotations: 
+        rdfs:label "rdf_:Anger"
+    
+    SubClassOf: 
+        Transitory_Emotions
+    
+    
+
+
+
+Class: Initiation
+
+    Annotations: 
+        rdfs:label "rdf_:Initiation",
+        rdfs:comment "Sanskrit: diksa"^^xsd:string
+    
+    SubClassOf: 
+        Regulative_Devotional_Service
+    
+    
+
+
+
+Class: Bhava
+
+    Annotations: 
+        rdfs:label "rdf_:Bhava"
+    
+    SubClassOf: 
+        Pure_Love_of_Godhead
+    
+    
+
+
+
+Class: Faith
+
+    Annotations: 
+        rdfs:comment "Sanskrit: sraddha"^^xsd:string,
+        rdfs:label "rdf_:Faith"
+    
+    SubClassOf: 
+        Regulative_Devotional_Service
+    
+    
+
+
+
+Class: Negative_Actions
+
+    Annotations: 
+        rdfs:label "rdf_:Negative_Actions",
+        rdfs:comment "Sanskrit: nivrtti"^^xsd:string
+    
+    SubClassOf: 
+        Training
+    
+    
+
+
+
+Class: Sentiments
+
+    Annotations: 
+        rdfs:comment "Sanskrit: bhava-rupa"^^xsd:string,
+        rdfs:label "rdf_:Sentiments"
+    
+    SubClassOf: 
+        Devotional_Activities
+    
+    
+
+
+
+Class: Pranaya
+
+    Annotations: 
+        rdfs:label "rdf_:Pranaya"
+    
+    SubClassOf: 
+        Pure_Love_of_Godhead
+    
+    
+
+
+
+Class: Compassion
+
+    Annotations: 
+        rdfs:label "rdf_:Compassion"
+    
+    SubClassOf: 
+        Transitory_Emotions
+    
+    
+
+
+
+Class: Parenthood
+
+    Annotations: 
+        rdfs:comment "Sanskrit: vatsalya-rasa"^^xsd:string,
+        rdfs:label "rdf_:Parenthood"
+    
+    SubClassOf: 
+        Permanent_Sentiment
+    
+    
+
+
+
+Class: Sancari-bhava
+
+    Annotations: 
+        rdfs:label "rdf_:Sancari-bhava"
+    
+    SubClassOf: 
+        Bhavas
+    
+    
+
+
+
+Class: Dread
+
+    Annotations: 
+        rdfs:label "rdf_:Dread"
+    
+    SubClassOf: 
+        Transitory_Emotions
+    
+    
+
+
+
+Class: Servitude
+
+    Annotations: 
+        rdfs:comment "Sanskrit: dasya-bhava"^^xsd:string,
+        rdfs:label "rdf_:Servitude"
+    
+    SubClassOf: 
+        Permanent_Sentiment
+    
+    
+
+
+
+Class: Service
+
+    Annotations: 
+        rdfs:comment "Sanskrit: bhajana-kriya"^^xsd:string,
+        rdfs:label "rdf_:Service"
+    
+    SubClassOf: 
+        Regulative_Devotional_Service
+    
+    
+
+
+
+Class: Friendship
+
+    Annotations: 
+        rdfs:comment "Sanskrit: sakhya-bhava"^^xsd:string,
+        rdfs:label "rdf_:Friendship"
+    
+    SubClassOf: 
+        Permanent_Sentiment
+    
+    
+
+
+
+Class: Steadiness
+
+    Annotations: 
+        rdfs:comment "Sanskrit: nistha"^^xsd:string,
+        rdfs:label "rdf_:Steadiness"
+    
+    SubClassOf: 
+        Spontaneous_Devotional_Service
+    
+    
+
+
+
+Class: Spontaneous_Devotional_Service
+
+    Annotations: 
+        rdfs:label "rdf_:Spontaneous_Devotional_Service",
+        rdfs:comment "Sanskrit: raganuga-bhakti"^^xsd:string
+    
+    SubClassOf: 
+        Stages_of_Devotion
+    
+    
+
+
+
+Class: Mahabhava
+
+    Annotations: 
+        rdfs:label "rdf_:Mahabhava"
+    
+    SubClassOf: 
+        Pure_Love_of_Godhead
+    
+    
+
+
+
+Class: Laughter
+
+    Annotations: 
+        rdfs:label "rdf_:Laughter"
+    
+    SubClassOf: 
+        Transitory_Emotions
+    
+    
+
+
+
+Class: Bhavas
+
+    Annotations: 
+        rdfs:comment "Sanskrit: karya-rupa
+Description: efforts manifesting as effects upon attainment of bhava."^^xsd:string,
+        rdfs:label "rdf_:Bhavas"
+    
+    SubClassOf: 
+        Endeavors
+    
+    
+
+
+
+Class: Chivalry
+
+    Annotations: 
+        rdfs:label "rdf_:Chivalry"
+    
+    SubClassOf: 
+        Transitory_Emotions
+    
+    
+
+
+
+Class: Purity
+
+    Annotations: 
+        rdfs:label "rdf_:Purity",
+        rdfs:comment "Sanskrit: anartha-nivrtti"^^xsd:string
+    
+    SubClassOf: 
+        Regulative_Devotional_Service
+    
+    
+
+
+
+Class: Stages_of_Devotion
+
+    Annotations: 
+        rdfs:label "rdf_:Stages_of_Devotion"
+    
+    SubClassOf: 
+        Gaudiya_Bhakti
+    
+    
+
+
+
+Class: Anuraga
+
+    Annotations: 
+        rdfs:label "rdf_:Anuraga"
+    
+    SubClassOf: 
+        Pure_Love_of_Godhead
+    
+    
+
+
+
+Class: Positive_Actions
+
+    Annotations: 
+        rdfs:comment "Sanskrit: pravritti"^^xsd:string,
+        rdfs:label "rdf_:Positive_Actions"
+    
+    SubClassOf: 
+        Training
+    
+    
+
+
+
+Class: Vyabhicari-bhava
+
+    Annotations: 
+        rdfs:label "rdf_:Vyabhicari-bhava"
+    
+    SubClassOf: 
+        Bhavas
+    
+    
+
+
+
+Class: Association
+
+    Annotations: 
+        rdfs:label "rdf_:Association",
+        rdfs:comment "Sanskrit: sadhu-sanga"^^xsd:string
+    
+    SubClassOf: 
+        Regulative_Devotional_Service
+    
+    
+
+
+
+Class: Ghastliness
+
+    Annotations: 
+        rdfs:label "rdf_:Ghastliness"
+    
+    SubClassOf: 
+        Transitory_Emotions
+    
+    
+
+
+
+Class: Conjugal_Love
+
+    Annotations: 
+        rdfs:label "rdf_:Conjugal_Love",
+        rdfs:comment "Sanskrit: madhurya-rasa"^^xsd:string
+    
+    SubClassOf: 
+        Permanent_Sentiment
+    
+    
+
+
+
+Class: Astonishment
+
+    Annotations: 
+        rdfs:label "rdf_:Astonishment"
+    
+    SubClassOf: 
+        Transitory_Emotions
+    
+    
+
+
+
+Class: Transitory_Emotions
+
+    Annotations: 
+        rdfs:label "rdf_:Transitory_Emotions",
+        rdfs:comment "Sanskrit: sancari-bhava-rupa
+Description: 33 internal emotions (sancari-bhavas)"^^xsd:string
+    
+    SubClassOf: 
+        Sentiments
+    
+    
+
+
+
+Class: Gaudiya_Bhakti
+
+    Annotations: 
+        rdfs:comment "The system of terminology in Gaudiya Vaisnavism describing devotional service. From works of Rupa Gosvami and Visvanath Cakravarti Thakur."^^xsd:string,
+        rdfs:label "rdf_:Bhakti_Gaudiya_"
+    
+    
+
+
+
+

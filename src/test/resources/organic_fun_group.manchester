@@ -1,0 +1,442 @@
+Namespace: dc <http://purl.org/dc/elements/1.1/>
+Namespace:  <http://ontology.dumontierlab.com/organic-functional-group-complex>
+Namespace: rdfs <http://www.w3.org/2000/01/rdf-schema#>
+Namespace: owl2xml <http://www.w3.org/2006/12/owl2-xml#>
+Namespace: owl11 <http://www.w3.org/2006/12/owl11#>
+Namespace: owl11xml <http://www.w3.org/2006/12/owl11-xml#>
+Namespace: owl <http://www.w3.org/2002/07/owl#>
+Namespace: xsd <http://www.w3.org/2001/XMLSchema#>
+Namespace: rdf <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+Namespace: dl <http://ontology.dumontierlab.com/>
+
+
+
+Ontology: <http://ontology.dumontierlab.com/organic-functional-group-complex>
+Import: <http://ontology.dumontierlab.com/organic-functional-group-primitive>
+Import: <http://ontology.dumontierlab.com/atom-common>
+Import: <http://ontology.dumontierlab.com/annotation>
+
+Annotations: 
+    dc:publisher "Dumontier Lab"^^xsd:string,
+    dc:title "Organic Functional Group Ontology (complex)"^^xsd:string,
+    dc:creator "Michel Dumontier"^^xsd:string,
+    dc:language "en"^^xsd:string,
+    owl:versionInfo "2.0"^^xsd:string,
+    dc:date "2007-10-01"^^xsd:date,
+    dc:description "Complex class descriptions for the realization of organic functional groups."^^xsd:string,
+    dc:format "application/rdf+xml"^^xsd:string
+
+ObjectProperty: dl:hasDoubleBondWith
+
+    
+
+
+
+ObjectProperty: dl:hasAromaticBondWith
+
+    
+
+
+
+ObjectProperty: dl:hasBondWith
+
+    
+
+
+
+ObjectProperty: dl:hasSingleBondWith
+
+    
+
+
+
+Class: dl:MethylGroup
+
+    SubClassOf: 
+        dl:CarbonGroup
+    
+    
+
+
+
+Class: dl:SulfurAtom
+
+    
+
+
+
+Class: dl:AcylGroup
+
+    EquivalentTo: 
+        dl:CarbonAtom
+        and (dl:hasDoubleBondWith exactly 1 dl:OxygenAtom)
+        and (dl:hasSingleBondWith exactly 2 dl:OrganicGroup)
+    
+    
+
+
+
+Class: dl:HeteroAtom
+
+    
+
+
+
+Class: dl:PrimaryAmineGroup
+
+    EquivalentTo: 
+        dl:NitrogenAtom
+        and (dl:hasSingleBondWith some dl:CarbonAtom)
+        and (dl:hasSingleBondWith exactly 2 dl:HydrogenAtom)
+    
+    
+
+
+
+Class: dl:Alkyl
+
+    EquivalentTo: 
+        dl:CarbonAtom
+        and (dl:hasSingleBondWith some (dl:CarbonAtom
+        or dl:HydrogenAtom))
+    
+    
+
+
+
+Class: dl:OrganicGroup
+
+    
+
+
+
+Class: dl:AldehydeGroup
+
+    EquivalentTo: 
+        dl:CarbonAtom
+        and (dl:hasDoubleBondWith exactly 1 dl:OxygenAtom)
+        and (dl:hasSingleBondWith exactly 1 dl:HydrogenAtom)
+    
+    
+
+
+
+Class: dl:AmineGroup
+
+    EquivalentTo: 
+        dl:NitrogenAtom
+        and (dl:hasBondWith some dl:CarbonAtom)
+    
+    
+
+
+
+Class: dl:NitrogenAtom
+
+    
+
+
+
+Class: dl:ImineGroup
+
+    EquivalentTo: 
+        dl:OrganicGroup
+        and (dl:hasSingleBondWith some (dl:CarbonAtom
+        and (dl:hasDoubleBondWith some dl:NitrogenAtom)))
+    
+    
+
+
+
+Class: dl:SulfinicAcidGeneralGroup
+
+    EquivalentTo: 
+        dl:CarbonGroup
+        and (dl:hasSingleBondWith some (dl:SulfurAtom
+        and (dl:hasDoubleBondWith some dl:OxygenAtom)
+        and (dl:hasDoubleBondWith exactly 1 dl:OxygenAtom)))
+    
+    
+
+
+
+Class: dl:SulfonicAcidGroup
+
+    EquivalentTo: 
+        dl:CarbonGroup
+        and (dl:hasSingleBondWith some (dl:SulfurAtom
+        and (dl:hasDoubleBondWith some dl:OxygenAtom)
+        and (dl:hasSingleBondWith some (dl:OxygenAtom
+        and (dl:hasSingleBondWith some dl:HydrogenAtom)))
+        and (dl:hasDoubleBondWith min 2 dl:OxygenAtom)))
+    
+    
+
+
+
+Class: dl:AcylHalideGroup
+
+    EquivalentTo: 
+        dl:CarbonAtom
+        and (dl:hasDoubleBondWith exactly 1 dl:OxygenAtom)
+        and (dl:hasSingleBondWith exactly 1 dl:HalogenAtom)
+        and (dl:hasSingleBondWith exactly 1 dl:OrganicGroup)
+    
+    
+
+
+
+Class: dl:SulfonylHalideGroup
+
+    EquivalentTo: 
+        dl:CarbonGroup
+        and (dl:hasSingleBondWith some (dl:SulfurAtom
+        and (dl:hasDoubleBondWith some dl:OxygenAtom)
+        and (dl:hasSingleBondWith some dl:HalogenAtom)
+        and (dl:hasDoubleBondWith min 2 dl:OxygenAtom)))
+    
+    
+
+
+
+Class: dl:CarbonAtom
+
+    
+
+
+
+Class: dl:OrganicNitrogenGroup
+
+    EquivalentTo: 
+        dl:OrganicGroup
+        and (dl:hasBondWith some dl:NitrogenAtom)
+    
+    
+
+
+
+Class: dl:OxygenAtom
+
+    
+
+
+
+Class: dl:TertiaryAmineGroup
+
+    EquivalentTo: 
+        dl:NitrogenAtom
+        and (dl:hasSingleBondWith exactly 3 dl:CarbonAtom)
+    
+    
+
+
+
+Class: dl:AcylBromideGroup
+
+    EquivalentTo: 
+        dl:CarbonAtom
+        and (dl:hasDoubleBondWith exactly 1 dl:OxygenAtom)
+        and (dl:hasSingleBondWith exactly 1 dl:BromineAtom)
+        and (dl:hasSingleBondWith exactly 1 dl:OrganicGroup)
+    
+    
+
+
+
+Class: dl:Aryl
+
+    EquivalentTo: 
+        dl:CarbonAtom
+        and (dl:hasAromaticBondWith some dl:CarbonAtom)
+    
+    
+
+
+
+Class: dl:CarbonGroup
+
+    EquivalentTo: 
+        dl:Alkyl
+        or dl:Aryl
+    
+    
+
+
+
+Class: dl:PhosphorusAtom
+
+    
+
+
+
+Class: dl:CarboxylicAcidGroup
+
+    EquivalentTo: 
+        dl:OrganicGroup
+        and (dl:hasSingleBondWith some (dl:CarbonAtom
+        and (dl:hasDoubleBondWith some dl:OxygenAtom)
+        and (dl:hasSingleBondWith some (dl:OxygenAtom
+        and (dl:hasSingleBondWith some dl:HydrogenAtom)))))
+    
+    
+
+
+
+Class: dl:OrganicPhosphateGroup
+
+    EquivalentTo: 
+        dl:OrganicGroup
+        and (dl:hasBondWith some dl:PhosphorusAtom)
+    
+    SubClassOf: 
+        dl:OrganicGroup
+    
+    
+
+
+
+Class: dl:HydrogenAtom
+
+    
+
+
+
+Class: dl:SecondaryAmineGroup
+
+    SubClassOf: 
+        dl:CarbonGroup
+    
+    
+
+
+
+Class: dl:HalogenAtom
+
+    
+
+
+
+Class: dl:HydroxylGroup
+
+    EquivalentTo: 
+        dl:OxygenAtom
+        and (dl:hasBondWith some dl:HydrogenAtom)
+    
+    
+
+
+
+Class: dl:BromineAtom
+
+    
+
+
+
+Class: dl:SulfoxideGroup
+
+    EquivalentTo: 
+        dl:CarbonGroup
+        and (dl:hasSingleBondWith some (dl:SulfurAtom
+        and (dl:hasDoubleBondWith some dl:OxygenAtom)
+        and (dl:hasSingleBondWith some dl:CarbonGroup)
+        and (dl:hasSingleBondWith min 2 dl:CarbonGroup)
+        and (dl:hasDoubleBondWith exactly 1 dl:OxygenAtom)))
+    
+    
+
+
+
+Class: owl:Thing
+
+    
+
+
+
+Class: dl:EsterGroup
+
+    EquivalentTo: 
+        (dl:CarbonAtom
+        and (dl:hasDoubleBondWith exactly 1 dl:OxygenAtom))
+        and (dl:hasSingleBondWith exactly 1 owl:Thing)
+    
+    
+
+
+
+Class: dl:EtherGroup
+
+    EquivalentTo: 
+        dl:OxygenAtom
+        and (dl:hasSingleBondWith exactly 2 dl:Alkyl)
+    
+    
+
+
+
+Class: dl:OrganicSulfurGroup
+
+    EquivalentTo: 
+        dl:OrganicGroup
+        and (dl:hasBondWith some dl:SulfurAtom)
+    
+    
+
+
+
+Class: dl:SulfonicAcidDerivativeGroup
+
+    EquivalentTo: 
+        dl:CarbonGroup
+        and (dl:hasSingleBondWith some ((dl:SulfurAtom
+        and (dl:hasDoubleBondWith min 2 dl:OxygenAtom))
+        and (dl:hasDoubleBondWith some dl:OxygenAtom)
+        and (dl:hasSingleBondWith some dl:HeteroAtom)))
+    
+    
+
+
+
+Class: dl:ThiolGroup
+
+    EquivalentTo: 
+        dl:CarbonGroup
+        and (dl:hasSingleBondWith some (dl:SulfurAtom
+        and (dl:hasSingleBondWith some dl:HydrogenAtom)))
+    
+    
+
+
+
+Class: dl:AmideGroup
+
+    EquivalentTo: 
+        dl:CarbonAtom
+        and (dl:hasDoubleBondWith some dl:OxygenAtom)
+        and (dl:hasSingleBondWith some dl:NitrogenAtom)
+    
+    
+
+
+
+Class: dl:KetoneGroup
+
+    EquivalentTo: 
+        (dl:CarbonAtom
+        and (dl:hasSingleBondWith exactly 2 dl:Alkyl))
+        and (dl:hasDoubleBondWith exactly 1 dl:OxygenAtom)
+    
+    
+
+
+
+Class: dl:CarbonylGroup
+
+    EquivalentTo: 
+        dl:CarbonAtom
+        and (dl:hasDoubleBondWith exactly 1 dl:OxygenAtom)
+    
+    
+
+
+
+

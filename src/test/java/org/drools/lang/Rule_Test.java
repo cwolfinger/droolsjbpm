@@ -149,8 +149,8 @@ public class Rule_Test {
 				" " + "\n" +	
 				"global int N; \n" +				
 				" " + "\n" +
-				"Ontology : " + "\n" +
-				" @Class declare Test end " + "\n" +
+//				"Ontology : " + "\n" +
+//				" @Class declare Test end " + "\n" +
 				" " + "\n" +
 				"rule \"ruel\"\n" +
 				"when\n" +
@@ -163,7 +163,7 @@ public class Rule_Test {
 				
 	}	
 	
-	
+						
 	
 	@Test	
 	public void test_package_statement() {		
@@ -257,6 +257,92 @@ public class Rule_Test {
 		check(rule,testDRL);
 	}
 			
+	
+	
+	
+	
+	@Test
+	public void test_declare() {
+		String rule = "declare_bean";
+		String[] testDRL = new String[] {							
+				" declare Person " +
+				"  @role(fact) " +	
+				"  name : String @key" +
+				"  age : int" +
+				" end " +				
+				"  ",
+				
+				" declare MyEvent " +
+				"  @role(event) " +
+				"  @timestamp(tim_field) " +
+				"  @duration(dur_field) " +
+				"  @expires(exp_field) " +			//todo 
+				"  " + 
+				"  field : String " +				
+				" end " +				
+				"  ",
+				
+				" declare MyEvent " +
+				"  @role(event) " +
+				"  @timestamp(tim_field) " +
+				"  @duration(dur_field) " +
+				"  @expires(exp_field) " +			//todo 
+				"  " + 
+				"  field : String " +				
+				" end " +				
+				"  ",
+				
+				" declare @role(individual) " +				
+				"  Person(\"john\",34,Address(\"London\",44,true))" +				
+				// optional end " end " +				
+				"  ",
+				
+				
+				" declare ns:hasName " +
+				"  @role(property) " +				
+				"  domain : Person " +
+				"  range : String" +
+				" end ",
+				
+				" declare ns:hasName " +
+				"  @role(property) " +
+				"  @transitive " +
+				"  @symmetric " +
+				"  @reflexive " +
+				" " +
+				"  domain : Person " +
+				"  range : String" +
+				" end " +				
+				"  ",
+					
+				
+				
+				" declare ns:YoungPerson " +
+				"  aka Kid " + 
+				"  extends Person " +
+				"  as Person and :hasAge only Integer [< 18] " +
+				"  @role(concept) " +								
+				"  hasSchool : School" +
+				" end " +				
+				"  ",
+				
+				
+				
+				
+				
+				
+				
+				//dec indiv
+				//
+				
+				
+		};
+		check(rule,testDRL);											
+	}	
+	
+	
+	
+	
 	
 	
 	
@@ -1645,416 +1731,7 @@ public class Rule_Test {
 	
 	
 		
-	
-	@Test	
-	public void test_manDL_declaration_root() {
-		String rule = "manDL_type_declaration";
-		String[] testDRL = {
-				"@Class " + "\n" +
-				"declare foo " + "\n" +
-				"end",
-				
-				"Class : foo ",
-				
-				"@Event declare SomeEvent end",
-		};
-				
-		check(rule,testDRL);										
-	}
-	   
-	
-	
-	@Test	
-	public void test_manDL_annotations() {
-		String rule = "manDL_annotations";
-		String[] testDRL = {				
-				
-				"Annotations : creator sotty",
-				
-				"Annotations : creator sotty, " +
-				"	Annotations: rdfsComment year creationYear 2008, " +
-				"mainClass Person," +
-				"	Annotations: meta target annotationProp annotationTgt",
-				
-				
-				" Annotations:" + "\n" + 
-				" rdfs:seeAlsso \"http://xmlns.com/foaf/0.1/\"^^xsd:anyURI, " + "\n" +
-				" dc:description \"The Friend of a Friend (FOAF) RDF vocabulary, described using W3C RDF Schema and the Web Ontology Language.\", " + "\n" + 
-				" dc:title \"Friend of a Friend (FOAF) vocabulary\", " + "\n" + 
-				" dc:date \"$Date: 2006/01/29 22:38:45 $\" ",
-		};
-				
-		check(rule,testDRL);										
-	}
-	
-	@Test	
-	public void test_manDL_class() {
-		String rule = "manDL_type_declaration";
-		String[] testDRL = {
-				"@Class " + "\n" +
-				"declare Foo " + "\n" +
-				" Annotations: creatory sotty " + "\n" +
-				" DisjointUnionOf: Annotations: guess what Child, Adult" + "\n" +
-				" SubClassOf: Person and Worker" + "\n" +
-				" EquivalentTo: Annotations: guess again Person" + "\n" +
-				" DisjointWith: Person" + "\n" +
-				" HasKey: Annotations: annkey targt hasSSN" + "\n" + 
-				"end",
-				
-				
-				"@Class " + "\n" +
-				"declare Foo2 " + "\n" +				
-				" as Person or Worker and hasAge : Integer[ < 33 ]" + "\n" +								
-				"end",
-				
-		};
-				
-		check(rule,testDRL);										
-	}
-	
-	
-	
-	
-	
-	
-	@Test	
-	public void test_manDL_datatype_declaration() {
-		String rule = "manDL_type_declaration";
-		String[] testDRL = {
-				"Datatype: NegInt " + "\n" +								
-				" EquivalentTo: Annotations: creator sotty Integer[ < 0 ], NegativeInteger" + "\n",
-				
-				"@Datatype declare NegInt " + "\n" +				
-				" as Integer[ < 0 ]" + "\n",
-				
-		};
-				
-		check(rule,testDRL);										
-	}
 
-	
-	
-	@Test	
-	public void test_manDL_annotated_description() {
-		String rule = "manDL_annotated_description";
-		String[] testDRL = {
-				
-				"hasAge exactly 1 and hasAge only not NegInt",
-				
-				"Annotations: tell me Human or Animal or Robot and not Alien",
-				
-				"Person and (" +
-				"	hasChildren exactly 3 Male or hasChildren min 2 Female ) ",
-				
-				"hasChild Male",
-				
-				"Person and hasChildren some Male ",
-								
-				"Person and hasChildren only Male ",
-				
-				"Person and hasChildren value john ",
-				
-				"Person and hasChildren min 3 ",
-				
-				"Person and hasChildren max 5 ",
-				
-				"Person and hasChildren exactly 10 (Male or Female and hasFriend only Cat)",
-				
-				"Thing that hasFirstName exactly 1 and hasFirstName only String[minLength 1]",
-				
-				
-				
-				"hasGender exactly 1 and hasGender only {\"female\", \"male\"}",
-				
-				"hasFirstName value \"John\" or hasFirstName value \"Joe\" ",
-				
-				"Person or hasChildren only Male ",
-				
-				
-		};
-				
-		check(rule,testDRL);										
-	}
-	
-	
-	@Test
-	public void test_manDL_quantified_restriction_core() {
-		String rule = "manDL_quantified_restriction_core";
-		String[] testDRL = {
-								
-				
-				
-				"hasChildren some Male ",
-								
-				"hasChildren only Male ",
-				
-				"hasChildren value john ",
-				
-				"hasChildren min 3 ",
-				
-				"hasChildren max 5 ",
-				
-				"hasChildren exactly 10",
-				
-				"hasChildren Male",
-				
-					
-				
-		};
-				
-		check(rule,testDRL);										
-	}
-	
-	
-
-	
-	
-	
-	@Test	
-	public void test_manDL_objectprop() {
-		String rule = "manDL_objectProperty";
-		String[] testDRL = {
-				"ObjectProperty: hasWife" + "\n" +				
-				" Annotations: creator sotty " + "\n" +
-				" Characteristics: Functional, InverseFunctional, Reflexive, Irreflexive, Asymmetric, Transitive " + "\n" +
-				" Domain: Annotations: rdfsComment \"General dom\", creator sotty Person," + "\n" +
-				"         Annotations: rdfsCcomment \"More specific dom\" Man" + "\n" +
-				" Range: Person, Woman " + "\n" +
-				" SubPropertyOf: hasSpouse, loves" + "\n" +
-				" EquivalentTo: isMarriedTo " + "\n" +
-				" DisjointWith: hates " + "\n" +
-				" InverseOf: hasSpouse, inverse hasSpouse" + "\n" +
-				" SubPropertyChain: hasChild o hasParent " + "\n",	
-				
-				
-				"@ObjectProperty declare hasWife" + "\n" +				
-				" @Functional" +
-				" @InverseFunctional" +
-				" @Reflexive " +
-				" @Irreflexive " +
-				" @Asymmetric " +
-				" @Transitive " + "\n" +
-				" domain : Person " + "\n" +         
-				" range : Woman " + "\n" +
-				"end ",	
-			
-		};
-				
-		check(rule,testDRL);										
-	}
-	
-	
-	
-	@Test
-	public void test_manDL_dataprop() {
-		String rule = "manDL_dataProperty";
-		String[] testDRL = {
-				"DataProperty: hasAge" + "\n" +				
-				" Annotations: creator sotty " + "\n" +
-				" Characteristics: Functional " + "\n" +
-				" Domain: Person " + "\n" +
-				" Range: integer " + "\n" +
-				" SubPropertyOf: hasVerifiedAge" + "\n" +
-				" EquivalentTo: hasAgeInYears " + "\n" +
-				" DisjointWith: hasSSN " + "\n",
-
-
-
-				"@DataProperty declare hasAge" + "\n" +				
-				" @Functional" +				
-				" domain : Person" + "\n" +         
-				" range : Integer " + "\n" +
-				"end ",
-
-		};
-		check(rule,testDRL);										
-	}
-
-	@Test
-	public void test_manDL_annotation_prop() {
-		String rule = "manDL_type_declaration";
-		String[] testDRL = {
-				"AnnotationProperty: creator" + "\n" +				
-				" Annotations: price 100 " + "\n" +					
-				" Domain: Person " + "\n" +
-				" Range: String " + "\n" +
-				" SubPropertyOf: initialCreator" + "\n",
-
-				"@AnnotationProperty declare creator" + "\n" +				
-				" domain : Person" + "\n" +         
-				" range : Integer " + "\n" +
-				"end ",
-
-		};	
-		check(rule,testDRL);										
-	}
-	
-	@Test
-	public void test_manDL_individuals() {
-		String rule = "manDL_type_declaration";
-		String[] testDRL = {
-				"Individual: John" + "\n" +				
-				" Annotations: creator sotty " + "\n" +					
-				" Types: Person, hasFirstName value \"John\" or hasFirstName value \"Joe\" " + "\n" +
-				" Facts: hasWife Mary, not hasChild Susan, hasAge 33 " + "\n" +
-				" SameAs: Joe" + "\n" +
-				" DifferentFrom: Susan" + "\n",
-			
-		};	
-		check(rule,testDRL);										
-	}
-	
-	
-	@Test
-	public void test_manDL_misc() {
-		String rule = "manDL_type_declaration";
-		String[] testDRL = {
-				"EquivalentClasses: Annotations: creator sotty Rock, Scissors, Paper ",
-				 
-				"DisjointClasses: Annotations: creator sotty q:Rock, q:Scissors, Paper ",
-				
-				"EquivalentProperties: Annotations: creator sotty h:loves, h:hates ",
-				
-				"DisjointProperties: Annotations: creator sotty loves, hates ",
-				
-				"SameIndividual: Annotations: creator sotty John, Joe, Jack ",
-				
-				"DifferentIndividuals: Annotations: creator sotty John, Joe, Jack ",
-			
-		};	
-		check(rule,testDRL);										
-	}
-	
-	
-	@Test	
-	public void test_manDL_decl_field() {
-		String rule = "manDL_decl_field";
-		String[] testDRL = new String[] {
-				"field : datatype ;",
-				
-				"field : datatype[][] ;",
-				
-				"field : datatype[][][ > 18 ] ;",
-		};
-		check(rule,testDRL);	
-	}
-	
-	
-	
-	@Test	
-	public void test_manDL_data_type_restriction() {
-		String rule = "manDL_data_type_restriction";
-		String[] testDRL = new String[] {
-				
-				"Integer",
-				
-				"Custom",
-				
-				
-				"Integer[ length 3, > 342 ]",
-		};
-		check(rule,testDRL);	
-	}
-	
-	
-	
-	@Test
-	public void test_manDL_ontology() {
-		String rule = "manDL_ontology";
-		String[] testDRL = {
-				" Prefix: g: <someIRI> " +"\n" +								
-				" Ontology : myOnto v1 " +"\n" +
-				" Import: anotherOnto " + "\n" +
-				" Annotations: creator sotty" + "\n" +
-				"  " +"\n" + 
-				" declare g:Test end " +"\n",
-											
-		};	
-		check(rule,testDRL);										
-	}
-	
-	
-	@Test
-	public void test_manDL_prefix() {
-		String rule = "manDL_prefix";
-		String[] testDRL = {
-				" Prefix: g: <someIRI> " +"\n",
-				" Namespace: g <someIRI> " +"\n",
-				" Namespace: dc <http://purl.org/dc/elements/1.1/>",
-				
-											
-		};	
-		check(rule,testDRL);										
-	}
-	
-	
-	
-	
-	@Test	
-	public void test_manDL_bean() {
-		String rule = "manDL_type_declaration";
-		String[] testDRL = {
-				"@Class " + "\n" +
-				"declare Person " + "\n" +				
-				" DisjointUnionOf: Child, Adult" + "\n" +
-				" SubClassOf: Mammal" + "\n" +
-				" EquivalentTo: Mankind" + "\n" +
-				" DisjointWith: Vegetal" + "\n" +
-				" HasKey: hasage" + "\n" +
-				" " + "\n" +
-				" name : String @key ;" + "\n" +
-				" age : Integer ;" + "\n" +
-				" hasRelation String[ minLength 10 ] ;" + "\n" +
-				" hasAddress : Address[][] ;" + "\n" +
-				" hasAddress some Address ;" + "\n" +
-				" " + "\n" +
-				" " + "\n" +
-				"end",
-											
-		};
-				
-		check(rule,testDRL);										
-	}
-	
-	
-	
-	@Test	
-	public void test_manDL_backwardtype_declaration() {
-		String rule = "manDL_type_declaration";
-		String[] testDRL = new String[] {
-				"declare Student " + "\n" +
-				" as Male and Human and (Slave or worksAt some (School or Prison))" + "\n" +				
-				" age  : int ;" + "\n" +
-				" name : String ;" + "\n" +
-				" end \n"
-		};
-		check(rule,testDRL);											
-	}
-	
-	
-	
-	@Test
-	public void test_foaf_ontology() {
-		String rule = "manDL_ontology";
-		InputStream stream = Rule_Test.class.getClassLoader().getResourceAsStream("foaf.manchester");
-		assertNotNull(stream);
-
-		try {
-			byte[] buf = new byte[stream.available()];
-			stream.read(buf);
-			String source = new String(buf);
-
-			check(rule,new String[] {source});
-		} catch (IOException ioe) {
-			ioe.printStackTrace();
-			fail();
-		}
-		
-		
-
-	}
-	
-	
     
     
     

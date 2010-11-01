@@ -2,7 +2,7 @@ package org.drools.lang.dl.descr;
 
 
 
-public class DL_ExistsDescr extends DL_CompositeDescr {
+public class DL_ExistsDescr extends DL_aCompositeDescr {
 	
 	
 	

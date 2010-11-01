@@ -1,5 +1,5 @@
 lexer grammar DRLv6Lexer;
-   
+    
 options {
   language = Java; 
 }  

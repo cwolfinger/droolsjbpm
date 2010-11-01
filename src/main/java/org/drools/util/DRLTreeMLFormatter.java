@@ -1,5 +1,7 @@
 package org.drools.util;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -19,17 +21,17 @@ public class DRLTreeMLFormatter {
 	public static final String FIELD = "text";
 
 	public static InputStream getAsStream(CommonTree resultTree) {
-		ByteArrayBuffer buffer = new ByteArrayBuffer();
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		Graph graph = buildGraph(resultTree);
 		
 		TreeMLWriter writer = new TreeMLWriter();				
 		try {
-			writer.writeGraph(graph, buffer);
+			writer.writeGraph(graph, baos);
 		} catch (DataIOException e) {
 			e.printStackTrace();
 		}
 		
-		return buffer.newInputStream(); 
+		return new ByteArrayInputStream(baos.toByteArray());
 	}
 
 	private static Graph buildGraph(CommonTree resultTree) {

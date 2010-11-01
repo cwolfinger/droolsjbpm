@@ -2,7 +2,7 @@ package org.drools.lang.dl.descr;
 
 
 
-public class DL_OrDescr extends DL_CompositeDescr {
+public class DL_OrDescr extends DL_aCompositeDescr {
 	
 	
 	@Override

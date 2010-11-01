@@ -12,7 +12,7 @@ options {
     package org.drools.lang.dl;
     
     import org.drools.lang.dl.descr.DLDescrFactory;
-    import org.drools.lang.dl.descr.DL_BaseDescr;
+    import org.drools.lang.dl.descr.DL_aBaseDescr;
     import java.util.List;
     import java.util.LinkedList;
        

@@ -7,13 +7,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
+import org.antlr.runtime.Parser;
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.RecognizerSharedState;
 import org.antlr.runtime.Token;
 import org.antlr.runtime.TokenStream;
 import org.drools.compiler.DroolsParserException;
 
-import static org.drools.lang.DRLv6Parser.*;
+
 
 /**
  * This is a class to hold all the helper functions/methods used
@@ -27,12 +28,12 @@ public class ParserHelper {
     private Stack<Map<DroolsParaphraseTypes, String>> paraphrases              = new Stack<Map<DroolsParaphraseTypes, String>>();
 
     // parameters from parser
-    private DRLv6Parser                       parser                   = null;
+    private Parser                       parser                   = null;
     private DroolsParserExceptionFactory              errorMessageFactory      = null;
     private TokenStream                               input                    = null;
     private RecognizerSharedState                     state                    = null;
 
-    public ParserHelper(DRLv6Parser parser,
+    public ParserHelper(Parser parser,
                         String[] tokenNames,
                         TokenStream input,
                         RecognizerSharedState state) {
@@ -188,12 +189,12 @@ public class ParserHelper {
         }
     }
 
-    public boolean validateNotWithBinding() {
-        if ( input.LA( 1 ) == ID && input.LA( 2 ) == ID && input.LA( 3 ) == COLON ) {
-            return true;
-        }
-        return false;
-    }
+//    public boolean validateNotWithBinding() {
+//        if ( input.LA( 1 ) == ID && input.LA( 2 ) == ID && input.LA( 3 ) == COLON ) {
+//            return true;
+//        }
+//        return false;
+//    }
 
 //    public boolean validateRestr() {
 //        int lookahead = 2;

@@ -2,7 +2,7 @@ package org.drools.lang.dl.descr;
 
 
 
-public class DL_PropertyDescr extends DL_LeafDescr {
+public class DL_PropertyDescr extends DL_aLeafDescr {
 	
 	private String type;
 

@@ -1,0 +1,20 @@
+
+
+Ontology: <http://www.owlontologies.com/tur.owl>
+
+    ObjectProperty: is_inhabits
+
+    Characteristics: 
+        Functional
+    
+    Domain: 
+        person
+    
+    Range: 
+        center_of_pollution
+        or political_region
+        or tourists_place
+    
+    
+
+

@@ -1,6 +1,6 @@
 parser grammar DRLv6Parser; 
 
-   
+        
 options {  
   language = Java;
   output = AST;
@@ -12,8 +12,8 @@ options {
    
   
 //import  General, Expression; 
-import DRLv6Keywords, Manchester;
-
+import DRLv6Keywords; //, Manchester;
+ 
         
  
 
@@ -26,7 +26,7 @@ import DRLv6Keywords, Manchester;
   import java.util.HashSet;
   import org.drools.compiler.DroolsParserException;
 }
-    
+     
 @members {
 
     private Tree curField;
@@ -46,8 +46,8 @@ import DRLv6Keywords, Manchester;
 //        gExpression.setParserHelper( helper );
 //        gGeneral.setParserHelper( helper );          
 //          gAttributes.setParserHelper( helper );
-          gManchester.setParserHelper( helper );
-          gManchester.setPrefixSet( prefixes );
+//          gManchester.setParserHelper( helper );
+//          gManchester.setPrefixSet( prefixes );
     }  
    
     public ParserHelper getHelper()                           { return helper; }
@@ -66,18 +66,18 @@ import DRLv6Keywords, Manchester;
 }
  
 
-
+     
 compilation_unit
   : package_statement?  
     import_section
     declaration_section
-    ontology_section?
+//    ontology_section?
     rulebase_section?
     EOF
     -> ^(VT_COMPILATION_UNIT package_statement?
           ^(VT_IMPORT_SECTION import_section?) 
           ^(VT_DECLARATION_SECTION declaration_section?)
-          ^(VT_ONTOLOGY_SECTION ontology_section?)
+//          ^(VT_ONTOLOGY_SECTION ontology_section?)
           ^(VT_RULEBASE_SECTION rulebase_section?)
         )        
   ;
@@ -120,11 +120,9 @@ declaration_section
 declaration_statement
   : global  
   | function
+  | declare_bean
   ;
 
-ontology_section
-  : manDL_ontology 
-  ;
 
 rulebase_section
   : rulebase_statement+
@@ -187,8 +185,22 @@ function_id
 
 
  
+declare_bean
+  :
+  ;
 
-
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
  
      
      
@@ -994,7 +1006,7 @@ acc_limit
   ;
 
 
-
+ 
 accumulate_iteration
   : init_key pc1=accumulate_paren_chunk COMMA?  
     action_key pc2=accumulate_paren_chunk COMMA?
@@ -1415,9 +1427,12 @@ paren_chunk_data[boolean isRecursive]
 // --------------------------------------------------------
 
   
-
-literal
-    :   STRING m=msr_unit?
+locale
+  : AT ID
+  ;  
+ 
+literal 
+    :   STRING m=msr_unit? ( (locale) => locale )?
         -> {m==null}? STRING
         -> ^(VT_MSR STRING $m)
     |   DECIMAL m=msr_unit?
@@ -1426,7 +1441,7 @@ literal
     |   FLOAT m=msr_unit?
         -> {m==null}? FLOAT
         -> ^(VT_MSR FLOAT $m)
-    |   HEX
+    |   HEX  
     |   OCTAL
     |   BOOL 
     | null_key 
