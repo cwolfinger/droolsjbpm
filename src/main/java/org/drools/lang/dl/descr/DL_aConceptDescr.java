@@ -1,11 +1,12 @@
 package org.drools.lang.dl.descr;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 public abstract class DL_aConceptDescr extends DL_aDeclarationDescr {
 
-	private Set<DL_DefinitionDescr> equivalentTo;
+	private Set<DL_DefinitionDescr> equivalentTo = new HashSet<DL_DefinitionDescr>();
 
 	public Set<DL_DefinitionDescr> getEquivalentTo() {
 		return equivalentTo;

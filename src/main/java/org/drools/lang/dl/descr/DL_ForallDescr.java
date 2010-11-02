@@ -4,7 +4,6 @@ package org.drools.lang.dl.descr;
 
 public class DL_ForallDescr extends DL_aCompositeDescr {
 	
-	private boolean negated = false;
 
 	
 	@Override

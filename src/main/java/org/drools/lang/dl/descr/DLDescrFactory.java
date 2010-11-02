@@ -6,6 +6,16 @@ import java.util.Map;
 
 public class DLDescrFactory {
 
+	private static DLDescrFactory instance = new DLDescrFactory();
+	
+	public static DLDescrFactory instance() {
+		return instance;
+	}
+	
+	private DLDescrFactory() {
+		
+	}
+	
 	private static int N = 0;
 	
 	public DL_OntologyDescr buildOntologyDescr() {
@@ -14,59 +24,90 @@ public class DLDescrFactory {
 	
 	
 	public DL_IriDescr buildIriDescr(String nameSpace, String localName, Map<String,String> nsMap) {
-		return new DL_IriDescr(nameSpace,localName,nsMap);
+		DL_IriDescr descr =  new DL_IriDescr(nameSpace,localName,nsMap);
+		descr.setId(nextId());
+		return descr;
 	}
 	
 	public DL_IriDescr buildIriDescr(String iri) {
-		return new DL_IriDescr(iri);
+		DL_IriDescr descr = new DL_IriDescr(iri);
+		descr.setId(nextId());
+		return descr;
 	}
 	
 	public DL_AnnotationDescr buildAnnotationDescr() {
-		return new DL_AnnotationDescr();
+		DL_AnnotationDescr descr = new DL_AnnotationDescr();
+		descr.setId(nextId());
+		return descr;
 	}
 	
 	public DL_ClassDescr buildClassDescr() {
-		return new DL_ClassDescr();
+		DL_ClassDescr descr = new DL_ClassDescr();
+		descr.setId(nextId());
+		return descr;
 	}
 	
 	public DL_DatatypeDescr buildDatatypeDescr() {
-		return new DL_DatatypeDescr();
+		DL_DatatypeDescr descr = new DL_DatatypeDescr();
+		descr.setId(nextId());
+		return descr;
 	}
 	
 	public DL_ObjectPropertyDescr buildObjectPropertyDescr() {
-		return new DL_ObjectPropertyDescr();
+		DL_ObjectPropertyDescr descr = new DL_ObjectPropertyDescr();
+		descr.setId(nextId());
+		return descr;
 	}
 	
 	public DL_DataPropertyDescr buildDataPropertyDescr() {
-		return new DL_DataPropertyDescr();
+		DL_DataPropertyDescr descr = new DL_DataPropertyDescr();
+		descr.setId(nextId());
+		return descr;
 	}
 	
 	public DL_AnnotationPropertyDescr buildAnnotationPropertyDescr() {
-		return new DL_AnnotationPropertyDescr();
+		DL_AnnotationPropertyDescr descr = new DL_AnnotationPropertyDescr();
+		descr.setId(nextId());
+		return descr;
 	}
 	
 	public DL_IndividualDescr buildIndividualDescr() {
-		return new DL_IndividualDescr();		
+		DL_IndividualDescr descr = new DL_IndividualDescr();
+		descr.setId(nextId());
+		return descr;
 	}
 	
 	public DL_RelationDescr buildGenericRelationDescr(DL_IriDescr iri, boolean inverse) {
 		DL_RelationDescr descr = new DL_RelationDescr();
 			descr.setIri(iri);
 			descr.setInverse(inverse);
+			descr.setId(nextId());
 		return descr;
 	}
 	
 
 	
 	public DL_DefinitionDescr buildDefinitionDescr(DL_aBaseDescr root) {
-		return new DL_DefinitionDescr(root);
+		DL_DefinitionDescr descr = new DL_DefinitionDescr(root);
+		descr.setId(nextId());
+		return descr;
 	}
+	
+	
+	public DL_DefinitionDescr buildDefinitionDescr() {
+		DL_DefinitionDescr descr = new DL_DefinitionDescr();
+		descr.setId(nextId());
+		return descr;
+	}
+	
+	
 
 	public Object buildFactDescr(DL_RelationDescr rel, Object tgt, boolean negated) {
 		DL_FactDescr descr = new DL_FactDescr();
 			descr.setRel(rel);
 			descr.setObject(tgt);
 			descr.setNegated(negated);
+			descr.setId(nextId());
 		return descr;
 	}
 	
@@ -171,6 +212,7 @@ public class DLDescrFactory {
 	public DL_aBaseDescr buildEnumTypeDescr(Collection<Object> values) {
 		DL_EnumTypeDescr descr = new DL_EnumTypeDescr();
 			descr.addAll(values);
+			descr.setId(nextId());
 		return descr;
 	}
 	
@@ -180,6 +222,7 @@ public class DLDescrFactory {
 				descr.setType(((DL_TypeDescr) type).getType());
 			if (facets instanceof DL_AndDescr)
 				descr.addChildren(((DL_AndDescr) facets).getChildren());
+		descr.setId(nextId());
 		return descr;
 	}
 	
@@ -187,6 +230,7 @@ public class DLDescrFactory {
 		DL_FacetDescr facet = new DL_FacetDescr();
 			facet.setOp(op);
 			facet.setVal(val);
+		facet.setId(nextId());	
 		return facet;
 	}
 	

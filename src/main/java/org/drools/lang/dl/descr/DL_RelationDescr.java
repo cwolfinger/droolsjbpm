@@ -1,19 +1,20 @@
 package org.drools.lang.dl.descr;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 public class DL_RelationDescr extends DL_aDeclarationDescr {
 	
-	private Set<DL_DefinitionDescr> equivalentTo;
+	private Set<DL_DefinitionDescr> equivalentTo = new HashSet<DL_DefinitionDescr>();
 	
-	private Set<DL_DefinitionDescr> disjointWith;
+	private Set<DL_DefinitionDescr> disjointWith = new HashSet<DL_DefinitionDescr>();
 	
-	private Set<DL_DefinitionDescr> domain;
+	private Set<DL_DefinitionDescr> domain = new HashSet<DL_DefinitionDescr>();
 	
-	private Set<DL_DefinitionDescr> range;
+	private Set<DL_DefinitionDescr> range = new HashSet<DL_DefinitionDescr>();
 	
-	private Set<DL_DefinitionDescr> subPropertyOf;
+	private Set<DL_DefinitionDescr> subPropertyOf = new HashSet<DL_DefinitionDescr>();
 	
 	private boolean functional;
 	
@@ -169,6 +170,37 @@ public class DL_RelationDescr extends DL_aDeclarationDescr {
 	
 	
 	
+	
+	
+	
+	public String toFullDownwardString(int n) {
+		String s = super.toFullDownwardString(n);
+		String tabs = "";
+		for (int j = 0; j < n; j++)
+			tabs += "\t";
+		
+		for (DL_aBaseDescr descr : getEquivalentTo())
+			s += tabs + " <==> \t" + descr.toFullDownwardString(n+1);				
+		
+		for (DL_aBaseDescr descr : getSubPropertyOf())
+			s += tabs + " ===> \t" + descr.toFullDownwardString(n+1);
+		
+		
+		for (DL_aBaseDescr descr : getDisjointWith())
+			s += tabs + " =//= \t" + descr.toFullDownwardString(n+1);
+		
+		for (DL_aBaseDescr descr : getDomain())
+			s += tabs + " |--- \t" + descr.toFullDownwardString(n+1);
+		
+		for (DL_aBaseDescr descr : getRange())
+			s += tabs + " ---> \t" + descr.toFullDownwardString(n+1);
+		
+		
+		
+		
+		
+		return s;
+	}
 	
 
 }

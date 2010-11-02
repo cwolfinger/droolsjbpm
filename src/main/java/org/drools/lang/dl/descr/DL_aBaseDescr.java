@@ -34,7 +34,7 @@ public abstract class DL_aBaseDescr  {
     }
     
     public String toFullDownwardString(int n) {
-    	return toString() + formatAnnotations(1);
+    	return toString() + formatAnnotations(n+1);
     }
 
     public String toString() {
@@ -44,7 +44,7 @@ public abstract class DL_aBaseDescr  {
     
     
 	protected String formatAnnotations(int lev) {
-		String meta = "\n";
+		String meta = "";
 		String tab = "";
 		for (int j = 0; j < lev; j++) tab += "\t";		
 		for (String key : annotations.keySet()) {			

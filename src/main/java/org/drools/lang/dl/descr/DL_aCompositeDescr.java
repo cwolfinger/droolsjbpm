@@ -64,7 +64,7 @@ public abstract class DL_aCompositeDescr extends DL_aBaseDescr {
 	
 	public String toFullDownwardString(int n) {
 		StringBuilder sb = new StringBuilder();
-		sb.append(this.toString() + formatAnnotations(1));
+		sb.append(this.toString() + formatAnnotations(n));
 			for (DL_aBaseDescr child : children) {
 				for (int j = 0; j < n; j++)
 					sb.append("\t");

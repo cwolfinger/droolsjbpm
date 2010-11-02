@@ -2,8 +2,6 @@ package org.drools.lang.dl.descr;
 
 import java.util.Map;
 
-import sun.security.action.GetLongAction;
-
 public class DL_IriDescr extends DL_aLeafDescr {
 	
 	private String namespace;

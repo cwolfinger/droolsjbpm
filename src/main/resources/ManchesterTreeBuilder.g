@@ -19,7 +19,7 @@ options {
  
   
 @members {
-  DLDescrFactory factory = new DLDescrFactory();
+  DLDescrFactory factory = DLDescrFactory.instance();
   DL_OntologyDescr ontoDescr = null;  
 }
 
@@ -174,7 +174,7 @@ declaration returns [DL_aDeclarationDescr declDescr]
                                                                            
 disjointUnions returns [LinkedList diuList]
 @init {$diuList = new LinkedList();}
-  : ^(  VT_DISJOINTUNIONOF       
+  : ^(  VT_DISJOINTUNIONOF annotations?       
         ( d=definition {$diuList.add($d.defDescr);} )*  
      ) 
   ;
@@ -182,21 +182,21 @@ disjointUnions returns [LinkedList diuList]
 
 disjointWiths returns [LinkedList diwList]
 @init {$diwList = new LinkedList();}
-  : ^(  VT_DISJOINTWITH       
+  : ^(  VT_DISJOINTWITH annotations?      
         ( d=definition {$diwList.add($d.defDescr);} )*  
      ) 
   ;
 
 equivalentTos returns [LinkedList eqsList]
 @init {$eqsList = new LinkedList();}
-  : ^(  VT_EQUIVALENTTO       
+  : ^(  VT_EQUIVALENTTO annotations?      
         ( e=definition {$eqsList.add($e.defDescr);} )*  
      ) 
   ;
 
 subClassOfs returns [LinkedList subList]
 @init {$subList = new LinkedList();}
-  : ^(  VT_SUBCLASSOF       
+  : ^(  VT_SUBCLASSOF annotations?       
         ( s=definition {$subList.add($s.defDescr);} )*  
      ) 
   ;
@@ -204,7 +204,7 @@ subClassOfs returns [LinkedList subList]
 
 hasKeys returns [LinkedList keyList]
 @init {$keyList = new LinkedList();}
-  : ^(  VT_KEYS
+  : ^(  VT_KEYS annotations?
         ( k=relation {$keyList.add($k.relDescr);} )*  
      ) 
   ;
@@ -220,28 +220,28 @@ domains returns [LinkedList domList]
 
 ranges returns [LinkedList rngList]
 @init {$rngList = new LinkedList();}
-  : ^(  VT_RANGE       
+  : ^(  VT_RANGE annotations?      
         ( d=definition {$rngList.add($d.defDescr);} )*  
      ) 
   ;
 
 subPropertyOfs returns [LinkedList subList]
 @init {$subList = new LinkedList();}
-  : ^(  VT_SUBPROPERTYOF       
+  : ^(  VT_SUBPROPERTYOF annotations?      
         ( r=relation {$subList.add($r.relDescr);} )*  
      ) 
   ;
 
 inverseOfs returns [LinkedList invList]
 @init {$invList = new LinkedList();}
-  : ^(  VT_INVERSEOF       
+  : ^(  VT_INVERSEOF annotations?      
         ( r=relation {$invList.add($r.relDescr);} )*  
      ) 
   ;
 
 subPropertyChain returns [LinkedList chnList]
 @init {$chnList = new LinkedList();}
-  : ^(  VT_SUBPROPERTYCHAIN    
+  : ^(  VT_SUBPROPERTYCHAIN annotations?   
         ( r=relation {$chnList.add($r.relDescr);} )*  
      ) 
   ;
@@ -249,14 +249,14 @@ subPropertyChain returns [LinkedList chnList]
 
 types returns [LinkedList typList]
 @init {$typList = new LinkedList();}
-  : ^(  VT_TYPES    
+  : ^(  VT_TYPES annotations?   
         (  d=definition {$typList.add($d.defDescr);} )*  
      ) 
   ;
 
 facts returns [LinkedList facList]
 @init {$facList = new LinkedList();}
-  : ^(  VT_FACTS    
+  : ^(  VT_FACTS annotations?    
         (  
           ^(VT_FACT r=relation e=entity ) 
           { $facList.add(factory.buildFactDescr($r.relDescr,$e.val,false)); }
@@ -269,15 +269,19 @@ facts returns [LinkedList facList]
 
 sames returns [LinkedList eqsList]
 @init {$eqsList = new LinkedList();}
-  : ^(  VT_SAMEAS    
-        (  annotations? x=individual {$eqsList.add($x.val);} )*  
+  : ^(  VT_SAMEAS annotations? 
+        ^(VT_LIST
+          ( x=individual {$eqsList.add($x.val);} )*
+        )  
      ) 
   ;
 
 differs returns [LinkedList difList]
 @init {$difList = new LinkedList();}
-  : ^(  VT_DIFFERENTFROM    
-        (  annotations? x=individual {$difList.add($x.val);} )*  
+  : ^(  VT_DIFFERENTFROM annotations? 
+        ^(VT_LIST
+          ( x=individual {$difList.add($x.val);} )*
+        )  
      ) 
   ;
 
@@ -303,7 +307,13 @@ relation returns [DL_RelationDescr relDescr]
 
 
 definition returns [DL_DefinitionDescr defDescr]
-  : root=dl_tree { $defDescr = factory.buildDefinitionDescr($root.descr); }
+  : ^(VT_DL_DEFINITION
+          { $defDescr = factory.buildDefinitionDescr(); } 
+        ( ann=annotations
+          { $defDescr.addAnnotations($ann.annList); } 
+        )?        
+        root=dl_tree { $defDescr.setRoot($root.descr); } 
+     )
   ;
 
  

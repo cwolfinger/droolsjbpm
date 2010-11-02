@@ -32,4 +32,13 @@ public class DL_FactDescr extends DL_aBaseDescr {
 		this.object = object;
 	}
 
+	
+	
+	public String toFullDownwardString(int n) {
+		String s = "";
+		for (int j = 0; j < n; j++)
+			s += "\t";
+		s += getRel().toString() + getObject().toString();
+		return s;
+	}
 }

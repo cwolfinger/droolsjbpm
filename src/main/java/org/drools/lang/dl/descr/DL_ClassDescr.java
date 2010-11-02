@@ -1,17 +1,18 @@
 package org.drools.lang.dl.descr;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 public class DL_ClassDescr extends DL_aConceptDescr {
 
-	private Set<DL_DefinitionDescr> subClassOf;
+	private Set<DL_DefinitionDescr> subClassOf = new HashSet<DL_DefinitionDescr>();
 	
-	private Set<DL_DefinitionDescr> disjointWith;
+	private Set<DL_DefinitionDescr> disjointWith = new HashSet<DL_DefinitionDescr>();
 	
-	private Set<DL_DefinitionDescr> disjointUnion;
+	private Set<DL_DefinitionDescr> disjointUnion = new HashSet<DL_DefinitionDescr>();
 	
-	private Set<DL_RelationDescr> hasKey;
+	private Set<DL_RelationDescr> hasKey = new HashSet<DL_RelationDescr>();
 
 	
 	
@@ -84,6 +85,33 @@ public class DL_ClassDescr extends DL_aConceptDescr {
 	}
 	public void addAllHasKey(Collection<DL_RelationDescr> descr) {
 		this.hasKey.addAll(descr);
+	}
+	
+	
+	
+	
+	public String toFullDownwardString(int n) {
+		String s = super.toFullDownwardString(n);
+		String tabs = "";
+		for (int j = 0; j < n; j++)
+			tabs += "\t";
+		
+		for (DL_aBaseDescr descr : getEquivalentTo())
+			s += tabs + " <==> \t" + descr.toFullDownwardString(n+1);
+		
+		for (DL_aBaseDescr descr : getSubClassOf())
+			s += tabs + " ===> \t" + descr.toFullDownwardString(n+1);
+		
+		for (DL_aBaseDescr descr : getDisjointWith())
+			s += tabs + " =//= \t" + descr.toFullDownwardString(n+1);
+		
+		for (DL_aBaseDescr descr : getDisjointUnion())
+			s += tabs + " |==| \t" + descr.toFullDownwardString(n+1);
+		
+		for (DL_RelationDescr key : getHasKey())
+			s += tabs + "#### \t" + key.toFullDownwardString(n+1);
+		
+		return s;
 	}
 
 }

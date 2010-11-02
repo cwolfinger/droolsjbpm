@@ -1,13 +1,14 @@
 package org.drools.lang.dl.descr;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 
 
 
 public class DL_EnumTypeDescr extends DL_aLeafDescr {
 	
-	private Collection<Object> elements;
+	private Collection<Object> elements = new HashSet<Object>();
 
 	@Override
 	public String getType() {

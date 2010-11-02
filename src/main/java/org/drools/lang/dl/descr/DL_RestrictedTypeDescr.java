@@ -1,7 +1,5 @@
 package org.drools.lang.dl.descr;
 
-import java.util.Collection;
-import java.util.Iterator;
 
 
 

@@ -54,9 +54,8 @@ package org.drools.lang;
  */
 
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+
+import static org.junit.Assert.*;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -484,20 +483,35 @@ public class Manchester_Test {
 				
 				
 				
-//				"Namespace: dc <http://purl.org/dc/elements/1.1/>"+ "\n " +
-//				" Ontology : pass" + "\n " +
-//				" Import: <http://ontology.dumontierlab.com/atom-common> " + "\n " +
-//				" " + "\n " +
-//				"Annotations: " + "\n" + 
-//			    "dc:publisher \"Dumontier Lab\"^^string,"+ "\n " +
-//			    "dc:publisher \"Dumontier Lab\"^^xsd:string,"+ "\n " +
-//			    "dc:title \"Organic Functional Group Ontology (complex)\"^^xsd:string,"+ "\n " +
-//			    "dc:creator \"Michel Dumontier\"^^xsd:string,"+ "\n " +
-//			    "dc:language \"en\"^^xsd:string,"+ "\n " +
-//			    "owl:versionInfo \"2.0\"^^xsd:string,"+ "\n " +
-//			    "dc:date \"2007-10-01\"^^xsd:date,"+ "\n " +
-//			    "dc:description \"Complex class descriptions for the realization of organic functional groups.\"^^xsd:string,"+ "\n " +
-//			    "dc:format \"application/rdf+xml\"^^xsd:string"
+				"Namespace: dc <http://purl.org/dc/elements/1.1/>"+ "\n " +
+				" Ontology : pass" + "\n " +
+				" Import: <http://ontology.dumontierlab.com/atom-common> " + "\n " +
+				" " + "\n " +
+				"Annotations: " + "\n" + 
+			    "dc:publisher \"Dumontier Lab\"^^string,"+ "\n " +
+			    "dc:publisher \"Dumontier Lab\"^^xsd:string,"+ "\n " +
+			    "dc:title \"Organic Functional Group Ontology (complex)\"^^xsd:string,"+ "\n " +
+			    "dc:creator \"Michel Dumontier\"^^xsd:string,"+ "\n " +
+			    "dc:language \"en\"^^xsd:string,"+ "\n " +
+			    "owl:versionInfo \"2.0\"^^xsd:string,"+ "\n " +
+			    "dc:date \"2007-10-01\"^^xsd:date,"+ "\n " +
+			    "dc:description \"Complex class descriptions for the realization of organic functional groups.\"^^xsd:string,"+ "\n " +
+			    "dc:format \"application/rdf+xml\"^^xsd:string",
+				
+				
+				
+				
+				" Prefix: g: <sk:someIRI#> " +"\n" +								
+				" Ontology : owl:myOnto g:v1 " +"\n" +
+				" " + "\n" +
+				" Class : Foo " + "\n" +				
+				"  Annotations: creatory sotty " + "\n" + 
+				"  DisjointUnionOf: Annotations: guess what Child, Adult" + "\n" +
+				"  SubClassOf: Person and Worker" + "\n" +
+				"  EquivalentTo: Annotations: guess again Person, Slave" + "\n" +
+				"  DisjointWith: Person" + "\n" +
+				"  HasKey: Annotations: annkey targt hasSSN" + "\n" +
+				"\n",
 											
 		};	
 		check(rule,testDRL);
@@ -629,6 +643,8 @@ public class Manchester_Test {
 		}	
 		
 		 
+		
+		
 	}
 	
 	
@@ -682,8 +698,10 @@ public class Manchester_Test {
 						if (rulekey.equals("manDL_ontology")) {
 							ManchesterTreeBuilder builder = new ManchesterTreeBuilder(new CommonTreeNodeStream(resultTree));
 							DL_OntologyDescr od = builder.ontology();
+							
 							System.out.println(od.toFullDownwardString(2));
 							
+							res.setNumErrors(res.getNumErrors()+builder.getNumberOfSyntaxErrors());
 							
 						}
 					
