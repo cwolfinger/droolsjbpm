@@ -38,4 +38,6 @@ public interface RightTupleMemory {
     public Entry[] toArray();
 
     public int size();
+    
+    public void clear();
 }

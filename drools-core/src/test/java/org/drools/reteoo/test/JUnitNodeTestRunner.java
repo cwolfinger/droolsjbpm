@@ -20,8 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.drools.RuntimeDroolsException;
-import org.drools.reteoo.test.dsl.NodeTestDef;
 import org.drools.reteoo.test.dsl.NodeTestCase;
+import org.drools.reteoo.test.dsl.NodeTestDef;
 import org.junit.runner.Description;
 import org.junit.runner.Runner;
 import org.junit.runner.notification.RunNotifier;
@@ -34,33 +34,40 @@ import org.junit.runner.notification.RunNotifier;
 public class JUnitNodeTestRunner extends Runner {
 
     // The description of the test suite
-    private Description        descr;
+    private Description descr;
     private List<NodeTestCase> testCases = new ArrayList<NodeTestCase>();
 
-    public JUnitNodeTestRunner(Class< ? > clazz) {
+    public JUnitNodeTestRunner(Class<?> clazz) {
         try {
-            NodeTestCasesSource ntsuite = (NodeTestCasesSource) clazz.newInstance();
+            NodeTestCasesSource ntsuite = (NodeTestCasesSource) clazz
+                    .newInstance();
             testCases = ntsuite.getTestCases();
-        } catch ( Exception e ) {
+        } catch (Exception e) {
             e.printStackTrace();
-            throw new RuntimeDroolsException( "Error instantiating node test runner: "+e, e );
+            throw new RuntimeDroolsException(
+                    "Error instantiating node test runner: " + e, e);
         }
-        this.descr = Description.createSuiteDescription( "Node test case suite" );
+        this.descr = Description.createSuiteDescription("Node test case suite");
 
-        for ( NodeTestCase tcase : testCases ) {
-            Description tcaseDescr = Description.createSuiteDescription( tcase.getName() );
-            tcase.setDescription( tcaseDescr );
-            this.descr.addChild( tcaseDescr );
-            for ( NodeTestDef ntest : tcase.getTests() ) {
-                Description ntestDescr = Description.createTestDescription( clazz,
-                                                                            ntest.getName() );
-                tcaseDescr.addChild( ntestDescr );
-                ntest.setDescription( ntestDescr );
+        for (NodeTestCase tcase : testCases) {
+            
+        	Description tcaseDescr = Description.createSuiteDescription(tcase
+                    .getFileName() != null ? tcase.getFileName() : tcase.getName());
+            
+            tcase.setDescription(tcaseDescr);
+            this.descr.addChild(tcaseDescr);
+            for (NodeTestDef ntest : tcase.getTests()) {
+                Description ntestDescr = Description.createTestDescription(
+                        clazz, ntest.getName());
+                tcaseDescr.addChild(ntestDescr);
+                ntest.setDescription(ntestDescr);
             }
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.junit.runner.Runner#getDescription()
      */
     @Override
@@ -68,16 +75,18 @@ public class JUnitNodeTestRunner extends Runner {
         return descr;
     }
 
-    /* (non-Javadoc)
-     * @see org.junit.runner.Runner#run(org.junit.runner.notification.RunNotifier)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.junit.runner.Runner#run(org.junit.runner.notification.RunNotifier)
      */
     @Override
     public void run(RunNotifier notifier) {
+
         ReteDslTestEngine tester = new ReteDslTestEngine();
-        for ( NodeTestCase tcase : testCases ) {
-            tester.run( tcase,
-                        notifier );
+        for (NodeTestCase tcase : testCases) {
+            tester.run(tcase, notifier);
         }
     }
-
 }

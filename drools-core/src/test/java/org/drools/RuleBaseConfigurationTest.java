@@ -113,4 +113,20 @@ public class RuleBaseConfigurationTest extends TestCase {
         assertTrue( cfg.getAgendaGroupFactory() instanceof PriorityQueueAgendaGroupFactory );
     }
     
+    public void testLRUnlinking() {
+        RuleBaseConfiguration cfg = new RuleBaseConfiguration();
+        assertEquals( false,
+                      cfg.isLRUnlinkingEnabled() );
+
+        Properties properties = new Properties();
+        properties.setProperty( "drools.lrUnlinkingEnabled",
+                                "true" );
+        cfg = new RuleBaseConfiguration( properties );
+
+        assertEquals( true,
+                      cfg.isLRUnlinkingEnabled() );
+    }
+    
+
+    
 }

@@ -44,5 +44,5 @@ public interface ObjectSinkPropagator
                                       ModifyPreviousTuples modifyPreviousTuples,
                                       PropagationContext context,
                                       InternalWorkingMemory workingMemory);
-
+    
 }

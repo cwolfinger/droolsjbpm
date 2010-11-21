@@ -202,4 +202,13 @@ public class ConcurrentRightTupleList
     public Entry[] toArray() {
         throw new UnsupportedOperationException( "method is not implemented yet" );
     }    
+    
+    public void clear() {
+        
+        RightTuple rightTuple = null; 
+        
+        while((rightTuple = (RightTuple) iterator().next()) != null) {
+            remove(rightTuple);
+        }
+    }
 }

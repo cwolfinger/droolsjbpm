@@ -266,4 +266,14 @@ public class RightTupleList
 
         return builder.toString();
     }
+    
+    public void clear() {
+        
+        RightTuple rightTuple = null; 
+        
+        while((rightTuple = (RightTuple) iterator().next()) != null) {
+            remove(rightTuple);
+        }
+    }
+
 }

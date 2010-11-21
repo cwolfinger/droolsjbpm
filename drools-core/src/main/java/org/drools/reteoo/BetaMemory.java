@@ -24,36 +24,39 @@ import java.io.ObjectOutput;
 import org.drools.core.util.ObjectHashMap;
 import org.drools.rule.ContextEntry;
 
-public class BetaMemory
-    implements
-    Externalizable {
+public class BetaMemory implements Externalizable, Unlinkable {
 
     private static final long serialVersionUID = 510l;
 
-    private LeftTupleMemory   leftTupleMemory;
-    private RightTupleMemory  rightTupleMemory;
-    private ObjectHashMap     createdHandles;
-    private ContextEntry[]    context;
-    private Object            behaviorContext;
+    private LeftTupleMemory leftTupleMemory;
+    private RightTupleMemory rightTupleMemory;
+    private ObjectHashMap createdHandles;
+    private ContextEntry[] context;
+    private Object behaviorContext;
+    
+    /* Let's start with only left unlinked. */
+    private boolean isLeftUnlinked = false;
+    private boolean isRightUnlinked = true;
 
     public BetaMemory() {
     }
 
     public BetaMemory(final LeftTupleMemory tupleMemory,
-                      final RightTupleMemory objectMemory,
-                      final ContextEntry[] context) {
+            final RightTupleMemory objectMemory, final ContextEntry[] context) {
         this.leftTupleMemory = tupleMemory;
         this.rightTupleMemory = objectMemory;
         this.context = context;
     }
 
     public void readExternal(ObjectInput in) throws IOException,
-                                            ClassNotFoundException {
+            ClassNotFoundException {
         leftTupleMemory = (LeftTupleMemory) in.readObject();
         rightTupleMemory = (RightTupleMemory) in.readObject();
         createdHandles = (ObjectHashMap) in.readObject();
         context = (ContextEntry[]) in.readObject();
         behaviorContext = (Object) in.readObject();
+        isLeftUnlinked = in.readBoolean();
+        isRightUnlinked = in.readBoolean();
     }
 
     public void writeExternal(ObjectOutput out) throws IOException {
@@ -62,6 +65,8 @@ public class BetaMemory
         out.writeObject( createdHandles );
         out.writeObject( context );
         out.writeObject( behaviorContext );
+        out.writeBoolean( isLeftUnlinked );
+        out.writeBoolean( isRightUnlinked );
     }
 
     public RightTupleMemory getRightTupleMemory() {
@@ -73,7 +78,7 @@ public class BetaMemory
     }
 
     public ObjectHashMap getCreatedHandles() {
-        if ( this.createdHandles == null ) {
+        if (this.createdHandles == null) {
             this.createdHandles = new ObjectHashMap();
         }
         return this.createdHandles;
@@ -93,4 +98,29 @@ public class BetaMemory
     public void setBehaviorContext(Object behaviorContext) {
         this.behaviorContext = behaviorContext;
     }
+
+    public boolean isLeftUnlinked() {
+        return this.isLeftUnlinked;
+    }
+
+    public boolean isRightUnlinked() {
+        return this.isRightUnlinked;
+    }
+
+    public void linkLeft() {
+        this.isLeftUnlinked = false;
+    }
+
+    public void linkRight() {
+        this.isRightUnlinked = false;
+    }
+
+    public void unlinkLeft() {
+        this.isLeftUnlinked = true;
+    }
+
+    public void unlinkRight() {
+        this.isRightUnlinked = true;
+    }
+
 }

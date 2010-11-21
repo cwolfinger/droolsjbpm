@@ -59,5 +59,8 @@ public interface PropagationContext
 
     public EntryPoint getEntryPoint();
     
+    public int getLatestPropagationAttempt();
+    public void setLatestPropagationAttempt();
+    public void resetLatestPropagationAttempt();
 
 }

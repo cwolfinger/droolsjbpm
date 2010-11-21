@@ -21,20 +21,17 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import junit.framework.TestCase;
 
 import org.drools.FactHandle;
 import org.drools.Person;
-import org.drools.RuleBaseConfiguration;
 import org.drools.RuleBaseFactory;
 import org.drools.WorkingMemory;
 import org.drools.base.ClassObjectType;
 import org.drools.common.DefaultFactHandle;
 import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
-import org.drools.common.NodeMemory;
 import org.drools.common.PropagationContextImpl;
 import org.drools.reteoo.BetaMemory;
 import org.drools.reteoo.JoinNode;
@@ -43,11 +40,11 @@ import org.drools.reteoo.LeftTuple;
 import org.drools.reteoo.ObjectTypeNode;
 import org.drools.reteoo.ReteooRuleBase;
 import org.drools.reteoo.ReteooWorkingMemory;
-import org.drools.reteoo.RuleTerminalNode;
+import org.drools.reteoo.builder.BuildContext;
 import org.drools.reteoo.test.dsl.DslStep;
-import org.drools.reteoo.test.dsl.NodeTestDef;
 import org.drools.reteoo.test.dsl.NodeTestCase;
 import org.drools.reteoo.test.dsl.NodeTestCaseResult;
+import org.drools.reteoo.test.dsl.NodeTestDef;
 import org.drools.reteoo.test.dsl.NodeTestCaseResult.NodeTestResult;
 import org.drools.reteoo.test.dsl.NodeTestCaseResult.Result;
 import org.drools.rule.Declaration;
@@ -740,6 +737,21 @@ public class ReteDslTestEngineTest extends TestCase {
         assertEquals( 2,
                       memory.getLeftTupleMemory().size() );         
     }
+    
+    public void testConfigOptions() throws IOException {
+        String str = "TestCase 'testOTN'\nTest 'dummy'\n";
+        str += "Config:\n";
+        str += "    lrUnlinkingEnabled, true;\n";
+        str += "ObjectTypeNode:\n";
+        str += "    otn1, java.lang.Integer;\n";
+        
+        NodeTestResult result = executeTest( str );
+        Map<String, Object> map = result.context;
+
+        BuildContext buildCtx = (BuildContext) map.get( ReteDslTestEngine.BUILD_CONTEXT );
+        assertTrue(buildCtx.getRuleBase().getConfiguration().isLRUnlinkingEnabled());
+    }
+
     
     public void testNotNodeStep() throws IOException {
         String str = "TestCase 'testOTN'\nTest 'dummy'\n";

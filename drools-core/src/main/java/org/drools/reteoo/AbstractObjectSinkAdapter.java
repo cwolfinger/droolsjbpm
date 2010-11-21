@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
+import org.drools.common.InternalWorkingMemory;
+import org.drools.common.NodeMemory;
 import org.drools.common.RuleBasePartitionId;
 
 /**
@@ -60,4 +62,5 @@ public abstract class AbstractObjectSinkAdapter implements ObjectSinkPropagator,
     public void setPartitionId( RuleBasePartitionId partitionId ) {
         this.partitionId = partitionId;
     }
+   
 }

@@ -83,17 +83,17 @@ import org.drools.spi.RuleFlowGroup;
 
 public class InputMarshaller {
 
-	private static ProcessMarshaller processMarshaller = createProcessMarshaller();
-	
+    private static ProcessMarshaller processMarshaller = createProcessMarshaller();
+    
     private static ProcessMarshaller createProcessMarshaller() {
-		try {
-			return ProcessMarshallerFactory.newProcessMarshaller();
-		} catch (IllegalArgumentException e) {
-			return null;
-		}
+        try {
+            return ProcessMarshallerFactory.newProcessMarshaller();
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
     }
-	
-	/**
+    
+    /**
      * Stream the data into an existing session
      * 
      * @param session
@@ -141,11 +141,11 @@ public class InputMarshaller {
         }
 
         if ( context.marshalWorkItems ) {
-        	processMarshaller.readWorkItems( context );
+            processMarshaller.readWorkItems( context );
         }
 
         if (processMarshaller != null) {
-        	processMarshaller.readProcessTimers( context );
+            processMarshaller.readProcessTimers( context );
         }
         
         if( multithread ) {
@@ -227,11 +227,11 @@ public class InputMarshaller {
         }
 
         if ( context.marshalWorkItems  && processMarshaller != null ) {
-        	processMarshaller.readWorkItems( context );
+            processMarshaller.readWorkItems( context );
         }
 
         if (  processMarshaller != null ) {
-        	processMarshaller.readProcessTimers( context );
+            processMarshaller.readProcessTimers( context );
         }
 
         if( multithread ) {
@@ -268,9 +268,9 @@ public class InputMarshaller {
                                                rfg );
             int nbNodeInstances = stream.readInt();
             for (int i = 0; i < nbNodeInstances; i++) {
-            	Long processInstanceId = stream.readLong();
-            	String nodeInstanceId = stream.readUTF();
-            	rfg.addNodeInstance(processInstanceId, nodeInstanceId);
+                Long processInstanceId = stream.readLong();
+                String nodeInstanceId = stream.readUTF();
+                rfg.addNodeInstance(processInstanceId, nodeInstanceId);
             }
         }
 
@@ -356,9 +356,9 @@ public class InputMarshaller {
             ClassObjectType objectType = new ClassObjectType( object.getClass() );
             ObjectTypeNode objectTypeNode = objectTypeNodes.get( objectType );
             if (objectTypeNode != null) {
-	            ObjectHashSet set = (ObjectHashSet) context.wm.getNodeMemory( objectTypeNode );
-	            set.add( handle,
-	                     false );
+                ObjectHashSet set = (ObjectHashSet) context.wm.getNodeMemory( objectTypeNode );
+                set.add( handle,
+                         false );
             }
         }
 
@@ -439,6 +439,7 @@ public class InputMarshaller {
                 }
             }
             memory.getRightTupleMemory().add( rightTuple );
+            memory.linkLeft();
         }
     }
 
@@ -469,7 +470,7 @@ public class InputMarshaller {
         switch ( sink.getType() ) {
             case NodeTypeEnums.JoinNode : {
                 BetaMemory memory = (BetaMemory) context.wm.getNodeMemory( (BetaNode) sink );
-                memory.getLeftTupleMemory().add( parentLeftTuple );
+                addToLeftMemory(parentLeftTuple, memory);
 
                 while ( stream.readShort() == PersisterEnums.RIGHT_TUPLE ) {
                     LeftTupleSink childSink = (LeftTupleSink) sinks.get( stream.readInt() );
@@ -503,7 +504,7 @@ public class InputMarshaller {
                 BetaMemory memory = (BetaMemory) context.wm.getNodeMemory( (BetaNode) sink );
                 int type = stream.readShort();
                 if ( type == PersisterEnums.LEFT_TUPLE_NOT_BLOCKED ) {
-                    memory.getLeftTupleMemory().add( parentLeftTuple );
+                    addToLeftMemory(parentLeftTuple, memory);
 
                     while ( stream.readShort() == PersisterEnums.LEFT_TUPLE ) {
                         LeftTupleSink childSink = (LeftTupleSink) sinks.get( stream.readInt() );
@@ -529,7 +530,7 @@ public class InputMarshaller {
                 BetaMemory memory = (BetaMemory) context.wm.getNodeMemory( (BetaNode) sink );
                 int type = stream.readShort();
                 if ( type == PersisterEnums.LEFT_TUPLE_NOT_BLOCKED ) {
-                    memory.getLeftTupleMemory().add( parentLeftTuple );
+                    addToLeftMemory(parentLeftTuple, memory);
                 } else {
                     int factHandleId = stream.readInt();
                     RightTupleKey key = new RightTupleKey( factHandleId,
@@ -583,6 +584,7 @@ public class InputMarshaller {
                                            rightTuple,
                                            sink,
                                            true );
+
                             break;
                         }
                         case PersisterEnums.LEFT_TUPLE : {
@@ -660,6 +662,12 @@ public class InputMarshaller {
                 break;
             }
         }
+    }
+
+    private static void addToLeftMemory(LeftTuple parentLeftTuple,
+            BetaMemory memory) {
+        memory.getLeftTupleMemory().add( parentLeftTuple );
+        memory.linkRight();
     }
 
     public static void readActivations(MarshallerReaderContext context) throws IOException {

@@ -49,6 +49,8 @@ public class PropagationContextImpl
     private EntryPoint         entryPoint;
     
     private int                originOffset;
+    
+    private int                 latestPropagationAttempt;
 
     public PropagationContextImpl() {
 
@@ -68,6 +70,7 @@ public class PropagationContextImpl
         this.dormantActivations = 0;
         this.entryPoint = EntryPoint.DEFAULT;
         this.originOffset = -1;
+        resetLatestPropagationAttempt();
     }
 
     public PropagationContextImpl(final long number,
@@ -87,6 +90,7 @@ public class PropagationContextImpl
         this.dormantActivations = dormantActivations;
         this.entryPoint = entryPoint;
         this.originOffset = -1;
+        resetLatestPropagationAttempt();
     }
 
     public void readExternal(ObjectInput in) throws IOException,
@@ -99,6 +103,7 @@ public class PropagationContextImpl
         this.leftTuple = (LeftTuple) in.readObject();
         this.entryPoint = (EntryPoint) in.readObject();
         this.originOffset = in.readInt();
+        this.latestPropagationAttempt = in.readInt();
     }
 
     public void writeExternal(ObjectOutput out) throws IOException {
@@ -110,6 +115,7 @@ public class PropagationContextImpl
         out.writeObject( this.leftTuple );
         out.writeObject( this.entryPoint );
         out.writeInt( this.originOffset );
+        out.writeInt( this.latestPropagationAttempt );
     }
 
     public long getPropagationNumber() {
@@ -188,5 +194,21 @@ public class PropagationContextImpl
     public void setOriginOffset(int originOffset) {
         this.originOffset = originOffset;
     }
+
+    public int getLatestPropagationAttempt() {
+        return latestPropagationAttempt;
+    }
+
+    public void setLatestPropagationAttempt() {
+        this.latestPropagationAttempt = this.factHandle.getId();
+    }
+
+    public void resetLatestPropagationAttempt() {
+        this.latestPropagationAttempt = -1;
+    }
+    
+    
+    
+    
 
 }

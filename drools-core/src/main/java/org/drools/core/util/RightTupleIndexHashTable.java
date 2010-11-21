@@ -259,7 +259,7 @@ public class RightTupleIndexHashTable extends AbstractHashTable
                                            this.table.length );
                 RightTupleList previous = null;
                 RightTupleList current = (RightTupleList) this.table[index];
-                while ( current != memory ) {
+                while (current != memory ) {
                     previous = current;
                     current = (RightTupleList) current.getNext();
                 }
@@ -417,4 +417,15 @@ public class RightTupleIndexHashTable extends AbstractHashTable
 
         return builder.toString();
     }
+    
+    public void clear() {
+
+        Iterator it = iterator();
+        
+        for ( RightTuple rightTuple = (RightTuple) it.next(); rightTuple != null; rightTuple = (RightTuple) it.next() ) {
+            remove(rightTuple);
+            rightTuple.setMemory(null);
+        }
+    }
+
 }

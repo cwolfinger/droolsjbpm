@@ -18,12 +18,10 @@ package org.drools.reteoo;
 
 import java.util.Arrays;
 
-import org.drools.common.AgendaItem;
 import org.drools.common.InternalFactHandle;
 import org.drools.core.util.Entry;
 import org.drools.core.util.LeftTupleList;
 import org.drools.rule.Declaration;
-import org.drools.spi.Activation;
 import org.drools.spi.Tuple;
 
 public class LeftTuple

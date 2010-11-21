@@ -338,6 +338,7 @@ public class CompositeObjectSinkAdapter extends AbstractObjectSinkAdapter {
     public void propagateAssertObject(final InternalFactHandle factHandle,
                                       final PropagationContext context,
                                       final InternalWorkingMemory workingMemory) {
+        
         final Object object = factHandle.getObject();
 
         // Iterates the FieldIndex collection, which tells you if particularly field is hashed or not
@@ -447,6 +448,7 @@ public class CompositeObjectSinkAdapter extends AbstractObjectSinkAdapter {
                                            PropagationContext context,
                                            InternalWorkingMemory workingMemory,
                                            ObjectSink sink) {
+        
         sink.assertObject( factHandle,
                            context,
                            workingMemory );
@@ -520,7 +522,10 @@ public class CompositeObjectSinkAdapter extends AbstractObjectSinkAdapter {
     public int size() {
         return (this.otherSinks != null ? this.otherSinks.size() : 0) + (this.hashableSinks != null ? this.hashableSinks.size() : 0) + (this.hashedSinkMap != null ? this.hashedSinkMap.size() : 0);
     }
+    
+    
 
+    
     public static class HashKey
         implements
         Externalizable {

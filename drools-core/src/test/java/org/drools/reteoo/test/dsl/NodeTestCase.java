@@ -21,14 +21,15 @@ import java.util.List;
 
 import org.junit.runner.Description;
 
-
 /**
  * A class to describe a test case for reteoo nodes
  * 
  * @author etirelli
  */
 public class NodeTestCase {
-    
+
+    public static final String SUFFIX = ".nodeTestCase";
+
     private String name;
     private List<String> imports;
     private List<DslStep> setup;
@@ -36,48 +37,58 @@ public class NodeTestCase {
     private List<NodeTestDef> tests;
     private List<String> errors;
     private Description description;
-    
+    private String fileName;
+
     public NodeTestCase() {
         this("");
     }
-    
-    public NodeTestCase( String name ) {
+
+    public NodeTestCase(String name) {
         this.name = name;
         this.imports = new ArrayList<String>();
         this.setup = new ArrayList<DslStep>();
         this.tearDown = new ArrayList<DslStep>();
         this.tests = new ArrayList<NodeTestDef>();
     }
-    
+
     public String getName() {
         return name;
     }
+
     public void setName(String name) {
         this.name = name;
     }
-    public void addImport( String clazz ) {
-        this.imports.add( clazz );
+
+    public void addImport(String clazz) {
+        this.imports.add(clazz);
     }
+
     public List<String> getImports() {
         return this.imports;
     }
+
     public List<DslStep> getSetup() {
         return setup;
     }
+
     public void addSetupStep(DslStep step) {
-        this.setup.add( step );
+        this.setup.add(step);
     }
+
     public List<DslStep> getTearDown() {
         return tearDown;
     }
+
     public void addTearDownStep(DslStep step) {
-        this.tearDown.add( step );
+        this.tearDown.add(step);
     }
+
     public List<NodeTestDef> getTests() {
         return tests;
     }
+
     public void addTest(NodeTestDef test) {
-        this.tests.add( test );
+        this.tests.add(test);
     }
 
     public List<String> getErrors() {
@@ -89,7 +100,7 @@ public class NodeTestCase {
     }
 
     public boolean hasErrors() {
-        return this.errors != null && ! this.errors.isEmpty();
+        return this.errors != null && !this.errors.isEmpty();
     }
 
     public Description getDescription() {
@@ -111,4 +122,24 @@ public class NodeTestCase {
     public void setTearDown(List<DslStep> tearDown) {
         this.tearDown = tearDown;
     }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+
+        this.fileName = removeSuffix(fileName);
+    }
+
+    private String removeSuffix(String name) {
+        // removes the suffix, if present.
+        if (name.endsWith(SUFFIX)) {
+            return name.substring(0, name.indexOf(SUFFIX));
+        }
+        
+        return name;
+
+    }
+
 }
