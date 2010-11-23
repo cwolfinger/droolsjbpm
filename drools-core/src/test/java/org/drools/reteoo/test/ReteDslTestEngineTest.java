@@ -741,7 +741,7 @@ public class ReteDslTestEngineTest extends TestCase {
     public void testConfigOptions() throws IOException {
         String str = "TestCase 'testOTN'\nTest 'dummy'\n";
         str += "Config:\n";
-        str += "    lrUnlinkingEnabled, true;\n";
+        str += "    drools.lrUnlinkingEnabled, true;\n";
         str += "ObjectTypeNode:\n";
         str += "    otn1, java.lang.Integer;\n";
         

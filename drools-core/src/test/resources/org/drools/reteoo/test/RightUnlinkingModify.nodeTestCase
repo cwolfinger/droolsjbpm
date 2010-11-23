@@ -2,7 +2,7 @@ TestCase "RightUnlinkingModify"
 
 Setup
 	Config:
-		lrUnlinkingEnabled, true;
+		drools.lrUnlinkingEnabled, true;
 	ObjectTypeNode:
 	    otnLeft1, org.drools.Person;
 	LeftInputAdapterNode:

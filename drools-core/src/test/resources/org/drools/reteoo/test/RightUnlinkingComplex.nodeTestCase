@@ -1,8 +1,12 @@
 TestCase "RightUnlinkingComplex"
 
+/* 
+* A bit more complex, this test case shows that memories get properly populated
+* when there are loops like the one between Join1 and Join2 here. 
+*/
 Setup
 	Config:
-		lrUnlinkingEnabled, true;
+		drools.lrUnlinkingEnabled, true;
 	ObjectTypeNode:
 	    otnLeft1, org.drools.Person;
 	LeftInputAdapterNode:
@@ -27,19 +31,21 @@ Setup
 	Facts:
 	    new org.drools.Person('darth', 35, 'stilton'), new org.drools.Person('bobba', 36, 'brie'),
 	    new org.drools.Person('yoda', 37, 'cammembert'), new org.drools.Person('luke', 38, 'minas'),
-	    new org.drools.Person('dave', 33, 'prato'), new org.drools.Person('bob', 32, 'parmigiano'),
-	    new org.drools.Person('dave', 31, 'stilton'), new org.drools.Person('bob', 30, 'minas');
+	    new org.drools.Person('dave', 33, 'prato'), new org.drools.Person('bob', 32, 'stilton'),
+	    new org.drools.Person('dave', 31, 'parmigiano'), new org.drools.Person('bob', 30, 'minas');
 	    
 
 Test "RightUnlinkingComplex"	    
 
 	assert:
 		otnRight1, [h1];
+		
 	join1:
 		leftMemory, [];	
-		rightMemory, []; 	// right is side is unlinked - PROBLEM here!
+		rightMemory, []; 	// right side is unlinked.
 	assert:
-		otnLeft1, [h0];			 	
+		otnLeft1, [h0];		// a left propagation will link the right side and trigger
+							// its population by calling updateSink in the OTN.			 	
 	join1:
 		leftMemory, [[h0]];	
 		rightMemory, [h1];
@@ -54,4 +60,44 @@ Test "RightUnlinkingComplex"
 		otnRight2, [h3];
 	join3:
 		leftMemory, [];
-		rightMemory, [];
+		rightMemory, [];	// right memory remains empty, since node is unlinked.
+		
+	assert:
+		otnRight1, [h5];	// age is != and likes ==
+	join1:
+		leftMemory, [[h0]];
+		rightMemory, [h1, h5];
+    join2:
+    	leftMemory, [[h0,h1],[h0,h5]];
+    	rightMemory, [h1,h5];
+    join3:
+    	leftMemory, [[h0,h1,h5], [h0,h5,h5]];		
+    	rightMemory, [h3];		// populated, since right side is now linked.
+
+	assert:
+		otnRight2, [h7];
+	join3:
+		rightMemory, [h3,h7];	// now right memory is linked
+								// and can be asserted normally.
+								
+	retract:
+		otnRight1, [h5];
+	join1:
+		rightMemory, [h1];
+	join2:
+		leftMemory, [[h0,h1]];
+		rightMemory, [h1];
+	join3:
+		leftMemory, [];
+		rightMemory, [h3,h7];
+	
+	// Now, even if the left memory is empty, the right side will stay
+	// linked to avoid churn. 
+	assert:
+		otnRight2, [h2];
+	join3:
+		leftMemory, [];
+		rightMemory, [h2,h3,h7];
+											 	
+		
+				

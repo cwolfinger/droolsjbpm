@@ -12,8 +12,32 @@ import org.drools.reteoo.ReteooRuleBase;
 import org.drools.reteoo.builder.BuildContext;
 
 /**
- * A step in the setup of a nodeTestCase, it allows configuration parameters to
- * be passed.
+ * <p>
+ * A step in the setup of a nodeTestCase, it allows any configuration parameters
+ * to be passed. </br> Note that the RuleBase and Working Memory are recreated
+ * and changed in the context, so the configuration step should be the first one
+ * in the setup of your nodeTestCase or you may face inconsistent behavior.
+ * </p>
+ * <b>Usage:</b>
+ * 
+ * <pre>
+ * Setup
+ *     Config:
+ *         drools.lrUnlinkingEnabled, true;
+ *     ObjectTypeNode:
+ *         otnLeft1, org.drools.Person;
+ *     LeftInputAdapterNode:
+ *         lian0, otnLeft1;
+ *     ObjectTypeNode:
+ *         otnRight1, org.drools.Person;
+ *     Binding:
+ *          p1, 0, org.drools.Person, age;
+ *     JoinNode:
+ *         join1, lian0, otnRight1;
+ *         age, !=, p1;
+ *     Facts:
+ *         new org.drools.Person('darth', 35), new org.drools.Person('bobba', 36),
+ *</pre>
  * 
  * @author lgomes
  * 
@@ -25,7 +49,7 @@ public class ConfigStep implements Step {
         RuleBaseConfiguration conf = new RuleBaseConfiguration();
 
         for (String[] configOption : args) {
-            conf.setProperty("drools." + configOption[0], configOption[1]);
+            conf.setProperty(configOption[0], configOption[1]);
         }
 
         ReteooRuleBase rbase = new ReteooRuleBase("ID", conf);
