@@ -395,23 +395,6 @@ public class ReteDslTestEngine {
                         actualRightTuples.add(rightTuple);
                     }
                     
-                    if(lrUnlinkingEnabled) {
-                        // FIXME:
-                        // This is a temporary hack, because I think there might be a bug
-                        // in the above iteration. To be verified with ETirelli.
-                        actualRightTuples.clear();
-                        
-                        Iterator it = rightMemory.iterator();
-                        for (RightTuple rt = (RightTuple) it.next(); rt != null; rt = (RightTuple) it.next()) {
-                            actualRightTuples.add(rt);
-                        }
-
-                        // Need to sort before comparing, because with L&R unlinking
-                        // the order of insertion is not kept.
-                        Collections.sort(actualRightTuples, new RightTupleComparator());
-                    }
-
-
                     if (expectedFactHandles.size() != actualRightTuples.size()) {
                         throw new AssertionFailedError("line " + step.getLine()
                                 + ": right Memory expected "
@@ -963,19 +946,6 @@ public class ReteDslTestEngine {
         }
     }
     
-    private final class RightTupleComparator implements Comparator<RightTuple> {
-        public int compare(RightTuple o1, RightTuple o2) {
-                
-            int diff = o1.getFactHandle().getId() - o2.getFactHandle().getId();
-        
-            if (diff != 0)
-                return diff;
-            
-            return 0;
-        }
-    }
-
-
     public static class EmptyNotifier extends RunNotifier {
         public static final EmptyNotifier INSTANCE = new EmptyNotifier();
 

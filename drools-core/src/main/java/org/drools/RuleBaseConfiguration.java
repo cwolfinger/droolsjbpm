@@ -707,11 +707,18 @@ public class RuleBaseConfiguration
     }
     
     /**
-     * Enable Left & Right Unlinking. 
+     * Enable Left & Right Unlinking. It will also disable sequential mode 
+     * and multithread evaluation as these are incompatible with L&R unlinking.
      * @param enabled
      */
     public void setLRUnlinkingEnabled(boolean enabled) {
+        checkCanChange(); // throws an exception if a change isn't possible;
         this.lrUnlinkingEnabled = enabled;
+        if (enabled) {
+            setSequential(false);
+            setMultithreadEvaluation(false);
+        }
+        
     }
 
 
