@@ -15,6 +15,7 @@
  */
 package org.drools.builder.conf;
 
+import org.drools.conf.MultithreadEvaluationOption;
 import org.drools.conf.SequentialOption;
 import org.drools.conf.SingleValueKnowledgeBaseOption;
 
@@ -39,14 +40,14 @@ import org.drools.conf.SingleValueKnowledgeBaseOption;
  * </p>
  * 
  * <p>
- * <b>Note:</b> It won't work when:
+ * <b>Note:</b> It will NOT work when:
  * <ul>
  * 
  * <li>
  * {@link SequentialOption} is used, because in sequential mode we disable node
  * memory, which is mandatory for L&R Unlinking to work;</li>
  * 
- * <li>Multiple entry points are used.</li>
+ * <li>{@link MultithreadEvaluationOption} is used.</li>
  * </ul>
  * </p>
  * 
