@@ -3,8 +3,8 @@ lexer grammar ManchesterLexer;
 options {
   language = Java; 
 }  
-             
- 
+              
+  
 tokens {
   
   VT_IMPORT;

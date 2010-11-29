@@ -1,6 +1,7 @@
 package org.drools.util;
 
 import org.antlr.runtime.tree.CommonTree;
+import org.drools.util.DRLTreeFormatter;
 
 
 public class ParsingResult {

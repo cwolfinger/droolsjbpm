@@ -1,6 +1,6 @@
 parser grammar ManchesterParser;
-       
-         
+        
+          
 options {  
   language = Java;
   output = AST;

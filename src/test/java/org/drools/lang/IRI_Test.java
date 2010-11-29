@@ -31,7 +31,7 @@ public class IRI_Test {
 		iri = "foo://username:password@example.com:8042/over/there/index.dtb?type=animal;name=narwhal#nose"; 
 		if (! check(iri)) fail();
 		
-		iri = "??urn:example:animal:ferret:nose";
+		iri = "urn:example:animal:ferret:nose";
 		if (! check(iri)) fail();
 	}
 	

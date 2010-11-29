@@ -1,6 +1,6 @@
 grammar iri;
-  
-options {
+           
+options {   
   language = Java;
   output = AST;
 }

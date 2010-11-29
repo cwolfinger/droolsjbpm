@@ -55,7 +55,9 @@ package org.drools.lang;
 
 
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;

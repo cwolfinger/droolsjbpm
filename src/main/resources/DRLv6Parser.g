@@ -1,6 +1,6 @@
 parser grammar DRLv6Parser; 
-
-        
+  
+         
 options {  
   language = Java;
   output = AST;
@@ -8,9 +8,9 @@ options {
   tokenVocab=DRLv6Lexer;
   k=2; 
 }
-                     
+                      
+       
    
-  
 //import  General, Expression; 
 import DRLv6Keywords; //, Manchester;
  
@@ -120,7 +120,7 @@ declaration_section
 declaration_statement
   : global  
   | function
-  | declare_bean
+//  | declare_bean
   ;
 
 
@@ -184,10 +184,10 @@ function_id
   ;
 
 
- 
-declare_bean
-  :
-  ;
+// 
+//declare_bean
+//  :
+//  ;
 
  
  
@@ -222,7 +222,7 @@ rule
               then_part)
   ;
   
-
+ 
 
 rule_id
   :   id=ID 

@@ -55,15 +55,12 @@ package org.drools.lang;
 
 
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.*;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.ByteArrayInputStream;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collections;
@@ -128,7 +125,7 @@ public class Rule_Test {
 	}
 	
 	
-	 
+	  
 	@Test	
 	public void test_key() {		
 		String rule = "rule_attributes";
@@ -147,10 +144,7 @@ public class Rule_Test {
 				"package org.pack.subpack;\n" +
 				"import org.klass;" + "\n" +
 				" " + "\n" +	
-				"global int N; \n" +				
-				" " + "\n" +
-//				"Ontology : " + "\n" +
-//				" @Class declare Test end " + "\n" +
+				"global int N; \n" +								
 				" " + "\n" +
 				"rule \"ruel\"\n" +
 				"when\n" +
@@ -1818,7 +1812,7 @@ public class Rule_Test {
 							final CommonTree resultTree = (CommonTree) root.getTree();
 							fakeRoot.addChild(resultTree);
 							
-						int errors = parser.getHelper().errors.size();
+						int errors = parser.getHelper().errors.size() + parser.getNumberOfSyntaxErrors();
 						
 						
 					

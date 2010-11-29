@@ -1,10 +1,10 @@
 lexer grammar DRLv6Lexer;
-    
+     
 options {
   language = Java; 
 }  
-    
- 
+     
+   
     
 tokens {
   UP;
@@ -1499,3 +1499,4 @@ IdentifierPart
     |   '\ufff9'..'\ufffb' 
 // UTF-16    |   ('\ud800'..'\udbff') ('\udc00'..'\udfff')
     ; 
+ 

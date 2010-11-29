@@ -7,14 +7,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
-import org.antlr.runtime.Parser;
+import org.antlr.runtime.BitSet;
+import org.antlr.runtime.MismatchedSetException;
+import org.antlr.runtime.MismatchedTokenException;
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.RecognizerSharedState;
 import org.antlr.runtime.Token;
 import org.antlr.runtime.TokenStream;
 import org.drools.compiler.DroolsParserException;
 
-
+import static org.drools.lang.DRLParser.*;
 
 /**
  * This is a class to hold all the helper functions/methods used
@@ -28,12 +30,12 @@ public class ParserHelper {
     private Stack<Map<DroolsParaphraseTypes, String>> paraphrases              = new Stack<Map<DroolsParaphraseTypes, String>>();
 
     // parameters from parser
-    private Parser                       parser                   = null;
+    private DRLParser                                 parser                   = null;
     private DroolsParserExceptionFactory              errorMessageFactory      = null;
     private TokenStream                               input                    = null;
     private RecognizerSharedState                     state                    = null;
 
-    public ParserHelper(Parser parser,
+    public ParserHelper(DRLParser parser,
                         String[] tokenNames,
                         TokenStream input,
                         RecognizerSharedState state) {
@@ -132,11 +134,9 @@ public class ParserHelper {
     }
 
     public boolean validateLT(int LTNumber,
-                               String text) {    	
-        String text2Validate = retrieveLT( LTNumber );       
-        boolean ans = text2Validate == null ? false : text2Validate.equalsIgnoreCase( text );        
-        return ans;
-        
+                               String text) {
+        String text2Validate = retrieveLT( LTNumber );
+        return text2Validate == null ? false : text2Validate.equalsIgnoreCase( text );
     }
 
     public boolean isPluggableEvaluator(int offset,
@@ -169,11 +169,10 @@ public class ParserHelper {
     }
 
     public boolean validateIdentifierSufix() {
-        return validateLT( 1,
-                           "[" ) || validateLT( 1,
-                                                "(" ) || validateLT( 1,
-                                                                     "<" ) || (validateLT( 1,
-                                                                                           "." ) && validateSpecialID( 2 ));
+        return validateLT( 1, "[" ) || 
+               validateLT( 1, "(" ) || 
+               validateLT( 1, "<" ) || 
+               (validateLT( 1, "." ) && validateSpecialID( 2 ));
     }
 
     public void checkTrailingSemicolon(String text,
@@ -189,48 +188,48 @@ public class ParserHelper {
         }
     }
 
-//    public boolean validateNotWithBinding() {
-//        if ( input.LA( 1 ) == ID && input.LA( 2 ) == ID && input.LA( 3 ) == COLON ) {
-//            return true;
-//        }
-//        return false;
-//    }
+    public boolean validateNotWithBinding() {
+        if ( input.LA( 1 ) == ID && input.LA( 2 ) == ID && input.LA( 3 ) == COLON ) {
+            return true;
+        }
+        return false;
+    }
 
-//    public boolean validateRestr() {
-//        int lookahead = 2;
-//        int countParen = 1;
-//
-//        while ( true ) {
-//            if ( input.LA( lookahead ) == COMMA ) {
-//                break;
-//            } else if ( input.LA( lookahead ) == LEFT_PAREN ) {
-//                countParen++;
-//            } else if ( input.LA( lookahead ) == RIGHT_PAREN ) {
-//                countParen--;
-//            } else if ( input.LA( lookahead ) == EOF ) {
-//                break;
-//            }
-//            if ( countParen == 0 ) {
-//                break;
-//            }
-//            lookahead++;
-//        }
-//
-//        boolean returnValue = false;
-//        int activeIndex = input.index();
-//        lookaheadTest = true;
-//        try {
-//            input.seek( input.LT( 2 ).getTokenIndex() );
-//            parser.constraint_expression();
-//            returnValue = true;
-//        } catch ( RecognitionException e ) {
-//        } finally {
-//            input.seek( activeIndex );
-//        }
-//        lookaheadTest = false;
-//
-//        return returnValue;
-//    }
+    public boolean validateRestr() {
+        int lookahead = 2;
+        int countParen = 1;
+
+        while ( true ) {
+            if ( input.LA( lookahead ) == COMMA ) {
+                break;
+            } else if ( input.LA( lookahead ) == LEFT_PAREN ) {
+                countParen++;
+            } else if ( input.LA( lookahead ) == RIGHT_PAREN ) {
+                countParen--;
+            } else if ( input.LA( lookahead ) == EOF ) {
+                break;
+            }
+            if ( countParen == 0 ) {
+                break;
+            }
+            lookahead++;
+        }
+
+        boolean returnValue = false;
+        int activeIndex = input.index();
+        lookaheadTest = true;
+        try {
+            input.seek( input.LT( 2 ).getTokenIndex() );
+            parser.constraint_expression();
+            returnValue = true;
+        } catch ( RecognitionException e ) {
+        } finally {
+            input.seek( activeIndex );
+        }
+        lookaheadTest = false;
+
+        return returnValue;
+    }
 
     public String safeSubstring(String text,
                                  int start,
@@ -329,4 +328,112 @@ public class ParserHelper {
     public void emitErrorMessage(String msg) {
     }
 
+// ---------------------------------------------------------------------------------
+// COPIED FROM: http://www.antlr.org/wiki/display/ANTLR3/Custom+Syntax+Error+Recovery
+// ---------------------------------------------------------------------------------
+    /**
+     * Use the current stacked followset to work out the valid tokens that
+     * can follow on from the current point in the parse, then recover by
+     * eating tokens that are not a member of the follow set we compute.
+     *
+     * This method is used whenever we wish to force a sync, even though
+     * the parser has not yet checked LA(1) for alt selection. This is useful
+     * in situations where only a subset of tokens can begin a new construct
+     * (such as the start of a new statement in a block) and we want to
+     * proactively detect garbage so that the current rule does not exit on
+     * on an exception.
+     *
+     * We could override recover() to make this the default behavior but that
+     * is too much like using a sledge hammer to crack a nut. We want finer
+     * grained control of the recovery and error mechanisms.
+     */
+    protected void syncToSet()
+    {
+        // Compute the followset that is in context wherever we are in the
+        // rule chain/stack
+        //
+         BitSet follow = state.following[state._fsp]; //computeContextSensitiveRuleFOLLOW();
+
+         syncToSet(follow);
+    }
+
+    protected void syncToSet(BitSet follow)
+    {
+        int mark = -1;
+
+        try {
+
+            mark = input.mark();
+
+            // Consume all tokens in the stream until we find a member of the follow
+            // set, which means the next production should be guaranteed to be happy.
+            //
+            while (! memberOfFollowSet( follow ) ) {
+
+                if  (input.LA(1) == Token.EOF) {
+
+                    // Looks like we didn't find anything at all that can help us here
+                    // so we need to rewind to where we were and let normal error handling
+                    // bail out.
+                    //
+                    input.rewind();
+                    mark = -1;
+                    return;
+                }
+                reportError( new MismatchedSetException(follow, input) );
+                input.consume();
+
+                // Now here, because you are consuming some tokens, yu will probably want
+                // to raise an error message such as "Spurious elements after the class member were discarded"
+                // using whatever your override of displayRecognitionError() routine does to record
+                // error messages. The exact error my depend on context etc.
+                //
+            }
+        } catch (Exception e) {
+
+          // Just ignore any errors here, we will just let the recognizer
+          // try to resync as normal - something must be very screwed.
+          //
+            e.printStackTrace();
+        }
+        finally {
+
+            // Always release the mark we took
+            //
+            if  (mark != -1) {
+                input.release(mark);
+            }
+        }
+    }
+
+    private boolean memberOfFollowSet(BitSet follow) {
+        boolean isMember = follow.member(input.LA(1));
+        if( input.LA( 1 ) == DRLParser.ID ) {
+            String token = input.LT( 1 ).getText();
+            isMember = ( DroolsSoftKeywords.IMPORT.equals( token ) ||
+                         DroolsSoftKeywords.GLOBAL.equals( token ) ||
+                         DroolsSoftKeywords.FUNCTION.equals( token ) ||
+                         DroolsSoftKeywords.DECLARE.equals( token ) ||
+                         DroolsSoftKeywords.RULE.equals( token ) ||
+                         DroolsSoftKeywords.QUERY.equals( token ) ||
+                         DroolsSoftKeywords.SALIENCE.equals( token ) ||
+                         DroolsSoftKeywords.NO.equals( token ) ||
+                         DroolsSoftKeywords.AGENDA.equals( token ) ||
+                         DroolsSoftKeywords.TIMER.equals( token ) ||
+                         DroolsSoftKeywords.ACTIVATION.equals( token ) ||
+                         DroolsSoftKeywords.AUTO.equals( token ) ||
+                         DroolsSoftKeywords.DATE.equals( token ) ||
+                         DroolsSoftKeywords.ENABLED.equals( token ) ||
+                         DroolsSoftKeywords.RULEFLOW.equals( token ) ||
+                         DroolsSoftKeywords.DIALECT.equals( token ) ||
+                         DroolsSoftKeywords.CALENDARS.equals( token )
+                        );
+        }
+        return isMember;
+    }
+ // ---------------------------------------------------------------------------------
+ // END COPIED FROM: http://www.antlr.org/wiki/display/ANTLR3/Custom+Syntax+Error+Recovery
+ // ---------------------------------------------------------------------------------
+
+    
 }
