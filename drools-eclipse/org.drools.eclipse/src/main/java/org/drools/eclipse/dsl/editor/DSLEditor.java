@@ -465,9 +465,9 @@ public class DSLEditor extends EditorPart {
 	        if ( !editor.isCancelled() ) {
 	            refreshModel();
 	            makeDirty();
-                exprText.setText( selected.getMappingKey() );
-                mappingText.setText( selected.getMappingValue() );
-                objText.setText( selected.getMetaData().getMetaData() == null ? "" : selected.getMetaData().getMetaData() );
+                exprText.setText(selected.getMappingKey());
+                mappingText.setText(selected.getMappingValue());
+                objText.setText(selected.getMetaData().getMetaData() == null ? "" : selected.getMetaData().getMetaData());
 	        }
     	}
     }
