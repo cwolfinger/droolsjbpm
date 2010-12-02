@@ -144,7 +144,6 @@ public class JoinNode extends BetaNode {
                                                factHandle );
         int i = 0;
         
-        // TODO lgomes: Do I really need to propagate when I know that the sink is an EmptyLeftTupleSinkAdapter
         for ( LeftTuple leftTuple = memory.getLeftTupleMemory().getFirst( rightTuple ); leftTuple != null; leftTuple = (LeftTuple) leftTuple.getNext() ) {
             if ( this.constraints.isAllowedCachedRight( memory.getContext(),
                                                         leftTuple ) ) {
@@ -179,9 +178,6 @@ public class JoinNode extends BetaNode {
         
         memory.getRightTupleMemory().remove( rightTuple );
         
-        // Check if memory should be unlinked
-        //checkLeftUnlinking(memory);
-
         if ( rightTuple.firstChild != null ) {
             this.sink.propagateRetractRightTuple( rightTuple,
                                                   context,
@@ -202,10 +198,6 @@ public class JoinNode extends BetaNode {
         }
         
         memory.getLeftTupleMemory().remove( leftTuple );
-        
-        // Check if right side should be unlinked.
-        //checkRightUnlinking(memory);
-        
         
         if ( leftTuple.firstChild != null ) {
             this.sink.propagateRetractLeftTuple( leftTuple,

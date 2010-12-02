@@ -217,14 +217,5 @@ public class LeftTupleList
 
         return builder.toString();
     }
-    
-    public void clear() {
-        
-        LeftTuple leftTuple = null; 
-        
-        while((leftTuple = (LeftTuple) iterator().next()) != null) {
-            remove(leftTuple);
-        }
-    }
 
 }

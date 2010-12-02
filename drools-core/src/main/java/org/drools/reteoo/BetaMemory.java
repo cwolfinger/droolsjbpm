@@ -34,7 +34,7 @@ public class BetaMemory implements Externalizable, Unlinkable {
     private ContextEntry[] context;
     private Object behaviorContext;
     
-    /* Let's start with only left unlinked. */
+    /* Let's start with only right unlinked. */
     private boolean isLeftUnlinked = false;
     private boolean isRightUnlinked = true;
 

@@ -39,5 +39,4 @@ public interface RightTupleMemory {
 
     public int size();
     
-    public void clear();
 }

@@ -101,26 +101,26 @@ import org.mvel2.MVEL;
 
 public class ReteDslTestEngine {
 
-    public static final String WORKING_MEMORY = "WorkingMemory";
-    public static final String BUILD_CONTEXT = "BuildContext";
-    
-    private static final String CONFIG = "Config";
-    private static final String OBJECT_TYPE_NODE = "ObjectTypeNode";
-    private static final String LEFT_INPUT_ADAPTER_NODE = "LeftInputAdapterNode";
-    private static final String BINDING = "Binding";
-    private static final String JOIN_NODE = "JoinNode";
-    private static final String NOT_NODE = "NotNode";
-    private static final String EXISTS_NODE = "ExistsNode";
-    private static final String ACCUMULATE_NODE = "AccumulateNode";
-    private static final String RULE_TERMINAL_NODE = "RuleTerminalNode";
-    private static final String EVAL_NODE = "EvalNode";
-    private static final String WITH = "With";
-    private static final String FACTS = "Facts";
-    private static final String RIGHT_INPUT_ADAPTER_NODE = "RightInputAdapterNode";
-    private static final String LEFT_TUPLE_SINK_STEP = "LeftTupleSink";
-    private static final String BETA_NODE_STEP = "BetaNodeStep";
+    public static final String  WORKING_MEMORY           = "WorkingMemory";
+    public static final String  BUILD_CONTEXT            = "BuildContext";
 
-    private ReteTesterHelper reteTesterHelper;
+    private static final String CONFIG                   = "Config";
+    private static final String OBJECT_TYPE_NODE         = "ObjectTypeNode";
+    private static final String LEFT_INPUT_ADAPTER_NODE  = "LeftInputAdapterNode";
+    private static final String BINDING                  = "Binding";
+    private static final String JOIN_NODE                = "JoinNode";
+    private static final String NOT_NODE                 = "NotNode";
+    private static final String EXISTS_NODE              = "ExistsNode";
+    private static final String ACCUMULATE_NODE          = "AccumulateNode";
+    private static final String RULE_TERMINAL_NODE       = "RuleTerminalNode";
+    private static final String EVAL_NODE                = "EvalNode";
+    private static final String WITH                     = "With";
+    private static final String FACTS                    = "Facts";
+    private static final String RIGHT_INPUT_ADAPTER_NODE = "RightInputAdapterNode";
+    private static final String LEFT_TUPLE_SINK_STEP     = "LeftTupleSink";
+    private static final String BETA_NODE_STEP           = "BetaNodeStep";
+
+    private ReteTesterHelper    reteTesterHelper;
     private Map<String, Object> steps;
 
     public ReteDslTestEngine() {
@@ -128,160 +128,214 @@ public class ReteDslTestEngine {
         this.reteTesterHelper = new ReteTesterHelper();
 
         this.steps = new HashMap<String, Object>();
-        
-        this.steps.put(CONFIG, new ConfigStep());
-        this.steps.put(OBJECT_TYPE_NODE, new ObjectTypeNodeStep(
-                this.reteTesterHelper));
-        this.steps.put(LEFT_INPUT_ADAPTER_NODE, new LeftInputAdapterNodeStep(
-                this.reteTesterHelper));
-        this.steps.put(BINDING, new BindingStep(this.reteTesterHelper));
-        this.steps.put(JOIN_NODE, new JoinNodeStep(this.reteTesterHelper));
-        this.steps.put(NOT_NODE, new NotNodeStep(this.reteTesterHelper));
-        this.steps.put(EXISTS_NODE, new ExistsNodeStep(this.reteTesterHelper));
-        this.steps.put(ACCUMULATE_NODE, new AccumulateNodeStep(
-                this.reteTesterHelper));
-        this.steps.put(RULE_TERMINAL_NODE, new RuleTerminalNodeStep(
-                this.reteTesterHelper));
-        this.steps.put(EVAL_NODE, new EvalNodeStep(this.reteTesterHelper));
-        this.steps.put(RIGHT_INPUT_ADAPTER_NODE, new RIANodeStep(
-                this.reteTesterHelper));
-        this.steps.put(FACTS, new FactsStep(this.reteTesterHelper));
-        this.steps.put(WITH, new WithStep(this.reteTesterHelper));
-        this.steps.put(LEFT_TUPLE_SINK_STEP, new LeftTupleSinkStep(
-                this.reteTesterHelper));
-        this.steps.put(BETA_NODE_STEP, new BetaNodeStep(this.reteTesterHelper));
+
+        this.steps.put( CONFIG,
+                        new ConfigStep() );
+        this.steps.put( OBJECT_TYPE_NODE,
+                        new ObjectTypeNodeStep(
+                                                this.reteTesterHelper ) );
+        this.steps.put( LEFT_INPUT_ADAPTER_NODE,
+                        new LeftInputAdapterNodeStep(
+                                                      this.reteTesterHelper ) );
+        this.steps.put( BINDING,
+                        new BindingStep( this.reteTesterHelper ) );
+        this.steps.put( JOIN_NODE,
+                        new JoinNodeStep( this.reteTesterHelper ) );
+        this.steps.put( NOT_NODE,
+                        new NotNodeStep( this.reteTesterHelper ) );
+        this.steps.put( EXISTS_NODE,
+                        new ExistsNodeStep( this.reteTesterHelper ) );
+        this.steps.put( ACCUMULATE_NODE,
+                        new AccumulateNodeStep(
+                                                this.reteTesterHelper ) );
+        this.steps.put( RULE_TERMINAL_NODE,
+                        new RuleTerminalNodeStep(
+                                                  this.reteTesterHelper ) );
+        this.steps.put( EVAL_NODE,
+                        new EvalNodeStep( this.reteTesterHelper ) );
+        this.steps.put( RIGHT_INPUT_ADAPTER_NODE,
+                        new RIANodeStep(
+                                         this.reteTesterHelper ) );
+        this.steps.put( FACTS,
+                        new FactsStep( this.reteTesterHelper ) );
+        this.steps.put( WITH,
+                        new WithStep( this.reteTesterHelper ) );
+        this.steps.put( LEFT_TUPLE_SINK_STEP,
+                        new LeftTupleSinkStep(
+                                               this.reteTesterHelper ) );
+        this.steps.put( BETA_NODE_STEP,
+                        new BetaNodeStep( this.reteTesterHelper ) );
     }
 
-    public NodeTestCaseResult run(NodeTestCase testCase, RunNotifier notifier) {
-        if (testCase == null || testCase.hasErrors()) {
+    public NodeTestCaseResult run(NodeTestCase testCase,
+                                  RunNotifier notifier) {
+        if ( testCase == null || testCase.hasErrors() ) {
             throw new IllegalArgumentException(
-                    "Impossible to execute test case due to existing errors: "
-                            + testCase.getErrors());
+                                                "Impossible to execute test case due to existing errors: "
+                                                        + testCase.getErrors() );
         }
-        if (notifier == null) {
+        if ( notifier == null ) {
             notifier = EmptyNotifier.INSTANCE;
         }
-        this.reteTesterHelper.addImports(testCase.getImports());
-        NodeTestCaseResult result = new NodeTestCaseResult(testCase);
-        
-        for (NodeTestDef test : testCase.getTests()) {
-            
-            notifier.fireTestStarted(test.getDescription());
-            NodeTestResult testResult = createTestResult(test, null);
-            
+        this.reteTesterHelper.addImports( testCase.getImports() );
+        NodeTestCaseResult result = new NodeTestCaseResult( testCase );
+
+        for ( NodeTestDef test : testCase.getTests() ) {
+
+            notifier.fireTestStarted( test.getDescription() );
+            NodeTestResult testResult = createTestResult( test,
+                                                          null );
+
             try {
-                
-                testResult = run(testCase, test);
-                
-                switch (testResult.result) {
-                case SUCCESS:
-                    notifier.fireTestFinished(test.getDescription());
-                    break;
-                case ERROR:
-                case FAILURE:
-                    notifier.fireTestFailure(new Failure(test.getDescription(),
-                            new AssertionError(testResult.errorMsgs)));
-                    break;
+
+                testResult = run( testCase,
+                                  test );
+
+                switch ( testResult.result ) {
+                    case SUCCESS :
+                        notifier.fireTestFinished( test.getDescription() );
+                        break;
+                    case ERROR :
+                    case FAILURE :
+                        notifier.fireTestFailure( new Failure( test.getDescription(),
+                                                               new AssertionError( testResult.errorMsgs ) ) );
+                        break;
                 }
 
-                
-            } catch (Throwable e) {
-                notifier.fireTestFailure(new Failure(test.getDescription(), e));
+            } catch ( Throwable e ) {
+                notifier.fireTestFailure( new Failure( test.getDescription(),
+                                                       e ) );
             }
-            
-            result.add(testResult);
+
+            result.add( testResult );
         }
-        
+
         return result;
     }
 
-    private NodeTestResult run(NodeTestCase testCase, NodeTestDef test) {
-        Map<String, Object> context = createContext(testCase);
-        NodeTestResult result = createTestResult(test, context);
+    private NodeTestResult run(NodeTestCase testCase,
+                               NodeTestDef test) {
+        Map<String, Object> context = createContext( testCase );
+        NodeTestResult result = createTestResult( test,
+                                                  context );
 
         try {
             // run setup
-            run(context, testCase.getSetup(), result);
+            run( context,
+                 testCase.getSetup(),
+                 result );
             // run test
-            run(context, test.getSteps(), result);
+            run( context,
+                 test.getSteps(),
+                 result );
             // run tearDown
-            run(context, testCase.getTearDown(), result);
+            run( context,
+                 testCase.getTearDown(),
+                 result );
             result.result = Result.SUCCESS;
-        } catch (Throwable e) {
+        } catch ( Throwable e ) {
             result.result = Result.ERROR;
-            result.errorMsgs.add(e.toString());
+            result.errorMsgs.add( e.toString() );
         }
         return result;
     }
 
     private NodeTestResult createTestResult(NodeTestDef test,
-            Map<String, Object> context) {
-        NodeTestResult result = new NodeTestResult(test, Result.NOT_EXECUTED,
-                context, new LinkedList<String>());
+                                            Map<String, Object> context) {
+        NodeTestResult result = new NodeTestResult( test,
+                                                    Result.NOT_EXECUTED,
+                                                    context,
+                                                    new LinkedList<String>() );
         return result;
     }
 
     private Map<String, Object> createContext(NodeTestCase testCase) {
         Map<String, Object> context = new HashMap<String, Object>();
-        context.put("TestCase", testCase);
+        context.put( "TestCase",
+                     testCase );
 
         RuleBaseConfiguration conf = new RuleBaseConfiguration();
 
-        ReteooRuleBase rbase = new ReteooRuleBase("ID", conf);
-        BuildContext buildContext = new BuildContext(rbase, rbase
-                .getReteooBuilder().getIdGenerator());
-        context.put(BUILD_CONTEXT, buildContext);
+        ReteooRuleBase rbase = new ReteooRuleBase( "ID",
+                                                   conf );
+        BuildContext buildContext = new BuildContext( rbase,
+                                                      rbase
+                                                              .getReteooBuilder().getIdGenerator() );
+        context.put( BUILD_CONTEXT,
+                     buildContext );
         context
-                .put("ClassFieldAccessorStore", this.reteTesterHelper
-                        .getStore());
+                .put( "ClassFieldAccessorStore",
+                      this.reteTesterHelper
+                              .getStore() );
 
         InternalWorkingMemory wm = (InternalWorkingMemory) rbase
-                .newStatefulSession(true);
-        context.put(WORKING_MEMORY, wm);
+                .newStatefulSession( true );
+        context.put( WORKING_MEMORY,
+                     wm );
         return context;
     }
 
     public Map<String, Object> run(Map<String, Object> context,
-            List<DslStep> steps, NodeTestResult result) {
+                                   List<DslStep> steps,
+                                   NodeTestResult result) {
         InternalWorkingMemory wm = (InternalWorkingMemory) context
-                .get(WORKING_MEMORY);
-        for (DslStep step : steps) {
+                .get( WORKING_MEMORY );
+        for ( DslStep step : steps ) {
             String name = step.getName();
-            Object object = this.steps.get(name);
-            if (object != null && object instanceof Step) {
+            Object object = this.steps.get( name );
+            if ( object != null && object instanceof Step ) {
                 Step stepImpl = (Step) object;
                 try {
-                    stepImpl.execute(context, step.getCommands());
-                } catch (Exception e) {
-                    throw new IllegalArgumentException("line " + step.getLine()
-                            + ": unable to execute step " + step, e);
+                    stepImpl.execute( context,
+                                      step.getCommands() );
+                } catch ( Exception e ) {
+                    throw new IllegalArgumentException( "line " + step.getLine()
+                                                                + ": unable to execute step " + step,
+                                                        e );
                 }
-            } else if ("assert".equals(name.trim())) {
-                assertObject(step, context, wm);
-            } else if ("retract".equals(name.trim())) {
-                retractObject(step, context, wm);
-            } else if ("modify".equals(name.trim())) {
-                modifyObject(step, context, wm);
+            } else if ( "assert".equals( name.trim() ) ) {
+                assertObject( step,
+                              context,
+                              wm );
+            } else if ( "retract".equals( name.trim() ) ) {
+                retractObject( step,
+                               context,
+                               wm );
+            } else if ( "modify".equals( name.trim() ) ) {
+                modifyObject( step,
+                              context,
+                              wm );
             } else {
-                Object node = context.get(name.trim());
-                if (node == null) {
-                    throw new IllegalArgumentException("line " + step.getLine()
-                            + ": step " + name + " does not exist");
+                Object node = context.get( name.trim() );
+                if ( node == null ) {
+                    throw new IllegalArgumentException( "line " + step.getLine()
+                                                        + ": step " + name + " does not exist" );
                 }
 
-                if (node instanceof DSLMock) {
+                if ( node instanceof DSLMock ) {
                     // it is a mock
-                    MockitoHelper.process(step, (LeftTupleSink) node, context,
-                            wm);
-                } else if (node instanceof BetaNode) {
-                    betaNode(step, (BetaNode) node, context, wm);
-                } else if (node instanceof RightInputAdapterNode) {
-                    riaNode(step, (RightInputAdapterNode) node, context, wm);
-                } else if (node instanceof RuleTerminalNode) {
-                    ruleTerminalNode(step, (RuleTerminalNode) node, context, wm);
+                    MockitoHelper.process( step,
+                                           (LeftTupleSink) node,
+                                           context,
+                                           wm );
+                } else if ( node instanceof BetaNode ) {
+                    betaNode( step,
+                              (BetaNode) node,
+                              context,
+                              wm );
+                } else if ( node instanceof RightInputAdapterNode ) {
+                    riaNode( step,
+                             (RightInputAdapterNode) node,
+                             context,
+                             wm );
+                } else if ( node instanceof RuleTerminalNode ) {
+                    ruleTerminalNode( step,
+                                      (RuleTerminalNode) node,
+                                      context,
+                                      wm );
                 } else {
-                    throw new IllegalArgumentException("line " + step.getLine()
-                            + ": unknown node " + node);
+                    throw new IllegalArgumentException( "line " + step.getLine()
+                                                        + ": unknown node " + node );
                 }
             }
         }
@@ -289,663 +343,746 @@ public class ReteDslTestEngine {
         return context;
     }
 
-    private void betaNode(DslStep step, BetaNode node,
-            Map<String, Object> context, InternalWorkingMemory wm) {
-        
-        final boolean lrUnlinkingEnabled = ((BuildContext) context.get(BUILD_CONTEXT))
-                                                                  .getRuleBase()
-                                                                  .getConfiguration().isLRUnlinkingEnabled();
-        
+    private void betaNode(DslStep step,
+                          BetaNode node,
+                          Map<String, Object> context,
+                          InternalWorkingMemory wm) {
+
+        final boolean lrUnlinkingEnabled = ((BuildContext) context
+                .get( BUILD_CONTEXT )).getRuleBase().getConfiguration()
+                .isLRUnlinkingEnabled();
+
         try {
             List<String[]> cmds = step.getCommands();
             List<InternalFactHandle> handles = (List<InternalFactHandle>) context
-                    .get("Handles");
+                    .get( "Handles" );
 
             BetaMemory memory = null;
-            if (node instanceof AccumulateNode) {
+            if ( node instanceof AccumulateNode ) {
                 AccumulateMemory accmem = (AccumulateMemory) wm
-                        .getNodeMemory(node);
+                        .getNodeMemory( node );
                 memory = accmem.betaMemory;
             } else {
-                memory = (BetaMemory) wm.getNodeMemory(node);
+                memory = (BetaMemory) wm.getNodeMemory( node );
             }
-            for (String[] cmd : cmds) {
-                if (cmd[0].equals("leftMemory")) {
+            for ( String[] cmd : cmds ) {
+                if ( cmd[0].equals( "leftMemory" ) ) {
                     String args = cmd[1];
-                    String listString = args.replaceAll("h(\\d+)", "h[$1]");
+                    String listString = args.replaceAll( "h(\\d+)",
+                                                         "h[$1]" );
                     Map<String, Object> vars = new HashMap<String, Object>();
-                    vars.put("h", handles);
-                    List<?> expectedLeftTuples = (List<?>) MVEL.eval(
-                            listString, vars);
+                    vars.put( "h",
+                              handles );
+                    List< ? > expectedLeftTuples = (List< ? >) MVEL.eval(
+                                                                          listString,
+                                                                          vars );
 
                     LeftTupleMemory leftMemory = memory.getLeftTupleMemory();
 
-                    if (expectedLeftTuples.isEmpty() && leftMemory.size() != 0) {
-                        throw new AssertionFailedError("line " + step.getLine()
-                                + ": left Memory expected [] actually "
-                                + print(leftMemory, lrUnlinkingEnabled));
-                    } else if (expectedLeftTuples.isEmpty()
-                            && leftMemory.size() == 0) {
+                    if ( expectedLeftTuples.isEmpty() && leftMemory.size() != 0 ) {
+                        throw new AssertionFailedError( "line " + step.getLine()
+                                                        + ": left Memory expected [] actually "
+                                                        + print( leftMemory,
+                                                                 lrUnlinkingEnabled ) );
+                    } else if ( expectedLeftTuples.isEmpty()
+                                && leftMemory.size() == 0 ) {
                         continue;
                     }
 
                     // we always lookup from the first element, in case it's
                     // indexed
                     List<InternalFactHandle> first = (List<InternalFactHandle>) expectedLeftTuples
-                            .get(0);
-                    LeftTuple firstTuple = new LeftTuple(first.get(0), null,
-                            false);
-                    for (int i = 1; i < first.size(); i++) {
-                        firstTuple = new LeftTuple(firstTuple, null, false);
+                            .get( 0 );
+                    LeftTuple firstTuple = new LeftTuple( first.get( 0 ),
+                                                          null,
+                                                          false );
+                    for ( int i = 1; i < first.size(); i++ ) {
+                        firstTuple = new LeftTuple( firstTuple,
+                                                    null,
+                                                    false );
                     }
 
                     List<LeftTuple> leftTuples = new ArrayList<LeftTuple>();
 
-                    for (LeftTuple leftTuple = memory.getLeftTupleMemory()
-                            .getFirst(firstTuple); leftTuple != null; leftTuple = (LeftTuple) leftTuple
-                            .getNext()) {
-                        leftTuples.add(leftTuple);
-                    }
-                    
-
-                    if (lrUnlinkingEnabled) {
-                        // When L&R Unlinking is active, we need to sort the tuples here, 
-                        // because we might have asserted things in the wrong order, 
-                        // since linking a node's side means populating its memory
-                        // from the OTN which stores things in a hash-set, so insertion order is not kept. 
-                        Collections.sort(leftTuples, new LeftTupleComparator());
-                    }
-                    
-                    List<List<InternalFactHandle>> actualLeftTuples = getHandlesList(leftTuples);
-                    
-
-                    if (!expectedLeftTuples.equals(actualLeftTuples)) {
-                        throw new AssertionFailedError("line " + step.getLine()
-                                + ": left Memory expected "
-                                + print(expectedLeftTuples) + " actually "
-                                + print(actualLeftTuples));
+                    for ( LeftTuple leftTuple = memory.getLeftTupleMemory()
+                            .getFirst( firstTuple ); leftTuple != null; leftTuple = (LeftTuple) leftTuple
+                            .getNext() ) {
+                        leftTuples.add( leftTuple );
                     }
 
-                } else if (cmd[0].equals("rightMemory")) {
+                    if ( lrUnlinkingEnabled ) {
+                        // When L&R Unlinking is active, we need to sort the
+                        // tuples here,
+                        // because we might have asserted things in the wrong
+                        // order,
+                        // since linking a node's side means populating its
+                        // memory
+                        // from the OTN which stores things in a hash-set, so
+                        // insertion order is not kept.
+                        Collections.sort( leftTuples,
+                                          new LeftTupleComparator() );
+                    }
+
+                    List<List<InternalFactHandle>> actualLeftTuples = getHandlesList( leftTuples );
+
+                    if ( !expectedLeftTuples.equals( actualLeftTuples ) ) {
+                        throw new AssertionFailedError( "line " + step.getLine()
+                                                        + ": left Memory expected "
+                                                        + print( expectedLeftTuples ) + " actually "
+                                                        + print( actualLeftTuples ) );
+                    }
+
+                } else if ( cmd[0].equals( "rightMemory" ) ) {
                     String args = cmd[1];
-                    String listString = args.replaceAll("h(\\d+)", "h[$1]");
+                    String listString = args.replaceAll( "h(\\d+)",
+                                                         "h[$1]" );
                     Map<String, Object> vars = new HashMap<String, Object>();
-                    vars.put("h", handles);
-                    List<?> expectedFactHandles = (List<?>) MVEL.eval(
-                            listString, vars);
+                    vars.put( "h",
+                              handles );
+                    List< ? > expectedFactHandles = (List< ? >) MVEL.eval(
+                                                                           listString,
+                                                                           vars );
 
                     RightTupleMemory rightMemory = memory.getRightTupleMemory();
-                    
-                    if (expectedFactHandles.isEmpty()
-                            && rightMemory.size() != 0) {
-                        throw new AssertionFailedError("line " + step.getLine()
-                                + ": right Memory expected [] actually "
-                                + print(rightMemory));
-                    } else if (expectedFactHandles.isEmpty()
-                            && rightMemory.size() == 0) {
+
+                    if ( expectedFactHandles.isEmpty()
+                            && rightMemory.size() != 0 ) {
+                        throw new AssertionFailedError( "line " + step.getLine()
+                                                        + ": right Memory expected [] actually "
+                                                        + print( rightMemory ) );
+                    } else if ( expectedFactHandles.isEmpty()
+                                && rightMemory.size() == 0 ) {
                         continue;
                     }
 
                     RightTuple first = new RightTuple(
-                            (InternalFactHandle) expectedFactHandles.get(0));
+                                                       (InternalFactHandle) expectedFactHandles.get( 0 ) );
                     List<RightTuple> actualRightTuples = new ArrayList<RightTuple>();
-                    for (RightTuple rightTuple = memory.getRightTupleMemory()
-                            .getFirst(first); rightTuple != null; rightTuple = (RightTuple) rightTuple
-                            .getNext()) {
-                        actualRightTuples.add(rightTuple);
-                    }
-                    
-                    if (expectedFactHandles.size() != actualRightTuples.size()) {
-                        throw new AssertionFailedError("line " + step.getLine()
-                                + ": right Memory expected "
-                                + print(expectedFactHandles) + " actually "
-                                + print(actualRightTuples));
+                    for ( RightTuple rightTuple = memory.getRightTupleMemory()
+                            .getFirst( first ); rightTuple != null; rightTuple = (RightTuple) rightTuple
+                            .getNext() ) {
+                        actualRightTuples.add( rightTuple );
                     }
 
-                    for (int i = 0, length = actualRightTuples.size(); i < length; i++) {
-                        if (expectedFactHandles.get(i) != actualRightTuples
-                                .get(i).getFactHandle()) {
-                            throw new AssertionFailedError("line "
-                                    + step.getLine()
-                                    + ": right Memory expected ["
-                                    + print(expectedFactHandles) + "] actually ["
-                                    + print(actualRightTuples)
-                                    + "]");
+                    if ( expectedFactHandles.size() != actualRightTuples.size() ) {
+                        throw new AssertionFailedError( "line " + step.getLine()
+                                                        + ": right Memory expected "
+                                                        + print( expectedFactHandles ) + " actually "
+                                                        + print( actualRightTuples ) );
+                    }
+
+                    for ( int i = 0, length = actualRightTuples.size(); i < length; i++ ) {
+                        if ( expectedFactHandles.get( i ) != actualRightTuples
+                                .get( i ).getFactHandle() ) {
+                            throw new AssertionFailedError( "line "
+                                                            + step.getLine()
+                                                            + ": right Memory expected ["
+                                                            + print( expectedFactHandles )
+                                                            + "] actually [" + print( actualRightTuples )
+                                                            + "]" );
                         }
                     }
 
                 } else {
-                    throw new IllegalArgumentException("line " + step.getLine()
-                            + ": command does not exist "
-                            + Arrays.toString(cmd));
+                    throw new IllegalArgumentException( "line " + step.getLine()
+                                                        + ": command does not exist "
+                                                        + Arrays.toString( cmd ) );
                 }
             }
-        } catch (Exception e) {
-            throw new IllegalArgumentException("line " + step.getLine()
-                    + ": unable to execute step " + step, e);
+        } catch ( Exception e ) {
+            throw new IllegalArgumentException( "line " + step.getLine()
+                                                        + ": unable to execute step " + step,
+                                                e );
         }
     }
 
     private List<List<InternalFactHandle>> getHandlesList(
-            List<LeftTuple> leftTuples) {
+                                                          List<LeftTuple> leftTuples) {
         List<List<InternalFactHandle>> actualLeftTuples = new ArrayList<List<InternalFactHandle>>(
-                leftTuples.size());
-        for (LeftTuple leftTuple : leftTuples) {
-            List<InternalFactHandle> tupleHandles = Arrays
-                    .asList(leftTuple.toFactHandles());
-            actualLeftTuples.add(tupleHandles);
+                                                                                                   leftTuples.size() );
+        for ( LeftTuple leftTuple : leftTuples ) {
+            List<InternalFactHandle> tupleHandles = Arrays.asList( leftTuple
+                    .toFactHandles() );
+            actualLeftTuples.add( tupleHandles );
         }
         return actualLeftTuples;
     }
 
-    private String print(LeftTupleMemory leftMemory, boolean lrUnlinkingEnabled) {
-        
+    private String print(LeftTupleMemory leftMemory,
+                         boolean lrUnlinkingEnabled) {
+
         List<LeftTuple> tuples = new ArrayList<LeftTuple>();
         Iterator it = leftMemory.iterator();
-        for ( LeftTuple tuple = (LeftTuple) it.next(); tuple != null; tuple = (LeftTuple) it.next() ) {
-            tuples.add(tuple);
-        }
-        
-        if (lrUnlinkingEnabled) {
-            // Necessary only when L&R unlinking are active.
-            Collections.sort(tuples, new LeftTupleComparator());
+        for ( LeftTuple tuple = (LeftTuple) it.next(); tuple != null; tuple = (LeftTuple) it
+                .next() ) {
+            tuples.add( tuple );
         }
 
-        return print(getHandlesList(tuples));
+        if ( lrUnlinkingEnabled ) {
+            // Necessary only when L&R unlinking are active.
+            Collections.sort( tuples,
+                              new LeftTupleComparator() );
+        }
+
+        return print( getHandlesList( tuples ) );
     }
-    
+
     private String print(RightTupleMemory memory) {
 
         List<RightTuple> tuples = new ArrayList<RightTuple>();
         Iterator it = memory.iterator();
 
-        for ( RightTuple tuple = (RightTuple) it.next(); tuple != null; tuple = (RightTuple) it.next() ) {
-            tuples.add(tuple);
+        for ( RightTuple tuple = (RightTuple) it.next(); tuple != null; tuple = (RightTuple) it
+                .next() ) {
+            tuples.add( tuple );
         }
-        
-        return "[" + print(tuples) + "]";
+
+        return "[" + print( tuples ) + "]";
     }
 
     /** Provides better error messages. */
-    protected String print(List<?> tuples) {
-        
+    protected String print(List< ? > tuples) {
+
         StringBuilder b = new StringBuilder();
-        
-        for (java.util.Iterator iterator = tuples.iterator(); iterator.hasNext();) {
-            
-                Object tuple = (Object) iterator.next();
-    
-                if (tuple instanceof List<?>) {
-                    b.append("[");
-                    b.append(print((List<?>) tuple));
-                    b.append("]");
-                } else if (tuple instanceof InternalFactHandle){
-                    InternalFactHandle h = (InternalFactHandle) tuple;
-                    b.append("h").append(h.getId()-1);
-                } else if (tuple instanceof RightTuple){
-                    InternalFactHandle h = (InternalFactHandle) ((RightTuple) tuple).getFactHandle();
-                    b.append("h").append(h.getId()-1);
-                }
-                
-                if(iterator.hasNext()) 
-                    b.append(", ");
+
+        for ( java.util.Iterator iterator = tuples.iterator(); iterator
+                .hasNext(); ) {
+
+            Object tuple = (Object) iterator.next();
+
+            if ( tuple instanceof List< ? > ) {
+                b.append( "[" );
+                b.append( print( (List< ? >) tuple ) );
+                b.append( "]" );
+            } else if ( tuple instanceof InternalFactHandle ) {
+                InternalFactHandle h = (InternalFactHandle) tuple;
+                b.append( "h" ).append( h.getId() - 1 );
+            } else if ( tuple instanceof RightTuple ) {
+                InternalFactHandle h = (InternalFactHandle) ((RightTuple) tuple)
+                        .getFactHandle();
+                b.append( "h" ).append( h.getId() - 1 );
             }
 
-        if (b.length() == 0)
-            return "[]";
-        
+            if ( iterator.hasNext() ) b.append( ", " );
+        }
+
+        if ( b.length() == 0 ) return "[]";
+
         return b.toString();
     }
-    
 
-    private void riaNode(DslStep step, RightInputAdapterNode node,
-            Map<String, Object> context, InternalWorkingMemory wm) {
+    private void riaNode(DslStep step,
+                         RightInputAdapterNode node,
+                         Map<String, Object> context,
+                         InternalWorkingMemory wm) {
         try {
             List<String[]> cmds = step.getCommands();
             List<InternalFactHandle> handles = (List<InternalFactHandle>) context
-                    .get("Handles");
+                    .get( "Handles" );
 
-            final ObjectHashMap memory = (ObjectHashMap) wm.getNodeMemory(node);
-            for (String[] cmd : cmds) {
-                if (cmd[0].equals("leftMemory")) {
+            final ObjectHashMap memory = (ObjectHashMap) wm.getNodeMemory( node );
+            for ( String[] cmd : cmds ) {
+                if ( cmd[0].equals( "leftMemory" ) ) {
                     String args = cmd[1];
-                    String listString = args.replaceAll("h(\\d+)", "h[$1]");
+                    String listString = args.replaceAll( "h(\\d+)",
+                                                         "h[$1]" );
                     Map<String, Object> vars = new HashMap<String, Object>();
-                    vars.put("h", handles);
-                    List<?> expectedLeftTuples = (List<?>) MVEL.eval(
-                            listString, vars);
+                    vars.put( "h",
+                              handles );
+                    List< ? > expectedLeftTuples = (List< ? >) MVEL.eval(
+                                                                          listString,
+                                                                          vars );
 
-                    if (expectedLeftTuples.isEmpty() && memory.size() != 0) {
-                        throw new AssertionFailedError("line " + step.getLine()
-                                + ": left Memory expected [] actually "
-                                + memory);
-                    } else if (expectedLeftTuples.isEmpty()
-                            && memory.size() == 0) {
+                    if ( expectedLeftTuples.isEmpty() && memory.size() != 0 ) {
+                        throw new AssertionFailedError( "line " + step.getLine()
+                                                        + ": left Memory expected [] actually "
+                                                        + memory );
+                    } else if ( expectedLeftTuples.isEmpty()
+                                && memory.size() == 0 ) {
                         return;
                     }
 
                     // create expected tuples
                     List<LeftTuple> leftTuples = new ArrayList<LeftTuple>();
-                    for (List<InternalFactHandle> tlist : (List<List<InternalFactHandle>>) expectedLeftTuples) {
-                        LeftTuple tuple = new LeftTuple(tlist.get(0), null,
-                                false);
-                        for (int i = 1; i < tlist.size(); i++) {
-                            tuple = new LeftTuple(tuple, new RightTuple(tlist
-                                    .get(i)), null, false);
+                    for ( List<InternalFactHandle> tlist : (List<List<InternalFactHandle>>) expectedLeftTuples ) {
+                        LeftTuple tuple = new LeftTuple( tlist.get( 0 ),
+                                                         null,
+                                                         false );
+                        for ( int i = 1; i < tlist.size(); i++ ) {
+                            tuple = new LeftTuple( tuple,
+                                                   new RightTuple( tlist
+                                                           .get( i ) ),
+                                                   null,
+                                                   false );
                         }
-                        leftTuples.add(tuple);
+                        leftTuples.add( tuple );
 
                     }
 
                     // get actual tuples
                     final List<LeftTuple> actualTuples = new ArrayList<LeftTuple>();
                     final Iterator it = memory.iterator();
-                    for (ObjectEntry entry = (ObjectEntry) it.next(); entry != null; entry = (ObjectEntry) it
-                            .next()) {
-                        actualTuples.add((LeftTuple) entry.getKey());
+                    for ( ObjectEntry entry = (ObjectEntry) it.next(); entry != null; entry = (ObjectEntry) it
+                            .next() ) {
+                        actualTuples.add( (LeftTuple) entry.getKey() );
                     }
 
                     // iterate over expected tuples and compare with actual
                     // tuples
-                    for (LeftTuple tuple : leftTuples) {
-                        if (!actualTuples.remove(tuple)) {
-                            throw new AssertionFailedError("line "
-                                    + step.getLine()
-                                    + ": left Memory expected " + tuple
-                                    + " not found in memory.");
+                    for ( LeftTuple tuple : leftTuples ) {
+                        if ( !actualTuples.remove( tuple ) ) {
+                            throw new AssertionFailedError( "line "
+                                                            + step.getLine()
+                                                            + ": left Memory expected " + tuple
+                                                            + " not found in memory." );
                         }
                     }
-                    if (!actualTuples.isEmpty()) {
+                    if ( !actualTuples.isEmpty() ) {
                         throw new AssertionFailedError(
-                                "line "
-                                        + step.getLine()
-                                        + ": left Memory unexpected tuples in the node memory "
-                                        + actualTuples);
+                                                        "line "
+                                                                + step.getLine()
+                                                                + ": left Memory unexpected tuples in the node memory "
+                                                                + actualTuples );
                     }
                 } else {
-                    throw new IllegalArgumentException("line " + step.getLine()
-                            + ": command does not exist "
-                            + Arrays.toString(cmd));
+                    throw new IllegalArgumentException( "line " + step.getLine()
+                                                        + ": command does not exist "
+                                                        + Arrays.toString( cmd ) );
                 }
             }
-        } catch (Exception e) {
-            throw new IllegalArgumentException("line " + step.getLine()
-                    + ": unable to execute step " + step, e);
+        } catch ( Exception e ) {
+            throw new IllegalArgumentException( "line " + step.getLine()
+                                                        + ": unable to execute step " + step,
+                                                e );
         }
     }
 
-    private void ruleTerminalNode(DslStep step, RuleTerminalNode node,
-            Map<String, Object> context, InternalWorkingMemory wm) {
+    private void ruleTerminalNode(DslStep step,
+                                  RuleTerminalNode node,
+                                  Map<String, Object> context,
+                                  InternalWorkingMemory wm) {
         try {
             List<String[]> cmds = step.getCommands();
             // List<InternalFactHandle> handles = (List<InternalFactHandle>)
             // context.get( "Handles" );
 
-            for (String[] cmd : cmds) {
-                throw new IllegalArgumentException("line " + step.getLine()
-                        + ": command does not exist " + Arrays.toString(cmd));
+            for ( String[] cmd : cmds ) {
+                throw new IllegalArgumentException( "line " + step.getLine()
+                                                    + ": command does not exist " + Arrays.toString( cmd ) );
             }
-        } catch (Exception e) {
-            throw new IllegalArgumentException("line " + step.getLine()
-                    + ": unable to execute step " + step, e);
+        } catch ( Exception e ) {
+            throw new IllegalArgumentException( "line " + step.getLine()
+                                                        + ": unable to execute step " + step,
+                                                e );
         }
     }
 
     @SuppressWarnings("unchecked")
-    private void assertObject(DslStep step, Map<String, Object> context,
-            InternalWorkingMemory wm) {
+    private void assertObject(DslStep step,
+                              Map<String, Object> context,
+                              InternalWorkingMemory wm) {
         try {
             List<String[]> cmds = step.getCommands();
             List<InternalFactHandle> handles = (List<InternalFactHandle>) context
-                    .get("Handles");
-            for (String[] cmd : cmds) {
+                    .get( "Handles" );
+            for ( String[] cmd : cmds ) {
                 try {
                     String nodeName = cmd[0];
-                    Sink sink = (Sink) context.get(nodeName);
-                    if (sink == null) {
-                        throw new IllegalArgumentException("line "
-                                + step.getLine() + ": node " + nodeName
-                                + " does not exist");
+                    Sink sink = (Sink) context.get( nodeName );
+                    if ( sink == null ) {
+                        throw new IllegalArgumentException( "line "
+                                                            + step.getLine() + ": node " + nodeName
+                                                            + " does not exist" );
                     }
 
                     Map<String, Object> vars = new HashMap<String, Object>();
-                    vars.put("h", handles);
+                    vars.put( "h",
+                              handles );
                     String args = cmd[1];
-                    String listString = args.replaceAll("h(\\d+)", "h[$1]");
-                    List<?> list = (List<?>) MVEL.eval(listString, vars);
-                    if (list == null) {
-                        throw new IllegalArgumentException(cmd
-                                + " does not specify an existing fact handle");
+                    String listString = args.replaceAll( "h(\\d+)",
+                                                         "h[$1]" );
+                    List< ? > list = (List< ? >) MVEL.eval( listString,
+                                                            vars );
+                    if ( list == null ) {
+                        throw new IllegalArgumentException( cmd
+                                                            + " does not specify an existing fact handle" );
                     }
 
-                    for (Object element : list) {
-                        if (element == null) {
+                    for ( Object element : list ) {
+                        if ( element == null ) {
                             throw new IllegalArgumentException(
-                                    cmd
-                                            + " does not specify an existing fact handle");
+                                                                cmd
+                                                                        + " does not specify an existing fact handle" );
                         }
 
-                        if (element instanceof InternalFactHandle) {
+                        if ( element instanceof InternalFactHandle ) {
                             InternalFactHandle handle = (InternalFactHandle) element;
                             PropagationContext pContext = new PropagationContextImpl(
-                                    wm.getNextPropagationIdCounter(),
-                                    PropagationContext.ASSERTION, null, null,
-                                    handle);
-                            ((ObjectSink) sink).assertObject(handle, pContext,
-                                    wm);
+                                                                                      wm.getNextPropagationIdCounter(),
+                                                                                      PropagationContext.ASSERTION,
+                                                                                      null,
+                                                                                      null,
+                                                                                      handle );
+                            ((ObjectSink) sink).assertObject( handle,
+                                                              pContext,
+                                                              wm );
                         } else {
                             List<InternalFactHandle> tlist = (List<InternalFactHandle>) element;
-                            LeftTuple tuple = createTuple(context, tlist);
+                            LeftTuple tuple = createTuple( context,
+                                                           tlist );
                             PropagationContext pContext = new PropagationContextImpl(
-                                    wm.getNextPropagationIdCounter(),
-                                    PropagationContext.ASSERTION, null, tuple,
-                                    null);
-                            ((LeftTupleSink) sink).assertLeftTuple(tuple,
-                                    pContext, wm);
+                                                                                      wm.getNextPropagationIdCounter(),
+                                                                                      PropagationContext.ASSERTION,
+                                                                                      null,
+                                                                                      tuple,
+                                                                                      null );
+                            ((LeftTupleSink) sink).assertLeftTuple( tuple,
+                                                                    pContext,
+                                                                    wm );
                         }
 
                     }
-                } catch (Exception e) {
-                    throw new IllegalArgumentException("line " + step.getLine()
-                            + ": unable to execute command " + cmd, e);
+                } catch ( Exception e ) {
+                    throw new IllegalArgumentException( "line " + step.getLine()
+                                                                + ": unable to execute command " + cmd,
+                                                        e );
 
                 }
             }
-        } catch (Exception e) {
-            throw new IllegalArgumentException("line " + step.getLine()
-                    + ": unable to execute step " + step, e);
+        } catch ( Exception e ) {
+            throw new IllegalArgumentException( "line " + step.getLine()
+                                                        + ": unable to execute step " + step,
+                                                e );
         }
     }
 
     private LeftTuple createTuple(Map<String, Object> context,
-            List<InternalFactHandle> tlist) {
+                                  List<InternalFactHandle> tlist) {
         LeftTuple tuple = null;
-        String id = getTupleId(tlist);
-        for (InternalFactHandle handle : tlist) {
-            if (tuple == null) {
-                tuple = new LeftTuple(handle, null, false); // do not keep
-                                                            // generated tuples
-                                                            // on the handle
-                                                            // list
+        String id = getTupleId( tlist );
+        for ( InternalFactHandle handle : tlist ) {
+            if ( tuple == null ) {
+                tuple = new LeftTuple( handle,
+                                       null,
+                                       false ); // do not keep
+                // generated tuples
+                // on the handle
+                // list
             } else {
-                tuple = new LeftTuple(tuple, new RightTuple(handle), null, true);
+                tuple = new LeftTuple( tuple,
+                                       new RightTuple( handle ),
+                                       null,
+                                       true );
             }
         }
-        context.put(id, tuple);
+        context.put( id,
+                     tuple );
         return tuple;
     }
 
     private String getTupleId(List<InternalFactHandle> tlist) {
         StringBuilder id = new StringBuilder();
-        id.append("T.");
-        for (InternalFactHandle handle : tlist) {
-            id.append(handle.getId());
-            id.append(".");
+        id.append( "T." );
+        for ( InternalFactHandle handle : tlist ) {
+            id.append( handle.getId() );
+            id.append( "." );
         }
         return id.toString();
     }
 
-    private void retractObject(DslStep step, Map<String, Object> context,
-            InternalWorkingMemory wm) {
+    private void retractObject(DslStep step,
+                               Map<String, Object> context,
+                               InternalWorkingMemory wm) {
         try {
             List<String[]> cmds = step.getCommands();
             List<InternalFactHandle> handles = (List<InternalFactHandle>) context
-                    .get("Handles");
-            for (String[] cmd : cmds) {
+                    .get( "Handles" );
+            for ( String[] cmd : cmds ) {
                 try {
                     String nodeName = cmd[0];
-                    Sink sink = (Sink) context.get(nodeName);
-                    if (sink == null) {
-                        throw new IllegalArgumentException("line "
-                                + step.getLine() + ": node " + nodeName
-                                + " does not exist");
+                    Sink sink = (Sink) context.get( nodeName );
+                    if ( sink == null ) {
+                        throw new IllegalArgumentException( "line "
+                                                            + step.getLine() + ": node " + nodeName
+                                                            + " does not exist" );
                     }
 
                     String args = cmd[1];
-                    String listString = args.replaceAll("h(\\d+)", "h[$1]");
+                    String listString = args.replaceAll( "h(\\d+)",
+                                                         "h[$1]" );
                     Map<String, Object> vars = new HashMap<String, Object>();
-                    vars.put("h", handles);
-                    List<?> list = (List<?>) MVEL.eval(listString, vars);
-                    if (list == null) {
-                        throw new IllegalArgumentException(Arrays.toString(cmd)
-                                + " does not specify an existing fact handle");
+                    vars.put( "h",
+                              handles );
+                    List< ? > list = (List< ? >) MVEL.eval( listString,
+                                                            vars );
+                    if ( list == null ) {
+                        throw new IllegalArgumentException( Arrays.toString( cmd )
+                                                            + " does not specify an existing fact handle" );
                     }
 
-                    for (Object element : list) {
-                        if (element == null) {
+                    for ( Object element : list ) {
+                        if ( element == null ) {
                             throw new IllegalArgumentException(
-                                    Arrays.toString(cmd)
-                                            + " does not specify an existing fact handle");
+                                                                Arrays.toString( cmd )
+                                                                        + " does not specify an existing fact handle" );
                         }
 
-                        if (element instanceof InternalFactHandle) {
+                        if ( element instanceof InternalFactHandle ) {
                             InternalFactHandle handle = (InternalFactHandle) element;
                             PropagationContext pContext = new PropagationContextImpl(
-                                    wm.getNextPropagationIdCounter(),
-                                    PropagationContext.RETRACTION, null, null,
-                                    handle);
-                            if (sink instanceof ObjectTypeNode) {
-                                ((ObjectTypeNode) sink).retractObject(handle,
-                                        pContext, wm);
+                                                                                      wm.getNextPropagationIdCounter(),
+                                                                                      PropagationContext.RETRACTION,
+                                                                                      null,
+                                                                                      null,
+                                                                                      handle );
+                            if ( sink instanceof ObjectTypeNode ) {
+                                ((ObjectTypeNode) sink).retractObject( handle,
+                                                                       pContext,
+                                                                       wm );
                             } else {
-                                for (RightTuple rightTuple = handle
+                                for ( RightTuple rightTuple = handle
                                         .getFirstRightTuple(); rightTuple != null; rightTuple = (RightTuple) rightTuple
-                                        .getHandleNext()) {
+                                        .getHandleNext() ) {
                                     rightTuple.getRightTupleSink()
-                                            .retractRightTuple(rightTuple,
-                                                    pContext, wm);
+                                            .retractRightTuple( rightTuple,
+                                                                pContext,
+                                                                wm );
                                 }
-                                handle.setFirstRightTuple(null);
-                                handle.setLastRightTuple(null);
-                                for (LeftTuple leftTuple = handle
+                                handle.setFirstRightTuple( null );
+                                handle.setLastRightTuple( null );
+                                for ( LeftTuple leftTuple = handle
                                         .getFirstLeftTuple(); leftTuple != null; leftTuple = (LeftTuple) leftTuple
-                                        .getLeftParentNext()) {
+                                        .getLeftParentNext() ) {
                                     leftTuple.getLeftTupleSink()
-                                            .retractLeftTuple(leftTuple,
-                                                    pContext, wm);
+                                            .retractLeftTuple( leftTuple,
+                                                               pContext,
+                                                               wm );
                                 }
-                                handle.setFirstLeftTuple(null);
-                                handle.setLastLeftTuple(null);
+                                handle.setFirstLeftTuple( null );
+                                handle.setLastLeftTuple( null );
                             }
                         } else {
                             List<InternalFactHandle> tlist = (List<InternalFactHandle>) element;
-                            String id = getTupleId(tlist);
-                            LeftTuple tuple = (LeftTuple) context.remove(id);
-                            if (tuple == null) {
+                            String id = getTupleId( tlist );
+                            LeftTuple tuple = (LeftTuple) context.remove( id );
+                            if ( tuple == null ) {
                                 throw new IllegalArgumentException(
-                                        "Tuple not found: " + id + " : "
-                                                + tlist.toString());
+                                                                    "Tuple not found: " + id + " : "
+                                                                            + tlist.toString() );
                             }
                             PropagationContext pContext = new PropagationContextImpl(
-                                    wm.getNextPropagationIdCounter(),
-                                    PropagationContext.RETRACTION, null, tuple,
-                                    null);
-                            ((LeftTupleSink) sink).retractLeftTuple(tuple,
-                                    pContext, wm);
+                                                                                      wm.getNextPropagationIdCounter(),
+                                                                                      PropagationContext.RETRACTION,
+                                                                                      null,
+                                                                                      tuple,
+                                                                                      null );
+                            ((LeftTupleSink) sink).retractLeftTuple( tuple,
+                                                                     pContext,
+                                                                     wm );
                         }
 
                     }
-                } catch (Exception e) {
-                    throw new IllegalArgumentException("line " + step.getLine()
-                            + ": unable to execute command "
-                            + Arrays.toString(cmd), e);
+                } catch ( Exception e ) {
+                    throw new IllegalArgumentException( "line " + step.getLine()
+                                                                + ": unable to execute command "
+                                                                + Arrays.toString( cmd ),
+                                                        e );
 
                 }
             }
-        } catch (Exception e) {
-            throw new IllegalArgumentException("line " + step.getLine()
-                    + ": unable to execute step " + step, e);
+        } catch ( Exception e ) {
+            throw new IllegalArgumentException( "line " + step.getLine()
+                                                        + ": unable to execute step " + step,
+                                                e );
         }
     }
 
-    private void modifyObject(DslStep step, Map<String, Object> context,
-            InternalWorkingMemory wm) {
+    private void modifyObject(DslStep step,
+                              Map<String, Object> context,
+                              InternalWorkingMemory wm) {
         try {
             List<String[]> cmds = step.getCommands();
             List<InternalFactHandle> handles = (List<InternalFactHandle>) context
-                    .get("Handles");
-            for (String[] cmd : cmds) {
+                    .get( "Handles" );
+            for ( String[] cmd : cmds ) {
                 try {
                     String nodeName = cmd[0];
-                    Sink sink = (Sink) context.get(nodeName);
-                    if (sink == null) {
-                        throw new IllegalArgumentException("line "
-                                + step.getLine() + ": node " + nodeName
-                                + " does not exist");
+                    Sink sink = (Sink) context.get( nodeName );
+                    if ( sink == null ) {
+                        throw new IllegalArgumentException( "line "
+                                                            + step.getLine() + ": node " + nodeName
+                                                            + " does not exist" );
                     }
 
                     String args = cmd[1];
-                    String listString = args.replaceAll("h(\\d+)", "h[$1]");
+                    String listString = args.replaceAll( "h(\\d+)",
+                                                         "h[$1]" );
                     Map<String, Object> vars = new HashMap<String, Object>();
-                    vars.put("h", handles);
-                    List<?> list = (List<?>) MVEL.eval(listString, vars);
-                    if (list == null) {
-                        throw new IllegalArgumentException(Arrays.toString(cmd)
-                                + " does not specify an existing fact handle");
+                    vars.put( "h",
+                              handles );
+                    List< ? > list = (List< ? >) MVEL.eval( listString,
+                                                            vars );
+                    if ( list == null ) {
+                        throw new IllegalArgumentException( Arrays.toString( cmd )
+                                                            + " does not specify an existing fact handle" );
                     }
 
-                    for (Object element : list) {
-                        if (element == null) {
+                    for ( Object element : list ) {
+                        if ( element == null ) {
                             throw new IllegalArgumentException(
-                                    Arrays.toString(cmd)
-                                            + " does not specify an existing fact handle");
+                                                                Arrays.toString( cmd )
+                                                                        + " does not specify an existing fact handle" );
                         }
 
-                        if (element instanceof InternalFactHandle) {
+                        if ( element instanceof InternalFactHandle ) {
                             InternalFactHandle handle = (InternalFactHandle) element;
                             PropagationContext pContext = new PropagationContextImpl(
-                                    wm.getNextPropagationIdCounter(),
-                                    PropagationContext.MODIFICATION, null,
-                                    null, handle);
+                                                                                      wm.getNextPropagationIdCounter(),
+                                                                                      PropagationContext.MODIFICATION,
+                                                                                      null,
+                                                                                      null,
+                                                                                      handle );
                             ModifyPreviousTuples modifyPreviousTuples = new ModifyPreviousTuples(
-                                    handle.getFirstLeftTuple(), handle
-                                            .getFirstRightTuple());
-                            handle.setFirstLeftTuple(null);
-                            handle.setFirstRightTuple(null);
-                            handle.setLastLeftTuple(null);
-                            handle.setLastRightTuple(null);
-                            ((ObjectSink) sink).modifyObject(handle,
-                                    modifyPreviousTuples, pContext, wm);
-                            modifyPreviousTuples.retractTuples(pContext, wm);
+                                                                                                  handle.getFirstLeftTuple(),
+                                                                                                  handle
+                                                                                                          .getFirstRightTuple() );
+                            handle.setFirstLeftTuple( null );
+                            handle.setFirstRightTuple( null );
+                            handle.setLastLeftTuple( null );
+                            handle.setLastRightTuple( null );
+                            ((ObjectSink) sink).modifyObject( handle,
+                                                              modifyPreviousTuples,
+                                                              pContext,
+                                                              wm );
+                            modifyPreviousTuples.retractTuples( pContext,
+                                                                wm );
                         } else {
                             List<InternalFactHandle> tlist = (List<InternalFactHandle>) element;
-                            String id = getTupleId(tlist);
-                            LeftTuple tuple = (LeftTuple) context.get(id);
-                            if (tuple == null) {
+                            String id = getTupleId( tlist );
+                            LeftTuple tuple = (LeftTuple) context.get( id );
+                            if ( tuple == null ) {
                                 throw new IllegalArgumentException(
-                                        "Tuple not found: " + id + " : "
-                                                + tlist.toString());
+                                                                    "Tuple not found: " + id + " : "
+                                                                            + tlist.toString() );
                             }
                             PropagationContext pContext = new PropagationContextImpl(
-                                    wm.getNextPropagationIdCounter(),
-                                    PropagationContext.MODIFICATION, null,
-                                    tuple, null);
-                            ((LeftTupleSink) sink).modifyLeftTuple(tuple,
-                                    pContext, wm);
+                                                                                      wm.getNextPropagationIdCounter(),
+                                                                                      PropagationContext.MODIFICATION,
+                                                                                      null,
+                                                                                      tuple,
+                                                                                      null );
+                            ((LeftTupleSink) sink).modifyLeftTuple( tuple,
+                                                                    pContext,
+                                                                    wm );
                         }
                     }
-                } catch (Exception e) {
-                    throw new IllegalArgumentException("line " + step.getLine()
-                            + ": unable to execute command " + cmd, e);
+                } catch ( Exception e ) {
+                    throw new IllegalArgumentException( "line " + step.getLine()
+                                                                + ": unable to execute command " + cmd,
+                                                        e );
                 }
             }
-        } catch (Exception e) {
-            throw new IllegalArgumentException("line " + step.getLine()
-                    + ": unable to execute step " + step, e);
+        } catch ( Exception e ) {
+            throw new IllegalArgumentException( "line " + step.getLine()
+                                                        + ": unable to execute step " + step,
+                                                e );
         }
     }
 
     public static NodeTestCase compile(final Reader reader) throws IOException {
-        NodeTestDSLParser parser = getParser(reader);
-        return compile(parser);
+        NodeTestDSLParser parser = getParser( reader );
+        return compile( parser );
     }
 
     public static NodeTestCase compile(final InputStream is) throws IOException {
-        NodeTestDSLParser parser = getParser(is);
-        return compile(parser);
+        NodeTestDSLParser parser = getParser( is );
+        return compile( parser );
     }
 
     public static NodeTestCase compile(final String source) throws IOException {
-        NodeTestDSLParser parser = getParser(source);
-        return compile(parser);
+        NodeTestDSLParser parser = getParser( source );
+        return compile( parser );
     }
 
     private static NodeTestCase compile(final NodeTestDSLParser parser) {
         try {
             compilation_unit_return cur = parser.compilation_unit();
-            if (parser.hasErrors()) {
+            if ( parser.hasErrors() ) {
                 NodeTestCase result = new NodeTestCase();
-                result.setErrors(parser.getErrorMessages());
+                result.setErrors( parser.getErrorMessages() );
                 return result;
             }
-            NodeTestCase testCase = walk(parser.getTokenStream(),
-                    (CommonTree) cur.getTree());
+            NodeTestCase testCase = walk( parser.getTokenStream(),
+                                          (CommonTree) cur.getTree() );
             return testCase;
-        } catch (RecognitionException e) {
+        } catch ( RecognitionException e ) {
             NodeTestCase result = new NodeTestCase();
-            result.setErrors(Collections.singletonList(e.getMessage()));
+            result.setErrors( Collections.singletonList( e.getMessage() ) );
             return result;
         }
     }
 
-    private static NodeTestCase walk(TokenStream tokenStream, Tree resultTree)
-            throws RecognitionException {
-        CommonTreeNodeStream nodes = new CommonTreeNodeStream(resultTree);
+    private static NodeTestCase walk(TokenStream tokenStream,
+                                     Tree resultTree)
+                                                     throws RecognitionException {
+        CommonTreeNodeStream nodes = new CommonTreeNodeStream( resultTree );
         // AST nodes have payload that point into token stream
-        nodes.setTokenStream(tokenStream);
+        nodes.setTokenStream( tokenStream );
         // Create a tree walker attached to the nodes stream
-        NodeTestDSLTree walker = new NodeTestDSLTree(nodes);
+        NodeTestDSLTree walker = new NodeTestDSLTree( nodes );
         walker.compilation_unit();
         return walker.getTestCase();
     }
 
     private static NodeTestDSLParser getParser(final Reader reader)
-            throws IOException {
-        NodeTestDSLLexer lexer = new NodeTestDSLLexer(new ANTLRReaderStream(
-                reader));
-        NodeTestDSLParser parser = new NodeTestDSLParser(new CommonTokenStream(
-                lexer));
+                                                                   throws IOException {
+        NodeTestDSLLexer lexer = new NodeTestDSLLexer( new ANTLRReaderStream(
+                                                                              reader ) );
+        NodeTestDSLParser parser = new NodeTestDSLParser( new CommonTokenStream(
+                                                                                 lexer ) );
         return parser;
     }
 
     private static NodeTestDSLParser getParser(final InputStream is)
-            throws IOException {
-        NodeTestDSLLexer lexer = new NodeTestDSLLexer(new ANTLRInputStream(is));
-        NodeTestDSLParser parser = new NodeTestDSLParser(new CommonTokenStream(
-                lexer));
+                                                                    throws IOException {
+        NodeTestDSLLexer lexer = new NodeTestDSLLexer( new ANTLRInputStream( is ) );
+        NodeTestDSLParser parser = new NodeTestDSLParser( new CommonTokenStream(
+                                                                                 lexer ) );
         return parser;
     }
 
     private static NodeTestDSLParser getParser(final String source)
-            throws IOException {
-        NodeTestDSLLexer lexer = new NodeTestDSLLexer(new ANTLRStringStream(
-                source));
-        NodeTestDSLParser parser = new NodeTestDSLParser(new CommonTokenStream(
-                lexer));
+                                                                   throws IOException {
+        NodeTestDSLLexer lexer = new NodeTestDSLLexer( new ANTLRStringStream(
+                                                                              source ) );
+        NodeTestDSLParser parser = new NodeTestDSLParser( new CommonTokenStream(
+                                                                                 lexer ) );
         return parser;
     }
 
-    private final class LeftTupleComparator implements Comparator<LeftTuple> {
-        public int compare(LeftTuple o1, LeftTuple o2) {
-            
+    private final class LeftTupleComparator
+        implements
+        Comparator<LeftTuple> {
+        public int compare(LeftTuple o1,
+                           LeftTuple o2) {
+
             InternalFactHandle[] h1 = o1.getFactHandles();
             InternalFactHandle[] h2 = o2.getFactHandles();
-            
+
             // Handles have to be compared in the inverse order.
-            for (int i = (h1.length-1); i >= 0; i--) {
-                
+            for ( int i = (h1.length - 1); i >= 0; i-- ) {
+
                 int diff = h1[i].getId() - h2[i].getId();
-            
+
                 // Will continue comparing handles until
                 // a difference is found.
-                if (diff != 0)
-                    return diff;
+                if ( diff != 0 ) return diff;
             }
-            
+
             return 0;
         }
     }
-    
+
     public static class EmptyNotifier extends RunNotifier {
         public static final EmptyNotifier INSTANCE = new EmptyNotifier();
 
@@ -975,7 +1112,7 @@ public class ReteDslTestEngine {
 
         @Override
         public void fireTestStarted(Description description)
-                throws StoppedByUserException {
+                                                            throws StoppedByUserException {
         }
     }
 }

@@ -39,7 +39,5 @@ public interface LeftTupleMemory {
     //    public Entry[] getTable();
 
     public Entry[] toArray();
-    
-    public void clear();
 
 }

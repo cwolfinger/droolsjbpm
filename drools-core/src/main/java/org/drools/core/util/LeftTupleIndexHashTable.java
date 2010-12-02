@@ -397,16 +397,4 @@ public class LeftTupleIndexHashTable extends AbstractHashTable
         return builder.toString();
     }
 
-    
-    public void clear() {
-        
-        LeftTuple leftTuple = null; 
-        
-        while((leftTuple = (LeftTuple) iterator().next()) != null) {
-            remove(leftTuple);
-        }
-    }
-    
-    
-
 }

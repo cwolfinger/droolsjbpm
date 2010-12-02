@@ -94,13 +94,4 @@ public class EmptyObjectSinkAdapter extends AbstractObjectSinkAdapter {
         return obj instanceof EmptyObjectSinkAdapter;
     }
 
-
-    public boolean shouldPropagate(InternalWorkingMemory workingMemory) {
-        return true;
-    }
-    
-    
-
-
-
 }

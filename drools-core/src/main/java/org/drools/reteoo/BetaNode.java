@@ -218,7 +218,10 @@ public abstract class BetaNode extends LeftTupleSource
                                                                                       null,
                                                                                       null );
 
-            /* When L&R Unlinking is enabled, we only need to update the side
+            /* FIXME: This should be generalized at BetaNode level and the 
+             * instanceof should be removed!
+             * 
+             * When L&R Unlinking is enabled, we only need to update the side
              * that is initially linked. If there are tuples to be propagated,
              * they will trigger the update (thus, population) of the other side.
              * */

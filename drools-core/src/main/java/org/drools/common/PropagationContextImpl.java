@@ -195,15 +195,15 @@ public class PropagationContextImpl
         this.originOffset = originOffset;
     }
 
-    public int getLatestPropagationAttempt() {
+    public final int getLatestPropagationAttempt() {
         return latestPropagationAttempt;
     }
 
-    public void setLatestPropagationAttempt() {
+    public final void setLatestPropagationAttempt() {
         this.latestPropagationAttempt = this.factHandle.getId();
     }
 
-    public void resetLatestPropagationAttempt() {
+    public final void resetLatestPropagationAttempt() {
         this.latestPropagationAttempt = -1;
     }
     
