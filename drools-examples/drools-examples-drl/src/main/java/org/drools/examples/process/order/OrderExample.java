@@ -267,7 +267,7 @@ public class OrderExample extends JFrame {
         kbuilder.add(ResourceFactory.newClassPathResource(
     		"RuleSetExample.rf", OrderExample.class), ResourceType.DRF );
         kbuilder.add(ResourceFactory.newClassPathResource(
-    		"workflow_rules.drl", OrderExample.class), ResourceType.DRL );
+        			 "workflow_rules.drl", OrderExample.class), ResourceType.DRL );
         kbuilder.add(ResourceFactory.newClassPathResource(
     		"validation.drl", OrderExample.class), ResourceType.DRL );
         kbuilder.add(ResourceFactory.newClassPathResource(
@@ -276,6 +276,11 @@ public class OrderExample extends JFrame {
     		"assignment.dslr", OrderExample.class), ResourceType.DSLR );
         kbuilder.add(ResourceFactory.newClassPathResource(
     		"discount.drl", OrderExample.class), ResourceType.DRL );
+        
+        if ( kbuilder.hasErrors() ) {
+        	throw new RuntimeException ( kbuilder.getErrors().toString() );
+        }
+        
         KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
         kbase.addKnowledgePackages( kbuilder.getKnowledgePackages() );
 		return kbase;

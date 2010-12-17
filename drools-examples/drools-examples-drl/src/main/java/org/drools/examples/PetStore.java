@@ -59,12 +59,18 @@ public class PetStore {
     public static void main(String[] args) {
         try {
         	KnowledgeBuilderConfiguration conf = KnowledgeBuilderFactory.newKnowledgeBuilderConfiguration();
-        	conf.setOption( DumpDirOption.get(new File("/home/kverlaen/NotBackedUp/development/drools/drools-examples/drools-examples-drl/dump")) );
+        	// example dump
+        	// conf.setOption( DumpDirOption.get(new File("/home/kverlaen/NotBackedUp/development/drools/drools-examples/drools-examples-drl/dump")) );
             KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder(conf);
 
             kbuilder.add( ResourceFactory.newClassPathResource( "PetStore.drl",
-                                                                        PetStore.class ),
+                                                                 PetStore.class ),
                                   ResourceType.DRL );
+            
+            if ( kbuilder.hasErrors() ) {
+            	throw new RuntimeException ( kbuilder.getErrors().toString() );
+            }
+            
             KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
             kbase.addKnowledgePackages( kbuilder.getKnowledgePackages() );
 

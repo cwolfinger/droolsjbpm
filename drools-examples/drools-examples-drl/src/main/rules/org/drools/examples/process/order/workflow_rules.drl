@@ -33,8 +33,7 @@ rule "Execute Pending Work Item" salience 20
 	    workItemNodeInstance: WorkItemNodeInstance( workItemId <= 0 )
 	    workItem: WorkItemImpl( state == WorkItemImpl.PENDING ) from workItemNodeInstance.getWorkItem()
 	then 
-		workItemNodeInstance.getProcessInstance().getWorkingMemory()
-			.getWorkItemManager().internalExecuteWorkItem(workItem);
+		workItemNodeInstance.getProcessInstance().getWorkingMemory().getWorkItemManager().internalExecuteWorkItem(workItem);
 		workItemNodeInstance.internalSetWorkItemId(workItem.getId());
 		updateIfExists(drools.getWorkingMemory(), workItemNodeInstance);
 end
