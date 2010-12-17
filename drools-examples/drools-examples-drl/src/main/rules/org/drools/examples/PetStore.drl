@@ -53,9 +53,9 @@ rule "Free Fish Food Sample"
 	dialect "mvel"
 	when
 	    $order : Order()
-		not ( $p : Product( name == "Fish Food") && Purchase( product == $p ) )
-		not ( $p : Product( name == "Fish Food Sample") && Purchase( product == $p ) )		
-		exists ( $p : Product( name == "Gold Fish") && Purchase( product == $p ) )	
+		not ( $p : Product( name == "Fish Food") and Purchase( product == $p ) )
+		not ( $p : Product( name == "Fish Food Sample") and Purchase( product == $p ) )		
+		exists ( $p : Product( name == "Gold Fish") and Purchase( product == $p ) )	
 		$fishFoodSample : Product( name == "Fish Food Sample" );
 	then
 		System.out.println( "Adding free Fish Food Sample to cart" );
@@ -71,7 +71,7 @@ rule "Suggest Tank"
        dialect "java"
 	when
 	    $order : Order()
-		not ( $p : Product( name == "Fish Tank") && Purchase( product == $p ) )	
+		not ( $p : Product( name == "Fish Tank") and Purchase( product == $p ) )	
 		ArrayList( $total : size > 5 ) from collect( Purchase( product.name == "Gold Fish" ) )
 		$fishTank : Product( name == "Fish Tank" )		
 	then
