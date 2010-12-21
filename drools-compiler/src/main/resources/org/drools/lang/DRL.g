@@ -1474,7 +1474,7 @@ options{ backtrack=true; memoize=true; }
       | catches
       | finally_key block
       )
-    | switch_key parExpression LEFT_CURLY switchBlockStatementGroups RIGHT_CURLY
+    | switch_key parExpression LEFT_CURLY switchBlockStatementGroups* RIGHT_CURLY
     | synchronized_key parExpression block
     | return_key expression? SEMICOLON
     | throw_key expression SEMICOLON
@@ -1526,21 +1526,15 @@ formalParameter
 	:	variableModifier* type variableDeclaratorId
 	;
 
-
-
 switchBlockStatementGroups
-	:	(switchBlockStatementGroup)*
-	;
-	
-switchBlockStatementGroup
-	:	switchLabel blockStatement*
+	: switchLabel
+    | blockStatement
 	;
 	
 switchLabel
 //	:	'case' constantExpression ':'				//constantExpression is actually an expression
+//	|   'case' enumConstantName ':'			  //enumConstantName is actually an ID, and an ID is an expression.
 	: case_key expression COLON
-//	|   'case' enumConstantName ':'			  //enumConstantName is actually an ID
-	| case_key ID COLON
 	| default_key COLON
 	;
 	
