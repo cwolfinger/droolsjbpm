@@ -29,6 +29,7 @@ import org.drools.reteoo.AlphaNode;
 import org.drools.reteoo.EntryPointNode;
 import org.drools.reteoo.EvalConditionNode;
 import org.drools.reteoo.ExistsNode;
+import org.drools.reteoo.ForallNotNode;
 import org.drools.reteoo.FromNode;
 import org.drools.reteoo.JoinNode;
 import org.drools.reteoo.LeftInputAdapterNode;
@@ -88,6 +89,8 @@ public class SessionInspector {
                            BetaNodeVisitor.INSTANCE );
         this.visitors.put( NotNode.class,
                            BetaNodeVisitor.INSTANCE );
+        this.visitors.put( ForallNotNode.class,
+                           BetaNodeVisitor.INSTANCE );
         this.visitors.put( ExistsNode.class,
                            BetaNodeVisitor.INSTANCE );
         this.visitors.put( AccumulateNode.class,
@@ -133,7 +136,7 @@ public class SessionInspector {
                                nodeStack,
                                info );
             } else {
-                throw new RuntimeException( "No visitor found for node: " + parent );
+                throw new RuntimeException( "No visitor found for node class: " + parent.getClass()+" node: "+parent );
             }
             visitChildren( parent,
                            nodeStack,

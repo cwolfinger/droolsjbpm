@@ -1,5 +1,10 @@
 package org.drools.integrationtests;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -33,6 +38,7 @@ import org.drools.State;
 import org.drools.StatefulSession;
 import org.drools.StockTick;
 import org.drools.WorkingMemory;
+import org.drools.audit.WorkingMemoryConsoleLogger;
 import org.drools.builder.KnowledgeBuilder;
 import org.drools.builder.KnowledgeBuilderFactory;
 import org.drools.builder.ResourceType;
@@ -49,7 +55,6 @@ import org.drools.runtime.KnowledgeSessionConfiguration;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.runtime.conf.ClockTypeOption;
 import org.drools.time.SessionPseudoClock;
-import static org.mockito.Mockito.*;
 
 public class FirstOrderLogicTest extends TestCase {
     protected RuleBase getRuleBase() throws Exception {
@@ -445,6 +450,23 @@ public class FirstOrderLogicTest extends TestCase {
         workingMemory.fireAllRules();
         assertEquals( 1,
                       list.size() );
+    }
+
+    public void testExists3() throws Exception {
+        final KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
+        kbuilder.add( ResourceFactory.newClassPathResource( "test_Exists_JBRULES_2810.drl",
+                                                            FirstOrderLogicTest.class ),
+                      ResourceType.DRL );
+        
+        assertFalse( kbuilder.getErrors().toString(), kbuilder.hasErrors() );
+        
+        final KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
+        kbase.addKnowledgePackages( kbuilder.getKnowledgePackages() );
+        
+        final StatefulKnowledgeSession ksession = kbase.newStatefulKnowledgeSession();
+        WorkingMemoryConsoleLogger logger = new WorkingMemoryConsoleLogger( ksession );
+        ksession.fireAllRules();
+        ksession.dispose();
     }
 
     public void testForall() throws Exception {
