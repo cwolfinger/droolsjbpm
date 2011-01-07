@@ -194,7 +194,7 @@ public class RuleViewer extends GuvnorEditor {
     private ActionToolbarButtonsConfigurationProvider getConfiguration() {
         if ( actionToolbarButtonsConfigurationProvider == null ) {
             return new DefaultActionToolbarButtonsConfigurationProvider( asset,
-                                                                         this );
+                                                                         (EditorWidget)editor);
         } else {
             return actionToolbarButtonsConfigurationProvider;
         }
